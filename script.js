@@ -130,10 +130,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function apiCall(action, method = 'GET', bodyData = null, queryParams = {}) {
-        if (apiUrl.startsWith('https://script.google.com/macros/s/AKfycbwg8oGi_I3bn0yVgcTXJtSOCr16soK6lOdXTG28ft5Qv6Yw8kHRkEAEWEiS3uP1NCR2eQ/exec')) {
-            showStatusMessage('Error Crítico: La URL del API no ha sido configurada en el script JavaScript.', 'error', 10000);
-            throw new Error('API URL no configurada.');
-        }
+        //if (apiUrl.startsWith('https://script.google.com/macros/s/AKfycbwg8oGi_I3bn0yVgcTXJtSOCr16soK6lOdXTG28ft5Qv6Yw8kHRkEAEWEiS3uP1NCR2eQ/exec')) {
+        //    showStatusMessage('Error Crítico: La URL del API no ha sido configurada en el script JavaScript.', 'error', 10000);
+        //    throw new Error('API URL no configurada.');
+        //}
 
         const url = new URL(apiUrl);
         url.searchParams.append('action', action);
