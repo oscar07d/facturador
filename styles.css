@@ -1,0 +1,676 @@
+/* Archivo: styles.css (v2.3.3 - Formato Mejorado) */
+
+/* =================================== */
+/* 0. Variables Globales               */
+/* =================================== */
+:root {
+    --primary-color: #3498db;
+    --secondary-color: #2ecc71;
+    --danger-color: #e74c3c;
+    --warning-color: #f39c12;
+    --info-color: #3498db;
+    --light-gray-color: #f4f7f9;
+    --medium-gray-color: #dce1e5;
+    --dark-gray-color: #34495e;
+    --text-color-primary: #2c3e50;
+    --text-color-secondary: #566573;
+    --placeholder-color: rgba(108, 117, 125, 0.7);
+    --body-bg-color: #eef1f5;
+    --container-bg-color: #ffffff;
+    --border-radius-main: 30px;
+    --border-radius-medium: 20px;
+    --border-radius-small: 12px;
+    --input-padding: 12px 18px;
+    --box-shadow-light: 0 5px 15px rgba(0, 0, 0, 0.07);
+    --box-shadow-medium: 0 8px 25px rgba(0, 0, 0, 0.1);
+    --transition-speed: 0.25s;
+    --font-family-sans: 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+/* =================================== */
+/* 1. Reset y Base                   */
+/* =================================== */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    scroll-behavior: smooth;
+    font-size: 16px;
+}
+
+body {
+    font-family: var(--font-family-sans);
+    background-color: var(--body-bg-color);
+    color: var(--text-color-primary);
+    line-height: 1.65;
+    padding: clamp(10px, 3vw, 30px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.invoice-generator {
+    background-color: var(--container-bg-color);
+    padding: clamp(20px, 5vw, 40px) clamp(20px, 5vw, 50px);
+    border-radius: var(--border-radius-main);
+    box-shadow: var(--box-shadow-medium);
+    width: 100%;
+    max-width: 1280px;
+    margin: 20px 0;
+}
+
+/* =================================== */
+/* 2. Tipografía                     */
+/* =================================== */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    color: var(--dark-gray-color);
+    margin-bottom: 0.75em;
+    line-height: 1.3;
+    font-weight: 700;
+}
+
+h1 {
+    text-align: center;
+    color: var(--primary-color);
+    margin-bottom: 1.2em;
+    font-size: clamp(2rem, 5vw, 2.8rem);
+}
+
+h2 {
+    border-bottom: 3px solid var(--primary-color);
+    padding-bottom: 0.5em;
+    margin-bottom: 1em;
+    font-size: clamp(1.6rem, 4vw, 2.1rem);
+}
+
+h3 {
+    font-size: clamp(1.3rem, 3.5vw, 1.7rem);
+    margin-bottom: 0.8em;
+    color: var(--dark-gray-color);
+}
+
+p {
+    margin-bottom: 1em;
+}
+p:last-child {
+    margin-bottom: 0;
+}
+
+a {
+    color: var(--primary-color);
+    text-decoration: none;
+    transition: color var(--transition-speed), text-decoration var(--transition-speed);
+}
+a:hover,
+a:focus {
+    color: #2980b9;
+    text-decoration: underline;
+    outline: 2px solid transparent;
+}
+
+/* =================================== */
+/* 3. Secciones                      */
+/* =================================== */
+.invoice-header,
+.invoice-section {
+    margin-bottom: clamp(30px, 6vw, 50px);
+    padding-bottom: clamp(25px, 5vw, 40px);
+    border-bottom: 1px solid var(--medium-gray-color);
+}
+.invoice-header:last-child,
+.invoice-section:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+/* =================================== */
+/* 4. Formularios                    */
+/* =================================== */
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+    gap: clamp(20px, 3vw, 25px) clamp(20px, 3vw, 30px);
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    margin-bottom: 10px;
+    font-weight: 600;
+    color: var(--text-color-primary);
+    font-size: clamp(0.9rem, 2vw, 1rem);
+}
+
+.form-group input[type="text"],
+.form-group input[type="email"],
+.form-group input[type="tel"],
+.form-group input[type="number"],
+.form-group input[type="date"],
+.form-group select,
+.form-group textarea {
+    padding: var(--input-padding);
+    border: 1px solid var(--medium-gray-color);
+    border-radius: var(--border-radius-medium);
+    font-size: clamp(0.9rem, 2vw, 1rem);
+    color: var(--text-color-primary);
+    background-color: #fff;
+    transition: border-color var(--transition-speed), box-shadow var(--transition-speed);
+    width: 100%; 
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3.5px rgba(52, 152, 219, 0.25);
+    outline: none;
+}
+
+.form-group input[readonly] {
+    background-color: var(--light-gray-color);
+    cursor: not-allowed;
+    border-color: var(--medium-gray-color);
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 110px;
+}
+
+/* --- Estilos para Placeholder --- */
+::-webkit-input-placeholder { color: var(--placeholder-color) !important; opacity: 1; }
+::-moz-placeholder          { color: var(--placeholder-color) !important; opacity: 1; }
+:-ms-input-placeholder      { color: var(--placeholder-color) !important; opacity: 1; }
+:-moz-placeholder           { color: var(--placeholder-color) !important; opacity: 1; }
+input::placeholder,
+textarea::placeholder       { color: var(--placeholder-color) !important; opacity: 1; }
+
+
+/* --- Estilos para Checkboxs y sus Labels --- */
+.form-group-checkbox {
+    display: flex;
+    align-items: center;
+}
+
+.form-group-checkbox input[type="checkbox"] {
+    margin-right: 10px;
+    width: auto;
+    height: auto;
+    transform: scale(1.3);
+    accent-color: var(--primary-color);
+    cursor: pointer;
+    flex-shrink: 0; 
+}
+
+.form-group-checkbox label {
+    margin-bottom: 0;
+    font-weight: normal;
+    font-size: clamp(0.9rem, 1.9vw, 0.95rem);
+    cursor: pointer;
+    color: var(--text-color-primary);
+    line-height: 1.4;
+}
+
+/* --- Input de archivo (logo-upload) --- */
+#logo-upload-wrapper {
+    border: 2px dashed var(--medium-gray-color);
+    border-radius: var(--border-radius-medium);
+    padding: var(--input-padding);
+    text-align: center;
+    cursor: pointer;
+    transition: border-color var(--transition-speed), background-color var(--transition-speed);
+    background-color: var(--light-gray-color);
+}
+#logo-upload-wrapper:hover,
+#logo-upload-wrapper:focus-within {
+    border-color: var(--primary-color);
+    background-color: rgba(52, 152, 219, 0.05);
+}
+#logo-upload {
+    opacity: 0;
+    position: absolute;
+    width: 0.1px;
+    height: 0.1px;
+    overflow: hidden;
+    z-index: -1;
+}
+#logo-upload-button-label {
+    display: inline-block;
+    font-size: clamp(0.85rem, 1.8vw, 0.95rem);
+    color: var(--primary-color);
+    font-weight: 500;
+    pointer-events: none; 
+}
+#logo-upload-button-label::before {
+    content: '📂 ';
+    margin-right: 8px;
+    font-size: 1.1em;
+}
+#selected-logo-filename {
+    display: block;
+    margin-top: 10px;
+    font-size: clamp(0.8rem, 1.7vw, 0.9rem);
+    color: var(--text-color-secondary);
+    font-style: italic;
+    word-break: break-all;
+}
+
+/* --- Ocultar flecha de Datalist en Chrome --- */
+input[list]::-webkit-calendar-picker-indicator {
+    display: none;
+}
+
+/* =================================== */
+/* 5. Botones                        */
+/* =================================== */
+.btn {
+    padding: clamp(10px, 2.2vw, 14px) clamp(18px, 4vw, 28px);
+    font-size: clamp(0.9rem, 2vw, 1.05rem);
+    font-weight: 600;
+    border-radius: var(--border-radius-medium);
+    border: none;
+    cursor: pointer;
+    transition: background-color var(--transition-speed), transform var(--transition-speed), box-shadow var(--transition-speed), opacity var(--transition-speed);
+    text-align: center;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    line-height: 1.45;
+    box-shadow: var(--box-shadow-light);
+}
+.btn:hover:not(:disabled) {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: var(--box-shadow-medium);
+}
+
+.btn:active:not(:disabled) {
+    transform: translateY(0px) scale(0.99);
+    box-shadow: inset 0 3px 7px rgba(0,0,0,0.1);
+}
+.btn:focus-visible {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 3px;
+}
+.btn:disabled,
+.btn.disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+.btn-primary { background-color: var(--primary-color); color: white; }
+.btn-primary:hover:not(:disabled) { background-color: #2886c4; }
+.btn-secondary { background-color: var(--secondary-color); color: white; }
+.btn-secondary:hover:not(:disabled) { background-color: #25a25a; }
+.btn-danger { background-color: var(--danger-color); color: white; }
+.btn-danger:hover:not(:disabled) { background-color: #d63e2d; }
+.btn-outline {
+    background-color: transparent;
+    color: var(--primary-color);
+    border: 2px solid var(--primary-color);
+    box-shadow: none;
+}
+.btn-outline:hover:not(:disabled) {
+    background-color: var(--primary-color);
+    color: white;
+    box-shadow: var(--box-shadow-light);
+}
+.btn-small {
+    padding: clamp(7px, 1.8vw, 10px) clamp(12px, 3vw, 20px);
+    font-size: clamp(0.8rem, 1.8vw, 0.95rem);
+    border-radius: var(--border-radius-small);
+}
+.btn-full-width { width: 100%; }
+.action-buttons-group {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+/* =================================== */
+/* 6. Tablas                         */
+/* =================================== */
+.table-responsive-wrapper {
+    overflow-x: auto;
+    width: 100%;
+    margin-bottom: 25px;
+    border-radius: var(--border-radius-medium);
+    box-shadow: var(--box-shadow-light);
+    border: 1px solid var(--medium-gray-color);
+    background-color: var(--container-bg-color);
+}
+.item-table {
+    width: 100%;
+    border-collapse: separate; /* Importante para border-spacing */
+    border-spacing: 0;
+}
+.item-table th,
+.item-table td {
+    border-bottom: 1px solid var(--medium-gray-color);
+    padding: clamp(10px, 2.5vw, 14px) clamp(12px, 3vw, 18px);
+    text-align: left;
+    vertical-align: middle;
+    font-size: clamp(0.85rem, 1.9vw, 0.95rem);
+}
+.item-table th {
+    background-color: var(--light-gray-color);
+    font-weight: 600;
+    color: var(--dark-gray-color);
+    white-space: nowrap;
+}
+.item-table td.text-right,
+.item-table th.text-right { /* Alineación para columnas de números */
+    text-align: right;
+} 
+.item-table tr:last-child td {
+    border-bottom: none;
+}
+.item-table tr:nth-child(even) td {
+    background-color: #fbfcfd;
+}
+.item-table tr:hover td {
+    background-color: rgba(52, 152, 219, 0.04);
+}
+
+/* =================================== */
+/* 7. Elementos Específicos          */
+/* =================================== */
+.invoice-header {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: clamp(20px, 4vw, 40px);
+}
+.logo-section {
+    flex: 1 1 320px;
+    min-width: 280px;
+}
+.invoice-info {
+    flex: 1 1 280px;
+    min-width: 240px;
+    text-align: right;
+}
+.invoice-info p {
+    margin: 10px 0;
+    font-size: clamp(0.9rem, 2vw, 1rem);
+}
+.invoice-info p span {
+    font-weight: 600;
+    color: var(--primary-color);
+}
+.logo-preview-container {
+    width: 100%;
+    max-width: 240px;
+    min-height: 130px;
+    border: 2px dashed var(--medium-gray-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 15px;
+    background-color: #f9fafb;
+    overflow: hidden;
+    border-radius: var(--border-radius-medium);
+}
+#logo-preview {
+    max-width: 95%;
+    max-height: 120px;
+    display: block;
+    object-fit: contain;
+}
+#edit-client-form-container,
+#search-results-div {
+    margin-top: 30px;
+    padding: clamp(20px, 4vw, 30px);
+    background-color: var(--light-gray-color);
+    border: 1px solid var(--medium-gray-color);
+    border-radius: var(--border-radius-main);
+    box-shadow: inset 0 2px 8px rgba(0,0,0,0.03);
+}
+#search-results-div pre {
+    background: #e8f0f3;
+    padding: 20px;
+    border-radius: var(--border-radius-medium);
+    max-height: 350px;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    word-break: break-all;
+    font-size: clamp(0.8rem, 1.8vw, 0.9rem);
+    line-height: 1.7;
+}
+
+/* --- Sección de Totales y sus Elementos --- */
+.totals-section > .form-group-checkbox { /* Checkbox de IVA Global */
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    padding: 10px 0; 
+    margin-bottom: 20px; 
+}
+.totals-section .form-grid { /* Grid para los campos numéricos de totales */
+    display: grid; 
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr));
+    align-items: flex-end; 
+    gap: clamp(20px, 3vw, 25px) clamp(20px, 3vw, 30px);
+}
+.totals-section .form-group input[type="text"],
+.totals-section .form-group input[type="number"] {
+    font-weight: bold;
+    font-size: clamp(1rem, 2.2vw, 1.15rem); 
+}
+#total-display {
+    font-size: clamp(1.2rem, 2.8vw, 1.5rem) !important;
+    color: var(--secondary-color) !important;
+    background-color: #e8f5e9 !important;
+    text-align: right;
+    padding-right: 20px !important;
+}
+#subtotal-display,
+#tax-amount-display {
+    text-align: right;
+    padding-right: 20px !important;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* =================================== */
+/* 8. Mensajes de Estado             */
+/* =================================== */
+.status-message {
+    padding: clamp(12px, 2.5vw, 18px) clamp(18px, 4vw, 28px);
+    margin: 30px auto;
+    border-radius: var(--border-radius-main);
+    font-weight: 500;
+    text-align: center;
+    border: 1px solid transparent;
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    transition: opacity var(--transition-speed) ease-out, transform var(--transition-speed) ease-out, visibility 0s linear 0s;
+    visibility: visible;
+    max-width: 900px;
+    font-size: clamp(0.9rem, 2vw, 1rem);
+}
+.status-message.hidden {
+    opacity: 0;
+    transform: translateY(-25px) scale(0.95);
+    transition-delay: 0s, 0s, var(--transition-speed); /* Delay visibility change */
+    visibility: hidden;
+}
+.status-success { background-color: #d1fae5; color: #065f46; border-color: #a7f3d0; }
+.status-error   { background-color: #fee2e2; color: #991b1b; border-color: #fecaca; }
+.status-info    { background-color: #dbeafe; color: #1e40af; border-color: #bfdbfe; }
+.status-warning { background-color: #fef3c7; color: #92400e; border-color: #fde68a; }
+
+/* =================================== */
+/* 9. Estilos para Plantilla Export  */
+/* =================================== */
+#invoice-to-export-wrapper {
+    position: fixed;
+    left: -2000px; /* Mover fuera de pantalla */
+    top: 0;
+    width: 800px; /* Ancho A4 aprox, ajustar según necesidad */
+    background: white;
+    padding: 40px;
+    font-family: Arial, sans-serif; /* Fuente común para PDFs */
+    color: #000; /* Asegurar texto negro para impresión */
+    z-index: -1; /* Detrás de todo */
+}
+#invoice-to-export-wrapper.visible-for-capture {
+    left: 0; 
+    top:0; 
+    z-index: 10000; /* Traer al frente para html2canvas */
+}
+#invoice-to-export {
+    border: 1px solid #ccc;
+}
+#invoice-to-export header,
+#invoice-to-export section,
+#invoice-to-export footer {
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+}
+#invoice-to-export h1,
+#invoice-to-export h2,
+#invoice-to-export h3 {
+    margin-bottom: 10px;
+    color: #000;
+}
+#invoice-to-export h1 {
+    font-size: 24pt;
+    text-align: center;
+    border-bottom: 2px solid #000;
+}
+#invoice-to-export .header-flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 30px;
+}
+#invoice-to-export .export-logo {
+    max-width: 150px;
+    max-height: 100px;
+}
+#invoice-to-export .export-business-details,
+#invoice-to-export .export-client-details,
+#invoice-to-export .export-invoice-info {
+    font-size: 10pt;
+    margin-bottom:15px;
+}
+#invoice-to-export .export-invoice-info {
+    text-align: right;
+}
+#invoice-to-export .export-items-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 9pt;
+    margin-top: 20px;
+}
+#invoice-to-export .export-items-table th,
+#invoice-to-export .export-items-table td {
+    border: 1px solid #888;
+    padding: 6px 8px;
+    text-align: left;
+}
+#invoice-to-export .export-items-table th {
+    background-color: #f0f0f0;
+}
+#invoice-to-export .export-items-table td.number,
+#invoice-to-export .export-items-table th.number {
+    text-align: right;
+}
+#invoice-to-export .export-totals {
+    margin-top: 25px;
+    text-align: right;
+    font-size: 10pt;
+}
+#invoice-to-export .export-totals p {
+    margin: 5px 0;
+}
+#invoice-to-export .export-totals strong {
+    display: inline-block;
+    min-width: 120px;
+}
+#invoice-to-export footer {
+    font-size: 8pt;
+    text-align: center;
+    border-top: 1px solid #ccc;
+    padding-top: 10px;
+    margin-top:30px;
+}
+
+/* =================================== */
+/* 10. Media Queries (Responsividad)   */
+/* =================================== */
+@media (max-width: 992px) {
+    .invoice-info {
+        text-align: left;
+    }
+}
+
+@media (max-width: 768px) {
+    html { font-size: 15px; }
+    .invoice-generator { padding: clamp(15px, 4vw, 25px); }
+    .form-grid { grid-template-columns: 1fr; gap: clamp(15px, 3vw, 20px) 0; }
+    .invoice-header { flex-direction: column; align-items: stretch; }
+    .invoice-info { margin-top: 25px; }
+    .logo-preview-container { max-width: 200px; min-height: 110px; }
+    #logo-preview { max-height: 100px; }
+    .item-table th,
+    .item-table td {
+        font-size: clamp(0.8rem, 2.5vw, 0.9rem);
+        padding: clamp(8px, 2vw, 12px) clamp(10px, 2.5vw, 15px);
+    }
+    .action-buttons-group { flex-direction: column; gap: 12px; }
+    .action-buttons-group .btn { width: 100%; }
+    #generate-invoice-btn { font-size: clamp(1rem, 2.5vw, 1.15rem) !important; }
+    
+    /* Ajustes específicos para móviles en el form-grid de "Añadir Ítem" */
+    .items-section .form-grid {
+        grid-template-columns: 1fr; /* Asegurar una columna */
+    }
+    .items-section .form-grid .form-group { /* Espacio entre campos */
+        margin-bottom: 15px; 
+    }
+    .items-section .form-grid .form-group-checkbox { /* Ajustar checkbox de ítem */
+        margin-top: 5px;
+        justify-content: flex-start;
+        padding: 5px 0;
+    }
+}
+
+@media (max-width: 480px) {
+    html { font-size: 14px; }
+    .invoice-generator { border-radius: var(--border-radius-medium); }
+    h1 { font-size: clamp(1.6rem, 6vw, 2rem); }
+    h2 { font-size: clamp(1.3rem, 5vw, 1.7rem); }
+    h3 { font-size: clamp(1.1rem, 4vw, 1.4rem); }
+    .btn { border-radius: var(--border-radius-small); }
+    .form-group input[type="text"],
+    .form-group input[type="email"],
+    .form-group input[type="tel"],
+    .form-group input[type="number"],
+    .form-group input[type="date"],
+    .form-group select,
+    .form-group textarea {
+        border-radius: var(--border-radius-small);
+    }
+}

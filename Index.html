@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="es-CO">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Facturación OSCAR 07D Studios (v2.3 Estructurado)</title>
+    
+    <link rel="stylesheet" href="styles.css">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" integrity="sha512-BNaRQnYJYiPSqHHDb58B0yaPfCu+Wgds8Gp/gU33kqBtgP4PWGCoeEh8wNjga8QVHHOeqAcpkkn specialisesndeotagnpngvalue=" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" integrity="sha512-qZvrmS2ekKPF2mSznTQsxqPgnpkI4mkJsgPionyNG4ptaGLotg2XTGVbCVubysvhPNP5mc+S9g1VUcSD/}pngvalue=" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <script src="script.js" defer></script>
+</head>
+<body>
+
+    <div class="invoice-generator">
+        <h1>Facturación OSCAR 07D Studios</h1>
+        
+        <header class="invoice-header">
+            <div class="logo-section">
+                <h3>Logo y Detalles del Comercio</h3>
+                <div class="form-group">
+                    <label for="logo-upload">Cargar Logo (SVG, PNG):</label>
+                    <div id="logo-upload-wrapper">
+                        <input type="file" id="logo-upload" name="logo-upload" accept="image/svg+xml, image/png" aria-labelledby="logo-upload-button-label">
+                        <label for="logo-upload" id="logo-upload-button-label" role="button" tabindex="0"></label>
+                        <span id="selected-logo-filename">Ningún archivo seleccionado</span>
+                    </div>
+                </div>
+                <div class="logo-preview-container">
+                    <img id="logo-preview" src="#" alt="Vista previa Logo">
+                </div>
+                <div class="form-group" style="margin-top:15px;">
+                    <label for="business-details">Detalles del Comercio (NIT, Razón Social, Dirección, etc.):</label>
+                    <textarea id="business-details" placeholder="Ej: OSCAR 07D Studios SAS, NIT: 900.123.456-7, Cra 1 # 2-3 Bogotá..."></textarea>
+                </div>
+            </div>
+            <div class="invoice-info">
+                <h3>Información de Factura</h3>
+                <p>Fecha Factura: <span id="invoice-date-display">--/--/----</span></p>
+                <p>Nº Factura: <span id="invoice-number-display">----</span></p>
+                <p>Código Único: <span id="invoice-code-display">----</span></p>
+            </div>
+        </header>
+
+        <section class="invoice-section client-section">
+            <h2>Cliente</h2>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="select-client">Cliente Existente:</label>
+                    <select id="select-client">
+                        <option value="">-- Nuevo Cliente --</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Acciones del Cliente Seleccionado:</label>
+                    <div id="client-actions-container" class="action-buttons-group">
+                        <button id="delete-client-btn" class="btn btn-danger btn-small hidden">Eliminar</button>
+                        <button id="recover-client-btn" class="btn btn-secondary btn-small hidden">Recuperar</button>
+                    </div>
+                </div>
+            </div>
+            <div id="client-payment-status-area" class="form-group hidden" style="margin-top: 15px;">
+                <label>Estado de Pago del Cliente:</label>
+                <p id="payment-status-display" style="font-weight: bold;"></p>
+            </div>
+            <div id="new-client-form-container">
+                <h3>Datos del Nuevo Cliente</h3>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="new-client-name">Nombre Completo o Razón Social:</label>
+                        <input type="text" id="new-client-name" placeholder="Nombre del cliente">
+                    </div>
+                    <div class="form-group">
+                        <label for="new-client-email">Email:</label>
+                        <input type="email" id="new-client-email" placeholder="correo@ejemplo.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="new-client-address">Dirección Fiscal:</label>
+                        <input type="text" id="new-client-address" placeholder="Calle/Carrera, Número, Ciudad, Departamento">
+                    </div>
+                    <div class="form-group">
+                        <label for="new-client-phone">Teléfono (Colombia):</label>
+                        <input type="tel" id="new-client-phone" placeholder="Ej: 3001234567 o 6011234567" pattern="^(3\d{9}|60\d{8})$" title="Número de 10 dígitos. Móvil (3xx...) o Fijo con indicativo (60x...). Sin +57.">
+                    </div>
+                    <div class="form-group">
+                        <label for="new-client-payment-status">Estado de Pago (General Cliente):</label>
+                        <select id="new-client-payment-status">
+                            <option value="Pendiente">Pendiente</option>
+                            <option value="Pagado">Pagado</option>
+                            <option value="Parcialmente Pagado">Parcialmente Pagado</option>
+                            <option value="Vencido">Vencido</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div id="edit-client-form-container" class="hidden">
+                <h3>Editar Cliente: <span id="editing-client-name" style="color:var(--primary-color)"></span></h3>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="edit-client-name">Nombre:</label>
+                        <input type="text" id="edit-client-name">
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-client-email">Email:</label>
+                        <input type="email" id="edit-client-email">
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-client-address">Dirección:</label>
+                        <input type="text" id="edit-client-address">
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-client-phone">Teléfono (Colombia):</label>
+                        <input type="tel" id="edit-client-phone" placeholder="Ej: 3001234567 o 6011234567" pattern="^(3\d{9}|60\d{8})$" title="Número de 10 dígitos. Móvil (3xx...) o Fijo con indicativo (60x...). Sin +57.">
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-client-payment-status">Estado de Pago:</label>
+                        <select id="edit-client-payment-status">
+                            <option value="Pendiente">Pendiente</option>
+                            <option value="Pagado">Pagado</option>
+                            <option value="Parcialmente Pagado">Parcialmente Pagado</option>
+                            <option value="Vencido">Vencido</option>
+                        </select>
+                    </div>
+                </div>
+                <button id="save-client-changes-btn" class="btn btn-secondary" style="margin-top:15px;">Guardar Cambios del Cliente</button>
+            </div>
+        </section>
+
+        <section class="invoice-section items-section">
+            <h2>Detalles de la Factura</h2>
+            <h3>Añadir Ítem</h3>
+            <div class="form-grid" style="align-items: flex-end;">
+                <div class="form-group" style="grid-column: 1 / -1;">
+                    <label for="item-description">Descripción:</label>
+                    <input type="text" id="item-description" list="product-list" placeholder="Producto o servicio">
+                    <datalist id="product-list"></datalist>
+                </div>
+                <div class="form-group">
+                    <label for="item-quantity">Cantidad:</label>
+                    <input type="number" id="item-quantity" value="1" min="0.01" step="any">
+                </div>
+                <div class="form-group">
+                    <label for="item-price">Precio Unit. (COP $):</label>
+                    <input type="number" id="item-price" step="any" min="0" placeholder="Ej: 12000">
+                </div>
+                <div class="form-group form-group-checkbox" style="align-self: center; padding-top: 15px;">
+                    <input type="checkbox" id="apply-item-tax-checkbox" checked>
+                    <label for="apply-item-tax-checkbox">Aplicar IVA a este ítem</label>
+                </div>
+                 <div class="form-group">
+                    <button id="add-item-btn" class="btn btn-primary btn-full-width">Agregar Ítem</button>
+                </div>
+            </div>
+
+            <h3>Ítems de la Factura</h3>
+            <div class="table-responsive-wrapper">
+                <table class="item-table">
+                    <thead>
+                        <tr>
+                            <th>Descripción</th>
+                            <th class="text-right">Cantidad</th>
+                            <th class="text-right">Precio Unit. (COP $)</th>
+                            <th class="text-right">Importe (COP $)</th>
+                            <th class="text-right">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="invoice-items-tbody"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="invoice-section totals-section">
+            <h2>Totales</h2>
+            <div class="form-group form-group-checkbox" style="margin-bottom: 20px;">
+                <input type="checkbox" id="apply-invoice-tax-checkbox" checked>
+                <label for="apply-invoice-tax-checkbox">Aplicar IVA a la Factura</label>
+            </div>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Subtotal (COP $):</label>
+                    <input type="text" id="subtotal-display" readonly value="0">
+                </div>
+                <div class="form-group" id="tax-percentage-group">
+                    <label for="tax-percentage">Impuesto (IVA %):</label>
+                    <input type="number" id="tax-percentage" value="19" step="any" min="0" placeholder="Ej: 19">
+                </div>
+                <div class="form-group" id="tax-amount-group">
+                    <label>Total Impuesto (COP $):</label>
+                    <input type="text" id="tax-amount-display" readonly value="0">
+                </div>
+                <div class="form-group">
+                    <label style="font-size:1.2rem;">TOTAL FACTURA (COP $):</label>
+                    <input type="text" id="total-display" readonly value="0">
+                </div>
+            </div>
+        </section>
+
+        <section class="invoice-section actions-section">
+            <h2>Acciones Principales</h2>
+            <div class="form-group">
+                <button id="generate-invoice-btn" class="btn btn-secondary btn-full-width" style="padding: 15px; font-size: 1.3rem;">
+                    Generar y Guardar Factura
+                </button>
+            </div>
+            <h3 style="margin-top: 30px;">Gestión de Facturas Existentes</h3>
+            <div class="form-grid" style="align-items: flex-end;">
+                <div class="form-group">
+                    <label for="search-invoice-code">Buscar Factura (por Código/Consecutivo):</label>
+                    <input type="text" id="search-invoice-code" placeholder="Introduzca código de factura">
+                </div>
+                <div class="form-group">
+                    <button id="search-invoice-btn" class="btn btn-primary btn-full-width">Buscar Factura</button>
+                </div>
+            </div>
+            <div id="search-results-div" class="hidden">
+                <h4>Resultados de la Búsqueda:</h4>
+                <pre id="search-results-content"></pre>
+            </div>
+            <h3 style="margin-top: 30px;">Opciones Adicionales / Exportar</h3>
+            <div class="action-buttons-group" style="margin-top: 15px;">
+                <button id="share-whatsapp-btn" class="btn btn-outline">WhatsApp</button>
+                <button id="share-email-btn" class="btn btn-outline">Correo</button>
+                <button id="export-pdf-btn" class="btn btn-primary">Exportar PDF</button>
+                <button id="export-png-btn" class="btn btn-primary">Exportar PNG</button>
+            </div>
+        </section>
+
+        <div id="status-message-div" class="status-message hidden"></div>
+    </div>
+
+    <!-- Plantilla HTML para la factura a exportar (oculta) -->
+    <div id="invoice-to-export-wrapper">
+        <div id="invoice-to-export">
+            <header>
+                <div class="header-flex">
+                    <div class="export-business-details">
+                        <img id="export-logo-img" src="" alt="Logo Comercio" class="export-logo" style="display:none; margin-bottom:15px;" />
+                        <p id="export-business-name" style="font-size: 14pt; font-weight:bold; margin-bottom:5px;"></p>
+                        <div id="export-business-extra-details" style="white-space: pre-wrap;"></div>
+                    </div>
+                    <div class="export-invoice-info">
+                        <h1 style="font-size: 20pt; margin-bottom:10px;">FACTURA</h1>
+                        <p><strong>Nº Factura:</strong> <span id="export-invoice-number"></span></p>
+                        <p><strong>Código:</strong> <span id="export-invoice-code"></span></p>
+                        <p><strong>Fecha:</strong> <span id="export-invoice-date"></span></p>
+                    </div>
+                </div>
+            </header>
+            <hr style="margin: 20px 0;">
+            <section class="export-client-info">
+                <h3>Cliente:</h3>
+                <div id="export-client-details">
+                    <p><strong>Nombre:</strong> <span id="export-client-name"></span></p>
+                    <p><strong>Email:</strong> <span id="export-client-email"></span></p>
+                    <p><strong>Dirección:</strong> <span id="export-client-address"></span></p>
+                    <p><strong>Teléfono:</strong> <span id="export-client-phone"></span></p>
+                </div>
+            </section>
+            <hr style="margin: 20px 0;">
+            <section class="export-items">
+                <h3>Detalle de Ítems:</h3>
+                <table class="export-items-table">
+                    <thead>
+                        <tr>
+                            <th>Descripción</th>
+                            <th class="number">Cantidad</th>
+                            <th class="number">Precio Unit. (COP $)</th>
+                            <th class="number">Importe (COP $)</th>
+                            <th class="number">IVA Ítem (COP $)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="export-items-tbody">
+                    </tbody>
+                </table>
+            </section>
+            <hr style="margin: 20px 0;">
+            <section class="export-totals" id="export-totals-section">
+                <p><strong>Subtotal:</strong> <span id="export-subtotal"></span> COP $</p>
+                <p id="export-tax-line" class="hidden"><strong>Impuesto (<span id="export-tax-percentage"></span>%):</strong> <span id="export-tax-amount"></span> COP $</p>
+                <p style="font-size: 12pt; font-weight:bold;"><strong>TOTAL:</strong> <span id="export-total"></span> COP $</p>
+            </section>
+            <footer>
+                <p>Factura generada por Sistema OSCAR 07D Studios</p>
+                <p>Gracias por su compra.</p>
+            </footer>
+        </div>
+    </div>
+
+    <!-- El JavaScript se cargará desde script.js -->
+</body>
+</html>
