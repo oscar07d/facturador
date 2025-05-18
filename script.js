@@ -806,6 +806,25 @@ document.addEventListener('DOMContentLoaded', () => {
     // =================================================================================
     // 11. INICIALIZACIÓN DE EVENTOS Y DE LA APLICACIÓN
     // =================================================================================
+// =================================================================================
+// FUNCIÓN PARA CARGAR DATOS INICIALES DEL SERVIDOR
+// =================================================================================
+async function loadInitialDataFromServer() {
+    console.log("loadInitialDataFromServer: Iniciando carga de datos del servidor...");
+    try {
+        // Usar Promise.all para que se ejecuten en paralelo si es posible,
+        // o secuencialmente si una depende de la otra (no es el caso aquí)
+        await Promise.all([
+            loadClients(),
+            loadProducts()
+        ]);
+        console.log("loadInitialDataFromServer: Clientes y productos cargados.");
+    } catch (error) {
+        console.error("loadInitialDataFromServer: Error durante la carga inicial de datos.", error);
+        showStatusMessage("Error al cargar datos iniciales del servidor. Intente recargar.", "error", 7000);
+        // Podrías decidir si la app puede continuar sin estos datos o no.
+    }
+}
     
     function setupEventListeners() {
         // Negocio y Logo
