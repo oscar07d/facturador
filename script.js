@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 0. ESTADO GLOBAL, CONSTANTES Y FORMATTERS
     // =================================================================================
     
-    const apiUrl = 'https://script.google.com/macros/s/AKfycbwg8oGi_I3bn0yVgcTXJtSOCr16soK6lOdXTG28ft5Qv6Yw8kHRkEAEWEiS3uP1NCR2eQ/exec'; // ¡¡¡REEMPLAZAR ESTA URL!!!
+    const apiUrl = 'https://script.google.com/macros/s/AKfycbwZ6Jn3E2yBQMD0BYCFariKCzxMAzZzwMsjiNT2D4KiUfAOvFis7w8Y0_mNj90K_atPvQ/exec'; // ¡¡¡REEMPLAZAR ESTA URL!!!
     let items = [];
     let clientsData = [];
     let productsData = [];
