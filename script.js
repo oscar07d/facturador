@@ -25,6 +25,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const mainInvoiceGeneratorDiv = document.querySelector('.invoice-generator'); 
     // === FIN NUEVO ===
 
+    // === NUEVO: VERIFICAR SELECTORES ===
+console.log("Elemento pantalla de carga:", initialLoaderScreen);
+console.log("Elemento generador principal:", mainInvoiceGeneratorDiv);
+// === FIN NUEVO ===
+
     // =================================================================================
     // Separador Visual para el Parser de la Plataforma
     // =================================================================================
@@ -855,6 +860,161 @@ document.addEventListener('DOMContentLoaded', () => {
     // =================================================================================
     // 11. INICIALIZACIÓN DE EVENTOS Y DE LA APLICACIÓN
     // =================================================================================
+
+    // =================================================================================
+    // DEFINICIÓN DE MANEJADORES DE EVENTOS Y FUNCIONES DE INICIALIZACIÓN
+    // =================================================================================
+    
+    // Función helper para manejar el estado de carga de los botones
+    function setButtonLoading(buttonElement, isLoading) {
+        if (!buttonElement) return;
+        const textSpan = buttonElement.querySelector('.btn-text'); // Asumimos que tienes <span class="btn-text">
+    
+        if (isLoading) {
+            buttonElement.disabled = true;
+            buttonElement.classList.add('loading');
+            // El CSS se encarga de ocultar .btn-text y mostrar .loader
+        } else {
+            buttonElement.disabled = false;
+            buttonElement.classList.remove('loading');
+        }
+    }
+    
+    // Función para configurar todos los event listeners de la aplicación
+    function setupEventListeners() {
+        console.log("setupEventListeners: Configurando listeners...");
+    
+        // Negocio y Logo
+        setupFileUploaderLogic();       // Asegúrate de que esta función exista
+        setupBusinessInfoListeners(); // Asegúrate de que esta función exista
+        
+        // Clientes
+        if (selectClient) selectClient.addEventListener('change', handleClientSelection);
+        
+        if (deleteClientBtn) deleteClientBtn.addEventListener('click', async (event) => {
+            const buttonActual = event.currentTarget;
+            setButtonLoading(buttonActual, true);
+            try {
+                // confirmAndExecuteClientAction ya es async y maneja su propia lógica de API
+                await confirmAndExecuteClientAction('deleteClient', `¿Seguro que quiere ELIMINAR al cliente "${selectedClient?.Nombre}"?`, `Cliente "${selectedClient?.Nombre}" movido a eliminados.`);
+            } catch(e){ console.error("Error en listener deleteClientBtn:", e); }
+            finally { setButtonLoading(buttonActual, false); }
+        });
+    
+        if (recoverClientBtn) recoverClientBtn.addEventListener('click', async (event) => {
+            const buttonActual = event.currentTarget;
+            setButtonLoading(buttonActual, true);
+            try {
+                await confirmAndExecuteClientAction('recoverClient', `¿Seguro que quiere RECUPERAR al cliente "${selectedClient?.Nombre}"?`, `Cliente "${selectedClient?.Nombre}" recuperado.`);
+            } catch(e){ console.error("Error en listener recoverClientBtn:", e); }
+            finally { setButtonLoading(buttonActual, false); }
+        });
+    
+        if (saveClientChangesBtn) saveClientChangesBtn.addEventListener('click', async (event) => {
+            const buttonActual = event.currentTarget;
+            setButtonLoading(buttonActual, true);
+            try {
+                if (!selectedClient) { 
+                    showStatusMessage('No hay cliente seleccionado para editar.', 'warning'); 
+                    // Es importante quitar el loader si salimos temprano
+                    setButtonLoading(buttonActual, false);
+                    return; 
+                }
+                const updatedClient = { 
+                    // Usar ID_Cliente o id dependiendo de lo que tenga el objeto selectedClient
+                    id: selectedClient.ID_Cliente || selectedClient.id, 
+                    name: editClientNameInput.value.trim(), 
+                    email: editClientEmailInput.value.trim(), 
+                    address: editClientAddressInput.value.trim(), 
+                    phone: editClientPhoneInput.value.trim(), 
+                    paymentStatus: editClientPaymentStatusSelect.value 
+                };
+                if (!updatedClient.name) { 
+                    showStatusMessage('El nombre del cliente no puede estar vacío.', 'warning'); 
+                    editClientNameInput.focus(); 
+                    setButtonLoading(buttonActual, false);
+                    return; 
+                }
+                await confirmAndExecuteClientAction('saveClientChanges', '', `Cambios en cliente "${updatedClient.name}" guardados.`, { clientData: updatedClient });
+            } catch(error) {
+                console.error("Error al guardar cambios del cliente:", error)
+            } finally {
+                setButtonLoading(buttonActual, false);
+            }
+        });
+        
+        // Ítems y Productos
+        if (itemDescriptionInput) itemDescriptionInput.addEventListener('change', handleProductAutofill);
+        if (addItemBtn) addItemBtn.addEventListener('click', addItemToInvoice); // Esta acción es síncrona y local, no necesita loader
+        
+        // IVA y Totales
+        if (taxPercentageInput) taxPercentageInput.addEventListener('input', updateTotals);
+        if (applyInvoiceTaxCheckbox) applyInvoiceTaxCheckbox.addEventListener('change', updateTotals);
+        
+        // Acciones Principales
+        if (generateInvoiceBtn) generateInvoiceBtn.addEventListener('click', async (event) => {
+            const buttonActual = event.currentTarget;
+            setButtonLoading(buttonActual, true);
+            try {
+                await generateAndSaveInvoice(); // generateAndSaveInvoice es async
+            } catch(error) { 
+                // El error ya debería ser manejado y mostrado por generateAndSaveInvoice o apiCall
+                console.error("Error originado en listener de generateInvoiceBtn:", error);
+            }
+            finally { setButtonLoading(buttonActual, false); }
+        });
+    
+        if (searchInvoiceBtn) searchInvoiceBtn.addEventListener('click', async (event) => {
+            const buttonActual = event.currentTarget;
+            setButtonLoading(buttonActual, true);
+            try {
+                await searchInvoice(); // searchInvoice es async
+            } catch(error) { 
+                 console.error("Error originado en listener de searchInvoiceBtn:", error);
+            }
+            finally { setButtonLoading(buttonActual, false); }
+        });
+        
+        // Exportar y Compartir
+        // Estas funciones ahora pueden ser async porque la función de logueo es async
+        if (exportPdfBtn) exportPdfBtn.addEventListener('click', async (event) => {
+            const buttonActual = event.currentTarget;
+            setButtonLoading(buttonActual, true);
+            try { await exportInvoice('pdf'); }
+            catch(e){ console.error("Error originado en listener de exportPdfBtn:", e); }
+            finally { setButtonLoading(buttonActual, false); }
+        });
+    
+        if (exportPngBtn) exportPngBtn.addEventListener('click', async (event) => {
+            const buttonActual = event.currentTarget;
+            setButtonLoading(buttonActual, true);
+            try { await exportInvoice('png'); }
+            catch(e){ console.error("Error originado en listener de exportPngBtn:", e); }
+            finally { setButtonLoading(buttonActual, false); }
+        });
+    
+        // Las funciones de compartir originales no eran async, pero si el logueo es async, deben serlo
+        if (shareWhatsappBtn) shareWhatsappBtn.addEventListener('click', async (event) => {
+            const buttonActual = event.currentTarget; // Se podría añadir loader si se quiere
+            // setButtonLoading(buttonActual, true); // Descomentar si la acción de compartir tarda
+            try {
+               await shareViaWhatsApp(); // shareViaWhatsApp ahora es async para el logueo
+            } catch(e){ console.error("Error en listener shareWhatsappBtn:", e); }
+            // finally { setButtonLoading(buttonActual, false); } // Descomentar si se usó setButtonLoading
+        });
+    
+        if (shareEmailBtn) shareEmailBtn.addEventListener('click', async (event) => {
+            const buttonActual = event.currentTarget;
+            // setButtonLoading(buttonActual, true);
+            try {
+                await shareViaEmail(); // shareViaEmail ahora es async para el logueo
+            } catch(e){ console.error("Error en listener shareEmailBtn:", e); }
+            // finally { setButtonLoading(buttonActual, false); }
+        });
+    
+        console.log("setupEventListeners: Listeners configurados.");
+    }
+    
     // =================================================================================
     // FUNCIÓN PARA CARGAR DATOS INICIALES DEL SERVIDOR
     // =================================================================================
