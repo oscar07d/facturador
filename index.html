@@ -55,9 +55,16 @@
                 </div>
                 <div class="form-group">
                     <label>Acciones del Cliente Seleccionado:</label>
+                    <!-- Contenedor para los botones de acción del cliente -->
                     <div id="client-actions-container" class="action-buttons-group">
-                        <button id="delete-client-btn" class="btn btn-danger btn-small hidden">Eliminar</button>
-                        <button id="recover-client-btn" class="btn btn-secondary btn-small hidden">Recuperar</button>
+                        <button id="delete-client-btn" class="btn btn-danger btn-small hidden">
+                            <span class="btn-text">Eliminar</span>
+                            <div class="loader"></div>
+                        </button>
+                        <button id="recover-client-btn" class="btn btn-secondary btn-small hidden">
+                            <span class="btn-text">Recuperar</span>
+                            <div class="loader"></div>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -123,9 +130,10 @@
                             <option value="Vencido">Vencido</option>
                         </select>
                     </div>
-                </div>
-                <button id="save-client-changes-btn" class="btn btn-secondary" style="margin-top:15px;">Guardar Cambios del Cliente</button>
-            </div>
+                <button id="save-client-changes-btn" class="btn btn-secondary" style="margin-top:15px;">
+                    <span class="btn-text">Guardar Cambios del Cliente</span>
+                    <div class="loader"></div>
+                </button>
         </section>
 
         <section class="invoice-section items-section">
@@ -149,9 +157,10 @@
                     <input type="checkbox" id="apply-item-tax-checkbox" checked>
                     <label for="apply-item-tax-checkbox">Aplicar IVA a este ítem</label>
                 </div>
-                 <div class="form-group">
-                    <button id="add-item-btn" class="btn btn-primary btn-full-width">Agregar Ítem</button>
-                </div>
+                <button id="add-item-btn" class="btn btn-primary btn-full-width">
+                    <span class="btn-text">Agregar Ítem</span>
+                    <div class="loader"></div>
+                </button>
             </div>
 
             <h3>Ítems de la Factura</h3>
@@ -200,8 +209,9 @@
         <section class="invoice-section actions-section">
             <h2>Acciones Principales</h2>
             <div class="form-group">
-                <button id="generate-invoice-btn" class="btn btn-secondary btn-full-width" style="padding: 15px; font-size: 1.3rem;">
-                    Generar y Guardar Factura
+                <button id="generate-invoice-btn" class="btn btn-secondary btn-full-width">
+                    <span class="btn-text">Generar y Guardar Factura</span>
+                    <div class="loader"></div>
                 </button>
             </div>
             <h3 style="margin-top: 30px;">Gestión de Facturas Existentes</h3>
@@ -210,9 +220,10 @@
                     <label for="search-invoice-code">Buscar Factura (por Código/Consecutivo):</label>
                     <input type="text" id="search-invoice-code" placeholder="Introduzca código de factura">
                 </div>
-                <div class="form-group">
-                    <button id="search-invoice-btn" class="btn btn-primary btn-full-width">Buscar Factura</button>
-                </div>
+                <button id="search-invoice-btn" class="btn btn-primary btn-full-width">
+                    <span class="btn-text">Buscar Factura</span>
+                    <div class="loader"></div>
+                </button>
             </div>
             <div id="search-results-div" class="hidden">
                 <h4>Resultados de la Búsqueda:</h4>
@@ -222,8 +233,14 @@
             <div class="action-buttons-group" style="margin-top: 15px;">
                 <button id="share-whatsapp-btn" class="btn btn-outline">WhatsApp</button>
                 <button id="share-email-btn" class="btn btn-outline">Correo</button>
-                <button id="export-pdf-btn" class="btn btn-primary">Exportar PDF</button>
-                <button id="export-png-btn" class="btn btn-primary">Exportar PNG</button>
+                <button id="export-pdf-btn" class="btn btn-primary">
+                    <span class="btn-text">Exportar PDF</span>
+                    <div class="loader"></div>
+                </button>
+                <button id="export-png-btn" class="btn btn-primary">
+                    <span class="btn-text">Exportar PNG</span>
+                    <div class="loader"></div>
+                </button>
             </div>
         </section>
 
