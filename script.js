@@ -1018,51 +1018,46 @@ console.log("Elemento generador principal:", mainInvoiceGeneratorDiv);
     // =================================================================================
     // FUNCIÓN PARA CARGAR DATOS INICIALES DEL SERVIDOR
     // =================================================================================
+    // Asegúrate de que loadInitialDataFromServer, initializeApp estén definidas después de setupEventListeners
+    // o que setupEventListeners esté definida antes de ser llamada en initializeApp.
+    // (Con declaraciones de función 'function nombre() {}', el hoisting de JavaScript generalmente maneja esto,
+    // pero es buena práctica definir antes de usar).
+    
     async function loadInitialDataFromServer() {
+        // ... (tu código existente para esta función)
         console.log("loadInitialDataFromServer: Iniciando carga de datos del servidor...");
         try {
-            // Usar Promise.all para que se ejecuten en paralelo si es posible
             await Promise.all([
                 loadClients(),
                 loadProducts()
             ]);
             console.log("loadInitialDataFromServer: Clientes y productos cargados.");
-            return true; // Indicar que la carga (o el intento) finalizó
+            return true; 
         } catch (error) {
             console.error("loadInitialDataFromServer: Error durante la carga inicial de datos.", error);
             showStatusMessage("Error al cargar datos iniciales del servidor. Funcionalidad limitada.", "error", 7000);
-            return false; // Indicar que hubo un problema
+            return false; 
         }
     }
         
     function initializeApp() {
         console.log("initializeApp - Inicio");
-    
-        // Configuración síncrona básica
         setInitialInvoiceDate();
         loadFromLocalStorage();
-        setupEventListeners(); // Listeners deben estar listos
+        setupEventListeners(); // <- AHORA DEBERÍA ENCONTRAR LA FUNCIÓN
     
-        // Llamada para cargar datos iniciales y luego mostrar la app
         loadInitialDataFromServer().then((success) => {
             console.log("initializeApp: Carga inicial de datos completada (intento hecho, éxito relativo:", success, ")");
-            
-            // Ocultar pantalla de carga
             if (initialLoaderScreen) {
                 initialLoaderScreen.classList.add('hidden-loader');
             }
-            // Mostrar contenido principal
             if (mainInvoiceGeneratorDiv) {
-                mainInvoiceGeneratorDiv.style.display = 'block'; // O el display que use tu layout principal
+                mainInvoiceGeneratorDiv.style.display = 'block';
             }
-            
-            // Renderizar UI después de que la pantalla de carga se oculte
             renderItems();
             updateTotals();
             showStatusMessage('Sistema de Facturación listo.', 'info', 3000);
-    
         }).catch(error => {
-            // Este catch es para errores muy inesperados en la promesa de loadInitialDataFromServer
             console.error("initializeApp: Fallo CRÍTICO no manejado en carga de datos.", error);
             if (initialLoaderScreen) initialLoaderScreen.classList.add('hidden-loader');
             if (mainInvoiceGeneratorDiv) mainInvoiceGeneratorDiv.style.display = 'block';
@@ -1071,14 +1066,13 @@ console.log("Elemento generador principal:", mainInvoiceGeneratorDiv);
             showStatusMessage('Error crítico al iniciar. Intente recargar.', 'error', 10000);
         });
     
-        // Configuración de UI que no depende de la carga de datos puede ir aquí
         taxPercentageInput.value = '19'; 
         applyInvoiceTaxCheckbox.checked = true; 
         toggleTaxFieldsVisibility(true); 
         console.log("initializeApp - Fin de configuración síncrona inmediata");
     }
         
-    // Iniciar la aplicación (esta línea ya debería estar al final de tu script dentro del DOMContentLoaded)
+    // Iniciar la aplicación
     initializeApp();
 
 }); // Fin de DOMContentLoaded
