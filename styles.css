@@ -696,6 +696,7 @@ input[list]::-webkit-calendar-picker-indicator {
   /* Probemos con un tamaño más pequeño */
   width: 24px; /* Ajusta este valor según sea necesario */
   aspect-ratio: 1;
+  border-radius: 50%; /* <--- AÑADIR ESTO PARA HACERLO CIRCULAR */
   /* El borde original de 10px será muy grueso para un loader de 24px */
   /* Reducirlo proporcionalmente, ej. 24px / 80px * 10px = 3px */
   border: 3px solid var(--primary-color); /* Usar el color primario o blanco/negro */
@@ -706,7 +707,7 @@ input[list]::-webkit-calendar-picker-indicator {
     radial-gradient(farthest-side, var(--container-bg-color) 98%, #0000) left,
     radial-gradient(farthest-side, var(--container-bg-color) 98%, #0000) right,
     radial-gradient(farthest-side, var(--container-bg-color) 98%, #0000) bottom,
-    var(--primary-color); /* Color de fondo del loader, o el mismo que el borde */
+    transparent; /* <--- CAMBIAR A TRANSPARENTE */
   /* Ajustar background-size si el loader es más pequeño */
   /* 20px / 80px * 24px = 6px */
   background-size: 6px 6px; 
