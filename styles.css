@@ -24,10 +24,25 @@
     pointer-events: none; 
 }
 
-#loader-logo {
-    max-width: 200px; 
-    max-height: 150px; 
+/* ESTILOS PARA EL CONTENEDOR DEL LOGO SVG y EL SVG MISMO */
+#loader-logo-container {
+    max-width: 250px; /* Ajusta el tamaño máximo del logo como desees */
+    max-height: 180px;
+    width: 60%; /* O un porcentaje del ancho de la pantalla de carga */
     margin-bottom: 30px; 
+}
+
+#loader-logo-svg { /* El ID que le dimos a tu etiqueta <svg> */
+    width: 100%;    /* Hacer que el SVG ocupe el ancho de su contenedor */
+    height: auto;   /* Mantener la proporción del SVG */
+}
+
+/* === ESTILO PARA HACER EL SVG BLANCO === */
+/* Apuntamos a los path y polygon que tengan la clase que añadimos, o la original si decides no cambiarla */
+#loader-logo-svg .svg-shape,
+#loader-logo-svg .cls-1 { /* También incluimos .cls-1 por si acaso */
+    fill: #FFFFFF !important;  /* Forzar relleno blanco */
+    stroke: #FFFFFF !important; /* Forzar borde blanco si lo tuviera (opcional) */
 }
 
 /* --- NUEVO: Loader: Línea de Progreso --- */
