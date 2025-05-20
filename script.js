@@ -20,6 +20,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const copFormatter = new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0, maximumFractionDigits: 2 });
     const numberFormatter = new Intl.NumberFormat('es-CO', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
 
+    // === NUEVO: Selectores para la pantalla de carga ===
+    const initialLoaderScreen = document.getElementById('initial-loader-screen');
+    const mainInvoiceGeneratorDiv = document.querySelector('.invoice-generator'); 
+    // === FIN NUEVO ===
+
     // =================================================================================
     // Separador Visual para el Parser de la Plataforma
     // =================================================================================
@@ -850,82 +855,70 @@ document.addEventListener('DOMContentLoaded', () => {
     // =================================================================================
     // 11. INICIALIZACIÓN DE EVENTOS Y DE LA APLICACIÓN
     // =================================================================================
-// =================================================================================
-// FUNCIÓN PARA CARGAR DATOS INICIALES DEL SERVIDOR
-// =================================================================================
-async function loadInitialDataFromServer() {
-    console.log("loadInitialDataFromServer: Iniciando carga de datos del servidor...");
-    try {
-        // Usar Promise.all para que se ejecuten en paralelo si es posible,
-        // o secuencialmente si una depende de la otra (no es el caso aquí)
-        await Promise.all([
-            loadClients(),
-            loadProducts()
-        ]);
-        console.log("loadInitialDataFromServer: Clientes y productos cargados.");
-    } catch (error) {
-        console.error("loadInitialDataFromServer: Error durante la carga inicial de datos.", error);
-        showStatusMessage("Error al cargar datos iniciales del servidor. Intente recargar.", "error", 7000);
-        // Podrías decidir si la app puede continuar sin estos datos o no.
+    // =================================================================================
+    // FUNCIÓN PARA CARGAR DATOS INICIALES DEL SERVIDOR
+    // =================================================================================
+    async function loadInitialDataFromServer() {
+        console.log("loadInitialDataFromServer: Iniciando carga de datos del servidor...");
+        try {
+            // Usar Promise.all para que se ejecuten en paralelo si es posible
+            await Promise.all([
+                loadClients(),
+                loadProducts()
+            ]);
+            console.log("loadInitialDataFromServer: Clientes y productos cargados.");
+            return true; // Indicar que la carga (o el intento) finalizó
+        } catch (error) {
+            console.error("loadInitialDataFromServer: Error durante la carga inicial de datos.", error);
+            showStatusMessage("Error al cargar datos iniciales del servidor. Funcionalidad limitada.", "error", 7000);
+            return false; // Indicar que hubo un problema
+        }
     }
-}
-    
-    function setupEventListeners() {
-        // Negocio y Logo
-        setupFileUploaderLogic();
-        setupBusinessInfoListeners();
         
-        // Clientes
-        selectClient.addEventListener('change', handleClientSelection);
-        deleteClientBtn.addEventListener('click', () => confirmAndExecuteClientAction('deleteClient', `¿Seguro que quiere ELIMINAR al cliente "${selectedClient?.Nombre}"?`, `Cliente "${selectedClient?.Nombre}" movido a eliminados.`));
-        recoverClientBtn.addEventListener('click', () => confirmAndExecuteClientAction('recoverClient', `¿Seguro que quiere RECUPERAR al cliente "${selectedClient?.Nombre}"?`, `Cliente "${selectedClient?.Nombre}" recuperado.`));
-        saveClientChangesBtn.addEventListener('click', () => {
-            if (!selectedClient) { showStatusMessage('No hay cliente seleccionado para editar.', 'warning'); return; }
-            const updatedClient = { 
-                id: selectedClient.id || selectedClient.ID_Cliente, // Ser flexible con clave de ID
-                name: editClientNameInput.value.trim(), 
-                email: editClientEmailInput.value.trim(), 
-                address: editClientAddressInput.value.trim(), 
-                phone: editClientPhoneInput.value.trim(), 
-                paymentStatus: editClientPaymentStatusSelect.value 
-            };
-            if (!updatedClient.name) { showStatusMessage('El nombre del cliente no puede estar vacío.', 'warning'); editClientNameInput.focus(); return; }
-            confirmAndExecuteClientAction('saveClientChanges', '', `Cambios en cliente "${updatedClient.name}" guardados.`, { clientData: updatedClient });
-        });
-        
-        // Ítems y Productos
-        itemDescriptionInput.addEventListener('change', handleProductAutofill);
-        addItemBtn.addEventListener('click', addItemToInvoice);
-        
-        // IVA y Totales
-        taxPercentageInput.addEventListener('input', updateTotals);
-        applyInvoiceTaxCheckbox.addEventListener('change', updateTotals);
-        
-        // Acciones Principales
-        generateInvoiceBtn.addEventListener('click', generateAndSaveInvoice);
-        searchInvoiceBtn.addEventListener('click', searchInvoice);
-        
-        // Exportar y Compartir
-        exportPdfBtn.addEventListener('click', () => exportInvoice('pdf'));
-        exportPngBtn.addEventListener('click', () => exportInvoice('png'));
-        shareWhatsappBtn.addEventListener('click', shareViaWhatsApp);
-        shareEmailBtn.addEventListener('click', shareViaEmail);
-    }
-    
     function initializeApp() {
+        console.log("initializeApp - Inicio");
+    
+        // Configuración síncrona básica
         setInitialInvoiceDate();
         loadFromLocalStorage();
-        setupEventListeners();
-        loadInitialDataFromServer();
-        renderItems();
-        updateTotals();
+        setupEventListeners(); // Listeners deben estar listos
+    
+        // Llamada para cargar datos iniciales y luego mostrar la app
+        loadInitialDataFromServer().then((success) => {
+            console.log("initializeApp: Carga inicial de datos completada (intento hecho, éxito relativo:", success, ")");
+            
+            // Ocultar pantalla de carga
+            if (initialLoaderScreen) {
+                initialLoaderScreen.classList.add('hidden-loader');
+            }
+            // Mostrar contenido principal
+            if (mainInvoiceGeneratorDiv) {
+                mainInvoiceGeneratorDiv.style.display = 'block'; // O el display que use tu layout principal
+            }
+            
+            // Renderizar UI después de que la pantalla de carga se oculte
+            renderItems();
+            updateTotals();
+            showStatusMessage('Sistema de Facturación listo.', 'info', 3000);
+    
+        }).catch(error => {
+            // Este catch es para errores muy inesperados en la promesa de loadInitialDataFromServer
+            console.error("initializeApp: Fallo CRÍTICO no manejado en carga de datos.", error);
+            if (initialLoaderScreen) initialLoaderScreen.classList.add('hidden-loader');
+            if (mainInvoiceGeneratorDiv) mainInvoiceGeneratorDiv.style.display = 'block';
+            renderItems(); 
+            updateTotals();
+            showStatusMessage('Error crítico al iniciar. Intente recargar.', 'error', 10000);
+        });
+    
+        // Configuración de UI que no depende de la carga de datos puede ir aquí
         taxPercentageInput.value = '19'; 
         applyInvoiceTaxCheckbox.checked = true; 
         toggleTaxFieldsVisibility(true); 
-        showStatusMessage('Sistema de Facturación listo.', 'info', 3000);
+        console.log("initializeApp - Fin de configuración síncrona inmediata");
     }
-    
-    // Iniciar la aplicación
+        
+    // Iniciar la aplicación (esta línea ya debería estar al final de tu script dentro del DOMContentLoaded)
     initializeApp();
 
 }); // Fin de DOMContentLoaded
