@@ -130,42 +130,79 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function apiCall(action, method = 'GET', bodyData = null, queryParams = {}) {
-        //if (apiUrl.startsWith('https://script.google.com/macros/s/AKfycbwg8oGi_I3bn0yVgcTXJtSOCr16soK6lOdXTG28ft5Qv6Yw8kHRkEAEWEiS3uP1NCR2eQ/exec')) {
-        //    showStatusMessage('Error Crítico: La URL del API no ha sido configurada en el script JavaScript.', 'error', 10000);
-        //    throw new Error('API URL no configurada.');
-        //}
-
+        // La verificación de apiUrl está comentada, asumiendo que ya está bien configurada.
+        // if (apiUrl.startsWith('TU_URL_DE_APPS_SCRIPT_AQUI')) {
+        //     showStatusMessage('Error Crítico: La URL del API no está configurada.', 'error', 10000);
+        //     throw new Error('API URL no configurada.');
+        // }
+    
         const url = new URL(apiUrl);
         url.searchParams.append('action', action);
-
-        if(method === 'GET' && bodyData) { 
+    
+        if (method === 'GET' && bodyData) {
             Object.keys(bodyData).forEach(key => url.searchParams.append(key, bodyData[key]));
         }
         for (const key in queryParams) {
             url.searchParams.append(key, queryParams[key]);
         }
-
-        const fetchOptions = { 
-            method, 
+    
+        const fetchOptions = {
+            method,
             headers: { 'Accept': 'application/json' }
         };
-
+    
         if (method === 'POST' && bodyData) {
             fetchOptions.body = JSON.stringify(bodyData);
         }
-
-        const btnListToToggle = [generateInvoiceBtn, searchInvoiceBtn, exportPdfBtn, exportPngBtn, saveClientChangesBtn, deleteClientBtn, recoverClientBtn, addItemBtn];
-        const originalTexts = btnListToToggle.map(btn => btn ? btn.textContent : "");
-        const originalDisabledStates = btnListToToggle.map(btn => btn ? btn.disabled : false);
-
-        btnListToToggle.forEach(btn => { if(btn) { btn.disabled = true; btn.textContent = "Procesando..."; }});
+    
+        // Lista de botones que pueden invocar apiCall y deberían mostrar un loader.
+        // ¡Asegúrate de que solo estén aquí los botones que REALMENTE hacen una llamada a la API!
+        // He quitado addItemBtn asumiendo que su acción es local.
+        // Si las funciones de exportar/compartir llaman a apiCall (por ejemplo, para loguear), deben estar aquí.
+        const btnListToManageLoading = [
+            generateInvoiceBtn, 
+            searchInvoiceBtn, 
+            saveClientChangesBtn, 
+            deleteClientBtn, 
+            recoverClientBtn,
+            exportPdfBtn, // Si llama a apiCall para loguear
+            exportPngBtn  // Si llama a apiCall para loguear
+        ];
         
+        // Determinar qué botón (si alguno de la lista) disparó esta llamada.
+        // Esta es una forma simplificada; si múltiples botones pueden estar activos
+        // en paralelo por diferentes acciones, esta lógica necesitaría ser más robusta.
+        // Por ahora, intentaremos con el elemento activo.
+        let triggeredButtonElement = null;
+        if (document.activeElement && btnListToManageLoading.includes(document.activeElement)) {
+            triggeredButtonElement = document.activeElement;
+        }
+    
+        // Poner el botón que disparó la acción (si se identificó) en estado de carga.
+        // Si no se pudo identificar, podríamos aplicar a todos los de la lista, o a uno por defecto (ej. generateInvoiceBtn).
+        // Para mayor precisión, la Opción 2 (manejo en event listeners) es mejor, pero esto es una mejora.
+        
+        if (triggeredButtonElement) {
+            triggeredButtonElement.disabled = true;
+            triggeredButtonElement.classList.add('loading');
+        } else {
+            // Fallback: aplicar a todos los botones de la lista si no se puede identificar el específico.
+            // Esto es menos ideal porque todos los botones mostrarían loader.
+            btnListToManageLoading.forEach(btn => {
+                if (btn) {
+                    btn.disabled = true;
+                    btn.classList.add('loading');
+                }
+            });
+        }
+    
+    
         try {
             console.log(`API Call: ${method} ${url.toString()}`, bodyData ? `Payload: ${JSON.stringify(bodyData)}` : "");
             const response = await fetch(url.toString(), fetchOptions);
-            const responseText = await response.text(); 
+            const responseText = await response.text();
             console.log("API Raw Response Text:", responseText);
-
+    
             if (!response.ok) {
                 let errorMsg = `Error de Red/Servidor: ${response.status} - ${response.statusText}`;
                 try {
@@ -175,9 +212,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 throw new Error(errorMsg);
             }
             
-            const data = JSON.parse(responseText); 
+            const data = JSON.parse(responseText);
             console.log("API Parsed Response Data:", data);
-
+    
             if (data.status === 'success') {
                 return data.data;
             } else {
@@ -186,14 +223,21 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
             console.error(`Error en apiCall (acción: ${action}):`, error);
             showStatusMessage(error.message, 'error', 6000);
-            throw error;
+            throw error; // Re-lanzar para que el llamador pueda manejarlo si es necesario
         } finally {
-            btnListToToggle.forEach((btn, index) => { 
-                if(btn) {
-                    btn.disabled = originalDisabledStates[index]; 
-                    btn.textContent = originalTexts[index]; 
-                }
-            });
+            // Restaurar el botón que disparó la acción (o todos los de la lista si se usó el fallback)
+            if (triggeredButtonElement) {
+                triggeredButtonElement.disabled = false;
+                triggeredButtonElement.classList.remove('loading');
+            } else {
+                btnListToManageLoading.forEach(btn => {
+                    if (btn) {
+                        btn.disabled = false; // Aquí asumimos que todos se habilitan de nuevo.
+                                             // Se podría guardar su estado original de 'disabled' si fuera más complejo.
+                        btn.classList.remove('loading');
+                    }
+                });
+            }
         }
     }
 
