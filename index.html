@@ -13,8 +13,24 @@
     <script src="script.js" defer></script>
 </head>
 <body>
-
-    <div class="invoice-generator">
+    <!-- ========= PANTALLA DE CARGA INICIAL (AÑADIR ESTO) ========= -->
+    <div id="initial-loader-screen">
+        <img src="img/Logo OSCAR 07D Studios.svg" alt="Logo OSCAR 07D Studios" id="loader-logo">
+        
+        <!-- Loader de Línea de Progreso -->
+        <div class="progress-line-loader-container">
+             <span class="progress-line-loader"></span>
+        </div>
+    
+        <!-- Loader de Bolitas -->
+        <div class="dots-loader-container">
+            <span class="dots-loader"></span> 
+        </div>
+    
+        <p id="loading-message">Cargando aplicación...</p>
+    </div>
+    <!-- ========= FIN PANTALLA DE CARGA INICIAL ========= -->
+    <div class="invoice-generator" style="display: none;">
         <h1>Facturación OSCAR 07D Studios</h1>
         
         <header class="invoice-header">
