@@ -1,5 +1,113 @@
 /* Archivo: styles.css (v2.3.3 - Formato Mejorado) */
 
+/* ================================================= */
+/* NUEVO: ESTILOS PARA PANTALLA DE CARGA INICIAL     */
+/* ================================================= */
+#initial-loader-screen {
+    position: fixed; 
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: var(--primary-color); /* O el color de fondo que prefieras */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999; 
+    transition: opacity 0.5s ease-out, visibility 0.5s ease-out; 
+}
+
+#initial-loader-screen.hidden-loader {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none; 
+}
+
+#loader-logo {
+    max-width: 200px; 
+    max-height: 150px; 
+    margin-bottom: 30px; 
+}
+
+/* --- NUEVO: Loader: Línea de Progreso --- */
+.progress-line-loader-container {
+    width: 60%; 
+    max-width: 300px; 
+    margin-bottom: 25px; 
+}
+
+.progress-line-loader {
+  width: 0%; 
+  height: 6px; 
+  display: block; 
+  position: relative;
+  background: #FFF; 
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.6);
+  box-sizing: border-box;
+  border-radius: 3px; 
+  animation: animFw 3s ease-in-out infinite; 
+}
+
+@keyframes animFw {
+  0% { width: 0%; }
+  50% { width: 100%; }
+  100% { width: 0%; }
+} 
+
+/* --- NUEVO: Loader: Bolitas --- */
+.dots-loader-container {
+    margin-bottom: 20px; 
+}
+
+.dots-loader { 
+  width: 48px;
+  height: 48px;
+  display: block;
+  margin: 0 auto; 
+  position: relative;
+  color: #FFF; /* Probablemente no se use, pero estaba en tu original */
+  box-sizing: border-box;
+  animation: rotation 1s linear infinite;
+}
+.dots-loader::after,
+.dots-loader::before {
+  content: '';  
+  box-sizing: border-box;
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  top: 0;
+  background-color: #FFF; /* Bolita blanca */
+  border-radius: 50%;
+  animation: scale50 1s infinite ease-in-out;
+}
+.dots-loader::before {
+  top: auto;
+  bottom: 0;
+  background-color: #FF3D00; /* Bolita rojo-naranja */
+  animation-delay: 0.5s;
+}
+
+@keyframes rotation {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+} 
+@keyframes scale50 {
+  0%, 100% { transform: scale(0); }
+  50% { transform: scale(1); }
+}
+
+/* --- NUEVO: Mensaje de Carga --- */
+#loading-message {
+    color: #FFF; 
+    font-size: 1.1rem;
+    margin-top: 10px;
+}
+/* ================================================= */
+/* FIN DE NUEVOS ESTILOS PARA PANTALLA DE CARGA      */
+/* ================================================= */
+
 /* =================================== */
 /* 0. Variables Globales               */
 /* =================================== */
