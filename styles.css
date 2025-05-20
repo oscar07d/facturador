@@ -817,12 +817,12 @@ input[list]::-webkit-calendar-picker-indicator {
   /* Ajusta el tamaño del loader para que quepa bien en los botones */
   /* Originalmente era 80px, puede ser muy grande para un botón. */
   /* Probemos con un tamaño más pequeño */
-  width: 24px; /* Ajusta este valor según sea necesario */
+  width: 32px; /* Ajusta este valor según sea necesario */
   aspect-ratio: 1;
   border-radius: 50%; /* <--- AÑADIR ESTO PARA HACERLO CIRCULAR */
   /* El borde original de 10px será muy grueso para un loader de 24px */
   /* Reducirlo proporcionalmente, ej. 24px / 80px * 10px = 3px */
-  border: 3px solid var(--primary-color); /* Usar el color primario o blanco/negro */
+  border: 3px solid transparent; /* Usar el color primario o blanco/negro */
   box-sizing: border-box;
   background: 
     radial-gradient(farthest-side, var(--container-bg-color) 98%, #0000) top,   /* Usar el color de fondo del contenedor (o el color del texto del botón) */
@@ -833,9 +833,9 @@ input[list]::-webkit-calendar-picker-indicator {
     transparent; /* <--- CAMBIAR A TRANSPARENTE */
   /* Ajustar background-size si el loader es más pequeño */
   /* 20px / 80px * 24px = 6px */
-  background-size: 6px 6px; 
+  background-size: 8px 8px; 
   background-repeat: no-repeat;
-  filter: blur(1px) contrast(10); /* Reducir el blur si el loader es más pequeño */
+  filter: blur(0.1px) contrast(10); /* Reducir el blur si el loader es más pequeño */
   animation: l19 2s infinite;
   /* Añadir esto para que el loader no empuje el texto si se deja */
   position: absolute; /* O relative si el botón es su contenedor directo de posicionamiento */
