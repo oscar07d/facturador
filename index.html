@@ -358,7 +358,41 @@
             </footer>
         </div>
     </div>
-
-    <!-- El JavaScript se cargará desde script.js -->
+        <!-- ========= BLOQUE DE CONFIGURACIÓN E INICIALIZACIÓN DE FIREBASE (PEGAR AQUÍ) ========= -->
+        <script type="module">
+          // Import the functions you need from the SDKs you need
+          import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-app.js";
+          // La siguiente línea de getAnalytics es opcional si solo vas a usar Auth por ahora.
+          // Puedes comentarla o quitarla si no la necesitas de inmediato para simplificar.
+          // import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-analytics.js"; 
+          // TODO: Add SDKs for Firebase products that you want to use
+          // https://firebase.google.com/docs/web/setup#available-libraries
+    
+          // Your web app's Firebase configuration
+          // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+          const firebaseConfig = {
+            apiKey: "AIzaSyA3h3uek4kl0Vz0lmLglDb7-xhjrIAMMp4", // Estos son TUS valores
+            authDomain: "facturadorweb-29ad0.firebaseapp.com",
+            projectId: "facturadorweb-29ad0",
+            storageBucket: "facturadorweb-29ad0.firebasestorage.app", // Verifica si es .appspot.com o .firebasestorage.app como te lo dio Firebase
+            messagingSenderId: "765670879187",
+            appId: "1:765670879187:web:1d7a9082385517fd83c926",
+            measurementId: "G-GN1YNRR1S5" // Este es opcional para la Autenticación
+          };
+    
+          // Initialize Firebase
+          const app = initializeApp(firebaseConfig);
+          // const analytics = getAnalytics(app); // Opcional, puedes comentar esto también
+          
+          // HACER LA INSTANCIA 'app' ACCESIBLE GLOBALMENTE (PARA SCRIPT.JS NO MODULAR)
+          // Solo necesitas esta línea si tu script.js NO es type="module"
+          // Si vas a hacer script.js type="module", esta línea no es la forma ideal.
+          window.firebaseAppInstance = app; // <--- AÑADE ESTA LÍNEA DENTRO DE ESTE SCRIPT TYPE="MODULE"
+                                         // para hacerla accesible a tu script.js actual (si no es un módulo)
+    
+        </script>
+        <!-- =================================================================================== -->
+        <!-- El JavaScript se cargará desde script.js -->
+        <script src="script.js" defer></script>
 </body>
 </html>
