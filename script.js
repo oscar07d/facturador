@@ -1,4 +1,58 @@
-// Archivo: script.js (Completo v2.3.4 - Con Logueo de Acciones de Factura)
+// Archivo: script.js
+
+// ==================================================================
+// PARTE 1: Conexión e Importaciones de Firebase (al inicio del archivo)
+// ==================================================================
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-app.js"; // Confirma tu versión si es diferente
+import { 
+    getAuth, 
+    GoogleAuthProvider, 
+    onAuthStateChanged,
+    createUserWithEmailAndPassword,
+    signInWithEmailAndPassword,
+    signInWithPopup,
+    updateProfile,
+    signOut,
+    sendEmailVerification  // Para verificar correo después del registro (opcional)
+} from "https://www.gstatic.com/firebasejs/11.8.0/firebase-auth.js"; // Confirma tu versión
+
+// Esta es la "llave" para tu proyecto de Firebase.
+// DEBE COINCIDIR EXACTAMENTE CON LA DE TU index.html
+const firebaseConfig = {
+    apiKey: "AIzaSyA3h3uek4kl0Vz0lmLglDb7-xhjrIAMMp4", // ¡TUS VALORES REALES!
+    authDomain: "facturadorweb-29ad0.firebaseapp.com",
+    projectId: "facturadorweb-29ad0",
+    storageBucket: "facturadorweb-29ad0.firebasestorage.app", // O .appspot.com, usa la que te dio Firebase
+    messagingSenderId: "765670879187",
+    appId: "1:765670879187:web:1d7a9082385517fd83c926",
+    measurementId: "G-GN1YNRR1S5" // Opcional para solo Auth
+};
+
+// Inicializar Firebase aquí para que appFirebase y authFirebase estén disponibles globalmente en ESTE SCRIPT
+const appFirebase = initializeApp(firebaseConfig);
+const authFirebase = getAuth(appFirebase); 
+const providerGoogle = new GoogleAuthProvider(); 
+console.log("Firebase App inicializada en script.js. authFirebase y providerGoogle listos.");
+// --- FIN: Conexión con Firebase ---
+
+// ==================================================================
+// Variables Globales del Facturador (Definidas fuera de DOMContentLoaded)
+// Estas ya las tenías bien ubicadas.
+// ==================================================================
+const apiUrl = 'https://script.google.com/macros/s/AKfycbwg8oGi_I3bn0yVgcTXJtSOCr16soK6lOdXTG28ft5Qv6Yw8kHRkEAEWEiS3uP1NCR2eQ/exec';
+let items = [];
+let clientsData = [];
+let productsData = [];
+let selectedClient = null;
+let currentGeneratedInvoiceData = null;
+let currentFirebaseUser = null;     // Para guardar el usuario de Firebase logueado
+let currentFirebaseIdToken = null; // Para guardar el token ID de Firebase
+
+const copFormatter = new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0, maximumFractionDigits: 2 });
+const numberFormatter = new Intl.NumberFormat('es-CO', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+
+// NO PONGAS EL document.addEventListener('DOMContentLoaded', ...) aquí todavía.
+// Ese lo reemplazaremos completamente.
 
 // Importar jsPDF si usas CDNs en HTML (ya lo teníamos globalmente accesible)
 // const { jsPDF } = window.jspdf; // No es necesario si ya está en el scope global desde el CDN
@@ -22,7 +76,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // === NUEVO: Selectores para la pantalla de carga ===
     const initialLoaderScreen = document.getElementById('initial-loader-screen');
-    const mainInvoiceGeneratorDiv = document.querySelector('.invoice-generator'); 
+    const mainInvoiceGeneratorDiv = document.querySelector('.invoice-generator');
+    const authSection = document.getElementById('auth-section'); 
+    const loginFormContainer = document.getElementById('login-form-container');
     // === FIN NUEVO ===
 
     // === NUEVO: VERIFICAR SELECTORES ===
@@ -879,6 +935,67 @@ console.log("Elemento generador principal:", mainInvoiceGeneratorDiv);
             buttonElement.classList.remove('loading');
         }
     }
+
+     // === NUEVAS FUNCIONES PARA MANEJAR LA VISIBILIDAD DE FORMULARIOS DE AUTENTICACIÓN ===
+    // (Colócalas ANTES de tu setupEventListeners o initializeApp)
+    function showLoginForm() {
+        if (loginFormContainer && document.getElementById('register-form-container')) { // Asumiendo que registerFormContainer se define arriba
+            loginFormContainer.classList.remove('hidden');
+            document.getElementById('register-form-container').classList.add('hidden');
+            if (authSection) authSection.classList.remove('hidden'); // Asegurar que la sección de auth es visible
+            if (mainInvoiceGeneratorDiv) mainInvoiceGeneratorDiv.style.display = 'none'; // Ocultar facturador
+        }
+    }
+
+    function showRegisterForm() {
+        if (loginFormContainer && document.getElementById('register-form-container')) {
+            loginFormContainer.classList.add('hidden');
+            document.getElementById('register-form-container').classList.remove('hidden');
+            if (authSection) authSection.classList.remove('hidden');
+            if (mainInvoiceGeneratorDiv) mainInvoiceGeneratorDiv.style.display = 'none';
+        }
+    }
+    // === FIN FUNCIONES DE VISIBILIDAD DE FORMULARIOS ===
+
+    // === NUEVAS FUNCIONES DE LÓGICA DE AUTENTICACIÓN CON FIREBASE ===
+    // (Colócalas ANTES de tu setupEventListeners o initializeApp)
+    async function handleRegistration(event) { /* ... (El cuerpo completo que te di antes) ... */ }
+    async function handleLogin(event) { /* ... (El cuerpo completo que te di antes) ... */ }
+    async function handleGoogleSignIn() { /* ... (El cuerpo completo que te di antes) ... */ }
+    function handleLogout() { /* ... (El cuerpo completo que te di antes, usando authFirebase.signOut()) ... */ }
+
+    // Esta función ahora es para DESPUÉS del login
+    async function loadDataForAuthenticatedUser() {
+        console.log("loadDataForAuthenticatedUser: Iniciando carga de clientes y productos...");
+        // Opcional: Mostrar un loader más pequeño DENTRO de mainInvoiceGeneratorDiv si quieres
+        try {
+            // Estas son TUS funciones loadClients y loadProducts existentes
+            await Promise.all([
+                loadClients(), 
+                loadProducts()
+            ]);
+            console.log("loadDataForAuthenticatedUser: Datos cargados.");
+            renderItems(); // Renderizar la UI del facturador
+            updateTotals(); // Calcular totales
+            showStatusMessage(`Bienvenido, ${currentFirebaseUser ? currentFirebaseUser.displayName || currentFirebaseUser.email : ''}!`, 'success');
+        } catch (error) {
+            console.error("Error cargando datos del facturador después del login:", error);
+            showStatusMessage("Error al cargar datos de la aplicación.", "error");
+        }
+        // Opcional: ocultar el loader pequeño si lo usaste
+    }
+
+    function enterApp() { // Se llama cuando el usuario está logueado y el token está listo
+        console.log("enterApp: Mostrando interfaz del facturador.");
+        if (authSection) authSection.classList.add('hidden');
+        if (mainInvoiceGeneratorDiv) mainInvoiceGeneratorDiv.style.display = 'block'; // Mostrar facturador
+
+        // Llama a la carga de datos que SÍ depende de que el usuario esté autenticado
+        // (si es que tus llamadas a loadClients/loadProducts requieren el token en el backend)
+        // o simplemente para asegurar que se cargan después del login.
+        loadDataForAuthenticatedUser();
+    }
+    // === FIN FUNCIONES DE AUTENTICACIÓN Y LÓGICA DE APP ===
     
     // Función para configurar todos los event listeners de la aplicación
     function setupEventListeners() {
@@ -1040,39 +1157,74 @@ console.log("Elemento generador principal:", mainInvoiceGeneratorDiv);
         }
     }
         
-    function initializeApp() {
-        console.log("initializeApp - Inicio");
+    // =================================================================================
+    // TU FUNCIÓN initializeApp ACTUAL, PERO MODIFICADA PARA FIREBASE
+    // (Reemplaza tu initializeApp existente con esta)
+    // =================================================================================
+    function initializeApp() { // Este es el initializeApp que se llama al final de tu DOMContentLoaded
+        console.log("initializeApp (con Firebase): Inicio");
+        
+        // Configuración síncrona básica de UI que NO depende de datos o login
         setInitialInvoiceDate();
-        loadFromLocalStorage();
-        setupEventListeners(); // <- AHORA DEBERÍA ENCONTRAR LA FUNCIÓN
-    
-        loadInitialDataFromServer().then((success) => {
-            console.log("initializeApp: Carga inicial de datos completada (intento hecho, éxito relativo:", success, ")");
-            if (initialLoaderScreen) {
+        loadFromLocalStorage(); // Logo, detalles de negocio
+        
+        // CONFIGURAR LISTENERS PRIMERO (tanto de auth como del facturador)
+        // setupEventListeners(); // Esta función ahora se llamará dentro de onAuthStateChanged
+                                // O la podemos llamar aquí, pero su comportamiento interno podría cambiar
+                                // dependiendo de si el usuario está logueado.
+                                // Es mejor llamar setupEventListeners una vez, y que los listeners
+                                // del facturador solo actúen si currentFirebaseUser está definido.
+
+        if (!authFirebase) {
+            console.error("initializeApp: authFirebase no está definido. Deteniendo.");
+            showStatusMessage("Error crítico de inicialización de Firebase.", "error");
+            if (initialLoaderScreen) initialLoaderScreen.classList.add('hidden-loader');
+            return;
+        }
+        
+        // Configurar el observador de estado de Firebase
+        onAuthStateChanged(authFirebase, async (user) => {
+            console.log("onAuthStateChanged disparado. Usuario:", user ? user.email : "No logueado");
+            if (user) {
+                currentFirebaseUser = user;
+                try {
+                    currentFirebaseIdToken = await user.getIdToken(true); // Forzar refresco
+                    console.log("ID Token de Firebase obtenido/refrescado.");
+                    enterApp(); // Muestra el facturador y carga sus datos
+                } catch (tokenError) {
+                    console.error("Error al obtener ID Token en onAuthStateChanged:", tokenError);
+                    showStatusMessage("Error de sesión. Por favor, inicie sesión de nuevo.", "error");
+                    // Si no podemos obtener token, es como un logout
+                    await handleLogout(); // handleLogout se encargará de llamar a signOut
+                }
+            } else {
+                currentFirebaseUser = null;
+                currentFirebaseIdToken = null;
+                if (mainInvoiceGeneratorDiv) mainInvoiceGeneratorDiv.style.display = 'none'; // Ocultar facturador
+                if (authSection) authSection.classList.remove('hidden'); // Mostrar sección de auth
+                showLoginForm(); // Mostrar el formulario de login
+            }
+            // Ocultar la pantalla de carga inicial (grande con logo) una vez que sabemos el estado de auth
+            if (initialLoaderScreen && !initialLoaderScreen.classList.contains('hidden-loader')) {
                 initialLoaderScreen.classList.add('hidden-loader');
             }
-            if (mainInvoiceGeneratorDiv) {
-                mainInvoiceGeneratorDiv.style.display = 'block';
-            }
-            renderItems();
-            updateTotals();
-            showStatusMessage('Sistema de Facturación listo.', 'info', 3000);
-        }).catch(error => {
-            console.error("initializeApp: Fallo CRÍTICO no manejado en carga de datos.", error);
-            if (initialLoaderScreen) initialLoaderScreen.classList.add('hidden-loader');
-            if (mainInvoiceGeneratorDiv) mainInvoiceGeneratorDiv.style.display = 'block';
-            renderItems(); 
-            updateTotals();
-            showStatusMessage('Error crítico al iniciar. Intente recargar.', 'error', 10000);
         });
-    
-        taxPercentageInput.value = '19'; 
-        applyInvoiceTaxCheckbox.checked = true; 
+
+        // Configuración de UI del facturador que no depende de datos remotos pero sí del DOM
+        // (asegúrate que los selectores como taxPercentageInput estén definidos arriba)
+        if (taxPercentageInput) taxPercentageInput.value = '19'; 
+        const localApplyInvoiceTaxCheckbox = document.getElementById('apply-invoice-tax-checkbox'); // Re-obtener o usar el global si es seguro
+        if (localApplyInvoiceTaxCheckbox) localApplyInvoiceTaxCheckbox.checked = true; 
         toggleTaxFieldsVisibility(true); 
-        console.log("initializeApp - Fin de configuración síncrona inmediata");
+        
+        // Los listeners se configuran UNA VEZ, sin importar el estado de login.
+        // La lógica DENTRO de los listeners del facturador puede chequear si currentFirebaseUser existe.
+        setupEventListeners(); // MUEVE TU FUNCIÓN setupEventListeners aquí o asegúrate que está definida.
+        
+        console.log("initializeApp (con Firebase): Fin de configuración.");
     }
         
     // Iniciar la aplicación
-    initializeApp();
+    initializeApp(); // Esta es la llamada a TU initializeApp principal
 
 }); // Fin de DOMContentLoaded
