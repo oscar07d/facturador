@@ -235,27 +235,27 @@ if (logoutButton) {
 }
 
 // --- Observador del Estado de Autenticación ---
-onAuthStateChanged(auth, (user) => {
+onAuthStateChanged(auth, (user) => { // Esta podría ser alrededor de la línea 235-240
     showLoading(false);
-    if (user) {
+    if (user) { // Inicio del bloque 'if (user)'
         console.log("Usuario está conectado:", user.uid, user.displayName);
         if (loginContainer) loginContainer.style.display = 'none';
-        if (mainContent) mainContent.style.display = 'flex'; // O 'block' o como lo tengas para .main-content
+        if (mainContent) mainContent.style.display = 'flex'; 
 
-        // === INICIO: MODIFICACIÓN - PASO 4 (Llamar a handleNavigation) ===
         handleNavigation('createInvoiceSection');
-        // === FIN: MODIFICACIÓN - PASO 4 ===
 
-    } else {
-        console.log("No hay usuario conectado. Intentando ocultar mainContent y mostrar loginContainer."); // Mensaje actualizado
+    } else { // ESTE ES EL 'else' problemático o el bloque anterior
+        // El usuario no está autenticado
+        console.log("No hay usuario conectado. Intentando ocultar mainContent y mostrar loginContainer.");
         if (loginContainer) loginContainer.style.display = 'flex';
-        if (mainContent) mainContent.style.display = 'none';
-            console.log('Estilo de display de mainContent después de intentar ocultar:', mainContent.style.display); // <-- ESTE LOG
-        } else {
-            console.error("Error: El elemento #mainContent no fue encontrado en el DOM."); // <-- NUEVO LOG DE ERROR
+        if (mainContent) { 
+            mainContent.style.display = 'none';
+            console.log('Estilo de display de mainContent después de intentar ocultar:', mainContent.style.display); 
+        } else { // Este es un 'else' anidado, asegúrate que el 'if (mainContent)' esté bien
+            console.error("Error: El elemento #mainContent no fue encontrado en el DOM."); 
         }
-    }
-});
+    } // <-- Asegúrate que esta llave de cierre del 'else' principal esté presente
+}); // <-- Asegúrate que esta llave de cierre de 'onAuthStateChanged' esté presente
 
 // === INICIO: NUEVO CÓDIGO - PASO 5 (Nuevos Event Listeners UI Facturación) ===
 // Navegación Principal de la App
