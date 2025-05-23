@@ -1,875 +1,331 @@
-/* Archivo: styles.css (v2.3.3 - Formato Mejorado) */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
-/* ================================================= */
-/* NUEVO: ESTILOS PARA PANTALLA DE CARGA INICIAL     */
-/* ================================================= */
-#initial-loader-screen {
-    position: fixed; 
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background-color: var(--primary-color); /* O el color de fondo que prefieras */
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    z-index: 9999; 
-    transition: opacity 0.5s ease-out, visibility 0.5s ease-out; 
-}
-
-#initial-loader-screen.hidden-loader {
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none; 
-}
-
-/* ESTILOS PARA EL CONTENEDOR DEL LOGO SVG y EL SVG MISMO */
-#loader-logo-container {
-    max-width: 250px; /* Ajusta el tamaño máximo del logo como desees */
-    max-height: 180px;
-    width: 60%; /* O un porcentaje del ancho de la pantalla de carga */
-    margin-bottom: 30px; 
-}
-
-#loader-logo-svg { /* El ID que le dimos a tu etiqueta <svg> */
-    width: 100%;    /* Hacer que el SVG ocupe el ancho de su contenedor */
-    height: auto;   /* Mantener la proporción del SVG */
-}
-
-/* === ESTILO PARA HACER EL SVG BLANCO === */
-/* Apuntamos a los path y polygon que tengan la clase que añadimos, o la original si decides no cambiarla */
-#loader-logo-svg .svg-shape,
-#loader-logo-svg .cls-1 { /* También incluimos .cls-1 por si acaso */
-    fill: #FFFFFF !important;  /* Forzar relleno blanco */
-    stroke: #FFFFFF !important; /* Forzar borde blanco si lo tuviera (opcional) */
-}
-
-/* --- NUEVO: Loader: Línea de Progreso --- */
-.progress-line-loader-container {
-    width: 60%; 
-    max-width: 300px; 
-    margin-bottom: 25px; 
-}
-
-.progress-line-loader {
-  width: 0%; 
-  height: 6px; 
-  display: block; 
-  position: relative;
-  background: #FFF; 
-  box-shadow: 0 0 10px rgba(255, 255, 255, 0.6);
-  box-sizing: border-box;
-  border-radius: 3px; 
-  animation: animFw 3s ease-in-out infinite; 
-}
-
-@keyframes animFw {
-  0% { width: 0%; }
-  50% { width: 100%; }
-  100% { width: 0%; }
-} 
-
-/* --- NUEVO: Loader: Bolitas --- */
-.dots-loader-container {
-    margin-bottom: 20px; 
-}
-
-.dots-loader { 
-  width: 48px;
-  height: 48px;
-  display: block;
-  margin: 0 auto; 
-  position: relative;
-  color: #FFF; /* Probablemente no se use, pero estaba en tu original */
-  box-sizing: border-box;
-  animation: rotation 1s linear infinite;
-}
-.dots-loader::after,
-.dots-loader::before {
-  content: '';  
-  box-sizing: border-box;
-  position: absolute;
-  width: 24px;
-  height: 24px;
-  top: 0;
-  background-color: #FFF; /* Bolita blanca */
-  border-radius: 50%;
-  animation: scale50 1s infinite ease-in-out;
-}
-.dots-loader::before {
-  top: auto;
-  bottom: 0;
-  background-color: #FF3D00; /* Bolita rojo-naranja */
-  animation-delay: 0.5s;
-}
-
-@keyframes rotation {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-} 
-@keyframes scale50 {
-  0%, 100% { transform: scale(0); }
-  50% { transform: scale(1); }
-}
-
-/* --- NUEVO: Mensaje de Carga --- */
-#loading-message {
-    color: #FFF; 
-    font-size: 1.1rem;
-    margin-top: 10px;
-}
-/* ================================================= */
-/* FIN DE NUEVOS ESTILOS PARA PANTALLA DE CARGA      */
-/* ================================================= */
-
-/* =================================== */
-/* 0. Variables Globales               */
-/* =================================== */
 :root {
-    --primary-color: #3498db;
-    --secondary-color: #2ecc71;
-    --danger-color: #e74c3c;
-    --warning-color: #f39c12;
-    --info-color: #3498db;
-    --light-gray-color: #f4f7f9;
-    --medium-gray-color: #dce1e5;
-    --dark-gray-color: #34495e;
-    --text-color-primary: #2c3e50;
-    --text-color-secondary: #566573;
-    --placeholder-color: rgba(108, 117, 125, 0.7);
-    --body-bg-color: #eef1f5;
-    --container-bg-color: #ffffff;
-    --border-radius-main: 30px;
-    --border-radius-medium: 20px;
-    --border-radius-small: 12px;
-    --input-padding: 12px 18px;
-    --box-shadow-light: 0 5px 15px rgba(0, 0, 0, 0.07);
+    /* Paleta de Colores - Siéntete libre de ajustarlos */
+    --primary-color: #007bff; /* Azul primario vibrante */
+    --primary-hover-color: #0056b3; /* Azul más oscuro para hover */
+    --secondary-color: #6c757d; /* Gris secundario */
+    --background-color: #f8f9fa; /* Fondo general muy claro */
+    --container-background: #ffffff; /* Fondo de los contenedores */
+    --text-color: #212529; /* Color de texto principal (casi negro) */
+    --text-muted-color: #6c757d; /* Color de texto secundario/apagado */
+    --success-color: #28a745; /* Verde para éxito */
+    --danger-color: #dc3545; /* Rojo para peligro/error */
+    --border-color: #dee2e6; /* Color de borde sutil */
+
+    /* Radios de Borde */
+    --border-radius-xl: 40px; /* Extra grande, para contenedores principales */
+    --border-radius-l: 30px;  /* Grande, como solicitaste */
+    --border-radius-m: 15px;  /* Mediano */
+    --border-radius-s: 8px;   /* Pequeño */
+
+    /* Sombras */
+    --box-shadow-light: 0 4px 12px rgba(0, 0, 0, 0.08);
     --box-shadow-medium: 0 8px 25px rgba(0, 0, 0, 0.1);
-    --transition-speed: 0.25s;
-    --font-family-sans: 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+
+    /* Transiciones */
+    --transition-speed: 0.3s;
+
+    /* Color original del logo (si es necesario referenciarlo) */
+    --logo-svg-fill-color: #1d1d1b;
 }
 
-/* =================================== */
-/* 1. Reset y Base                   */
-/* =================================== */
-*,
-*::before,
-*::after {
-    box-sizing: border-box;
+/* --- Reset y Estilos Globales --- */
+* {
     margin: 0;
     padding: 0;
+    box-sizing: border-box;
 }
 
 html {
-    scroll-behavior: smooth;
-    font-size: 16px;
+    font-size: 16px; /* Base para REMs */
 }
 
 body {
-    font-family: var(--font-family-sans);
-    background-color: var(--body-bg-color);
-    color: var(--text-color-primary);
-    line-height: 1.65;
-    padding: clamp(10px, 3vw, 30px);
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-color);
     display: flex;
-    flex-direction: column;
+    justify-content: center;
     align-items: center;
     min-height: 100vh;
+    padding: 20px;
+    line-height: 1.6;
+    overflow-x: hidden;
 }
 
-.invoice-generator {
-    background-color: var(--container-bg-color);
-    padding: clamp(20px, 5vw, 40px) clamp(20px, 5vw, 50px);
-    border-radius: var(--border-radius-main);
-    box-shadow: var(--box-shadow-medium);
+#app {
     width: 100%;
-    max-width: 1280px;
-    margin: 20px 0;
-}
-
-/* =================================== */
-/* 2. Tipografía                     */
-/* =================================== */
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-    color: var(--dark-gray-color);
-    margin-bottom: 0.75em;
-    line-height: 1.3;
-    font-weight: 700;
-}
-
-h1 {
-    text-align: center;
-    color: var(--primary-color);
-    margin-bottom: 1.2em;
-    font-size: clamp(2rem, 5vw, 2.8rem);
-}
-
-h2 {
-    border-bottom: 3px solid var(--primary-color);
-    padding-bottom: 0.5em;
-    margin-bottom: 1em;
-    font-size: clamp(1.6rem, 4vw, 2.1rem);
-}
-
-h3 {
-    font-size: clamp(1.3rem, 3.5vw, 1.7rem);
-    margin-bottom: 0.8em;
-    color: var(--dark-gray-color);
-}
-
-p {
-    margin-bottom: 1em;
-}
-p:last-child {
-    margin-bottom: 0;
-}
-
-a {
-    color: var(--primary-color);
-    text-decoration: none;
-    transition: color var(--transition-speed), text-decoration var(--transition-speed);
-}
-a:hover,
-a:focus {
-    color: #2980b9;
-    text-decoration: underline;
-    outline: 2px solid transparent;
-}
-
-/* =================================== */
-/* 3. Secciones                      */
-/* =================================== */
-.invoice-header,
-.invoice-section {
-    margin-bottom: clamp(30px, 6vw, 50px);
-    padding-bottom: clamp(25px, 5vw, 40px);
-    border-bottom: 1px solid var(--medium-gray-color);
-}
-.invoice-header:last-child,
-.invoice-section:last-child {
-    border-bottom: none;
-    margin-bottom: 0;
-}
-
-/* =================================== */
-/* 4. Formularios                    */
-/* =================================== */
-.form-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
-    gap: clamp(20px, 3vw, 25px) clamp(20px, 3vw, 30px);
-}
-
-.form-group {
+    max-width: 1200px; /* Ancho máximo de la app en general */
     display: flex;
     flex-direction: column;
+    align-items: center;
 }
 
-.form-group label {
-    margin-bottom: 10px;
+/* --- Contenedor de Login y Contenido Principal --- */
+.login-container,
+.main-content {
+    background-color: var(--container-background);
+    padding: 30px 40px; /* Más padding vertical */
+    border-radius: var(--border-radius-xl);
+    box-shadow: var(--box-shadow-medium);
+    text-align: center;
+    width: 100%;
+    max-width: 480px; /* Ancho del contenedor de login */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 25px; /* Espacio entre elementos hijos */
+    transition: all var(--transition-speed) ease;
+}
+
+/* --- Logo --- */
+.logo-container {
+    margin-bottom: 15px; /* Reducido un poco */
+    width: 100%;
+    max-width: 300px; /* Ajusta según el tamaño deseado para el logo completo */
+    height: auto;
+}
+
+.login-logo-completo { /* Para el logo completo en el login */
+    width: 100%;
+    height: auto;
+    display: block; /* Evita espacio extra debajo si es inline */
+}
+
+/* Si necesitas forzar el color del SVG (aunque idealmente se maneja dentro del SVG o sin fill) */
+/* .login-logo-completo .cls-1 {
+    fill: var(--logo-svg-fill-color); 
+} */
+
+/* --- Tipografía --- */
+.login-container h1,
+.main-content h1 {
+    font-size: 1.75rem; /* 28px */
     font-weight: 600;
-    color: var(--text-color-primary);
-    font-size: clamp(0.9rem, 2vw, 1rem);
+    color: var(--text-color);
+    margin-bottom: 5px; /* Reducido */
 }
 
-.form-group input[type="text"],
-.form-group input[type="email"],
-.form-group input[type="tel"],
-.form-group input[type="number"],
-.form-group input[type="date"],
-.form-group select,
-.form-group textarea {
-    padding: var(--input-padding);
-    border: 1px solid var(--medium-gray-color);
-    border-radius: var(--border-radius-medium);
-    font-size: clamp(0.9rem, 2vw, 1rem);
-    color: var(--text-color-primary);
-    background-color: #fff;
-    transition: border-color var(--transition-speed), box-shadow var(--transition-speed);
-    width: 100%; 
+.login-container p,
+.main-content p {
+    font-size: 1rem; /* 16px */
+    color: var(--text-muted-color);
+    margin-bottom: 20px; /* Ajustado */
 }
 
-.form-group input:focus,
-.form-group select:focus,
-.form-group textarea:focus {
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 3.5px rgba(52, 152, 219, 0.25);
-    outline: none;
-}
-
-.form-group input[readonly] {
-    background-color: var(--light-gray-color);
-    cursor: not-allowed;
-    border-color: var(--medium-gray-color);
-}
-
-.form-group textarea {
-    resize: vertical;
-    min-height: 110px;
-}
-
-/* --- Estilos para Placeholder --- */
-::-webkit-input-placeholder { color: var(--placeholder-color) !important; opacity: 1; }
-::-moz-placeholder          { color: var(--placeholder-color) !important; opacity: 1; }
-:-ms-input-placeholder      { color: var(--placeholder-color) !important; opacity: 1; }
-:-moz-placeholder           { color: var(--placeholder-color) !important; opacity: 1; }
-input::placeholder,
-textarea::placeholder       { color: var(--placeholder-color) !important; opacity: 1; }
-
-
-/* --- Estilos para Checkboxs y sus Labels --- */
-.form-group-checkbox {
+/* --- Botones --- */
+.google-btn,
+#logoutButton {
+    width: 100%;
+    max-width: 320px;
+    padding: 14px 20px;
+    border-radius: var(--border-radius-m); /* Más redondeado */
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color var(--transition-speed) ease, box-shadow var(--transition-speed) ease, transform var(--transition-speed) ease;
     display: flex;
     align-items: center;
-}
-
-.form-group-checkbox input[type="checkbox"] {
-    margin-right: 10px;
-    width: auto;
-    height: auto;
-    transform: scale(1.3);
-    accent-color: var(--primary-color);
-    cursor: pointer;
-    flex-shrink: 0; 
-}
-
-.form-group-checkbox label {
-    margin-bottom: 0;
-    font-weight: normal;
-    font-size: clamp(0.9rem, 1.9vw, 0.95rem);
-    cursor: pointer;
-    color: var(--text-color-primary);
-    line-height: 1.4;
-}
-
-/* --- Input de archivo (logo-upload) --- */
-#logo-upload-wrapper {
-    border: 2px dashed var(--medium-gray-color);
-    border-radius: var(--border-radius-medium);
-    padding: var(--input-padding);
-    text-align: center;
-    cursor: pointer;
-    transition: border-color var(--transition-speed), background-color var(--transition-speed);
-    background-color: var(--light-gray-color);
-}
-#logo-upload-wrapper:hover,
-#logo-upload-wrapper:focus-within {
-    border-color: var(--primary-color);
-    background-color: rgba(52, 152, 219, 0.05);
-}
-#logo-upload {
-    opacity: 0;
-    position: absolute;
-    width: 0.1px;
-    height: 0.1px;
-    overflow: hidden;
-    z-index: -1;
-}
-#logo-upload-button-label {
-    display: inline-block;
-    font-size: clamp(0.85rem, 1.8vw, 0.95rem);
-    color: var(--primary-color);
-    font-weight: 500;
-    pointer-events: none; 
-}
-#logo-upload-button-label::before {
-    content: '📂 ';
-    margin-right: 8px;
-    font-size: 1.1em;
-}
-#selected-logo-filename {
-    display: block;
-    margin-top: 10px;
-    font-size: clamp(0.8rem, 1.7vw, 0.9rem);
-    color: var(--text-color-secondary);
-    font-style: italic;
-    word-break: break-all;
-}
-
-/* --- Ocultar flecha de Datalist en Chrome --- */
-input[list]::-webkit-calendar-picker-indicator {
-    display: none;
-}
-
-/* =================================== */
-/* 5. Botones                        */
-/* =================================== */
-.btn {
-    padding: clamp(10px, 2.2vw, 14px) clamp(18px, 4vw, 28px);
-    font-size: clamp(0.9rem, 2vw, 1.05rem);
-    font-weight: 600;
-    border-radius: var(--border-radius-medium);
-    border: none;
-    cursor: pointer;
-    transition: background-color var(--transition-speed), transform var(--transition-speed), box-shadow var(--transition-speed), opacity var(--transition-speed);
-    text-align: center;
-    display: inline-flex;
-    align-items: center;
     justify-content: center;
+    gap: 12px;
+    border: 1px solid var(--border-color);
     text-decoration: none;
-    line-height: 1.45;
+}
+
+.google-btn {
+    background-color: #fff;
+    color: #444; /* Un poco más oscuro para mejor contraste */
     box-shadow: var(--box-shadow-light);
 }
-.btn:hover:not(:disabled) {
-    transform: translateY(-2px) scale(1.02);
+
+.google-btn:hover {
+    background-color: #fdfdfd;
+    border-color: #c6c6c6;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+.google-icon {
+    width: 22px;
+    height: 22px;
+}
+
+#logoutButton {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    box-shadow: var(--box-shadow-light);
+}
+
+#logoutButton:hover {
+    background-color: var(--primary-hover-color);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.12);
+    transform: translateY(-2px);
+}
+
+/* --- Pantalla de Carga --- */
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.95); /* Un poco más opaco */
+    display: none; /* Oculto por defecto */
+    justify-content: center;
+    align-items: center;
+    z-index: 10000; /* Muy alto para estar encima de todo */
+    flex-direction: column;
+    gap: 20px;
+    backdrop-filter: blur(4px); /* Efecto blur si el navegador lo soporta */
+}
+
+.loading-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 35px;
+    background-color: var(--container-background);
+    border-radius: var(--border-radius-l);
     box-shadow: var(--box-shadow-medium);
 }
 
-.btn:active:not(:disabled) {
-    transform: translateY(0px) scale(0.99);
-    box-shadow: inset 0 3px 7px rgba(0,0,0,0.1);
+.loading-logo-spinner {
+    width: 70px;
+    height: auto;
+    animation: spin 1.2s linear infinite; /* Un poco más rápido */
 }
-.btn:focus-visible {
-    outline: 2px solid var(--primary-color);
-    outline-offset: 3px;
+
+.loading-logo-spinner .logo-path-spinner {
+    /* Usaremos el icono del logo pequeño aquí */
+    fill: var(--primary-color); /* Color primario para el logo en carga */
 }
-.btn:disabled,
-.btn.disabled {
-    opacity: 0.55;
-    cursor: not-allowed;
-    transform: none;
-    box-shadow: none;
-}
-.btn-primary { background-color: var(--primary-color); color: white; }
-.btn-primary:hover:not(:disabled) { background-color: #2886c4; }
-.btn-secondary { background-color: var(--secondary-color); color: white; }
-.btn-secondary:hover:not(:disabled) { background-color: #25a25a; }
-.btn-danger { background-color: var(--danger-color); color: white; }
-.btn-danger:hover:not(:disabled) { background-color: #d63e2d; }
-.btn-outline {
-    background-color: transparent;
+/* Asegúrate que el path del SVG del icono para spinner tenga esta clase */
+/* Ejemplo: <path class="logo-path-spinner" ... /> */
+
+
+.loading-overlay p {
+    font-size: 1.1rem; /* 17.6px */
     color: var(--primary-color);
-    border: 2px solid var(--primary-color);
-    box-shadow: none;
-}
-.btn-outline:hover:not(:disabled) {
-    background-color: var(--primary-color);
-    color: white;
-    box-shadow: var(--box-shadow-light);
-}
-.btn-small {
-    padding: clamp(7px, 1.8vw, 10px) clamp(12px, 3vw, 20px);
-    font-size: clamp(0.8rem, 1.8vw, 0.95rem);
-    border-radius: var(--border-radius-small);
-}
-.btn-full-width { width: 100%; }
-.action-buttons-group {
-    display: flex;
-    gap: 15px;
-    flex-wrap: wrap;
-    align-items: center;
-}
-
-/* =================================== */
-/* 6. Tablas                         */
-/* =================================== */
-.table-responsive-wrapper {
-    overflow-x: auto;
-    width: 100%;
-    margin-bottom: 25px;
-    border-radius: var(--border-radius-medium);
-    box-shadow: var(--box-shadow-light);
-    border: 1px solid var(--medium-gray-color);
-    background-color: var(--container-bg-color);
-}
-.item-table {
-    width: 100%;
-    border-collapse: separate; /* Importante para border-spacing */
-    border-spacing: 0;
-}
-.item-table th,
-.item-table td {
-    border-bottom: 1px solid var(--medium-gray-color);
-    padding: clamp(10px, 2.5vw, 14px) clamp(12px, 3vw, 18px);
-    text-align: left;
-    vertical-align: middle;
-    font-size: clamp(0.85rem, 1.9vw, 0.95rem);
-}
-.item-table th {
-    background-color: var(--light-gray-color);
-    font-weight: 600;
-    color: var(--dark-gray-color);
-    white-space: nowrap;
-}
-.item-table td.text-right,
-.item-table th.text-right { /* Alineación para columnas de números */
-    text-align: right;
-} 
-.item-table tr:last-child td {
-    border-bottom: none;
-}
-.item-table tr:nth-child(even) td {
-    background-color: #fbfcfd;
-}
-.item-table tr:hover td {
-    background-color: rgba(52, 152, 219, 0.04);
-}
-
-/* =================================== */
-/* 7. Elementos Específicos          */
-/* =================================== */
-.invoice-header {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: clamp(20px, 4vw, 40px);
-}
-.logo-section {
-    flex: 1 1 320px;
-    min-width: 280px;
-}
-.invoice-info {
-    flex: 1 1 280px;
-    min-width: 240px;
-    text-align: right;
-}
-.invoice-info p {
-    margin: 10px 0;
-    font-size: clamp(0.9rem, 2vw, 1rem);
-}
-.invoice-info p span {
-    font-weight: 600;
-    color: var(--primary-color);
-}
-.logo-preview-container {
-    width: 100%;
-    max-width: 240px;
-    min-height: 130px;
-    border: 2px dashed var(--medium-gray-color);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-top: 15px;
-    background-color: #f9fafb;
-    overflow: hidden;
-    border-radius: var(--border-radius-medium);
-}
-#logo-preview {
-    max-width: 95%;
-    max-height: 120px;
-    display: block;
-    object-fit: contain;
-}
-#edit-client-form-container,
-#search-results-div {
-    margin-top: 30px;
-    padding: clamp(20px, 4vw, 30px);
-    background-color: var(--light-gray-color);
-    border: 1px solid var(--medium-gray-color);
-    border-radius: var(--border-radius-main);
-    box-shadow: inset 0 2px 8px rgba(0,0,0,0.03);
-}
-#search-results-div pre {
-    background: #e8f0f3;
-    padding: 20px;
-    border-radius: var(--border-radius-medium);
-    max-height: 350px;
-    overflow-y: auto;
-    white-space: pre-wrap;
-    word-break: break-all;
-    font-size: clamp(0.8rem, 1.8vw, 0.9rem);
-    line-height: 1.7;
-}
-
-/* --- Sección de Totales y sus Elementos --- */
-.totals-section > .form-group-checkbox { /* Checkbox de IVA Global */
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    width: 100%;
-    padding: 10px 0; 
-    margin-bottom: 20px; 
-}
-.totals-section .form-grid { /* Grid para los campos numéricos de totales */
-    display: grid; 
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr));
-    align-items: flex-end; 
-    gap: clamp(20px, 3vw, 25px) clamp(20px, 3vw, 30px);
-}
-.totals-section .form-group input[type="text"],
-.totals-section .form-group input[type="number"] {
-    font-weight: bold;
-    font-size: clamp(1rem, 2.2vw, 1.15rem); 
-}
-#total-display {
-    font-size: clamp(1.2rem, 2.8vw, 1.5rem) !important;
-    color: var(--secondary-color) !important;
-    background-color: #e8f5e9 !important;
-    text-align: right;
-    padding-right: 20px !important;
-}
-#subtotal-display,
-#tax-amount-display {
-    text-align: right;
-    padding-right: 20px !important;
-}
-
-.hidden {
-    display: none !important;
-}
-
-/* =================================== */
-/* 8. Mensajes de Estado             */
-/* =================================== */
-.status-message {
-    padding: clamp(12px, 2.5vw, 18px) clamp(18px, 4vw, 28px);
-    margin: 30px auto;
-    border-radius: var(--border-radius-main);
     font-weight: 500;
-    text-align: center;
-    border: 1px solid transparent;
-    opacity: 1;
-    transform: translateY(0) scale(1);
-    transition: opacity var(--transition-speed) ease-out, transform var(--transition-speed) ease-out, visibility 0s linear 0s;
-    visibility: visible;
-    max-width: 900px;
-    font-size: clamp(0.9rem, 2vw, 1rem);
-}
-.status-message.hidden {
-    opacity: 0;
-    transform: translateY(-25px) scale(0.95);
-    transition-delay: 0s, 0s, var(--transition-speed); /* Delay visibility change */
-    visibility: hidden;
-}
-.status-success { background-color: #d1fae5; color: #065f46; border-color: #a7f3d0; }
-.status-error   { background-color: #fee2e2; color: #991b1b; border-color: #fecaca; }
-.status-info    { background-color: #dbeafe; color: #1e40af; border-color: #bfdbfe; }
-.status-warning { background-color: #fef3c7; color: #92400e; border-color: #fde68a; }
-
-/* =================================== */
-/* 9. Estilos para Plantilla Export  */
-/* =================================== */
-#invoice-to-export-wrapper {
-    position: fixed;
-    left: -2000px; /* Mover fuera de pantalla */
-    top: 0;
-    width: 800px; /* Ancho A4 aprox, ajustar según necesidad */
-    background: white;
-    padding: 40px;
-    font-family: Arial, sans-serif; /* Fuente común para PDFs */
-    color: #000; /* Asegurar texto negro para impresión */
-    z-index: -1; /* Detrás de todo */
-}
-#invoice-to-export-wrapper.visible-for-capture {
-    left: 0; 
-    top:0; 
-    z-index: 10000; /* Traer al frente para html2canvas */
-}
-#invoice-to-export {
-    border: 1px solid #ccc;
-}
-#invoice-to-export header,
-#invoice-to-export section,
-#invoice-to-export footer {
-    margin-bottom: 20px;
-    padding-bottom: 10px;
-}
-#invoice-to-export h1,
-#invoice-to-export h2,
-#invoice-to-export h3 {
-    margin-bottom: 10px;
-    color: #000;
-}
-#invoice-to-export h1 {
-    font-size: 24pt;
-    text-align: center;
-    border-bottom: 2px solid #000;
-}
-#invoice-to-export .header-flex {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 30px;
-}
-#invoice-to-export .export-logo {
-    max-width: 150px;
-    max-height: 100px;
-}
-#invoice-to-export .export-business-details,
-#invoice-to-export .export-client-details,
-#invoice-to-export .export-invoice-info {
-    font-size: 10pt;
-    margin-bottom:15px;
-}
-#invoice-to-export .export-invoice-info {
-    text-align: right;
-}
-#invoice-to-export .export-items-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 9pt;
-    margin-top: 20px;
-}
-#invoice-to-export .export-items-table th,
-#invoice-to-export .export-items-table td {
-    border: 1px solid #888;
-    padding: 6px 8px;
-    text-align: left;
-}
-#invoice-to-export .export-items-table th {
-    background-color: #f0f0f0;
-}
-#invoice-to-export .export-items-table td.number,
-#invoice-to-export .export-items-table th.number {
-    text-align: right;
-}
-#invoice-to-export .export-totals {
-    margin-top: 25px;
-    text-align: right;
-    font-size: 10pt;
-}
-#invoice-to-export .export-totals p {
-    margin: 5px 0;
-}
-#invoice-to-export .export-totals strong {
-    display: inline-block;
-    min-width: 120px;
-}
-#invoice-to-export footer {
-    font-size: 8pt;
-    text-align: center;
-    border-top: 1px solid #ccc;
-    padding-top: 10px;
-    margin-top:30px;
+    margin-top: 10px;
 }
 
-/* =================================== */
-/* 10. Media Queries (Responsividad)   */
-/* =================================== */
-@media (max-width: 992px) {
-    .invoice-info {
-        text-align: left;
-    }
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
 
+/* --- Contenido Principal (Placeholder) --- */
+.main-content {
+    /* Puede tener estilos diferentes si es necesario */
+    /* Por ahora, hereda de .login-container */
+}
+
+.main-content h1 {
+    color: var(--primary-color);
+}
+
+/* === Media Queries para Adaptabilidad === */
+
+/* Para tablets y dispositivos más pequeños (hasta 768px) */
 @media (max-width: 768px) {
-    html { font-size: 15px; }
-    .invoice-generator { padding: clamp(15px, 4vw, 25px); }
-    .form-grid { grid-template-columns: 1fr; gap: clamp(15px, 3vw, 20px) 0; }
-    .invoice-header { flex-direction: column; align-items: stretch; }
-    .invoice-info { margin-top: 25px; }
-    .logo-preview-container { max-width: 200px; min-height: 110px; }
-    #logo-preview { max-height: 100px; }
-    .item-table th,
-    .item-table td {
-        font-size: clamp(0.8rem, 2.5vw, 0.9rem);
-        padding: clamp(8px, 2vw, 12px) clamp(10px, 2.5vw, 15px);
+    body {
+        padding: 15px; /* Menos padding en el body */
     }
-    .action-buttons-group { flex-direction: column; gap: 12px; }
-    .action-buttons-group .btn { width: 100%; }
-    #generate-invoice-btn { font-size: clamp(1rem, 2.5vw, 1.15rem) !important; }
-    
-    /* Ajustes específicos para móviles en el form-grid de "Añadir Ítem" */
-    .items-section .form-grid {
-        grid-template-columns: 1fr; /* Asegurar una columna */
+
+    .login-container,
+    .main-content {
+        padding: 25px; /* Menos padding interno */
+        border-radius: var(--border-radius-l); /* Un poco menos redondeado si se prefiere */
+        gap: 20px;
+        max-width: 90%; /* Ocupa más ancho de la pantalla */
     }
-    .items-section .form-grid .form-group { /* Espacio entre campos */
-        margin-bottom: 15px; 
+
+    .login-container h1,
+    .main-content h1 {
+        font-size: 1.5rem; /* 24px */
     }
-    .items-section .form-grid .form-group-checkbox { /* Ajustar checkbox de ítem */
-        margin-top: 5px;
-        justify-content: flex-start;
-        padding: 5px 0;
+
+    .login-container p,
+    .main-content p {
+        font-size: 0.95rem; /* 15.2px */
+        margin-bottom: 15px;
+    }
+
+    .logo-container {
+        max-width: 250px; /* Logo un poco más pequeño */
+    }
+
+    .google-btn,
+    #logoutButton {
+        padding: 12px 18px;
+        font-size: 0.95rem;
     }
 }
 
+/* Para móviles (hasta 480px) */
 @media (max-width: 480px) {
-    html { font-size: 14px; }
-    .invoice-generator { border-radius: var(--border-radius-medium); }
-    h1 { font-size: clamp(1.6rem, 6vw, 2rem); }
-    h2 { font-size: clamp(1.3rem, 5vw, 1.7rem); }
-    h3 { font-size: clamp(1.1rem, 4vw, 1.4rem); }
-    .btn { border-radius: var(--border-radius-small); }
-    .form-group input[type="text"],
-    .form-group input[type="email"],
-    .form-group input[type="tel"],
-    .form-group input[type="number"],
-    .form-group input[type="date"],
-    .form-group select,
-    .form-group textarea {
-        border-radius: var(--border-radius-small);
+    .login-container,
+    .main-content {
+        padding: 20px 18px; /* Aún menos padding para pantallas pequeñas */
+        border-radius: var(--border-radius-m); /* Más adaptado a pequeño */
+        gap: 18px;
+        max-width: 95%; /* Casi todo el ancho */
+    }
+
+    .login-container h1,
+    .main-content h1 {
+        font-size: 1.3rem; /* 20.8px */
+    }
+
+    .login-container p,
+    .main-content p {
+        font-size: 0.9rem; /* 14.4px */
+    }
+
+    .logo-container {
+        max-width: 200px; /* Logo aún más pequeño */
+        margin-bottom: 10px;
+    }
+
+    .google-btn,
+    #logoutButton {
+        padding: 12px 15px;
+        font-size: 0.9rem;
+        gap: 8px;
+    }
+
+    .google-icon {
+        width: 18px;
+        height: 18px;
+    }
+
+    .loading-content {
+        padding: 25px;
+        max-width: 80%;
+    }
+
+    .loading-logo-spinner {
+        width: 60px;
+    }
+
+    .loading-overlay p {
+        font-size: 1rem;
     }
 }
 
-/* Archivo: styles.css */
+/* Ajuste menor para pantallas muy pequeñas si es necesario */
+@media (max-width: 360px) {
+    .login-container h1,
+    .main-content h1 {
+        font-size: 1.2rem; /* 19.2px */
+    }
 
-/* ... (tus estilos existentes) ... */
-
-/* =================================== */
-/* 12. Loader para Botones             */
-/* =================================== */
-.button-loader-container { /* Contenedor opcional para centrar el loader en el botón */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    height: 100%;
-}
-
-.loader {
-  /* Ajusta el tamaño del loader para que quepa bien en los botones */
-  /* Originalmente era 80px, puede ser muy grande para un botón. */
-  /* Probemos con un tamaño más pequeño */
-  width: 32px; /* Ajusta este valor según sea necesario */
-  aspect-ratio: 1;
-  border-radius: 50%; /* <--- AÑADIR ESTO PARA HACERLO CIRCULAR */
-  /* El borde original de 10px será muy grueso para un loader de 24px */
-  /* Reducirlo proporcionalmente, ej. 24px / 80px * 10px = 3px */
-  border: 3px solid transparent; /* Usar el color primario o blanco/negro */
-  box-sizing: border-box;
-  background: 
-    radial-gradient(farthest-side, var(--container-bg-color) 98%, #0000) top,   /* Usar el color de fondo del contenedor (o el color del texto del botón) */
-    radial-gradient(farthest-side, var(--container-bg-color) 98%, #0000) top,
-    radial-gradient(farthest-side, var(--container-bg-color) 98%, #0000) left,
-    radial-gradient(farthest-side, var(--container-bg-color) 98%, #0000) right,
-    radial-gradient(farthest-side, var(--container-bg-color) 98%, #0000) bottom,
-    transparent; /* <--- CAMBIAR A TRANSPARENTE */
-  /* Ajustar background-size si el loader es más pequeño */
-  /* 20px / 80px * 24px = 6px */
-  background-size: 8px 8px; 
-  background-repeat: no-repeat;
-  filter: blur(0.1px) contrast(10); /* Reducir el blur si el loader es más pequeño */
-  animation: l19 2s infinite;
-  /* Añadir esto para que el loader no empuje el texto si se deja */
-  position: absolute; /* O relative si el botón es su contenedor directo de posicionamiento */
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  /* Importante: inicialmente oculto */
-  display: none; 
-}
-
-@keyframes l19 {
-  0%   {background-position:top,top,left,right,bottom}
-  25%  {background-position:right,top,left,right,bottom}
-  50%  {background-position:bottom,top,left,right,bottom}
-  75%  {background-position:left,top,left,right,bottom}
-  100% {background-position:top,top,left,right,bottom}
-}
-
-/* Clase para aplicar al botón cuando está cargando */
-.btn.loading .btn-text { /* Asumimos que el texto del botón estará en un span con clase .btn-text */
-    visibility: hidden; /* Ocultar el texto original */
-    opacity: 0;
-}
-
-.btn.loading .loader {
-    display: block; /* Mostrar el loader */
-}
-
-/* Ajuste para que el botón mantenga su tamaño y forma cuando el texto se oculta */
-.btn {
-    position: relative; /* Necesario para posicionar el loader absolutamente dentro del botón */
-    /* Puede que necesites un min-height/min-width en los botones para que no colapsen 
-       cuando el texto se va y solo queda el loader si este es muy pequeño. 
-       O que el loader mismo ocupe el espacio. 
-       Este loader se posiciona absoluto, así que el botón necesita mantener su tamaño.
-    */
+     .login-container p,
+    .main-content p {
+        font-size: 0.85rem; /* 13.6px */
+    }
 }
