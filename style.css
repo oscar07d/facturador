@@ -329,3 +329,459 @@ body {
         font-size: 0.85rem; /* 13.6px */
     }
 }
+
+/* === ESTILOS PARA LA APLICACIÓN DE FACTURACIÓN (Post-Login) === */
+
+/* --- Cabecera de la Aplicación --- */
+.app-header {
+    background-color: var(--container-background);
+    padding: 15px 30px;
+    border-radius: var(--border-radius-l) var(--border-radius-l) 0 0; /* Redondeo solo arriba para contenedores anidados */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    max-width: 1200px; /* Coincide con #app max-width si quieres que ocupe todo */
+    margin-top: 20px; /* Espacio desde el borde superior del viewport si #app no tuviera padding */
+    flex-wrap: wrap; /* Para que se adapte en pantallas pequeñas */
+}
+
+.logo-app-container {
+    max-width: 250px; /* Ajusta esto según necesites */
+    height: auto;
+}
+
+.app-logo-completo {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.app-logo-completo .cls-1-app { /* Asegúrate que esta clase esté en tu SVG del header */
+    fill: var(--logo-svg-fill-color); /* O el color que desees para el logo aquí */
+}
+
+.app-title-container h1 {
+    font-size: 1.6rem; /* 25.6px */
+    color: var(--primary-color);
+    margin: 0; /* Resetear margen si lo hereda */
+    font-weight: 600;
+}
+
+.user-actions #logoutButton {
+    /* Los estilos base de #logoutButton ya están definidos */
+    /* Podemos hacer ajustes específicos si es necesario aquí */
+    margin: 0; /* Resetear margen si lo hereda */
+    background-color: var(--danger-color); /* Rojo para logout */
+    border: none;
+}
+
+.user-actions #logoutButton:hover {
+    background-color: #c82333; /* Rojo más oscuro */
+}
+
+
+/* --- Navegación de la Aplicación --- */
+.app-nav {
+    background-color: var(--primary-color);
+    padding: 0px 30px;
+    width: 100%;
+    max-width: 1200px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    border-radius: 0 0 var(--border-radius-l) var(--border-radius-l); /* Redondeo solo abajo */
+}
+
+.app-nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    justify-content: flex-start; /* o center si prefieres */
+    gap: 10px; /* Espacio entre pestañas */
+}
+
+.app-nav ul li a {
+    display: block;
+    padding: 14px 20px;
+    text-decoration: none;
+    color: rgba(255, 255, 255, 0.85);
+    font-weight: 500;
+    border-bottom: 3px solid transparent;
+    transition: color var(--transition-speed) ease, border-bottom-color var(--transition-speed) ease;
+}
+
+.app-nav ul li a:hover {
+    color: #ffffff;
+    background-color: rgba(255,255,255,0.1);
+}
+
+.app-nav ul li a.active-nav {
+    color: #ffffff;
+    font-weight: 600;
+    border-bottom-color: #ffffff; /* O un color de acento amarillo/blanco */
+    background-color: rgba(0,0,0,0.1);
+}
+
+/* --- Contenedor Principal de la App de Facturación --- */
+.invoice-app-container {
+    background-color: var(--container-background);
+    padding: 30px;
+    border-radius: var(--border-radius-l);
+    box-shadow: var(--box-shadow-medium);
+    width: 100%;
+    max-width: 1200px;
+    margin-top: 10px; /* Espacio desde la navegación */
+}
+
+.invoice-section {
+    /* display: none; Se maneja con JS, pero aquí definimos el estilo base */
+}
+.invoice-section.active-section {
+    display: block; /* O 'flex' si la sección es un contenedor flex */
+}
+
+/* --- Estilos Generales del Formulario de Factura --- */
+.invoice-form {
+    display: flex;
+    flex-direction: column;
+    gap: 30px; /* Espacio entre fieldsets */
+}
+
+.form-section {
+    border: 1px solid var(--border-color);
+    padding: 25px;
+    border-radius: var(--border-radius-m);
+    background-color: #fdfdfd; /* Un fondo ligeramente diferente para las secciones */
+}
+
+.form-section legend {
+    font-size: 1.25rem; /* 20px */
+    font-weight: 600;
+    color: var(--primary-color);
+    padding: 0 10px;
+    margin-left: 10px; /* Para alinear con el padding del fieldset */
+}
+
+.optional-tag {
+    font-size: 0.8rem;
+    font-weight: 400;
+    color: var(--text-muted-color);
+}
+
+/* --- Cuadrículas del Formulario --- */
+.form-grid {
+    display: grid;
+    gap: 20px;
+}
+
+.form-grid.two-columns {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* Columnas responsivas */
+}
+.form-grid.three-columns {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+}
+.form-group.full-width {
+    grid-column: 1 / -1; /* Ocupa todo el ancho en la cuadrícula */
+}
+
+
+/* --- Grupos de Formulario y Elementos --- */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px; /* Espacio entre label e input */
+}
+
+.form-group label {
+    font-weight: 500;
+    color: var(--text-color);
+    font-size: 0.95rem;
+}
+
+.form-group input[type="text"],
+.form-group input[type="email"],
+.form-group input[type="tel"],
+.form-group input[type="date"],
+.form-group input[type="number"],
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-s);
+    font-size: 1rem;
+    font-family: 'Poppins', sans-serif;
+    transition: border-color var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.form-group input[type="checkbox"].inline-checkbox {
+    width: auto; /* No ocupa todo el ancho */
+    margin-right: 8px;
+    vertical-align: middle; /* Alinear mejor con el texto */
+}
+/* Contenedor para el checkbox y su label para mejor alineación */
+.form-group label[for*="itemIsStreaming"], 
+.form-group label[for*="itemApplyIVA"] {
+    display: flex;
+    align-items: center;
+    font-weight: normal; /* Para que no sea tan fuerte como otros labels */
+}
+
+.invoice-number-display {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-color);
+    padding: 10px 0;
+}
+.invoice-number-display span {
+    color: var(--primary-color);
+}
+
+/* --- Botones Específicos del Formulario y Acciones del Cliente --- */
+.client-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 5px;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+}
+
+.btn { /* Clase base para botones */
+    padding: 10px 20px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    border-radius: var(--border-radius-m);
+    cursor: pointer;
+    text-decoration: none;
+    border: 1px solid transparent;
+    transition: all var(--transition-speed) ease;
+    display: inline-flex; /* Para alinear iconos si los tuvieran */
+    align-items: center;
+    justify-content: center;
+}
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.btn-primary { background-color: var(--primary-color); color: white; }
+.btn-primary:hover:not(:disabled) { background-color: var(--primary-hover-color); }
+
+.btn-secondary { background-color: var(--secondary-color); color: white; }
+.btn-secondary:hover:not(:disabled) { background-color: #545b62; }
+
+.btn-danger { background-color: var(--danger-color); color: white; }
+.btn-danger:hover:not(:disabled) { background-color: #c82333; }
+
+.btn-success { background-color: var(--success-color); color: white; }
+.btn-success:hover:not(:disabled) { background-color: #1e7e34; }
+
+.btn-info { background-color: #17a2b8; color: white; }
+.btn-info:hover:not(:disabled) { background-color: #117a8b; }
+
+.btn-outline {
+    background-color: transparent;
+    color: var(--text-color); /* Por defecto, luego se puede sobreescribir */
+    border-color: var(--border-color);
+}
+.user-actions .btn-outline { /* Para el logout específico */
+    color: var(--danger-color);
+    border-color: var(--danger-color);
+}
+.user-actions .btn-outline:hover:not(:disabled) {
+    background-color: var(--danger-color);
+    color: white;
+}
+
+
+/* --- Ítems de la Factura --- */
+#invoiceItemsContainer {
+    margin-bottom: 25px;
+    border: 1px dashed var(--border-color);
+    padding: 15px;
+    border-radius: var(--border-radius-s);
+    min-height: 50px; /* Para que se vea el placeholder */
+}
+.invoice-item-placeholder {
+    color: var(--text-muted-color);
+    text-align: center;
+    padding: 10px;
+}
+/* Estilos para los ítems agregados (se definirán más cuando los agreguemos con JS) */
+
+.add-item-form {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-color);
+}
+.add-item-form h4 {
+    font-size: 1.1rem;
+    margin-bottom: 15px;
+    font-weight: 500;
+}
+.item-details-grid {
+    align-items: end; /* Alinear elementos en la base de la cuadrícula */
+}
+
+
+/* --- Resumen de Totales y Estado de Pago --- */
+.totals-summary {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    padding: 20px;
+    background-color: #f0f8ff; /* Un fondo azul claro muy sutil */
+    border-radius: var(--border-radius-s);
+    border: 1px solid var(--primary-color);
+}
+.totals-summary p {
+    margin-bottom: 8px;
+    font-size: 1rem;
+    color: var(--text-color);
+}
+.totals-summary h3 {
+    font-size: 1.3rem;
+    color: var(--primary-color);
+    font-weight: 600;
+    margin-top: 10px;
+}
+.totals-summary span {
+    font-weight: 600;
+}
+
+.status-info-box {
+    margin-top: 15px;
+    padding: 15px;
+    border-radius: var(--border-radius-s);
+    background-color: #e9ecef; /* Fondo gris claro */
+    border: 1px solid var(--secondary-color);
+}
+.status-info-box h4 {
+    margin-bottom: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+}
+.status-info-box p {
+    font-size: 0.9rem;
+    margin-bottom: 5px;
+}
+
+/* --- Acciones del Formulario (botones principales) --- */
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+}
+.form-actions .btn {
+    padding: 12px 25px;
+    font-size: 1rem;
+}
+
+/* === Media Queries para Adaptabilidad (Interfaz de Facturación) === */
+@media (max-width: 992px) { /* Tablets y escritorios pequeños */
+    .app-header {
+        padding: 15px 20px;
+        flex-direction: column;
+        gap: 10px;
+    }
+    .logo-app-container {
+        max-width: 200px;
+    }
+    .app-title-container h1 {
+        font-size: 1.4rem;
+    }
+    .app-nav ul {
+        justify-content: center; /* Centrar pestañas en pantallas más pequeñas */
+    }
+    .invoice-app-container {
+        padding: 20px;
+    }
+    .form-section {
+        padding: 20px;
+    }
+}
+
+@media (max-width: 768px) { /* Tablets en vertical y móviles grandes */
+    .form-grid.two-columns,
+    .form-grid.three-columns {
+        grid-template-columns: 1fr; /* Apilar columnas */
+    }
+    .app-nav ul li a {
+        padding: 12px 15px;
+        font-size: 0.9rem;
+    }
+    .form-actions {
+        flex-direction: column; /* Apilar botones de acción */
+    }
+    .form-actions .btn {
+        width: 100%; /* Botones de acción ocupan todo el ancho */
+    }
+    .client-actions {
+        flex-direction: column;
+        gap: 8px;
+    }
+    .client-actions .btn {
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) { /* Móviles pequeños */
+    .app-header {
+        padding: 10px 15px;
+    }
+    .app-title-container h1 {
+        font-size: 1.2rem;
+    }
+    .user-actions #logoutButton {
+        padding: 8px 15px;
+        font-size: 0.85rem;
+    }
+    .app-nav ul {
+        gap: 5px;
+        flex-wrap: wrap; /* Permitir que las pestañas se envuelvan */
+        justify-content: space-around;
+    }
+    .app-nav ul li a {
+        padding: 10px 8px;
+        font-size: 0.8rem;
+    }
+    .invoice-app-container {
+        padding: 15px;
+    }
+    .form-section {
+        padding: 15px;
+    }
+    .form-section legend {
+        font-size: 1.1rem;
+    }
+    .form-group input[type="text"],
+    .form-group input[type="email"],
+    .form-group input[type="tel"],
+    .form-group input[type="date"],
+    .form-group input[type="number"],
+    .form-group select,
+    .form-group textarea {
+        padding: 10px 12px;
+        font-size: 0.95rem;
+    }
+    .btn { /* Reducir padding general de botones */
+        padding: 8px 15px;
+        font-size: 0.9rem;
+    }
+    .totals-summary {
+        padding: 15px;
+    }
+    .totals-summary h3 {
+        font-size: 1.15rem;
+    }
+}
