@@ -1,0 +1,331 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+:root {
+    /* Paleta de Colores - Siéntete libre de ajustarlos */
+    --primary-color: #007bff; /* Azul primario vibrante */
+    --primary-hover-color: #0056b3; /* Azul más oscuro para hover */
+    --secondary-color: #6c757d; /* Gris secundario */
+    --background-color: #f8f9fa; /* Fondo general muy claro */
+    --container-background: #ffffff; /* Fondo de los contenedores */
+    --text-color: #212529; /* Color de texto principal (casi negro) */
+    --text-muted-color: #6c757d; /* Color de texto secundario/apagado */
+    --success-color: #28a745; /* Verde para éxito */
+    --danger-color: #dc3545; /* Rojo para peligro/error */
+    --border-color: #dee2e6; /* Color de borde sutil */
+
+    /* Radios de Borde */
+    --border-radius-xl: 40px; /* Extra grande, para contenedores principales */
+    --border-radius-l: 30px;  /* Grande, como solicitaste */
+    --border-radius-m: 15px;  /* Mediano */
+    --border-radius-s: 8px;   /* Pequeño */
+
+    /* Sombras */
+    --box-shadow-light: 0 4px 12px rgba(0, 0, 0, 0.08);
+    --box-shadow-medium: 0 8px 25px rgba(0, 0, 0, 0.1);
+
+    /* Transiciones */
+    --transition-speed: 0.3s;
+
+    /* Color original del logo (si es necesario referenciarlo) */
+    --logo-svg-fill-color: #1d1d1b;
+}
+
+/* --- Reset y Estilos Globales --- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 16px; /* Base para REMs */
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+    line-height: 1.6;
+    overflow-x: hidden;
+}
+
+#app {
+    width: 100%;
+    max-width: 1200px; /* Ancho máximo de la app en general */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* --- Contenedor de Login y Contenido Principal --- */
+.login-container,
+.main-content {
+    background-color: var(--container-background);
+    padding: 30px 40px; /* Más padding vertical */
+    border-radius: var(--border-radius-xl);
+    box-shadow: var(--box-shadow-medium);
+    text-align: center;
+    width: 100%;
+    max-width: 480px; /* Ancho del contenedor de login */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 25px; /* Espacio entre elementos hijos */
+    transition: all var(--transition-speed) ease;
+}
+
+/* --- Logo --- */
+.logo-container {
+    margin-bottom: 15px; /* Reducido un poco */
+    width: 100%;
+    max-width: 300px; /* Ajusta según el tamaño deseado para el logo completo */
+    height: auto;
+}
+
+.login-logo-completo { /* Para el logo completo en el login */
+    width: 100%;
+    height: auto;
+    display: block; /* Evita espacio extra debajo si es inline */
+}
+
+/* Si necesitas forzar el color del SVG (aunque idealmente se maneja dentro del SVG o sin fill) */
+/* .login-logo-completo .cls-1 {
+    fill: var(--logo-svg-fill-color); 
+} */
+
+/* --- Tipografía --- */
+.login-container h1,
+.main-content h1 {
+    font-size: 1.75rem; /* 28px */
+    font-weight: 600;
+    color: var(--text-color);
+    margin-bottom: 5px; /* Reducido */
+}
+
+.login-container p,
+.main-content p {
+    font-size: 1rem; /* 16px */
+    color: var(--text-muted-color);
+    margin-bottom: 20px; /* Ajustado */
+}
+
+/* --- Botones --- */
+.google-btn,
+#logoutButton {
+    width: 100%;
+    max-width: 320px;
+    padding: 14px 20px;
+    border-radius: var(--border-radius-m); /* Más redondeado */
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color var(--transition-speed) ease, box-shadow var(--transition-speed) ease, transform var(--transition-speed) ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    border: 1px solid var(--border-color);
+    text-decoration: none;
+}
+
+.google-btn {
+    background-color: #fff;
+    color: #444; /* Un poco más oscuro para mejor contraste */
+    box-shadow: var(--box-shadow-light);
+}
+
+.google-btn:hover {
+    background-color: #fdfdfd;
+    border-color: #c6c6c6;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+.google-icon {
+    width: 22px;
+    height: 22px;
+}
+
+#logoutButton {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    box-shadow: var(--box-shadow-light);
+}
+
+#logoutButton:hover {
+    background-color: var(--primary-hover-color);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.12);
+    transform: translateY(-2px);
+}
+
+/* --- Pantalla de Carga --- */
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.95); /* Un poco más opaco */
+    display: none; /* Oculto por defecto */
+    justify-content: center;
+    align-items: center;
+    z-index: 10000; /* Muy alto para estar encima de todo */
+    flex-direction: column;
+    gap: 20px;
+    backdrop-filter: blur(4px); /* Efecto blur si el navegador lo soporta */
+}
+
+.loading-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 35px;
+    background-color: var(--container-background);
+    border-radius: var(--border-radius-l);
+    box-shadow: var(--box-shadow-medium);
+}
+
+.loading-logo-spinner {
+    width: 70px;
+    height: auto;
+    animation: spin 1.2s linear infinite; /* Un poco más rápido */
+}
+
+.loading-logo-spinner .logo-path-spinner {
+    /* Usaremos el icono del logo pequeño aquí */
+    fill: var(--primary-color); /* Color primario para el logo en carga */
+}
+/* Asegúrate que el path del SVG del icono para spinner tenga esta clase */
+/* Ejemplo: <path class="logo-path-spinner" ... /> */
+
+
+.loading-overlay p {
+    font-size: 1.1rem; /* 17.6px */
+    color: var(--primary-color);
+    font-weight: 500;
+    margin-top: 10px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* --- Contenido Principal (Placeholder) --- */
+.main-content {
+    /* Puede tener estilos diferentes si es necesario */
+    /* Por ahora, hereda de .login-container */
+}
+
+.main-content h1 {
+    color: var(--primary-color);
+}
+
+/* === Media Queries para Adaptabilidad === */
+
+/* Para tablets y dispositivos más pequeños (hasta 768px) */
+@media (max-width: 768px) {
+    body {
+        padding: 15px; /* Menos padding en el body */
+    }
+
+    .login-container,
+    .main-content {
+        padding: 25px; /* Menos padding interno */
+        border-radius: var(--border-radius-l); /* Un poco menos redondeado si se prefiere */
+        gap: 20px;
+        max-width: 90%; /* Ocupa más ancho de la pantalla */
+    }
+
+    .login-container h1,
+    .main-content h1 {
+        font-size: 1.5rem; /* 24px */
+    }
+
+    .login-container p,
+    .main-content p {
+        font-size: 0.95rem; /* 15.2px */
+        margin-bottom: 15px;
+    }
+
+    .logo-container {
+        max-width: 250px; /* Logo un poco más pequeño */
+    }
+
+    .google-btn,
+    #logoutButton {
+        padding: 12px 18px;
+        font-size: 0.95rem;
+    }
+}
+
+/* Para móviles (hasta 480px) */
+@media (max-width: 480px) {
+    .login-container,
+    .main-content {
+        padding: 20px 18px; /* Aún menos padding para pantallas pequeñas */
+        border-radius: var(--border-radius-m); /* Más adaptado a pequeño */
+        gap: 18px;
+        max-width: 95%; /* Casi todo el ancho */
+    }
+
+    .login-container h1,
+    .main-content h1 {
+        font-size: 1.3rem; /* 20.8px */
+    }
+
+    .login-container p,
+    .main-content p {
+        font-size: 0.9rem; /* 14.4px */
+    }
+
+    .logo-container {
+        max-width: 200px; /* Logo aún más pequeño */
+        margin-bottom: 10px;
+    }
+
+    .google-btn,
+    #logoutButton {
+        padding: 12px 15px;
+        font-size: 0.9rem;
+        gap: 8px;
+    }
+
+    .google-icon {
+        width: 18px;
+        height: 18px;
+    }
+
+    .loading-content {
+        padding: 25px;
+        max-width: 80%;
+    }
+
+    .loading-logo-spinner {
+        width: 60px;
+    }
+
+    .loading-overlay p {
+        font-size: 1rem;
+    }
+}
+
+/* Ajuste menor para pantallas muy pequeñas si es necesario */
+@media (max-width: 360px) {
+    .login-container h1,
+    .main-content h1 {
+        font-size: 1.2rem; /* 19.2px */
+    }
+
+     .login-container p,
+    .main-content p {
+        font-size: 0.85rem; /* 13.6px */
+    }
+}
