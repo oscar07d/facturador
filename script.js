@@ -247,9 +247,13 @@ onAuthStateChanged(auth, (user) => {
         // === FIN: MODIFICACIÓN - PASO 4 ===
 
     } else {
-        console.log("No hay usuario conectado.");
+        console.log("No hay usuario conectado. Intentando ocultar mainContent y mostrar loginContainer."); // Mensaje actualizado
         if (loginContainer) loginContainer.style.display = 'flex';
         if (mainContent) mainContent.style.display = 'none';
+            console.log('Estilo de display de mainContent después de intentar ocultar:', mainContent.style.display); // <-- ESTE LOG
+        } else {
+            console.error("Error: El elemento #mainContent no fue encontrado en el DOM."); // <-- NUEVO LOG DE ERROR
+        }
     }
 });
 
