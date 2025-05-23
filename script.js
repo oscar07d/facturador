@@ -235,27 +235,29 @@ if (logoutButton) {
 }
 
 // --- Observador del Estado de Autenticación ---
-onAuthStateChanged(auth, (user) => { // Esta podría ser alrededor de la línea 235-240
-    showLoading(false);
-    if (user) { // Inicio del bloque 'if (user)'
+onAuthStateChanged(auth, (user) => {
+    showLoading(false); // Ocultar la pantalla de carga siempre que cambie el estado de auth
+    if (user) {
+        // El usuario está autenticado (ha iniciado sesión)
         console.log("Usuario está conectado:", user.uid, user.displayName);
         if (loginContainer) loginContainer.style.display = 'none';
-        if (mainContent) mainContent.style.display = 'flex'; 
+        if (mainContent) mainContent.style.display = 'flex'; // O 'block' según tu CSS
 
         handleNavigation('createInvoiceSection');
 
-    } else { // ESTE ES EL 'else' problemático o el bloque anterior
-        // El usuario no está autenticado
+    } else {
+        // El usuario no está autenticado (ha cerrado sesión o nunca inició)
         console.log("No hay usuario conectado. Intentando ocultar mainContent y mostrar loginContainer.");
         if (loginContainer) loginContainer.style.display = 'flex';
-        if (mainContent) { 
+        
+        if (mainContent) { // <--- AÑADIDA LLAVE DE APERTURA
             mainContent.style.display = 'none';
-            console.log('Estilo de display de mainContent después de intentar ocultar:', mainContent.style.display); 
-        } else { // Este es un 'else' anidado, asegúrate que el 'if (mainContent)' esté bien
-            console.error("Error: El elemento #mainContent no fue encontrado en el DOM."); 
-        }
-    } // <-- Asegúrate que esta llave de cierre del 'else' principal esté presente
-}); // <-- Asegúrate que esta llave de cierre de 'onAuthStateChanged' esté presente
+            console.log('Estilo de display de mainContent después de intentar ocultar:', mainContent.style.display);
+        } else { // <--- Este 'else' ahora está correctamente emparejado con if (mainContent)
+            console.error("Error: El elemento #mainContent no fue encontrado en el DOM.");
+        } // <--- AÑADIDA LLAVE DE CIERRE para if (mainContent)
+    } // Cierre del 'else' principal (para if (user))
+}); // Cierre de onAuthStateChanged
 
 // === INICIO: NUEVO CÓDIGO - PASO 5 (Nuevos Event Listeners UI Facturación) ===
 // Navegación Principal de la App
