@@ -202,8 +202,41 @@
                 </div>
             </fieldset>
 
-            <fieldset class="form-section">
-                <legend>Ítems de la Factura</legend
+	<fieldset class="form-section">
+	    <legend>Ítems de la Factura</legend>
+	    <div id="invoiceItemsContainer"> <div class="invoice-item-placeholder">Aún no has agregado ítems.</div>
+	    </div>
+	
+	    <div class="add-item-form"> <h4>Añadir Nuevo Ítem</h4>
+	        <div class="form-group">
+	            <label for="itemDescription">Descripción (Producto o Servicio):</label>
+	            <input type="text" id="itemDescription" name="itemDescription">
+	        </div>
+	        <div class="form-grid three-columns item-details-grid">
+	            <div class="form-group">
+	                <label for="itemIsStreaming">
+	                    <input type="checkbox" id="itemIsStreaming" name="itemIsStreaming" class="inline-checkbox">
+	                    ¿Es Plataforma de Streaming?
+	                </label>
+	            </div>
+	            <div class="form-group">
+	                <label for="itemQuantity">Cantidad:</label>
+	                <input type="number" id="itemQuantity" name="itemQuantity" value="1" min="1">
+	            </div>
+	            <div class="form-group">
+	                <label for="itemPrice">Precio Unitario (COP):</label>
+	                <input type="number" id="itemPrice" name="itemPrice" min="0" step="any">
+	            </div>
+	        </div>
+	        <div class="form-group">
+	            <label for="itemApplyIVA">
+	                <input type="checkbox" id="itemApplyIVA" name="itemApplyIVA" class="inline-checkbox">
+	                Aplicar IVA (19%)
+	            </label>
+	        </div>
+	        <button type="button" id="addItemBtn" class="btn btn-primary">Agregar Ítem</button>
+	    </div>
+	</fieldset>
     </div>
 
     <script type="module" src="script.js"></script>
