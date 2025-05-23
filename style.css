@@ -604,32 +604,70 @@ body {
 
 
 /* --- Ítems de la Factura --- */
-#invoiceItemsContainer {
+#invoiceItemsContainer { /* Contenedor para la lista de ítems agregados */
     margin-bottom: 25px;
-    border: 1px dashed var(--border-color);
+    border: 1px dashed var(--border-color); /* Un borde discontinuo para distinguirlo */
     padding: 15px;
     border-radius: var(--border-radius-s);
-    min-height: 50px; /* Para que se vea el placeholder */
+    min-height: 70px; /* Altura mínima para que el placeholder sea visible */
+    display: flex; /* Para centrar el placeholder si es el único hijo */
+    justify-content: center;
+    align-items: center;
 }
-.invoice-item-placeholder {
+
+.invoice-item-placeholder { /* Mensaje cuando no hay ítems */
     color: var(--text-muted-color);
     text-align: center;
+    font-style: italic;
     padding: 10px;
 }
-/* Estilos para los ítems agregados (se definirán más cuando los agreguemos con JS) */
 
+/* (Aquí irían los estilos para cada ítem individual cuando los agreguemos con JS) */
+/* .invoice-item { ... } */
+
+
+/* --- Formulario para Añadir Nuevo Ítem --- */
 .add-item-form {
-    margin-top: 20px;
-    padding-top: 20px;
-    border-top: 1px solid var(--border-color);
+    margin-top: 20px;  /* Espacio arriba, separándolo del contenedor de ítems */
+    padding-top: 20px; /* Espacio interno superior */
+    border-top: 1px solid var(--border-color); /* Línea divisoria sutil */
+    display: block; /* Asegurarnos que sea visible como bloque */
 }
-.add-item-form h4 {
-    font-size: 1.1rem;
-    margin-bottom: 15px;
-    font-weight: 500;
+
+.add-item-form h4 { /* Título "Añadir Nuevo Ítem" */
+    font-size: 1.1rem; /* Tamaño del título */
+    margin-bottom: 15px; /* Espacio debajo del título */
+    font-weight: 500;   /* Peso de la fuente */
+    color: var(--text-color); /* Color del texto principal */
 }
-.item-details-grid {
-    align-items: end; /* Alinear elementos en la base de la cuadrícula */
+
+/* Estilos para la cuadrícula dentro del formulario de añadir ítem */
+.item-details-grid { 
+    /* Ya tienes .form-grid.three-columns, esto es específico para alinear */
+    align-items: end; /* Alinear elementos en la base de la cuadrícula (útil para labels y inputs de diferentes alturas) */
+}
+
+/* Ajustes para los checkboxes inline y sus labels dentro del form de ítems */
+.add-item-form .form-group label[for*="itemIsStreaming"], 
+.add-item-form .form-group label[for*="itemApplyIVA"] {
+    display: flex;
+    align-items: center;
+    font-weight: normal; /* Peso normal para el texto del label del checkbox */
+    font-size: 0.95rem; /* Tamaño de fuente consistente */
+    cursor: pointer; /* Cursor de mano sobre el label */
+}
+
+.add-item-form .form-group input[type="checkbox"].inline-checkbox {
+    width: auto; /* No ocupa todo el ancho */
+    margin-right: 8px; /* Espacio entre el checkbox y el texto */
+    vertical-align: middle; /* Alinear mejor con el texto */
+    transform: scale(1.1); /* Hacer el checkbox un poco más grande si se desea */
+}
+
+/* Botón "Agregar Ítem" */
+#addItemBtn {
+    margin-top: 15px; /* Espacio arriba del botón */
+    /* Hereda estilos de .btn y .btn-primary, podemos añadir más si es necesario */
 }
 
 
