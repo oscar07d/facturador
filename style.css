@@ -823,3 +823,85 @@ body {
         font-size: 1.15rem;
     }
 }
+/* === ESTILOS PARA CHECKBOXES PERSONALIZADOS === */
+
+/* Primero, ajustamos el label que contiene el checkbox para un mejor control */
+.add-item-form .form-group label[for*="itemIsStreaming"], 
+.add-item-form .form-group label[for*="itemApplyIVA"] {
+    display: inline-flex; /* Cambiado a inline-flex para que no ocupe todo el ancho si no es necesario */
+    align-items: center;
+    font-weight: normal;
+    font-size: 0.95rem;
+    cursor: pointer;
+    position: relative; /* Para posicionar el checkbox personalizado si es necesario */
+    padding-left: 5px; /* Un pequeño espacio si el checkbox personalizado se superpone */
+    user-select: none; /* Evitar selección de texto al hacer clic rápido */
+}
+
+/* Ocultamos la apariencia nativa del checkbox */
+input[type="checkbox"].inline-checkbox {
+    appearance: none; /* Quita la apariencia por defecto del navegador */
+    -webkit-appearance: none; /* Para Safari/Chrome */
+    -moz-appearance: none; /* Para Firefox */
+    
+    /* Definimos el tamaño de nuestro checkbox personalizado */
+    width: 20px;
+    height: 20px;
+    min-width: 20px; /* Asegurar que no se encoja */
+    
+    /* Estilo del borde y fondo */
+    border: 2px solid var(--border-color); /* Usamos el color de borde definido */
+    border-radius: var(--border-radius-s); /* Esquinas redondeadas, igual que otros inputs pequeños */
+    background-color: var(--container-background); /* Fondo similar a los inputs */
+    
+    /* Posicionamiento y transición */
+    margin-right: 10px; /* Espacio entre el checkbox y el texto del label */
+    cursor: pointer;
+    outline: none;
+    transition: background-color var(--transition-speed) ease, border-color var(--transition-speed) ease;
+    
+    /* Para alinear con el texto, si es necesario (vertical-align ya estaba, pero podemos ajustar) */
+    vertical-align: middle; 
+    position: relative; /* Para el checkmark */
+}
+
+/* Estilo cuando el checkbox está enfocado (accesibilidad) */
+input[type="checkbox"].inline-checkbox:focus-visible {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+/* Estilo cuando el checkbox está marcado (checked) */
+input[type="checkbox"].inline-checkbox:checked {
+    background-color: var(--primary-color); /* Fondo azul cuando está marcado */
+    border-color: var(--primary-color);    /* Borde azul */
+}
+
+/* Creamos el "checkmark" (palomita/tilde) usando un pseudo-elemento ::after */
+input[type="checkbox"].inline-checkbox:checked::after {
+    content: ''; /* Necesario para que se muestre el pseudo-elemento */
+    display: block;
+    position: absolute; /* Posicionarlo dentro del checkbox */
+    left: 6px;  /* Ajuste horizontal del checkmark */
+    top: 2px;   /* Ajuste vertical del checkmark */
+    width: 5px; /* Ancho del checkmark */
+    height: 10px; /* Alto del checkmark */
+    border: solid white; /* Color del checkmark */
+    border-width: 0 2.5px 2.5px 0; /* Grosor y forma del checkmark (forma de L) */
+    transform: rotate(45deg); /* Rotar para que parezca una palomita */
+}
+
+/* Si quieres deshabilitar visualmente el label cuando el input está deshabilitado (opcional) */
+input[type="checkbox"].inline-checkbox:disabled {
+    background-color: #e9ecef; /* Un gris claro */
+    border-color: #ced4da;
+    cursor: not-allowed;
+}
+
+input[type="checkbox"].inline-checkbox:disabled + /* No funciona así porque el texto está fuera del input */
+/* Si el texto estuviera en un <span> hermano: input:disabled + span { color: #aaa; } */
+/* Para el label que lo contiene, si el input está deshabilitado: */
+label:has(input[type="checkbox"].inline-checkbox:disabled) { /* Soporte para :has() es moderno */
+    color: var(--text-muted-color);
+    cursor: not-allowed;
+}
