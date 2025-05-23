@@ -234,30 +234,46 @@ if (logoutButton) {
     });
 }
 
-// --- Observador del Estado de Autenticación ---
 onAuthStateChanged(auth, (user) => {
-    showLoading(false); // Ocultar la pantalla de carga siempre que cambie el estado de auth
+    showLoading(false);
     if (user) {
         // El usuario está autenticado (ha iniciado sesión)
         console.log("Usuario está conectado:", user.uid, user.displayName);
-        if (loginContainer) loginContainer.style.display = 'none';
-        if (mainContent) mainContent.style.display = 'flex'; // O 'block' según tu CSS
+
+        if (loginContainer) { // Verificar si loginContainer fue encontrado
+            loginContainer.style.display = 'none'; // <-- ESTA LÍNEA DEBE OCULTAR EL LOGIN
+            console.log('Intentando ocultar loginContainer. Estilo display:', loginContainer.style.display); // Para depuración
+        } else {
+            console.error("Error: El elemento .login-container no fue encontrado en el DOM.");
+        }
+
+        if (mainContent) {
+            mainContent.style.display = 'flex'; // O 'block', según tu CSS para .main-content
+            console.log('Intentando mostrar mainContent. Estilo display:', mainContent.style.display); // Para depuración
+        } else {
+            console.error("Error: El elemento #mainContent no fue encontrado en el DOM.");
+        }
 
         handleNavigation('createInvoiceSection');
 
     } else {
         // El usuario no está autenticado (ha cerrado sesión o nunca inició)
         console.log("No hay usuario conectado. Intentando ocultar mainContent y mostrar loginContainer.");
-        if (loginContainer) loginContainer.style.display = 'flex';
-        
-        if (mainContent) { // <--- AÑADIDA LLAVE DE APERTURA
+        if (loginContainer) {
+            loginContainer.style.display = 'flex'; // O 'block'
+            console.log('Intentando mostrar loginContainer. Estilo display:', loginContainer.style.display); // Para depuración
+        } else {
+            console.error("Error: El elemento .login-container no fue encontrado en el DOM.");
+        }
+
+        if (mainContent) {
             mainContent.style.display = 'none';
-            console.log('Estilo de display de mainContent después de intentar ocultar:', mainContent.style.display);
-        } else { // <--- Este 'else' ahora está correctamente emparejado con if (mainContent)
+            console.log('Intentando ocultar mainContent. Estilo display:', mainContent.style.display); // Para depuración
+        } else {
             console.error("Error: El elemento #mainContent no fue encontrado en el DOM.");
-        } // <--- AÑADIDA LLAVE DE CIERRE para if (mainContent)
-    } // Cierre del 'else' principal (para if (user))
-}); // Cierre de onAuthStateChanged
+        }
+    }
+});
 
 // === INICIO: NUEVO CÓDIGO - PASO 5 (Nuevos Event Listeners UI Facturación) ===
 // Navegación Principal de la App
