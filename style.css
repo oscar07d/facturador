@@ -348,3 +348,15 @@ input.input-error, select.input-error, textarea.input-error { border-color: var(
     .loading-logo-spinner { width: 60px;}
     .loading-overlay p { font-size: 1rem;}
 }
+/* === ANIMACIÓN PARA EL GRADIENTE DEL APP-NAV === */
+@keyframes moveGradient {
+    0% {
+        background-position: 0% 50%; /* El gradiente comienza a la izquierda */
+    }
+    50% {
+        background-position: 100% 50%; /* El gradiente se mueve completamente a la derecha */
+    }
+    100% {
+        background-position: 0% 50%; /* El gradiente vuelve a la izquierda para un bucle suave */
+    }
+}
