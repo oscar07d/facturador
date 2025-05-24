@@ -360,3 +360,91 @@ input.input-error, select.input-error, textarea.input-error { border-color: var(
         background-position: 0% 50%; /* El gradiente vuelve a la izquierda para un bucle suave */
     }
 }
+/* === ESTILOS PARA LOS ÍTEMS DE LA FACTURA AGREGADOS === */
+#invoiceItemsContainer {
+    margin-bottom: 25px;
+    border: 1px solid var(--border-color); /* Cambiado de dashed a solid para consistencia */
+    padding: 0; /* El padding estará en los ítems individuales si es necesario */
+    border-radius: var(--border-radius-s);
+    min-height: 70px; 
+    display: flex;
+    flex-direction: column; /* Para apilar ítems o el placeholder */
+    /* justify-content: center; Ya no es necesario si los ítems ocupan el ancho */
+    /* align-items: center;   Ya no es necesario */
+}
+
+.invoice-item-placeholder {
+    color: var(--text-muted-color);
+    text-align: center;
+    font-style: italic;
+    padding: 20px; /* Más padding para el placeholder */
+    width: 100%; /* Asegurar que ocupe el espacio si es el único */
+}
+
+.invoice-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 15px;
+    border-bottom: 1px solid var(--border-color);
+    flex-wrap: wrap; /* Para que se adapte en pantallas pequeñas */
+}
+
+.invoice-item:last-child {
+    border-bottom: none; /* Quitar el borde del último ítem */
+}
+
+.invoice-item .item-details {
+    flex-grow: 1; /* Permite que los detalles ocupen el espacio disponible */
+    margin-right: 15px; /* Espacio antes de los botones/subtotal */
+}
+
+.invoice-item .item-description-display {
+    font-weight: 500;
+    color: var(--text-color);
+    margin-bottom: 4px;
+    font-size: 0.95rem;
+}
+
+.invoice-item .item-meta {
+    font-size: 0.85rem;
+    color: var(--text-muted-color);
+}
+
+.invoice-item .item-actions {
+    display: flex;
+    align-items: center;
+    gap: 15px; /* Espacio entre subtotal y botón eliminar */
+    flex-shrink: 0; /* Para que no se encoja esta sección */
+}
+
+.invoice-item .item-subtotal-display {
+    font-weight: 500;
+    color: var(--text-color);
+    font-size: 0.95rem;
+    min-width: 100px; /* Para alinear un poco los subtotales */
+    text-align: right;
+}
+
+.invoice-item .delete-item-btn {
+    padding: 5px 10px; /* Botón de eliminar más pequeño */
+    font-size: 0.8rem;
+    /* Hereda estilos de .btn .btn-danger */
+}
+
+/* Ajustes para móviles en la lista de ítems */
+@media (max-width: 576px) {
+    .invoice-item {
+        flex-direction: column; /* Apilar detalles y acciones */
+        align-items: flex-start; /* Alinear a la izquierda */
+    }
+    .invoice-item .item-actions {
+        width: 100%;
+        justify-content: space-between; /* Espaciar subtotal y botón */
+        margin-top: 8px;
+    }
+    .invoice-item .item-subtotal-display {
+        min-width: auto; /* Quitar min-width en móvil */
+        text-align: left; /* Alinear a la izquierda */
+    }
+}
