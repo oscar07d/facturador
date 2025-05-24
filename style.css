@@ -675,6 +675,9 @@ textarea.input-error {
         grid-template-columns: repeat(2, 1fr); /* Dos columnas para campos de totales y resumen */
         align-items: flex-start;
     }
+    body {
+        background-color: lightgreen !important; /* Un color de fondo muy obvio */
+    }
 }
 
 /* Tablets medianas (max-width: 992px) */
