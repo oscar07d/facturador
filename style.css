@@ -154,11 +154,21 @@ body {
 .user-actions #logoutButton:hover { background-color: #c82333; }
 
 .app-nav {
-    background-color: var(--primary-color);
     padding: 0px 30px;
     width: 100%;
+    max-width: 1200px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.08);
     border-radius: 0 0 var(--border-radius-l) var(--border-radius-l);
+    overflow: hidden; /* Importante para contener el gradiente grande */
+
+    /* Configuración del Gradiente Animado */
+    background: linear-gradient(90deg, 
+                                var(--primary-hover-color), 
+                                var(--primary-color), 
+                                var(--primary-hover-color), 
+                                var(--primary-color)); /* Usamos tu color primario y su versión hover para el degradado */
+    background-size: 300% 100%; /* Hacemos el fondo del gradiente más ancho que el elemento */
+    animation: moveGradient 10s ease-in-out infinite; /* Aplicamos la animación */
 }
 .app-nav ul { list-style: none; padding: 0; margin: 0; display: flex; justify-content: flex-start; gap: 10px; }
 .app-nav ul li a { display: block; padding: 14px 20px; text-decoration: none; color: rgba(255, 255, 255, 0.85); font-weight: 500; border-bottom: 3px solid transparent; transition: color var(--transition-speed) ease, border-bottom-color var(--transition-speed) ease, background-color var(--transition-speed) ease; }
