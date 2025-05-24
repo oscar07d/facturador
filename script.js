@@ -100,6 +100,10 @@ const paymentStatusDetails = {
 };
 // === FIN: NUEVO CÓDIGO - PASO 2 ===
 
+// === ARRAY PARA LOS ÍTEMS DE LA FACTURA ACTUAL ===
+let currentInvoiceItems = [];
+let nextItemId = 0; // Un contador simple para IDs únicos de ítems
+
 
 // --- Función para Mostrar/Ocultar Pantalla de Carga ---
 const showLoading = (show) => {
@@ -116,34 +120,37 @@ const showLoading = (show) => {
 function handleNavigation(sectionToShowId) {
     const sections = [createInvoiceSection, viewInvoicesSection, clientsSection];
     const navLinks = [navCreateInvoice, navViewInvoices, navClients];
-    let targetTitle = "Sistema de Facturación";
+    let targetTitle = "Sistema de Facturación"; // Título por defecto
 
     sections.forEach(section => {
-        if (section) {
+        if (section) { // Verificar que el elemento exista
             section.style.display = section.id === sectionToShowId ? 'block' : 'none';
             section.classList.toggle('active-section', section.id === sectionToShowId);
         }
     });
 
-    navLinks.forEach(link => {
-        if (link) {
-            const targetSectionId = link.id.replace('nav', '').charAt(0).toLowerCase() + link.id.replace('nav', '').slice(1) + 'Section';
-            link.classList.toggle('active-nav', targetSectionId === sectionToShowId);
-        }
-    });
-
+    // Bloque actualizado para manejar títulos y llamadas a funciones específicas de la sección
     if (sectionToShowId === 'createInvoiceSection') {
         targetTitle = "Crear Nueva Factura";
         if (typeof setDefaultInvoiceDate === 'function') setDefaultInvoiceDate();
         if (typeof updateQuantityBasedOnStreaming === 'function') updateQuantityBasedOnStreaming();
+        if (typeof renderItems === 'function') renderItems(); // Llamada para mostrar ítems (o placeholder)
     } else if (sectionToShowId === 'viewInvoicesSection') {
         targetTitle = "Mis Facturas";
+        // Aquí podrías llamar a una función para cargar/renderizar facturas en el futuro
     } else if (sectionToShowId === 'clientsSection') {
         targetTitle = "Clientes";
+        // Aquí podrías llamar a una función para cargar/renderizar clientes en el futuro
     }
     if (appPageTitle) appPageTitle.textContent = targetTitle;
-}
 
+    navLinks.forEach(link => {
+        if (link) { // Verificar que el elemento exista
+            const targetSectionId = link.id.replace('nav', '').charAt(0).toLowerCase() + link.id.replace('nav', '').slice(1) + 'Section';
+            link.classList.toggle('active-nav', targetSectionId === sectionToShowId);
+        }
+    });
+}
 /**
  * Establece la fecha actual en el campo de fecha de la factura.
  */
@@ -191,6 +198,54 @@ function updatePaymentStatusDisplay() {
 }
 // === FIN: NUEVO CÓDIGO - PASO 3 ===
 
+/**
+ * Muestra los ítems de la factura actual en el contenedor correspondiente.
+ */
+function renderItems() {
+    if (!invoiceItemsContainer) return; // Salir si el contenedor no existe
+
+    invoiceItemsContainer.innerHTML = ''; // Limpiar ítems anteriores
+
+    if (currentInvoiceItems.length === 0) {
+        invoiceItemsContainer.innerHTML = '<div class="invoice-item-placeholder">Aún no has agregado ítems.</div>';
+    } else {
+        currentInvoiceItems.forEach(item => {
+            const itemSubtotal = item.quantity * item.price;
+            // Aquí podrías añadir lógica de IVA por ítem si es necesario antes de mostrarlo
+
+            const itemElement = document.createElement('div');
+            itemElement.classList.add('invoice-item');
+            itemElement.setAttribute('data-item-id', item.id);
+            itemElement.innerHTML = `
+                <div class="item-details">
+                    <p class="item-description-display"><strong>${item.description}</strong></p>
+                    <p class="item-meta">Cantidad: ${item.quantity} x Precio: ${item.price.toLocaleString('es-CO', { style: 'currency', currency: 'COP' })}</p>
+                </div>
+                <div class="item-actions">
+                    <p class="item-subtotal-display">${itemSubtotal.toLocaleString('es-CO', { style: 'currency', currency: 'COP' })}</p>
+                    <button type="button" class="btn btn-danger btn-sm delete-item-btn">Eliminar</button>
+                </div>
+            `;
+            // Event listener para el botón de eliminar de este ítem
+            itemElement.querySelector('.delete-item-btn').addEventListener('click', () => {
+                deleteItem(item.id);
+            });
+
+            invoiceItemsContainer.appendChild(itemElement);
+        });
+    }
+    // Aquí llamaremos a la función de recalcular totales en el futuro
+    // recalculateTotals(); 
+}
+
+/**
+ * Elimina un ítem de la lista currentInvoiceItems por su ID y vuelve a renderizar.
+ * @param {number} itemId - El ID del ítem a eliminar.
+ */
+function deleteItem(itemId) {
+    currentInvoiceItems = currentInvoiceItems.filter(item => item.id !== itemId);
+    renderItems(); // Volver a mostrar los ítems actualizados
+}
 
 // --- Lógica de Inicio de Sesión con Google ---
 if (loginButton) {
@@ -309,8 +364,58 @@ if (paymentStatusSelect) {
 // Botones (placeholders)
 if (addItemBtn) {
     addItemBtn.addEventListener('click', () => {
-        console.log("Botón 'Agregar Ítem' presionado.");
-        alert("Funcionalidad 'Agregar Ítem' pendiente de implementación.");
+        // Leer valores de los campos del ítem
+        const description = itemDescription.value.trim();
+        const isStreaming = itemIsStreamingCheckbox.checked;
+        let quantity = parseInt(itemQuantityInput.value);
+        const price = parseFloat(itemPrice.value);
+        const applyIVA = itemApplyIVA.checked;
+
+        // Validación básica
+        if (!description) {
+            alert("Por favor, ingresa una descripción para el ítem.");
+            itemDescription.focus();
+            return;
+        }
+        if (isNaN(quantity) || quantity <= 0) {
+            alert("Por favor, ingresa una cantidad válida.");
+            itemQuantityInput.focus();
+            return;
+        }
+        if (isNaN(price) || price < 0) { // Permitimos precio 0 si es necesario
+            alert("Por favor, ingresa un precio válido.");
+            itemPrice.focus();
+            return;
+        }
+
+        if (isStreaming) { // Si es streaming, la cantidad es 1
+            quantity = 1;
+        }
+
+        // Crear el objeto ítem
+        const newItem = {
+            id: nextItemId++, // Asignar ID único e incrementar
+            description: description,
+            isStreaming: isStreaming,
+            quantity: quantity,
+            price: price,
+            applyIVA: applyIVA
+        };
+
+        // Añadir al array de ítems
+        currentInvoiceItems.push(newItem);
+
+        // Actualizar la lista visual de ítems
+        renderItems();
+
+        // Limpiar los campos del formulario de ítem
+        itemDescription.value = '';
+        itemIsStreamingCheckbox.checked = false;
+        itemQuantityInput.value = 1;
+        itemQuantityInput.disabled = false; // Asegurar que esté habilitado
+        itemPrice.value = '';
+        itemApplyIVA.checked = false;
+        itemDescription.focus(); // Poner foco de nuevo en la descripción
     });
 }
 
