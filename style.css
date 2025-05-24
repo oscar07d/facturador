@@ -1,36 +1,37 @@
+/* === FUENTE E IMPORTACIONES === */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
+/* === VARIABLES CSS GLOBALES === */
 :root {
-    /* Paleta de Colores - Siéntete libre de ajustarlos */
-    --primary-color: #007bff; /* Azul primario vibrante */
-    --primary-hover-color: #0056b3; /* Azul más oscuro para hover */
-    --secondary-color: #6c757d; /* Gris secundario */
-    --background-color: #f8f9fa; /* Fondo general muy claro */
-    --container-background: #ffffff; /* Fondo de los contenedores */
-    --text-color: #212529; /* Color de texto principal (casi negro) */
-    --text-muted-color: #6c757d; /* Color de texto secundario/apagado */
-    --success-color: #28a745; /* Verde para éxito */
-    --danger-color: #dc3545; /* Rojo para peligro/error */
-    --border-color: #dee2e6; /* Color de borde sutil */
+    /* Paleta de Colores */
+    --primary-color: #007bff;
+    --primary-hover-color: #0056b3;
+    --secondary-color: #6c757d;
+    --background-color: #f8f9fa;
+    --container-background: #ffffff;
+    --text-color: #212529;
+    --text-muted-color: #6c757d;
+    --success-color: #28a745;
+    --danger-color: #dc3545;
+    --info-color: #17a2b8;
+    --border-color: #dee2e6;
+    --logo-svg-fill-color: #1d1d1b; /* Color original de tu SVG de logo */
 
     /* Radios de Borde */
-    --border-radius-xl: 40px; /* Extra grande, para contenedores principales */
-    --border-radius-l: 30px;  /* Grande, como solicitaste */
-    --border-radius-m: 15px;  /* Mediano */
-    --border-radius-s: 8px;   /* Pequeño */
+    --border-radius-xl: 40px;
+    --border-radius-l: 30px;
+    --border-radius-m: 15px;
+    --border-radius-s: 8px;
 
     /* Sombras */
     --box-shadow-light: 0 4px 12px rgba(0, 0, 0, 0.08);
     --box-shadow-medium: 0 8px 25px rgba(0, 0, 0, 0.1);
 
     /* Transiciones */
-    --transition-speed: 0.3s;
-
-    /* Color original del logo (si es necesario referenciarlo) */
-    --logo-svg-fill-color: #1d1d1b;
+    --transition-speed: 0.2s; /* Un poco más rápida para interacciones comunes */
 }
 
-/* --- Reset y Estilos Globales --- */
+/* === RESET BÁSICO Y ESTILOS GLOBALES === */
 * {
     margin: 0;
     padding: 0;
@@ -38,7 +39,8 @@
 }
 
 html {
-    font-size: 16px; /* Base para REMs */
+    font-size: 16px;
+    scroll-behavior: smooth;
 }
 
 body {
@@ -46,6 +48,7 @@ body {
     background-color: var(--background-color);
     color: var(--text-color);
     display: flex;
+    flex-direction: column; /* Para alinear #app */
     justify-content: center;
     align-items: center;
     min-height: 100vh;
@@ -56,71 +59,56 @@ body {
 
 #app {
     width: 100%;
-    max-width: 1200px; /* Ancho máximo de la app en general */
+    max-width: 1200px; /* Ancho máximo general de la app */
     display: flex;
     flex-direction: column;
     align-items: center;
 }
 
-/* --- Contenedor de Login y Contenido Principal --- */
-.login-container,
-.main-content {
+/* === ESTILOS PARA LA PANTALLA DE LOGIN === */
+.login-container {
     background-color: var(--container-background);
-    padding: 30px 40px; /* Más padding vertical */
+    padding: 30px 40px;
     border-radius: var(--border-radius-xl);
     box-shadow: var(--box-shadow-medium);
     text-align: center;
     width: 100%;
-    max-width: 480px; /* Ancho del contenedor de login */
-    display: flex;
+    max-width: 480px; /* Contenedor de login más angosto */
+    display: flex; /* Se gestiona por JS, pero este es su estado visible */
     flex-direction: column;
     align-items: center;
-    gap: 25px; /* Espacio entre elementos hijos */
+    gap: 25px;
     transition: all var(--transition-speed) ease;
 }
 
-/* --- Logo --- */
-.logo-container {
-    margin-bottom: 15px; /* Reducido un poco */
+.login-container .logo-container { /* Estilo específico para el logo en login */
+    margin-bottom: 15px;
     width: 100%;
-    max-width: 300px; /* Ajusta según el tamaño deseado para el logo completo */
-    height: auto;
+    max-width: 300px; 
 }
 
-.login-logo-completo { /* Para el logo completo en el login */
-    width: 100%;
-    height: auto;
-    display: block; /* Evita espacio extra debajo si es inline */
+.login-logo-completo .cls-1-login { /* Para el SVG del login */
+    fill: var(--logo-svg-fill-color);
 }
 
-/* Si necesitas forzar el color del SVG (aunque idealmente se maneja dentro del SVG o sin fill) */
-/* .login-logo-completo .cls-1 {
-    fill: var(--logo-svg-fill-color); 
-} */
-
-/* --- Tipografía --- */
-.login-container h1,
-.main-content h1 {
-    font-size: 1.75rem; /* 28px */
+.login-container h1 {
+    font-size: 1.75rem;
     font-weight: 600;
     color: var(--text-color);
-    margin-bottom: 5px; /* Reducido */
+    margin-bottom: 5px;
 }
 
-.login-container p,
-.main-content p {
-    font-size: 1rem; /* 16px */
+.login-container p {
+    font-size: 1rem;
     color: var(--text-muted-color);
-    margin-bottom: 20px; /* Ajustado */
+    margin-bottom: 20px;
 }
 
-/* --- Botones --- */
-.google-btn,
-#logoutButton {
+.google-btn {
     width: 100%;
     max-width: 320px;
     padding: 14px 20px;
-    border-radius: var(--border-radius-m); /* Más redondeado */
+    border-radius: var(--border-radius-m);
     font-size: 1rem;
     font-weight: 500;
     cursor: pointer;
@@ -131,11 +119,8 @@ body {
     gap: 12px;
     border: 1px solid var(--border-color);
     text-decoration: none;
-}
-
-.google-btn {
     background-color: #fff;
-    color: #444; /* Un poco más oscuro para mejor contraste */
+    color: #444;
     box-shadow: var(--box-shadow-light);
 }
 
@@ -151,245 +136,70 @@ body {
     height: 22px;
 }
 
-#logoutButton {
-    background-color: var(--primary-color);
-    color: white;
-    border: none;
-    box-shadow: var(--box-shadow-light);
-}
-
-#logoutButton:hover {
-    background-color: var(--primary-hover-color);
-    box-shadow: 0 6px 15px rgba(0,0,0,0.12);
-    transform: translateY(-2px);
-}
-
-/* --- Pantalla de Carga --- */
-.loading-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(255, 255, 255, 0.95); /* Un poco más opaco */
-    display: none; /* Oculto por defecto */
-    justify-content: center;
-    align-items: center;
-    z-index: 10000; /* Muy alto para estar encima de todo */
-    flex-direction: column;
-    gap: 20px;
-    backdrop-filter: blur(4px); /* Efecto blur si el navegador lo soporta */
-}
-
-.loading-content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 35px;
-    background-color: var(--container-background);
-    border-radius: var(--border-radius-l);
-    box-shadow: var(--box-shadow-medium);
-}
-
-.loading-logo-spinner {
-    width: 70px;
-    height: auto;
-    animation: spin 1.2s linear infinite; /* Un poco más rápido */
-}
-
-.loading-logo-spinner .logo-path-spinner {
-    /* Usaremos el icono del logo pequeño aquí */
-    fill: var(--primary-color); /* Color primario para el logo en carga */
-}
-/* Asegúrate que el path del SVG del icono para spinner tenga esta clase */
-/* Ejemplo: <path class="logo-path-spinner" ... /> */
-
-
-.loading-overlay p {
-    font-size: 1.1rem; /* 17.6px */
-    color: var(--primary-color);
-    font-weight: 500;
-    margin-top: 10px;
-}
-
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-/* --- Contenido Principal (Placeholder) --- */
+/* === ESTILOS PARA EL CONTENIDO PRINCIPAL DE LA APP (POST-LOGIN) === */
+/* El div #mainContent se muestra/oculta con JS. Su clase .main-content es para el padding, etc. */
 .main-content {
-    /* Puede tener estilos diferentes si es necesario */
-    /* Por ahora, hereda de .login-container */
+    width: 100%;
+    display: flex; /* Se gestiona por JS, pero este es su estado visible */
+    flex-direction: column;
+    align-items: center; /* Centra el app-header, app-nav y invoice-app-container */
 }
-
-.main-content h1 {
-    color: var(--primary-color);
-}
-
-/* === Media Queries para Adaptabilidad === */
-
-/* Para tablets y dispositivos más pequeños (hasta 768px) */
-@media (max-width: 768px) {
-    body {
-        padding: 15px; /* Menos padding en el body */
-    }
-
-    .login-container,
-    .main-content {
-        padding: 25px; /* Menos padding interno */
-        border-radius: var(--border-radius-l); /* Un poco menos redondeado si se prefiere */
-        gap: 20px;
-        max-width: 90%; /* Ocupa más ancho de la pantalla */
-    }
-
-    .login-container h1,
-    .main-content h1 {
-        font-size: 1.5rem; /* 24px */
-    }
-
-    .login-container p,
-    .main-content p {
-        font-size: 0.95rem; /* 15.2px */
-        margin-bottom: 15px;
-    }
-
-    .logo-container {
-        max-width: 250px; /* Logo un poco más pequeño */
-    }
-
-    .google-btn,
-    #logoutButton {
-        padding: 12px 18px;
-        font-size: 0.95rem;
-    }
-}
-
-/* Para móviles (hasta 480px) */
-@media (max-width: 480px) {
-    .login-container,
-    .main-content {
-        padding: 20px 18px; /* Aún menos padding para pantallas pequeñas */
-        border-radius: var(--border-radius-m); /* Más adaptado a pequeño */
-        gap: 18px;
-        max-width: 95%; /* Casi todo el ancho */
-    }
-
-    .login-container h1,
-    .main-content h1 {
-        font-size: 1.3rem; /* 20.8px */
-    }
-
-    .login-container p,
-    .main-content p {
-        font-size: 0.9rem; /* 14.4px */
-    }
-
-    .logo-container {
-        max-width: 200px; /* Logo aún más pequeño */
-        margin-bottom: 10px;
-    }
-
-    .google-btn,
-    #logoutButton {
-        padding: 12px 15px;
-        font-size: 0.9rem;
-        gap: 8px;
-    }
-
-    .google-icon {
-        width: 18px;
-        height: 18px;
-    }
-
-    .loading-content {
-        padding: 25px;
-        max-width: 80%;
-    }
-
-    .loading-logo-spinner {
-        width: 60px;
-    }
-
-    .loading-overlay p {
-        font-size: 1rem;
-    }
-}
-
-/* Ajuste menor para pantallas muy pequeñas si es necesario */
-@media (max-width: 360px) {
-    .login-container h1,
-    .main-content h1 {
-        font-size: 1.2rem; /* 19.2px */
-    }
-
-     .login-container p,
-    .main-content p {
-        font-size: 0.85rem; /* 13.6px */
-    }
-}
-
-/* === ESTILOS PARA LA APLICACIÓN DE FACTURACIÓN (Post-Login) === */
 
 /* --- Cabecera de la Aplicación --- */
 .app-header {
     background-color: var(--container-background);
     padding: 15px 30px;
-    border-radius: var(--border-radius-l) var(--border-radius-l) 0 0; /* Redondeo solo arriba para contenedores anidados */
+    border-radius: var(--border-radius-l) var(--border-radius-l) 0 0;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
     display: flex;
     justify-content: space-between;
     align-items: center;
-    width: 100%;
-    max-width: 1200px; /* Coincide con #app max-width si quieres que ocupe todo */
-    margin-top: 20px; /* Espacio desde el borde superior del viewport si #app no tuviera padding */
-    flex-wrap: wrap; /* Para que se adapte en pantallas pequeñas */
+    width: 100%; /* Ocupará el ancho de .main-content (que es 100% de #app) */
+    flex-wrap: wrap;
+    margin-top: 20px;
 }
 
 .logo-app-container {
-    max-width: 250px; /* Ajusta esto según necesites */
+    max-width: 250px;
     height: auto;
 }
 
-.app-logo-completo {
+.app-logo-completo { /* Aplica a ambos logos si usan esta clase */
     width: 100%;
     height: auto;
     display: block;
 }
 
-.app-logo-completo .cls-1-app { /* Asegúrate que esta clase esté en tu SVG del header */
-    fill: var(--logo-svg-fill-color); /* O el color que desees para el logo aquí */
+.app-logo-completo .cls-1-app { /* Para el SVG del header de la app */
+    fill: var(--logo-svg-fill-color);
 }
 
 .app-title-container h1 {
-    font-size: 1.6rem; /* 25.6px */
+    font-size: 1.6rem;
     color: var(--primary-color);
-    margin: 0; /* Resetear margen si lo hereda */
+    margin: 0;
     font-weight: 600;
+    text-align: center; /* Para pantallas pequeñas cuando se apila */
 }
 
 .user-actions #logoutButton {
-    /* Los estilos base de #logoutButton ya están definidos */
-    /* Podemos hacer ajustes específicos si es necesario aquí */
-    margin: 0; /* Resetear margen si lo hereda */
-    background-color: var(--danger-color); /* Rojo para logout */
+    margin: 0;
+    background-color: var(--danger-color);
+    color: white;
     border: none;
 }
 
 .user-actions #logoutButton:hover {
-    background-color: #c82333; /* Rojo más oscuro */
+    background-color: #c82333;
 }
-
 
 /* --- Navegación de la Aplicación --- */
 .app-nav {
     background-color: var(--primary-color);
     padding: 0px 30px;
     width: 100%;
-    max-width: 1200px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-    border-radius: 0 0 var(--border-radius-l) var(--border-radius-l); /* Redondeo solo abajo */
+    border-radius: 0 0 var(--border-radius-l) var(--border-radius-l);
 }
 
 .app-nav ul {
@@ -397,8 +207,8 @@ body {
     padding: 0;
     margin: 0;
     display: flex;
-    justify-content: flex-start; /* o center si prefieres */
-    gap: 10px; /* Espacio entre pestañas */
+    justify-content: flex-start;
+    gap: 10px;
 }
 
 .app-nav ul li a {
@@ -408,7 +218,7 @@ body {
     color: rgba(255, 255, 255, 0.85);
     font-weight: 500;
     border-bottom: 3px solid transparent;
-    transition: color var(--transition-speed) ease, border-bottom-color var(--transition-speed) ease;
+    transition: color var(--transition-speed) ease, border-bottom-color var(--transition-speed) ease, background-color var(--transition-speed) ease;
 }
 
 .app-nav ul li a:hover {
@@ -419,7 +229,7 @@ body {
 .app-nav ul li a.active-nav {
     color: #ffffff;
     font-weight: 600;
-    border-bottom-color: #ffffff; /* O un color de acento amarillo/blanco */
+    border-bottom-color: #ffffff;
     background-color: rgba(0,0,0,0.1);
 }
 
@@ -430,37 +240,36 @@ body {
     border-radius: var(--border-radius-l);
     box-shadow: var(--box-shadow-medium);
     width: 100%;
-    max-width: 1200px;
     margin-top: 10px; /* Espacio desde la navegación */
 }
 
 .invoice-section {
-    /* display: none; Se maneja con JS, pero aquí definimos el estilo base */
+    /* display: none; es manejado por JS */
 }
 .invoice-section.active-section {
-    display: block; /* O 'flex' si la sección es un contenedor flex */
+    display: block;
 }
 
 /* --- Estilos Generales del Formulario de Factura --- */
 .invoice-form {
     display: flex;
     flex-direction: column;
-    gap: 30px; /* Espacio entre fieldsets */
+    gap: 30px;
 }
 
 .form-section {
     border: 1px solid var(--border-color);
     padding: 25px;
     border-radius: var(--border-radius-m);
-    background-color: #fdfdfd; /* Un fondo ligeramente diferente para las secciones */
+    background-color: #fdfdfd;
 }
 
 .form-section legend {
-    font-size: 1.25rem; /* 20px */
+    font-size: 1.25rem;
     font-weight: 600;
     color: var(--primary-color);
     padding: 0 10px;
-    margin-left: 10px; /* Para alinear con el padding del fieldset */
+    margin-left: 10px;
 }
 
 .optional-tag {
@@ -475,28 +284,28 @@ body {
     gap: 20px;
 }
 
-.form-grid.two-columns {
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* Columnas responsivas */
-}
+/* Por defecto, una columna. Media queries lo cambiarán */
+.form-grid.two-columns,
 .form-grid.three-columns {
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-}
-.form-group.full-width {
-    grid-column: 1 / -1; /* Ocupa todo el ancho en la cuadrícula */
+    grid-template-columns: 1fr;
 }
 
+.form-group.full-width {
+    grid-column: 1 / -1;
+}
 
 /* --- Grupos de Formulario y Elementos --- */
 .form-group {
     display: flex;
     flex-direction: column;
-    gap: 8px; /* Espacio entre label e input */
+    gap: 8px;
 }
 
 .form-group label {
     font-weight: 500;
     color: var(--text-color);
     font-size: 0.95rem;
+    text-align: left; /* Asegurar alineación a la izquierda */
 }
 
 .form-group input[type="text"],
@@ -523,39 +332,19 @@ body {
     box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
 }
 
-.form-group input[type="checkbox"].inline-checkbox {
-    width: auto; /* No ocupa todo el ancho */
-    margin-right: 8px;
-    vertical-align: middle; /* Alinear mejor con el texto */
-}
-/* Contenedor para el checkbox y su label para mejor alineación */
-.form-group label[for*="itemIsStreaming"], 
-.form-group label[for*="itemApplyIVA"] {
-    display: flex;
-    align-items: center;
-    font-weight: normal; /* Para que no sea tan fuerte como otros labels */
-}
-
 .invoice-number-display {
     font-size: 1.1rem;
     font-weight: 600;
     color: var(--text-color);
     padding: 10px 0;
+    text-align: left;
 }
 .invoice-number-display span {
     color: var(--primary-color);
 }
 
-/* --- Botones Específicos del Formulario y Acciones del Cliente --- */
-.client-actions {
-    display: flex;
-    gap: 10px;
-    margin-top: 5px;
-    margin-bottom: 15px;
-    flex-wrap: wrap;
-}
-
-.btn { /* Clase base para botones */
+/* --- Botones --- */
+.btn {
     padding: 10px 20px;
     font-size: 0.95rem;
     font-weight: 500;
@@ -564,9 +353,10 @@ body {
     text-decoration: none;
     border: 1px solid transparent;
     transition: all var(--transition-speed) ease;
-    display: inline-flex; /* Para alinear iconos si los tuvieran */
+    display: inline-flex;
     align-items: center;
     justify-content: center;
+    gap: 8px; /* Espacio para iconos */
 }
 .btn:disabled {
     opacity: 0.6;
@@ -575,25 +365,21 @@ body {
 
 .btn-primary { background-color: var(--primary-color); color: white; }
 .btn-primary:hover:not(:disabled) { background-color: var(--primary-hover-color); }
-
 .btn-secondary { background-color: var(--secondary-color); color: white; }
 .btn-secondary:hover:not(:disabled) { background-color: #545b62; }
-
 .btn-danger { background-color: var(--danger-color); color: white; }
 .btn-danger:hover:not(:disabled) { background-color: #c82333; }
-
 .btn-success { background-color: var(--success-color); color: white; }
 .btn-success:hover:not(:disabled) { background-color: #1e7e34; }
-
-.btn-info { background-color: #17a2b8; color: white; }
+.btn-info { background-color: var(--info-color); color: white; }
 .btn-info:hover:not(:disabled) { background-color: #117a8b; }
 
 .btn-outline {
     background-color: transparent;
-    color: var(--text-color); /* Por defecto, luego se puede sobreescribir */
+    color: var(--text-color);
     border-color: var(--border-color);
 }
-.user-actions .btn-outline { /* Para el logout específico */
+.user-actions .btn-outline {
     color: var(--danger-color);
     border-color: var(--danger-color);
 }
@@ -602,330 +388,131 @@ body {
     color: white;
 }
 
-
-/* --- Ítems de la Factura --- */
-#invoiceItemsContainer { /* Contenedor para la lista de ítems agregados */
-    margin-bottom: 25px;
-    border: 1px dashed var(--border-color); /* Un borde discontinuo para distinguirlo */
-    padding: 15px;
-    border-radius: var(--border-radius-s);
-    min-height: 70px; /* Altura mínima para que el placeholder sea visible */
-    display: flex; /* Para centrar el placeholder si es el único hijo */
-    justify-content: center;
-    align-items: center;
-}
-
-.invoice-item-placeholder { /* Mensaje cuando no hay ítems */
-    color: var(--text-muted-color);
-    text-align: center;
-    font-style: italic;
-    padding: 10px;
-}
-
-/* (Aquí irían los estilos para cada ítem individual cuando los agreguemos con JS) */
-/* .invoice-item { ... } */
-
-
-/* --- Formulario para Añadir Nuevo Ítem --- */
-.add-item-form {
-    margin-top: 20px;  /* Espacio arriba, separándolo del contenedor de ítems */
-    padding-top: 20px; /* Espacio interno superior */
-    border-top: 1px solid var(--border-color); /* Línea divisoria sutil */
-    display: block; /* Asegurarnos que sea visible como bloque */
-}
-
-.add-item-form h4 { /* Título "Añadir Nuevo Ítem" */
-    font-size: 1.1rem; /* Tamaño del título */
-    margin-bottom: 15px; /* Espacio debajo del título */
-    font-weight: 500;   /* Peso de la fuente */
-    color: var(--text-color); /* Color del texto principal */
-}
-
-/* Estilos para la cuadrícula dentro del formulario de añadir ítem */
-.item-details-grid { 
-    /* Ya tienes .form-grid.three-columns, esto es específico para alinear */
-    align-items: end; /* Alinear elementos en la base de la cuadrícula (útil para labels y inputs de diferentes alturas) */
-}
-
-/* Ajustes para los checkboxes inline y sus labels dentro del form de ítems */
-.add-item-form .form-group label[for*="itemIsStreaming"], 
-.add-item-form .form-group label[for*="itemApplyIVA"] {
+.client-actions {
     display: flex;
-    align-items: center;
-    font-weight: normal; /* Peso normal para el texto del label del checkbox */
-    font-size: 0.95rem; /* Tamaño de fuente consistente */
-    cursor: pointer; /* Cursor de mano sobre el label */
-}
-
-.add-item-form .form-group input[type="checkbox"].inline-checkbox {
-    width: auto; /* No ocupa todo el ancho */
-    margin-right: 8px; /* Espacio entre el checkbox y el texto */
-    vertical-align: middle; /* Alinear mejor con el texto */
-    transform: scale(1.1); /* Hacer el checkbox un poco más grande si se desea */
-}
-
-/* Botón "Agregar Ítem" */
-#addItemBtn {
-    margin-top: 15px; /* Espacio arriba del botón */
-    /* Hereda estilos de .btn y .btn-primary, podemos añadir más si es necesario */
-}
-
-
-/* --- Resumen de Totales y Estado de Pago --- */
-.totals-summary {
-    margin-top: 20px;
-    margin-bottom: 20px;
-    padding: 20px;
-    background-color: #f0f8ff; /* Un fondo azul claro muy sutil */
-    border-radius: var(--border-radius-s);
-    border: 1px solid var(--primary-color);
-}
-.totals-summary p {
-    margin-bottom: 8px;
-    font-size: 1rem;
-    color: var(--text-color);
-}
-.totals-summary h3 {
-    font-size: 1.3rem;
-    color: var(--primary-color);
-    font-weight: 600;
-    margin-top: 10px;
-}
-.totals-summary span {
-    font-weight: 600;
-}
-
-.status-info-box {
-    margin-top: 15px;
-    padding: 15px;
-    border-radius: var(--border-radius-s);
-    background-color: #e9ecef; /* Fondo gris claro */
-    border: 1px solid var(--secondary-color);
-}
-.status-info-box h4 {
-    margin-bottom: 8px;
-    font-size: 1rem;
-    font-weight: 600;
-}
-.status-info-box p {
-    font-size: 0.9rem;
-    margin-bottom: 5px;
-}
-
-/* --- Acciones del Formulario (botones principales) --- */
-.form-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 15px;
-    margin-top: 20px;
+    gap: 10px;
+    margin-top: 5px;
+    margin-bottom: 15px;
     flex-wrap: wrap;
 }
-.form-actions .btn {
-    padding: 12px 25px;
-    font-size: 1rem;
-}
 
-/* === Media Queries para Adaptabilidad (Interfaz de Facturación) === */
-@media (max-width: 992px) { /* Tablets y escritorios pequeños */
-    .app-header {
-        padding: 15px 20px;
-        flex-direction: column;
-        gap: 10px;
-    }
-    .logo-app-container {
-        max-width: 200px;
-    }
-    .app-title-container h1 {
-        font-size: 1.4rem;
-    }
-    .app-nav ul {
-        justify-content: center; /* Centrar pestañas en pantallas más pequeñas */
-    }
-    .invoice-app-container {
-        padding: 20px;
-    }
-    .form-section {
-        padding: 20px;
-    }
-}
-
-@media (max-width: 768px) { /* Tablets en vertical y móviles grandes */
-    .form-grid.two-columns,
-    .form-grid.three-columns {
-        grid-template-columns: 1fr; /* Apilar columnas */
-    }
-    .app-nav ul li a {
-        padding: 12px 15px;
-        font-size: 0.9rem;
-    }
-    .form-actions {
-        flex-direction: column; /* Apilar botones de acción */
-    }
-    .form-actions .btn {
-        width: 100%; /* Botones de acción ocupan todo el ancho */
-    }
-    .client-actions {
-        flex-direction: column;
-        gap: 8px;
-    }
-    .client-actions .btn {
-        width: 100%;
-    }
-}
-
-@media (max-width: 480px) { /* Móviles pequeños */
-    .app-header {
-        padding: 10px 15px;
-    }
-    .app-title-container h1 {
-        font-size: 1.2rem;
-    }
-    .user-actions #logoutButton {
-        padding: 8px 15px;
-        font-size: 0.85rem;
-    }
-    .app-nav ul {
-        gap: 5px;
-        flex-wrap: wrap; /* Permitir que las pestañas se envuelvan */
-        justify-content: space-around;
-    }
-    .app-nav ul li a {
-        padding: 10px 8px;
-        font-size: 0.8rem;
-    }
-    .invoice-app-container {
-        padding: 15px;
-    }
-    .form-section {
-        padding: 15px;
-    }
-    .form-section legend {
-        font-size: 1.1rem;
-    }
-    .form-group input[type="text"],
-    .form-group input[type="email"],
-    .form-group input[type="tel"],
-    .form-group input[type="date"],
-    .form-group input[type="number"],
-    .form-group select,
-    .form-group textarea {
-        padding: 10px 12px;
-        font-size: 0.95rem;
-    }
-    .btn { /* Reducir padding general de botones */
-        padding: 8px 15px;
-        font-size: 0.9rem;
-    }
-    .totals-summary {
-        padding: 15px;
-    }
-    .totals-summary h3 {
-        font-size: 1.15rem;
-    }
-}
-/* === ESTILOS PARA CHECKBOXES PERSONALIZADOS === */
-
-/* Primero, ajustamos el label que contiene el checkbox para un mejor control */
+/* --- Checkboxes Personalizados --- */
 .add-item-form .form-group label[for*="itemIsStreaming"], 
 .add-item-form .form-group label[for*="itemApplyIVA"] {
-    display: inline-flex; /* Cambiado a inline-flex para que no ocupe todo el ancho si no es necesario */
+    display: inline-flex;
     align-items: center;
     font-weight: normal;
     font-size: 0.95rem;
     cursor: pointer;
-    position: relative; /* Para posicionar el checkbox personalizado si es necesario */
-    padding-left: 5px; /* Un pequeño espacio si el checkbox personalizado se superpone */
-    user-select: none; /* Evitar selección de texto al hacer clic rápido */
+    position: relative;
+    user-select: none;
 }
 
-/* Ocultamos la apariencia nativa del checkbox */
 input[type="checkbox"].inline-checkbox {
-    appearance: none; /* Quita la apariencia por defecto del navegador */
-    -webkit-appearance: none; /* Para Safari/Chrome */
-    -moz-appearance: none; /* Para Firefox */
-    
-    /* Definimos el tamaño de nuestro checkbox personalizado */
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
     width: 20px;
     height: 20px;
-    min-width: 20px; /* Asegurar que no se encoja */
-    
-    /* Estilo del borde y fondo */
-    border: 2px solid var(--border-color); /* Usamos el color de borde definido */
-    border-radius: var(--border-radius-s); /* Esquinas redondeadas, igual que otros inputs pequeños */
-    background-color: var(--container-background); /* Fondo similar a los inputs */
-    
-    /* Posicionamiento y transición */
-    margin-right: 10px; /* Espacio entre el checkbox y el texto del label */
+    min-width: 20px;
+    border: 2px solid var(--border-color);
+    border-radius: var(--border-radius-s);
+    background-color: var(--container-background);
+    margin-right: 10px;
     cursor: pointer;
     outline: none;
     transition: background-color var(--transition-speed) ease, border-color var(--transition-speed) ease;
-    
-    /* Para alinear con el texto, si es necesario (vertical-align ya estaba, pero podemos ajustar) */
     vertical-align: middle; 
-    position: relative; /* Para el checkmark */
+    position: relative;
 }
 
-/* Estilo cuando el checkbox está enfocado (accesibilidad) */
 input[type="checkbox"].inline-checkbox:focus-visible {
     border-color: var(--primary-color);
     box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
 }
 
-/* Estilo cuando el checkbox está marcado (checked) */
 input[type="checkbox"].inline-checkbox:checked {
-    background-color: var(--primary-color); /* Fondo azul cuando está marcado */
-    border-color: var(--primary-color);    /* Borde azul */
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
 }
 
-/* Creamos el "checkmark" (palomita/tilde) usando un pseudo-elemento ::after */
 input[type="checkbox"].inline-checkbox:checked::after {
-    content: ''; /* Necesario para que se muestre el pseudo-elemento */
+    content: '';
     display: block;
-    position: absolute; /* Posicionarlo dentro del checkbox */
-    left: 6px;  /* Ajuste horizontal del checkmark */
-    top: 2px;   /* Ajuste vertical del checkmark */
-    width: 5px; /* Ancho del checkmark */
-    height: 10px; /* Alto del checkmark */
-    border: solid white; /* Color del checkmark */
-    border-width: 0 2.5px 2.5px 0; /* Grosor y forma del checkmark (forma de L) */
-    transform: rotate(45deg); /* Rotar para que parezca una palomita */
+    position: absolute;
+    left: 6px;
+    top: 2px;
+    width: 5px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 2.5px 2.5px 0;
+    transform: rotate(45deg);
 }
 
-/* Si quieres deshabilitar visualmente el label cuando el input está deshabilitado (opcional) */
 input[type="checkbox"].inline-checkbox:disabled {
-    background-color: #e9ecef; /* Un gris claro */
+    background-color: #e9ecef;
     border-color: #ced4da;
     cursor: not-allowed;
 }
-
-input[type="checkbox"].inline-checkbox:disabled + /* No funciona así porque el texto está fuera del input */
-/* Si el texto estuviera en un <span> hermano: input:disabled + span { color: #aaa; } */
-/* Para el label que lo contiene, si el input está deshabilitado: */
-label:has(input[type="checkbox"].inline-checkbox:disabled) { /* Soporte para :has() es moderno */
+label:has(input[type="checkbox"].inline-checkbox:disabled) {
     color: var(--text-muted-color);
     cursor: not-allowed;
 }
-/* === ESTILOS ADICIONALES PARA TOTALES Y ACCIONES === */
 
-.totals-grid {
-    display: grid;
-    grid-template-columns: 1fr; /* Por defecto una columna */
-    gap: 25px;
+/* --- Ítems de la Factura --- */
+#invoiceItemsContainer {
+    margin-bottom: 25px;
+    border: 1px dashed var(--border-color);
+    padding: 15px;
+    border-radius: var(--border-radius-s);
+    min-height: 70px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.invoice-item-placeholder {
+    color: var(--text-muted-color);
+    text-align: center;
+    font-style: italic;
+    padding: 10px;
+}
+.add-item-form {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-color);
+    display: block;
+}
+.add-item-form h4 {
+    font-size: 1.1rem;
+    margin-bottom: 15px;
+    font-weight: 500;
+    color: var(--text-color);
+}
+.item-details-grid { /* Para la cuadrícula de cantidad, precio, etc. */
+    align-items: end;
+}
+#addItemBtn {
+    margin-top: 15px;
 }
 
+/* --- Totales y Estado de Pago --- */
+.totals-grid {
+    display: grid;
+    grid-template-columns: 1fr; /* Una columna por defecto */
+    gap: 25px;
+    margin-top: 15px;
+}
 .totals-fields {
     display: flex;
     flex-direction: column;
-    gap: 15px; /* Espacio entre los campos de descuento y estado */
+    gap: 15px;
 }
-
 .totals-summary-box {
     padding: 20px;
-    background-color: #eef3f7; /* Un color de fondo suave */
+    background-color: #eef3f7;
     border-radius: var(--border-radius-m);
     border: 1px solid #d1e0ec;
 }
-
 .totals-summary-box h4 {
     margin-top: 0;
     margin-bottom: 15px;
@@ -935,7 +522,6 @@ label:has(input[type="checkbox"].inline-checkbox:disabled) { /* Soporte para :ha
     border-bottom: 1px solid var(--border-color);
     padding-bottom: 10px;
 }
-
 .totals-summary-box p {
     margin-bottom: 8px;
     font-size: 1rem;
@@ -945,7 +531,6 @@ label:has(input[type="checkbox"].inline-checkbox:disabled) { /* Soporte para :ha
 .totals-summary-box p span {
     font-weight: 600;
 }
-
 .totals-summary-box .grand-total {
     margin-top: 15px;
     padding-top: 15px;
@@ -956,59 +541,214 @@ label:has(input[type="checkbox"].inline-checkbox:disabled) { /* Soporte para :ha
     display: flex;
     justify-content: space-between;
 }
-
-/* Media query para poner los campos de descuento y el resumen lado a lado en pantallas más grandes */
-@media (min-width: 768px) {
-    .totals-grid {
-        grid-template-columns: repeat(2, 1fr); /* Dos columnas */
-        align-items: flex-start; /* Alinear al inicio */
-    }
+.status-info-box {
+    margin-top: 15px;
+    padding: 15px;
+    border-radius: var(--border-radius-s);
+    background-color: #e9ecef;
+    border: 1px solid var(--secondary-color);
 }
+.status-info-box h4 { margin-bottom: 8px; font-size: 1rem; font-weight: 600; }
+.status-info-box p { font-size: 0.9rem; margin-bottom: 5px; }
 
-
+/* --- Acciones del Formulario y Compartir --- */
 .actions-section legend {
-    color: var(--secondary-color); /* Diferente color para esta leyenda si quieres */
+    color: var(--secondary-color);
 }
-
-.main-actions {
+.form-actions { /* Contenedor general de botones de acción del formulario */
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+}
+.form-actions.main-actions { /* Para Guardar y Generar */
     margin-bottom: 25px;
     padding-bottom: 20px;
     border-bottom: 1px dashed var(--border-color);
 }
-
+.form-actions .btn { /* Tamaño específico para botones de acción principales */
+    padding: 12px 25px;
+    font-size: 1rem;
+}
 .share-actions {
     margin-top: 15px;
+    display: flex;
+    flex-direction: column; /* Apilar título y botones */
+    align-items: flex-start; /* Alinear a la izquierda */
 }
 .share-actions p {
     font-size: 0.95rem;
     color: var(--text-muted-color);
     margin-bottom: 10px;
 }
-
+.share-actions .button-group { /* Para agrupar botones de compartir */
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
 .share-actions .btn-share {
-    margin-right: 10px;
     padding: 8px 15px;
     font-size: 0.9rem;
 }
+.btn-share.whatsapp { background-color: #25D366; color: white; border-color: #25D366;}
+.btn-share.whatsapp:hover:not(:disabled) { background-color: #1DAE54; }
+.btn-share.email { background-color: #EA4335; color: white; border-color: #EA4335; }
+.btn-share.email:hover:not(:disabled) { background-color: #c73123; }
+.btn-share svg { vertical-align: middle; }
 
-.btn-share.whatsapp {
-    background-color: #25D366;
-    color: white;
-    border-color: #25D366;
+
+/* --- Estilos para Mensajes de Validación de Formularios --- */
+.validation-message {
+    font-size: 0.875rem;
+    color: var(--danger-color);
+    margin-top: 6px;
+    padding: 5px 0;
+    display: block;
 }
-.btn-share.whatsapp:hover:not(:disabled) {
-    background-color: #1DAE54;
+input.input-error,
+select.input-error,
+textarea.input-error {
+    border-color: var(--danger-color) !important;
+    box-shadow: 0 0 0 2px rgba(220, 53, 69, 0.25) !important;
 }
 
-.btn-share.email {
-    background-color: #EA4335; /* Color de Gmail/Google */
-    color: white;
-    border-color: #EA4335;
+/* --- Pantalla de Carga --- */
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.95);
+    display: none; /* Oculto por defecto, JS lo controla */
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+    flex-direction: column;
+    gap: 20px;
+    backdrop-filter: blur(4px);
 }
-.btn-share.email:hover:not(:disabled) {
-    background-color: #c73123;
+.loading-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 35px;
+    background-color: var(--container-background);
+    border-radius: var(--border-radius-l);
+    box-shadow: var(--box-shadow-medium);
+}
+.loading-logo-spinner {
+    width: 70px;
+    height: auto;
+    animation: spin 1.2s linear infinite;
+}
+.loading-logo-spinner .logo-path-spinner {
+    fill: var(--primary-color);
+}
+.loading-overlay p {
+    font-size: 1.1rem;
+    color: var(--primary-color);
+    font-weight: 500;
+    margin-top: 10px;
+}
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
 
-.btn-share svg {
-    vertical-align: middle;
+/* === MEDIA QUERIES PARA ADAPTABILIDAD === */
+
+/* Tablets y escritorios pequeños (a partir de 769px se aplican estos) */
+@media (min-width: 769px) {
+    .form-grid.two-columns {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .form-grid.three-columns {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    .item-details-grid { /* Para que cantidad y precio no se queden tan anchos */
+        grid-template-columns: auto 1fr 1fr; /* Checkbox auto, cantidad y precio dividen el resto */
+    }
+    .totals-grid {
+        grid-template-columns: repeat(2, 1fr); /* Dos columnas para campos de totales y resumen */
+        align-items: flex-start;
+    }
+}
+
+/* Tablets medianas (max-width: 992px) */
+@media (max-width: 992px) {
+    .app-header {
+        padding: 15px 20px;
+        flex-direction: column; /* Apila logo, título y botón de logout */
+        gap: 15px;
+    }
+    .logo-app-container { max-width: 220px; }
+    .app-title-container h1 { font-size: 1.5rem; }
+    .app-nav ul { justify-content: center; }
+    .invoice-app-container { padding: 25px; }
+    .form-section { padding: 20px; }
+    .form-section legend { font-size: 1.15rem; }
+}
+
+/* Tablets pequeñas y móviles grandes (max-width: 768px) */
+@media (max-width: 768px) {
+    body { padding: 15px; }
+    .login-container { max-width: 90%; padding: 25px;}
+    .app-header { gap: 10px; }
+    .logo-app-container { max-width: 200px; }
+    .app-title-container h1 { font-size: 1.4rem; }
+    .app-nav ul li a { padding: 12px 15px; font-size: 0.9rem; }
+    .invoice-app-container { padding: 20px; }
+    
+    /* Todas las grids de formulario a una columna */
+    .form-grid.two-columns,
+    .form-grid.three-columns,
+    .item-details-grid {
+        grid-template-columns: 1fr;
+    }
+    .totals-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .form-actions { flex-direction: column; }
+    .form-actions .btn { width: 100%; }
+    .client-actions { flex-direction: column; gap: 8px; }
+    .client-actions .btn { width: 100%; }
+    .share-actions .button-group { flex-direction: column; }
+    .share-actions .btn-share { width: 100%; margin-right: 0; }
+}
+
+/* Móviles pequeños (max-width: 480px) */
+@media (max-width: 480px) {
+    body { padding: 10px; }
+    .login-container { padding: 20px 18px; max-width: 95%; }
+    .app-header { padding: 10px 15px; }
+    .app-title-container h1 { font-size: 1.2rem; }
+    .user-actions #logoutButton { padding: 8px 15px; font-size: 0.85rem; }
+    
+    .app-nav ul { gap: 5px; flex-wrap: wrap; justify-content: space-around; }
+    .app-nav ul li a { padding: 10px 8px; font-size: 0.8rem; }
+    
+    .invoice-app-container { padding: 15px; }
+    .form-section { padding: 15px; }
+    .form-section legend { font-size: 1.1rem; }
+    
+    .form-group input[type="text"],
+    .form-group input[type="email"],
+    .form-group input[type="tel"],
+    .form-group input[type="date"],
+    .form-group input[type="number"],
+    .form-group select,
+    .form-group textarea {
+        padding: 10px 12px;
+        font-size: 0.95rem;
+    }
+    .btn { padding: 10px 15px; font-size: 0.9rem; }
+    .totals-summary-box { padding: 15px; }
+    .totals-summary-box h3 { font-size: 1.15rem; }
+    .loading-content { padding: 25px; max-width: 80%;}
+    .loading-logo-spinner { width: 60px;}
+    .loading-overlay p { font-size: 1rem;}
 }
