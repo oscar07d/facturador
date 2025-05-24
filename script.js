@@ -1,4 +1,29 @@
 // Importaciones de Firebase (usando la versión 11.8.1 como en tu configuración inicial)
+// Importaciones de Firebase (usando la versión 11.8.1 como en tu configuración inicial)
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
+import {
+    getAuth,
+    GoogleAuthProvider,
+    signInWithPopup,
+    onAuthStateChanged,
+    signOut
+} from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
+// import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-analytics.js"; // Opcional, si usarás Analytics
+
+// === INICIO: NUEVO CÓDIGO - Importaciones de Firestore ===
+import { 
+    getFirestore, 
+    collection, 
+    addDoc,
+    serverTimestamp // Para guardar la fecha de creación en el servidor
+} from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
+// === FIN: NUEVO CÓDIGO ===
+
+// Tu configuración de Firebase (la que me proporcionaste)
+const firebaseConfig = {
+    // ... (tu config) ...
+};
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
 import {
     getAuth,
@@ -25,7 +50,16 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app); // Obtener la instancia de Autenticación
 const googleProvider = new GoogleAuthProvider(); // Proveedor de Google para el inicio de sesión
 
-// const analytics = getAnalytics(app); // Descomenta si quieres usar Firebase Analytics
+// Inicializar Firebase
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app); // Obtener la instancia de Autenticación
+const googleProvider = new GoogleAuthProvider(); // Proveedor de Google para el inicio de sesión
+
+// === INICIO: NUEVO CÓDIGO - Instancia de Firestore ===
+const db = getFirestore(app); // Obtener la instancia de Firestore
+// === FIN: NUEVO CÓDIGO ===
+
+const analytics = getAnalytics(app); // Descomenta si quieres usar Firebase Analytics
 
 // --- Selección de Elementos del DOM ---
 const loginButton = document.getElementById('loginButton');
@@ -525,13 +559,102 @@ if (addItemBtn) {
     });
 }
 
-if (invoiceForm) { // Asegurarse que el formulario exista antes de añadir listener a su botón de submit
-    invoiceForm.addEventListener('submit', (e) => { // Cambiado a 'submit' en el form
-        e.preventDefault(); 
-        console.log("Botón 'Guardar Venta' (submit del form) presionado.");
-        alert("Funcionalidad 'Guardar Venta' pendiente de implementación.");
+if (invoiceForm) {
+    invoiceForm.addEventListener('submit', async (e) => { // Convertida a función async
+        e.preventDefault();
+        console.log("Intentando guardar factura...");
+
+        // 1. Verificar si hay un usuario autenticado
+        const user = auth.currentUser;
+        if (!user) {
+            alert("Debes iniciar sesión para guardar una factura.");
+            return;
+        }
+
+        // 2. Recopilar datos del formulario
+        // (Asegúrate de tener variables para todos estos elementos del DOM seleccionadas)
+        const emitterData = {
+            name: document.getElementById('emitterName') ? document.getElementById('emitterName').value.trim() : '',
+            id: document.getElementById('emitterId') ? document.getElementById('emitterId').value.trim() : '',
+            address: document.getElementById('emitterAddress') ? document.getElementById('emitterAddress').value.trim() : '',
+            phone: document.getElementById('emitterPhone') ? document.getElementById('emitterPhone').value.trim() : '',
+            email: document.getElementById('emitterEmail') ? document.getElementById('emitterEmail').value.trim() : ''
+        };
+
+        const clientData = {
+            // Por ahora, tomamos los datos ingresados. Más adelante integraremos la selección/creación.
+            name: document.getElementById('clientName') ? document.getElementById('clientName').value.trim() : '',
+            phone: document.getElementById('clientPhone') ? document.getElementById('clientPhone').value.trim() : '',
+            email: document.getElementById('clientEmail') ? document.getElementById('clientEmail').value.trim() : ''
+        };
+        // Validación básica de datos del cliente (puedes expandirla)
+        if (!clientData.name || !clientData.phone || !clientData.email) {
+            alert("Por favor, completa todos los campos obligatorios del cliente (Nombres, Celular, Correo).");
+            return;
+        }
+
+        if (currentInvoiceItems.length === 0) {
+            alert("Debes agregar al menos un ítem a la factura.");
+            return;
+        }
+        
+        // Forzar recálculo final antes de guardar (por si acaso)
+        if (typeof recalculateTotals === 'function') recalculateTotals();
+
+        const invoiceToSave = {
+            userId: user.uid, // Guardar el ID del usuario que creó la factura
+            invoiceNumberDisplay: `FCT-${invoiceNumberText.textContent}`, // El número como se muestra
+            invoiceDate: invoiceDateInput.value,
+            serviceStartDate: document.getElementById('serviceStartDate') ? document.getElementById('serviceStartDate').value : null,
+            emitter: emitterData,
+            client: clientData,
+            items: currentInvoiceItems, // El array de ítems que ya manejamos
+            discount: {
+                type: discountTypeSelect.value,
+                value: parseFloat(discountValueInput.value) || 0
+            },
+            totals: { // Guardar los totales calculados
+                subtotal: parseFloat(subtotalAmountSpan.textContent.replace(/[^\d,-]/g, '').replace(',', '.')) || 0,
+                discountApplied: parseFloat(discountAmountAppliedSpan.textContent.replace(/[^\d,-]/g, '').replace(',', '.')) || 0,
+                taxableBase: parseFloat(taxableBaseAmountSpan.textContent.replace(/[^\d,-]/g, '').replace(',', '.')) || 0,
+                iva: parseFloat(ivaAmountSpan.textContent.replace(/[^\d,-]/g, '').replace(',', '.')) || 0,
+                grandTotal: parseFloat(totalAmountSpan.textContent.replace(/[^\d,-]/g, '').replace(',', '.')) || 0
+            },
+            paymentStatus: paymentStatusSelect.value,
+            createdAt: serverTimestamp() // Fecha y hora de creación en el servidor
+        };
+
+        // 3. Guardar en Firestore
+        if (saveInvoiceBtn) saveInvoiceBtn.disabled = true; // Deshabilitar botón para evitar doble envío
+        if (generateInvoiceFileBtn) generateInvoiceFileBtn.disabled = true;
+        showLoading(true);
+
+        try {
+            const docRef = await addDoc(collection(db, "facturas"), invoiceToSave);
+            console.log("Factura guardada con ID: ", docRef.id);
+            alert("¡Factura guardada exitosamente!");
+
+            // 4. Limpiar formulario y reiniciar para una nueva factura
+            invoiceForm.reset(); // Resetea la mayoría de los campos del formulario
+            currentInvoiceItems = []; // Vaciar array de ítems
+            nextItemId = 0; // Resetear contador de ID de ítems
+            if (typeof renderItems === 'function') renderItems(); // Limpiar la lista visual de ítems y recalcular totales (que serán 0)
+            if (typeof setDefaultInvoiceDate === 'function') setDefaultInvoiceDate(); // Poner fecha actual
+            if (typeof updateQuantityBasedOnStreaming === 'function') updateQuantityBasedOnStreaming(); // Resetear checkbox de streaming
+            if (typeof handleDiscountChange === 'function') handleDiscountChange(); // Resetear campo de descuento
+            // Aquí podríamos implementar la lógica para el siguiente número de factura. Por ahora, se queda como estaba.
+            
+        } catch (error) {
+            console.error("Error al guardar la factura: ", error);
+            alert("Error al guardar la factura. Por favor, inténtalo de nuevo.\nDetalle: " + error.message);
+        } finally {
+            if (saveInvoiceBtn) saveInvoiceBtn.disabled = false; // Rehabilitar botón
+            if (generateInvoiceFileBtn) generateInvoiceFileBtn.disabled = false;
+            showLoading(false);
+        }
     });
 }
+
 // Si saveInvoiceBtn es un botón type="button" y no type="submit" del form, entonces:
 // if (saveInvoiceBtn) {
 //     saveInvoiceBtn.addEventListener('click', (e) => {
