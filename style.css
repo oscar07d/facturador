@@ -15,7 +15,7 @@
     --danger-color: #dc3545;
     --info-color: #17a2b8;
     --border-color: #dee2e6;
-    --logo-svg-fill-color: #1d1d1b; /* Color original de tu SVG de logo */
+    --logo-svg-fill-color: #1d1d1b;
 
     /* Radios de Borde */
     --border-radius-xl: 40px;
@@ -28,7 +28,7 @@
     --box-shadow-medium: 0 8px 25px rgba(0, 0, 0, 0.1);
 
     /* Transiciones */
-    --transition-speed: 0.2s; /* Un poco más rápida para interacciones comunes */
+    --transition-speed: 0.2s;
 }
 
 /* === RESET BÁSICO Y ESTILOS GLOBALES === */
@@ -48,7 +48,7 @@ body {
     background-color: var(--background-color);
     color: var(--text-color);
     display: flex;
-    flex-direction: column; /* Para alinear #app */
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
@@ -59,7 +59,7 @@ body {
 
 #app {
     width: 100%;
-    max-width: 1200px; /* Ancho máximo general de la app */
+    max-width: 1200px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -73,37 +73,32 @@ body {
     box-shadow: var(--box-shadow-medium);
     text-align: center;
     width: 100%;
-    max-width: 480px; /* Contenedor de login más angosto */
-    display: flex; /* Se gestiona por JS, pero este es su estado visible */
+    max-width: 480px;
+    display: flex;
     flex-direction: column;
     align-items: center;
     gap: 25px;
     transition: all var(--transition-speed) ease;
 }
-
-.login-container .logo-container { /* Estilo específico para el logo en login */
+.login-container .logo-container {
     margin-bottom: 15px;
     width: 100%;
     max-width: 300px; 
 }
-
-.login-logo-completo .cls-1-login { /* Para el SVG del login */
+.login-logo-completo .cls-1-login {
     fill: var(--logo-svg-fill-color);
 }
-
 .login-container h1 {
     font-size: 1.75rem;
     font-weight: 600;
     color: var(--text-color);
     margin-bottom: 5px;
 }
-
 .login-container p {
     font-size: 1rem;
     color: var(--text-muted-color);
     margin-bottom: 20px;
 }
-
 .google-btn {
     width: 100%;
     max-width: 320px;
@@ -123,29 +118,22 @@ body {
     color: #444;
     box-shadow: var(--box-shadow-light);
 }
-
 .google-btn:hover {
     background-color: #fdfdfd;
     border-color: #c6c6c6;
     box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
     transform: translateY(-2px);
 }
-
-.google-icon {
-    width: 22px;
-    height: 22px;
-}
+.google-icon { width: 22px; height: 22px; }
 
 /* === ESTILOS PARA EL CONTENIDO PRINCIPAL DE LA APP (POST-LOGIN) === */
-/* El div #mainContent se muestra/oculta con JS. Su clase .main-content es para el padding, etc. */
 .main-content {
     width: 100%;
-    display: flex; /* Se gestiona por JS, pero este es su estado visible */
+    display: flex;
     flex-direction: column;
-    align-items: center; /* Centra el app-header, app-nav y invoice-app-container */
+    align-items: center;
 }
 
-/* --- Cabecera de la Aplicación --- */
 .app-header {
     background-color: var(--container-background);
     padding: 15px 30px;
@@ -154,46 +142,17 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    width: 100%; /* Ocupará el ancho de .main-content (que es 100% de #app) */
+    width: 100%;
     flex-wrap: wrap;
     margin-top: 20px;
 }
+.logo-app-container { max-width: 250px; height: auto; }
+.app-logo-completo { width: 100%; height: auto; display: block; }
+.app-logo-completo .cls-1-app { fill: var(--logo-svg-fill-color); }
+.app-title-container h1 { font-size: 1.6rem; color: var(--primary-color); margin: 0; font-weight: 600; text-align: center; }
+.user-actions #logoutButton { margin: 0; background-color: var(--danger-color); color: white; border: none; }
+.user-actions #logoutButton:hover { background-color: #c82333; }
 
-.logo-app-container {
-    max-width: 250px;
-    height: auto;
-}
-
-.app-logo-completo { /* Aplica a ambos logos si usan esta clase */
-    width: 100%;
-    height: auto;
-    display: block;
-}
-
-.app-logo-completo .cls-1-app { /* Para el SVG del header de la app */
-    fill: var(--logo-svg-fill-color);
-}
-
-.app-title-container h1 {
-    font-size: 1.6rem;
-    color: var(--primary-color);
-    margin: 0;
-    font-weight: 600;
-    text-align: center; /* Para pantallas pequeñas cuando se apila */
-}
-
-.user-actions #logoutButton {
-    margin: 0;
-    background-color: var(--danger-color);
-    color: white;
-    border: none;
-}
-
-.user-actions #logoutButton:hover {
-    background-color: #c82333;
-}
-
-/* --- Navegación de la Aplicación --- */
 .app-nav {
     background-color: var(--primary-color);
     padding: 0px 30px;
@@ -201,168 +160,39 @@ body {
     box-shadow: 0 2px 8px rgba(0,0,0,0.08);
     border-radius: 0 0 var(--border-radius-l) var(--border-radius-l);
 }
+.app-nav ul { list-style: none; padding: 0; margin: 0; display: flex; justify-content: flex-start; gap: 10px; }
+.app-nav ul li a { display: block; padding: 14px 20px; text-decoration: none; color: rgba(255, 255, 255, 0.85); font-weight: 500; border-bottom: 3px solid transparent; transition: color var(--transition-speed) ease, border-bottom-color var(--transition-speed) ease, background-color var(--transition-speed) ease; }
+.app-nav ul li a:hover { color: #ffffff; background-color: rgba(255,255,255,0.1); }
+.app-nav ul li a.active-nav { color: #ffffff; font-weight: 600; border-bottom-color: #ffffff; background-color: rgba(0,0,0,0.1); }
 
-.app-nav ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    justify-content: flex-start;
-    gap: 10px;
-}
-
-.app-nav ul li a {
-    display: block;
-    padding: 14px 20px;
-    text-decoration: none;
-    color: rgba(255, 255, 255, 0.85);
-    font-weight: 500;
-    border-bottom: 3px solid transparent;
-    transition: color var(--transition-speed) ease, border-bottom-color var(--transition-speed) ease, background-color var(--transition-speed) ease;
-}
-
-.app-nav ul li a:hover {
-    color: #ffffff;
-    background-color: rgba(255,255,255,0.1);
-}
-
-.app-nav ul li a.active-nav {
-    color: #ffffff;
-    font-weight: 600;
-    border-bottom-color: #ffffff;
-    background-color: rgba(0,0,0,0.1);
-}
-
-/* --- Contenedor Principal de la App de Facturación --- */
 .invoice-app-container {
     background-color: var(--container-background);
     padding: 30px;
     border-radius: var(--border-radius-l);
     box-shadow: var(--box-shadow-medium);
     width: 100%;
-    margin-top: 10px; /* Espacio desde la navegación */
+    margin-top: 10px;
 }
+.invoice-section.active-section { display: block; }
 
-.invoice-section {
-    /* display: none; es manejado por JS */
-}
-.invoice-section.active-section {
-    display: block;
-}
+.invoice-form { display: flex; flex-direction: column; gap: 30px; }
+.form-section { border: 1px solid var(--border-color); padding: 25px; border-radius: var(--border-radius-m); background-color: #fdfdfd; }
+.form-section legend { font-size: 1.25rem; font-weight: 600; color: var(--primary-color); padding: 0 10px; margin-left: 10px; }
+.optional-tag { font-size: 0.8rem; font-weight: 400; color: var(--text-muted-color); }
 
-/* --- Estilos Generales del Formulario de Factura --- */
-.invoice-form {
-    display: flex;
-    flex-direction: column;
-    gap: 30px;
-}
+.form-grid { display: grid; gap: 20px; }
+.form-grid.two-columns, .form-grid.three-columns { grid-template-columns: 1fr; }
+.form-group.full-width { grid-column: 1 / -1; }
 
-.form-section {
-    border: 1px solid var(--border-color);
-    padding: 25px;
-    border-radius: var(--border-radius-m);
-    background-color: #fdfdfd;
-}
+.form-group { display: flex; flex-direction: column; gap: 8px; }
+.form-group label { font-weight: 500; color: var(--text-color); font-size: 0.95rem; text-align: left; }
+.form-group input[type="text"], .form-group input[type="email"], .form-group input[type="tel"], .form-group input[type="date"], .form-group input[type="number"], .form-group select, .form-group textarea { width: 100%; padding: 12px 15px; border: 1px solid var(--border-color); border-radius: var(--border-radius-s); font-size: 1rem; font-family: 'Poppins', sans-serif; transition: border-color var(--transition-speed) ease, box-shadow var(--transition-speed) ease; }
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25); }
+.invoice-number-display { font-size: 1.1rem; font-weight: 600; color: var(--text-color); padding: 10px 0; text-align: left; }
+.invoice-number-display span { color: var(--primary-color); }
 
-.form-section legend {
-    font-size: 1.25rem;
-    font-weight: 600;
-    color: var(--primary-color);
-    padding: 0 10px;
-    margin-left: 10px;
-}
-
-.optional-tag {
-    font-size: 0.8rem;
-    font-weight: 400;
-    color: var(--text-muted-color);
-}
-
-/* --- Cuadrículas del Formulario --- */
-.form-grid {
-    display: grid;
-    gap: 20px;
-}
-
-/* Por defecto, una columna. Media queries lo cambiarán */
-.form-grid.two-columns,
-.form-grid.three-columns {
-    grid-template-columns: 1fr;
-}
-
-.form-group.full-width {
-    grid-column: 1 / -1;
-}
-
-/* --- Grupos de Formulario y Elementos --- */
-.form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.form-group label {
-    font-weight: 500;
-    color: var(--text-color);
-    font-size: 0.95rem;
-    text-align: left; /* Asegurar alineación a la izquierda */
-}
-
-.form-group input[type="text"],
-.form-group input[type="email"],
-.form-group input[type="tel"],
-.form-group input[type="date"],
-.form-group input[type="number"],
-.form-group select,
-.form-group textarea {
-    width: 100%;
-    padding: 12px 15px;
-    border: 1px solid var(--border-color);
-    border-radius: var(--border-radius-s);
-    font-size: 1rem;
-    font-family: 'Poppins', sans-serif;
-    transition: border-color var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
-}
-
-.form-group input:focus,
-.form-group select:focus,
-.form-group textarea:focus {
-    outline: none;
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
-}
-
-.invoice-number-display {
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: var(--text-color);
-    padding: 10px 0;
-    text-align: left;
-}
-.invoice-number-display span {
-    color: var(--primary-color);
-}
-
-/* --- Botones --- */
-.btn {
-    padding: 10px 20px;
-    font-size: 0.95rem;
-    font-weight: 500;
-    border-radius: var(--border-radius-m);
-    cursor: pointer;
-    text-decoration: none;
-    border: 1px solid transparent;
-    transition: all var(--transition-speed) ease;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px; /* Espacio para iconos */
-}
-.btn:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-}
-
+.btn { padding: 10px 20px; font-size: 0.95rem; font-weight: 500; border-radius: var(--border-radius-m); cursor: pointer; text-decoration: none; border: 1px solid transparent; transition: all var(--transition-speed) ease; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+.btn:disabled { opacity: 0.6; cursor: not-allowed; }
 .btn-primary { background-color: var(--primary-color); color: white; }
 .btn-primary:hover:not(:disabled) { background-color: var(--primary-hover-color); }
 .btn-secondary { background-color: var(--secondary-color); color: white; }
@@ -373,294 +203,70 @@ body {
 .btn-success:hover:not(:disabled) { background-color: #1e7e34; }
 .btn-info { background-color: var(--info-color); color: white; }
 .btn-info:hover:not(:disabled) { background-color: #117a8b; }
+.btn-outline { background-color: transparent; color: var(--text-color); border-color: var(--border-color); }
+.user-actions .btn-outline { color: var(--danger-color); border-color: var(--danger-color); }
+.user-actions .btn-outline:hover:not(:disabled) { background-color: var(--danger-color); color: white; }
+.client-actions { display: flex; gap: 10px; margin-top: 5px; margin-bottom: 15px; flex-wrap: wrap; }
 
-.btn-outline {
-    background-color: transparent;
-    color: var(--text-color);
-    border-color: var(--border-color);
-}
-.user-actions .btn-outline {
-    color: var(--danger-color);
-    border-color: var(--danger-color);
-}
-.user-actions .btn-outline:hover:not(:disabled) {
-    background-color: var(--danger-color);
-    color: white;
-}
-
-.client-actions {
-    display: flex;
-    gap: 10px;
-    margin-top: 5px;
-    margin-bottom: 15px;
-    flex-wrap: wrap;
-}
-
-/* --- Checkboxes Personalizados --- */
 .add-item-form .form-group label[for*="itemIsStreaming"], 
-.add-item-form .form-group label[for*="itemApplyIVA"] {
-    display: inline-flex;
-    align-items: center;
-    font-weight: normal;
-    font-size: 0.95rem;
-    cursor: pointer;
-    position: relative;
-    user-select: none;
-}
+.add-item-form .form-group label[for*="itemApplyIVA"] { display: inline-flex; align-items: center; font-weight: normal; font-size: 0.95rem; cursor: pointer; position: relative; user-select: none; }
+input[type="checkbox"].inline-checkbox { appearance: none; -webkit-appearance: none; -moz-appearance: none; width: 20px; height: 20px; min-width: 20px; border: 2px solid var(--border-color); border-radius: var(--border-radius-s); background-color: var(--container-background); margin-right: 10px; cursor: pointer; outline: none; transition: background-color var(--transition-speed) ease, border-color var(--transition-speed) ease; vertical-align: middle; position: relative; }
+input[type="checkbox"].inline-checkbox:focus-visible { border-color: var(--primary-color); box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25); }
+input[type="checkbox"].inline-checkbox:checked { background-color: var(--primary-color); border-color: var(--primary-color); }
+input[type="checkbox"].inline-checkbox:checked::after { content: ''; display: block; position: absolute; left: 6px; top: 2px; width: 5px; height: 10px; border: solid white; border-width: 0 2.5px 2.5px 0; transform: rotate(45deg); }
+input[type="checkbox"].inline-checkbox:disabled { background-color: #e9ecef; border-color: #ced4da; cursor: not-allowed; }
+label:has(input[type="checkbox"].inline-checkbox:disabled) { color: var(--text-muted-color); cursor: not-allowed; }
 
-input[type="checkbox"].inline-checkbox {
-    appearance: none;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    width: 20px;
-    height: 20px;
-    min-width: 20px;
-    border: 2px solid var(--border-color);
-    border-radius: var(--border-radius-s);
-    background-color: var(--container-background);
-    margin-right: 10px;
-    cursor: pointer;
-    outline: none;
-    transition: background-color var(--transition-speed) ease, border-color var(--transition-speed) ease;
-    vertical-align: middle; 
-    position: relative;
-}
+#invoiceItemsContainer { margin-bottom: 25px; border: 1px dashed var(--border-color); padding: 15px; border-radius: var(--border-radius-s); min-height: 70px; display: flex; justify-content: center; align-items: center; }
+.invoice-item-placeholder { color: var(--text-muted-color); text-align: center; font-style: italic; padding: 10px; }
+.add-item-form { margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border-color); display: block; }
+.add-item-form h4 { font-size: 1.1rem; margin-bottom: 15px; font-weight: 500; color: var(--text-color); }
+.item-details-grid { align-items: end; }
+#addItemBtn { margin-top: 15px; }
 
-input[type="checkbox"].inline-checkbox:focus-visible {
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
-}
-
-input[type="checkbox"].inline-checkbox:checked {
-    background-color: var(--primary-color);
-    border-color: var(--primary-color);
-}
-
-input[type="checkbox"].inline-checkbox:checked::after {
-    content: '';
-    display: block;
-    position: absolute;
-    left: 6px;
-    top: 2px;
-    width: 5px;
-    height: 10px;
-    border: solid white;
-    border-width: 0 2.5px 2.5px 0;
-    transform: rotate(45deg);
-}
-
-input[type="checkbox"].inline-checkbox:disabled {
-    background-color: #e9ecef;
-    border-color: #ced4da;
-    cursor: not-allowed;
-}
-label:has(input[type="checkbox"].inline-checkbox:disabled) {
-    color: var(--text-muted-color);
-    cursor: not-allowed;
-}
-
-/* --- Ítems de la Factura --- */
-#invoiceItemsContainer {
-    margin-bottom: 25px;
-    border: 1px dashed var(--border-color);
-    padding: 15px;
-    border-radius: var(--border-radius-s);
-    min-height: 70px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-.invoice-item-placeholder {
-    color: var(--text-muted-color);
-    text-align: center;
-    font-style: italic;
-    padding: 10px;
-}
-.add-item-form {
-    margin-top: 20px;
-    padding-top: 20px;
-    border-top: 1px solid var(--border-color);
-    display: block;
-}
-.add-item-form h4 {
-    font-size: 1.1rem;
-    margin-bottom: 15px;
-    font-weight: 500;
-    color: var(--text-color);
-}
-.item-details-grid { /* Para la cuadrícula de cantidad, precio, etc. */
-    align-items: end;
-}
-#addItemBtn {
-    margin-top: 15px;
-}
-
-/* --- Totales y Estado de Pago --- */
-.totals-grid {
-    display: grid;
-    grid-template-columns: 1fr; /* Una columna por defecto */
-    gap: 25px;
-    margin-top: 15px;
-}
-.totals-fields {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-.totals-summary-box {
-    padding: 20px;
-    background-color: #eef3f7;
-    border-radius: var(--border-radius-m);
-    border: 1px solid #d1e0ec;
-}
-.totals-summary-box h4 {
-    margin-top: 0;
-    margin-bottom: 15px;
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: var(--text-color);
-    border-bottom: 1px solid var(--border-color);
-    padding-bottom: 10px;
-}
-.totals-summary-box p {
-    margin-bottom: 8px;
-    font-size: 1rem;
-    display: flex;
-    justify-content: space-between;
-}
-.totals-summary-box p span {
-    font-weight: 600;
-}
-.totals-summary-box .grand-total {
-    margin-top: 15px;
-    padding-top: 15px;
-    border-top: 1px solid var(--border-color);
-    font-size: 1.4rem;
-    color: var(--primary-color);
-    font-weight: 700;
-    display: flex;
-    justify-content: space-between;
-}
-.status-info-box {
-    margin-top: 15px;
-    padding: 15px;
-    border-radius: var(--border-radius-s);
-    background-color: #e9ecef;
-    border: 1px solid var(--secondary-color);
-}
+/* === ESTILOS MEJORADOS PARA TOTALES Y ESTADO DE PAGO === */
+.totals-grid { display: grid; grid-template-columns: 1fr; gap: 25px; margin-top: 15px; }
+.totals-fields { display: flex; flex-direction: column; gap: 15px; }
+.totals-summary-box { padding: 20px; background-color: #f7f9fc; border-radius: var(--border-radius-m); border: 1px solid #e3eaf3; }
+.totals-summary-box h4 { margin-top: 0; margin-bottom: 18px; font-size: 1.15rem; font-weight: 600; color: var(--text-color); border-bottom: 1px solid var(--border-color); padding-bottom: 12px; }
+.totals-summary-box p,
+.totals-summary-box .grand-total { margin-bottom: 10px; font-size: 1rem; display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; }
+.summary-label { color: var(--text-muted-color); margin-right: 10px; flex-shrink: 0; }
+.summary-value { font-weight: 600; color: var(--text-color); text-align: right; }
+.summary-value span[id$="Amount"] { font-weight: inherit; }
+.totals-summary-box .grand-total { margin-top: 18px; padding-top: 18px; border-top: 2px solid var(--primary-color); font-size: 1.45rem; color: var(--primary-color); font-weight: 700; }
+.totals-summary-box .grand-total .summary-label { color: var(--primary-color); font-weight: 700; }
+.totals-summary-box .grand-total .summary-value { color: var(--primary-color); font-weight: 700; }
+.status-info-box { margin-top: 15px; padding: 15px; border-radius: var(--border-radius-s); background-color: #e9ecef; border: 1px solid var(--secondary-color); }
 .status-info-box h4 { margin-bottom: 8px; font-size: 1rem; font-weight: 600; }
 .status-info-box p { font-size: 0.9rem; margin-bottom: 5px; }
 
-/* --- Acciones del Formulario y Compartir --- */
-.actions-section legend {
-    color: var(--secondary-color);
-}
-.form-actions { /* Contenedor general de botones de acción del formulario */
-    display: flex;
-    justify-content: flex-end;
-    gap: 15px;
-    margin-top: 20px;
-    flex-wrap: wrap;
-}
-.form-actions.main-actions { /* Para Guardar y Generar */
-    margin-bottom: 25px;
-    padding-bottom: 20px;
-    border-bottom: 1px dashed var(--border-color);
-}
-.form-actions .btn { /* Tamaño específico para botones de acción principales */
-    padding: 12px 25px;
-    font-size: 1rem;
-}
-.share-actions {
-    margin-top: 15px;
-    display: flex;
-    flex-direction: column; /* Apilar título y botones */
-    align-items: flex-start; /* Alinear a la izquierda */
-}
-.share-actions p {
-    font-size: 0.95rem;
-    color: var(--text-muted-color);
-    margin-bottom: 10px;
-}
-.share-actions .button-group { /* Para agrupar botones de compartir */
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-}
-.share-actions .btn-share {
-    padding: 8px 15px;
-    font-size: 0.9rem;
-}
+.actions-section legend { color: var(--secondary-color); }
+.form-actions { display: flex; justify-content: flex-end; gap: 15px; margin-top: 20px; flex-wrap: wrap; }
+.form-actions.main-actions { margin-bottom: 25px; padding-bottom: 20px; border-bottom: 1px dashed var(--border-color); }
+.form-actions .btn { padding: 12px 25px; font-size: 1rem; }
+.share-actions { margin-top: 15px; display: flex; flex-direction: column; align-items: flex-start; }
+.share-actions p { font-size: 0.95rem; color: var(--text-muted-color); margin-bottom: 10px; }
+.share-actions .button-group { display: flex; gap: 10px; flex-wrap: wrap; }
+.share-actions .btn-share { padding: 8px 15px; font-size: 0.9rem; }
 .btn-share.whatsapp { background-color: #25D366; color: white; border-color: #25D366;}
 .btn-share.whatsapp:hover:not(:disabled) { background-color: #1DAE54; }
 .btn-share.email { background-color: #EA4335; color: white; border-color: #EA4335; }
 .btn-share.email:hover:not(:disabled) { background-color: #c73123; }
 .btn-share svg { vertical-align: middle; }
 
+.validation-message { font-size: 0.875rem; color: var(--danger-color); margin-top: 6px; padding: 5px 0; display: block; }
+input.input-error, select.input-error, textarea.input-error { border-color: var(--danger-color) !important; box-shadow: 0 0 0 2px rgba(220, 53, 69, 0.25) !important; }
 
-/* --- Estilos para Mensajes de Validación de Formularios --- */
-.validation-message {
-    font-size: 0.875rem;
-    color: var(--danger-color);
-    margin-top: 6px;
-    padding: 5px 0;
-    display: block;
-}
-input.input-error,
-select.input-error,
-textarea.input-error {
-    border-color: var(--danger-color) !important;
-    box-shadow: 0 0 0 2px rgba(220, 53, 69, 0.25) !important;
-}
-
-/* --- Pantalla de Carga --- */
-.loading-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(255, 255, 255, 0.95);
-    display: none; /* Oculto por defecto, JS lo controla */
-    justify-content: center;
-    align-items: center;
-    z-index: 10000;
-    flex-direction: column;
-    gap: 20px;
-    backdrop-filter: blur(4px);
-}
-.loading-content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 35px;
-    background-color: var(--container-background);
-    border-radius: var(--border-radius-l);
-    box-shadow: var(--box-shadow-medium);
-}
-.loading-logo-spinner {
-    width: 70px;
-    height: auto;
-    animation: spin 1.2s linear infinite;
-}
-.loading-logo-spinner .logo-path-spinner {
-    fill: var(--primary-color);
-}
-.loading-overlay p {
-    font-size: 1.1rem;
-    color: var(--primary-color);
-    font-weight: 500;
-    margin-top: 10px;
-}
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
+.loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(255, 255, 255, 0.95); display: none; justify-content: center; align-items: center; z-index: 10000; flex-direction: column; gap: 20px; backdrop-filter: blur(4px); }
+.loading-content { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 35px; background-color: var(--container-background); border-radius: var(--border-radius-l); box-shadow: var(--box-shadow-medium); }
+.loading-logo-spinner { width: 70px; height: auto; animation: spin 1.2s linear infinite; }
+.loading-logo-spinner .logo-path-spinner { fill: var(--primary-color); }
+.loading-overlay p { font-size: 1.1rem; color: var(--primary-color); font-weight: 500; margin-top: 10px; }
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
 /* === MEDIA QUERIES PARA ADAPTABILIDAD === */
-
-/* Tablets y escritorios pequeños (a partir de 769px se aplican estos) */
+/* Estilos para pantallas más grandes (PC) - A partir de 769px */
 @media (min-width: 769px) {
     .form-grid.two-columns {
         grid-template-columns: repeat(2, 1fr);
@@ -668,22 +274,21 @@ textarea.input-error {
     .form-grid.three-columns {
         grid-template-columns: repeat(3, 1fr);
     }
-    .item-details-grid { /* Para que cantidad y precio no se queden tan anchos */
+    .item-details-grid { 
         grid-template-columns: auto 1fr 1fr; /* Checkbox auto, cantidad y precio dividen el resto */
     }
     .totals-grid {
-        grid-template-columns: repeat(2, 1fr); /* Dos columnas para campos de totales y resumen */
+        grid-template-columns: 0.8fr 1.2fr; /* Dar un poco más de espacio al resumen que a los campos de descuento/estado */
         align-items: flex-start;
+    }
+    .share-actions .button-group {
+        flex-direction: row; /* Botones de compartir en fila */
     }
 }
 
-/* Tablets medianas (max-width: 992px) */
+/* Tablets medianas (hasta 992px) */
 @media (max-width: 992px) {
-    .app-header {
-        padding: 15px 20px;
-        flex-direction: column; /* Apila logo, título y botón de logout */
-        gap: 15px;
-    }
+    .app-header { padding: 15px 20px; flex-direction: column; gap: 15px; }
     .logo-app-container { max-width: 220px; }
     .app-title-container h1 { font-size: 1.5rem; }
     .app-nav ul { justify-content: center; }
@@ -692,7 +297,7 @@ textarea.input-error {
     .form-section legend { font-size: 1.15rem; }
 }
 
-/* Tablets pequeñas y móviles grandes (max-width: 768px) */
+/* Tablets pequeñas y móviles grandes (hasta 768px) */
 @media (max-width: 768px) {
     body { padding: 15px; }
     .login-container { max-width: 90%; padding: 25px;}
@@ -702,16 +307,9 @@ textarea.input-error {
     .app-nav ul li a { padding: 12px 15px; font-size: 0.9rem; }
     .invoice-app-container { padding: 20px; }
     
-    /* Todas las grids de formulario a una columna */
-    .form-grid.two-columns,
-    .form-grid.three-columns,
-    .item-details-grid {
-        grid-template-columns: 1fr;
+    .form-grid.two-columns, .form-grid.three-columns, .item-details-grid, .totals-grid {
+        grid-template-columns: 1fr; /* Todo a una columna */
     }
-    .totals-grid {
-        grid-template-columns: 1fr;
-    }
-
     .form-actions { flex-direction: column; }
     .form-actions .btn { width: 100%; }
     .client-actions { flex-direction: column; gap: 8px; }
@@ -720,31 +318,19 @@ textarea.input-error {
     .share-actions .btn-share { width: 100%; margin-right: 0; }
 }
 
-/* Móviles pequeños (max-width: 480px) */
+/* Móviles pequeños (hasta 480px) */
 @media (max-width: 480px) {
     body { padding: 10px; }
     .login-container { padding: 20px 18px; max-width: 95%; }
     .app-header { padding: 10px 15px; }
     .app-title-container h1 { font-size: 1.2rem; }
     .user-actions #logoutButton { padding: 8px 15px; font-size: 0.85rem; }
-    
     .app-nav ul { gap: 5px; flex-wrap: wrap; justify-content: space-around; }
     .app-nav ul li a { padding: 10px 8px; font-size: 0.8rem; }
-    
     .invoice-app-container { padding: 15px; }
     .form-section { padding: 15px; }
     .form-section legend { font-size: 1.1rem; }
-    
-    .form-group input[type="text"],
-    .form-group input[type="email"],
-    .form-group input[type="tel"],
-    .form-group input[type="date"],
-    .form-group input[type="number"],
-    .form-group select,
-    .form-group textarea {
-        padding: 10px 12px;
-        font-size: 0.95rem;
-    }
+    .form-group input[type="text"], .form-group input[type="email"], .form-group input[type="tel"], .form-group input[type="date"], .form-group input[type="number"], .form-group select, .form-group textarea { padding: 10px 12px; font-size: 0.95rem; }
     .btn { padding: 10px 15px; font-size: 0.9rem; }
     .totals-summary-box { padding: 15px; }
     .totals-summary-box h3 { font-size: 1.15rem; }
