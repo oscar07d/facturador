@@ -14,7 +14,11 @@ import {
     getFirestore, 
     collection, 
     addDoc,
-    serverTimestamp 
+    serverTimestamp,
+    doc,            // Para referenciar un documento específico
+    getDoc,         // Para leer un documento
+    setDoc,         // Para crear o sobrescribir un documento (usado en la transacción)
+    runTransaction  // Para operaciones atómicas
 } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
 
 // Tu configuración de Firebase
@@ -33,7 +37,7 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const googleProvider = new GoogleAuthProvider();
 const db = getFirestore(app); // Instancia de Firestore
-// const analytics = getAnalytics(app); // Descomenta si quieres usar Firebase Analytics
+// const analytics = getAnalytics(app);
 
 // --- Selección de Elementos del DOM (Login y UI Principal) ---
 const loginButton = document.getElementById('loginButton');
@@ -43,36 +47,29 @@ const loginContainer = document.querySelector('.login-container');
 const mainContent = document.getElementById('mainContent');
 
 // --- Selección de Elementos del DOM (Interfaz de Facturación) ---
-// Navegación
 const navCreateInvoice = document.getElementById('navCreateInvoice');
 const navViewInvoices = document.getElementById('navViewInvoices');
 const navClients = document.getElementById('navClients');
-
-// Secciones
 const createInvoiceSection = document.getElementById('createInvoiceSection');
 const viewInvoicesSection = document.getElementById('viewInvoicesSection');
 const clientsSection = document.getElementById('clientsSection');
 const appPageTitle = document.getElementById('appPageTitle');
-
-// Formulario de Factura
 const invoiceForm = document.getElementById('invoiceForm');
 const invoiceDateInput = document.getElementById('invoiceDate');
 const invoiceNumberText = document.getElementById('invoiceNumberText');
 const itemIsStreamingCheckbox = document.getElementById('itemIsStreaming');
 const itemQuantityInput = document.getElementById('itemQuantity');
-const itemDescription = document.getElementById('itemDescription'); // Asegúrate que este ID existe
-const itemPrice = document.getElementById('itemPrice');             // Asegúrate que este ID existe
-const itemApplyIVA = document.getElementById('itemApplyIVA');       // Asegúrate que este ID existe
+const itemDescription = document.getElementById('itemDescription');
+const itemPrice = document.getElementById('itemPrice');
+const itemApplyIVA = document.getElementById('itemApplyIVA');
 const paymentStatusSelect = document.getElementById('paymentStatus');
 const paymentStatusInfoDiv = document.getElementById('paymentStatusInfo');
 const paymentStatusDescriptionP = document.getElementById('paymentStatusDescription');
 const paymentStatusActionP = document.getElementById('paymentStatusAction');
 const addItemBtn = document.getElementById('addItemBtn');
-const saveInvoiceBtn = document.getElementById('saveInvoiceBtn'); // Este es el botón submit del form
+const saveInvoiceBtn = document.getElementById('saveInvoiceBtn');
 const generateInvoiceFileBtn = document.getElementById('generateInvoiceFileBtn');
 const invoiceItemsContainer = document.getElementById('invoiceItemsContainer');
-
-// Campos de Descuento y Totales
 const discountTypeSelect = document.getElementById('discountType');
 const discountValueInput = document.getElementById('discountValue');
 const subtotalAmountSpan = document.getElementById('subtotalAmount');
@@ -82,15 +79,15 @@ const ivaAmountSpan = document.getElementById('ivaAmount');
 const totalAmountSpan = document.getElementById('totalAmount');
 
 // --- Variables Globales para la Lógica de Facturación ---
-const paymentStatusDetails = {
-    pending: { description: "La factura ha sido emitida y enviada al cliente, pero aún no se ha recibido el pago...", action: "Monitoreo regular, envío de recordatorios..." },
-    paid: { description: "El cliente ha realizado el pago completo...", action: "Agradecimiento al cliente, actualización de registros." },
-    overdue: { description: "La fecha de vencimiento ha pasado y el pago no se ha recibido.", action: "Inicio del proceso de cobranza..." },
-    in_process: { description: "El cliente ha informado que el pago está en trámite...", action: "Seguimiento para confirmar recepción." },
-    partial_payment: { description: "El cliente ha realizado un abono parcial.", action: "Contactar para acordar pago restante." },
-    disputed: { description: "El cliente ha manifestado una inconformidad.", action: "Investigación interna y comunicación." },
-    cancelled: { description: "La factura ha sido anulada.", action: "Informar al cliente y actualizar registros." },
-    uncollectible: { description: "Se considera que la deuda no será recuperada.", action: "Proceder según políticas para dar de baja." }
+const paymentStatusDetails = { /* ... (tu objeto paymentStatusDetails completo aquí, como lo definimos antes) ... */ 
+    pending: { description: "La factura ha sido emitida y enviada al cliente, pero aún no se ha recibido el pago. El plazo de vencimiento todavía no ha llegado.", action: "Monitoreo regular, envío de recordatorios amigables antes de la fecha de vencimiento." },
+    paid: { description: "El cliente ha realizado el pago completo de la factura y este ha sido confirmado.", action: "Agradecimiento al cliente, actualización de registros." },
+    overdue: { description: "La fecha de vencimiento de la factura ha pasado y el pago no se ha recibido.", action: "Inicio del proceso de cobranza (recordatorios más insistentes, llamadas, aplicación de posibles intereses de mora según políticas). Se puede subclasificar por antigüedad de la mora (ej. Vencido 1-30 días, Vencido 31-60 días, etc.)." },
+    in_process: { description: "El cliente ha informado que ha realizado el pago, o el pago está siendo procesado por el banco o la pasarela de pagos, pero aún no se refleja como confirmado.", action: "Seguimiento para confirmar la recepción efectiva del pago." },
+    partial_payment: { description: "El cliente ha realizado un abono, pero no ha cubierto el total de la factura.", action: "Contactar al cliente para aclarar la situación y acordar el pago del saldo restante. Registrar el monto pagado y el pendiente." },
+    disputed: { description: "El cliente ha manifestado una inconformidad con la factura o el servicio y, por lo tanto, ha retenido el pago total o parcial.", action: "Investigación interna de la disputa, comunicación con el cliente para resolver el problema." },
+    cancelled: { description: "La factura ha sido anulada, ya sea por un error, por la cancelación del servicio/producto, o por un acuerdo con el cliente.", action: "Asegurarse de que el cliente esté informado y que los registros contables reflejen la anulación." },
+    uncollectible: { description: "Después de múltiples intentos de cobro, se considera que la deuda no será recuperada.", action: "Se procede según las políticas de la empresa para dar de baja la cuenta por cobrar, lo cual puede tener implicaciones contables y fiscales." }
 };
 let currentInvoiceItems = [];
 let nextItemId = 0;
@@ -199,15 +196,47 @@ function handleDiscountChange() {
     if (typeof recalculateTotals === 'function') recalculateTotals();
 }
 
-function handleNavigation(sectionToShowId) {
+function formatInvoiceNumber(number) {
+    if (number < 1000) {
+        return String(number).padStart(3, '0');
+    }
+    return String(number);
+}
+
+async function getNextInvoiceNumber(userId) {
+    if (!userId) throw new Error("ID de usuario no proporcionado para obtener el número de factura.");
+    const counterRef = doc(db, "user_counters", userId);
+    try {
+        const newInvoiceNumber = await runTransaction(db, async (transaction) => {
+            const counterDoc = await transaction.get(counterRef);
+            let lastNumber = 0;
+            if (counterDoc.exists() && counterDoc.data().lastInvoiceNumber !== undefined) {
+                lastNumber = counterDoc.data().lastInvoiceNumber;
+            }
+            const nextNumber = lastNumber + 1;
+            transaction.set(counterRef, { lastInvoiceNumber: nextNumber }, { merge: true });
+            return nextNumber;
+        });
+        return newInvoiceNumber;
+    } catch (error) {
+        console.error("Error al obtener el siguiente número de factura:", error);
+        throw error;
+    }
+}
+
+async function handleNavigation(sectionToShowId) {
     const sections = [createInvoiceSection, viewInvoicesSection, clientsSection];
     const navLinks = [navCreateInvoice, navViewInvoices, navClients];
     let targetTitle = "Sistema de Facturación";
 
     sections.forEach(section => {
-        if (section) {
-            section.style.display = section.id === sectionToShowId ? 'block' : 'none';
-            section.classList.toggle('active-section', section.id === sectionToShowId);
+        if (section) section.style.display = section.id === sectionToShowId ? 'block' : 'none';
+        // section.classList.toggle('active-section', section.id === sectionToShowId); // Ya no es necesaria si solo una se muestra
+    });
+    navLinks.forEach(link => {
+        if (link) {
+            const targetSectionId = link.id.replace('nav', '').charAt(0).toLowerCase() + link.id.replace('nav', '').slice(1) + 'Section';
+            link.classList.toggle('active-nav', targetSectionId === sectionToShowId);
         }
     });
 
@@ -217,25 +246,31 @@ function handleNavigation(sectionToShowId) {
         if (typeof updateQuantityBasedOnStreaming === 'function') updateQuantityBasedOnStreaming();
         if (typeof handleDiscountChange === 'function') handleDiscountChange();
         if (typeof renderItems === 'function') renderItems();
+
+        const user = auth.currentUser;
+        if (user && invoiceNumberText) {
+            try {
+                invoiceNumberText.textContent = "..."; // Placeholder
+                const nextNum = await getNextInvoiceNumber(user.uid);
+                invoiceNumberText.textContent = formatInvoiceNumber(nextNum);
+            } catch (error) {
+                invoiceNumberText.textContent = "Error";
+            }
+        } else if (invoiceNumberText) {
+            invoiceNumberText.textContent = "N/A";
+        }
     } else if (sectionToShowId === 'viewInvoicesSection') {
         targetTitle = "Mis Facturas";
         if (viewInvoicesSection && viewInvoicesSection.innerHTML.trim() === '') {
-            viewInvoicesSection.innerHTML = `<h2>Mis Facturas</h2><p>Listado de facturas aparecerá aquí. Funcionalidad en desarrollo.</p><div id="invoiceListContainer"></div>`;
+            viewInvoicesSection.innerHTML = `<h2>Mis Facturas</h2><p>Funcionalidad en desarrollo.</p><div id="invoiceListContainer"></div>`;
         }
     } else if (sectionToShowId === 'clientsSection') {
         targetTitle = "Clientes";
         if (clientsSection && clientsSection.innerHTML.trim() === '') {
-            clientsSection.innerHTML = `<h2>Clientes</h2><p>Listado de clientes aparecerá aquí. Funcionalidad en desarrollo.</p><div id="clientListContainer"></div>`;
+            clientsSection.innerHTML = `<h2>Clientes</h2><p>Funcionalidad en desarrollo.</p><div id="clientListContainer"></div>`;
         }
     }
     if (appPageTitle) appPageTitle.textContent = targetTitle;
-
-    navLinks.forEach(link => {
-        if (link) {
-            const targetSectionId = link.id.replace('nav', '').charAt(0).toLowerCase() + link.id.replace('nav', '').slice(1) + 'Section';
-            link.classList.toggle('active-nav', targetSectionId === sectionToShowId);
-        }
-    });
 }
 
 // --- Lógica de Autenticación y Estado ---
@@ -336,11 +371,15 @@ if (invoiceForm) {
             return;
         }
         
-        if (typeof recalculateTotals === 'function') recalculateTotals(); // Asegurar totales actualizados
+        if (typeof recalculateTotals === 'function') recalculateTotals();
+
+        const displayedInvoiceNumberStr = invoiceNumberText.textContent;
+        const numericInvoiceNumber = parseInt(displayedInvoiceNumberStr);
 
         const invoiceToSave = {
             userId: user.uid,
-            invoiceNumberDisplay: `FCT-${invoiceNumberText.textContent}`,
+            invoiceNumberFormatted: `FCT-${displayedInvoiceNumberStr}`,
+            invoiceNumberNumeric: numericInvoiceNumber,
             invoiceDate: invoiceDateInput.value,
             serviceStartDate: document.getElementById('serviceStartDate') ? document.getElementById('serviceStartDate').value : null,
             emitter: {
@@ -380,6 +419,11 @@ if (invoiceForm) {
             if (typeof setDefaultInvoiceDate === 'function') setDefaultInvoiceDate();
             if (typeof updateQuantityBasedOnStreaming === 'function') updateQuantityBasedOnStreaming();
             if (typeof handleDiscountChange === 'function') handleDiscountChange();
+            // Volver a cargar el siguiente número de factura para el formulario reseteado
+            if (user && typeof getNextInvoiceNumber === 'function' && invoiceNumberText) {
+                const nextNum = await getNextInvoiceNumber(user.uid);
+                invoiceNumberText.textContent = formatInvoiceNumber(nextNum);
+            }
             
         } catch (error) {
             console.error("Error al guardar la factura: ", error);
