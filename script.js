@@ -62,6 +62,16 @@ const saveInvoiceBtn = document.getElementById('saveInvoiceBtn');
 const generateInvoiceFileBtn = document.getElementById('generateInvoiceFileBtn');
 // === FIN: NUEVO CÓDIGO - PASO 1 ===
 
+// === INICIO: NUEVO CÓDIGO - Selectores para Totales y Descuento ===
+const discountTypeSelect = document.getElementById('discountType');
+const discountValueInput = document.getElementById('discountValue');
+
+const subtotalAmountSpan = document.getElementById('subtotalAmount');
+const discountAmountAppliedSpan = document.getElementById('discountAmountApplied');
+const taxableBaseAmountSpan = document.getElementById('taxableBaseAmount'); // Base Imponible
+const ivaAmountSpan = document.getElementById('ivaAmount');
+const totalAmountSpan = document.getElementById('totalAmount');
+// === FIN: NUEVO CÓDIGO ===
 
 // === INICIO: NUEVO CÓDIGO - PASO 2 (Constante Estados de Pago) ===
 const paymentStatusDetails = {
@@ -134,13 +144,23 @@ function handleNavigation(sectionToShowId) {
         targetTitle = "Crear Nueva Factura";
         if (typeof setDefaultInvoiceDate === 'function') setDefaultInvoiceDate();
         if (typeof updateQuantityBasedOnStreaming === 'function') updateQuantityBasedOnStreaming();
+        if (typeof handleDiscountChange === 'function') handleDiscountChange();
         if (typeof renderItems === 'function') renderItems(); // Llamada para mostrar ítems (o placeholder)
     } else if (sectionToShowId === 'viewInvoicesSection') {
         targetTitle = "Mis Facturas";
-        // Aquí podrías llamar a una función para cargar/renderizar facturas en el futuro
+        // Aquí, en el futuro, llamaríamos a una función como loadAndDisplayInvoices();
+        // Por ahora, nos aseguramos que la sección correcta esté visible.
+        // El HTML de la sección ya tiene un placeholder: <p>Próximamente: Aquí podrás buscar y ver tus facturas creadas.</p>
+        if (viewInvoicesSection && viewInvoicesSection.innerHTML.trim() === '') { // Solo si está vacía para no reescribir si ya tiene algo más complejo
+            viewInvoicesSection.innerHTML = `<h2>Mis Facturas</h2><p>Listado de facturas aparecerá aquí. Funcionalidad en desarrollo.</p><div id="invoiceListContainer"></div>`;
+        }
     } else if (sectionToShowId === 'clientsSection') {
         targetTitle = "Clientes";
-        // Aquí podrías llamar a una función para cargar/renderizar clientes en el futuro
+        // Aquí, en el futuro, llamaríamos a una función como loadAndDisplayClients();
+        // El HTML de la sección ya tiene un placeholder: <p>Próximamente: Aquí podrás buscar y gestionar tus clientes.</p>
+        if (clientsSection && clientsSection.innerHTML.trim() === '') { // Solo si está vacía
+            clientsSection.innerHTML = `<h2>Clientes</h2><p>Listado de clientes aparecerá aquí. Funcionalidad en desarrollo.</p><div id="clientListContainer"></div>`;
+        }
     }
     if (appPageTitle) appPageTitle.textContent = targetTitle;
 
@@ -234,8 +254,9 @@ function renderItems() {
             invoiceItemsContainer.appendChild(itemElement);
         });
     }
-    // Aquí llamaremos a la función de recalcular totales en el futuro
-    // recalculateTotals(); 
+    // === INICIO: MODIFICACIÓN - Llamar a recalcular totales ===
+    if (typeof recalculateTotals === 'function') recalculateTotals();
+    // === FIN: MODIFICACIÓN ===
 }
 
 /**
@@ -246,6 +267,55 @@ function deleteItem(itemId) {
     currentInvoiceItems = currentInvoiceItems.filter(item => item.id !== itemId);
     renderItems(); // Volver a mostrar los ítems actualizados
 }
+// (Después de la función deleteItem(itemId) ...)
+
+// === INICIO: NUEVO CÓDIGO - PASO B (Función para Recalcular Totales) ===
+/**
+ * Calcula y actualiza todos los totales de la factura en el DOM.
+ */
+function recalculateTotals() {
+    let subtotal = 0;
+    let totalIVA = 0;
+
+    currentInvoiceItems.forEach(item => {
+        const itemTotal = item.quantity * item.price;
+        subtotal += itemTotal;
+        if (item.applyIVA) {
+            totalIVA += itemTotal * 0.19; // 19% IVA sobre el total del ítem
+        }
+    });
+
+    let discountAmount = 0;
+    const selectedDiscountType = discountTypeSelect ? discountTypeSelect.value : 'none';
+    const discountValue = discountValueInput ? parseFloat(discountValueInput.value) : 0;
+
+    if (selectedDiscountType === 'percentage' && !isNaN(discountValue) && discountValue > 0) {
+        discountAmount = subtotal * (discountValue / 100);
+    } else if (selectedDiscountType === 'fixed' && !isNaN(discountValue) && discountValue > 0) {
+        discountAmount = discountValue;
+    }
+    
+    // Asegurarse que el descuento no sea mayor que el subtotal
+    if (discountAmount > subtotal) {
+        discountAmount = subtotal;
+    }
+
+    const taxableBaseAmount = subtotal - discountAmount;
+    // El totalIVA ya se calculó sobre los precios de los ítems antes del descuento general de factura.
+    // Si el IVA se calculara sobre la base imponible DESPUÉS del descuento general, la lógica sería:
+    // totalIVA = taxableBaseAmount * 0.19; (Solo si todos los ítems llevan IVA o se define una política global)
+    // Pero según tu solicitud, el IVA es por ítem, así que el cálculo anterior de totalIVA es correcto.
+
+    const grandTotal = taxableBaseAmount + totalIVA;
+
+    // Actualizar el DOM
+    if (subtotalAmountSpan) subtotalAmountSpan.textContent = subtotal.toLocaleString('es-CO', { style: 'currency', currency: 'COP' });
+    if (discountAmountAppliedSpan) discountAmountAppliedSpan.textContent = discountAmount.toLocaleString('es-CO', { style: 'currency', currency: 'COP' });
+    if (taxableBaseAmountSpan) taxableBaseAmountSpan.textContent = taxableBaseAmount.toLocaleString('es-CO', { style: 'currency', currency: 'COP' });
+    if (ivaAmountSpan) ivaAmountSpan.textContent = totalIVA.toLocaleString('es-CO', { style: 'currency', currency: 'COP' });
+    if (totalAmountSpan) totalAmountSpan.textContent = grandTotal.toLocaleString('es-CO', { style: 'currency', currency: 'COP' });
+}
+// === FIN: NUEVO CÓDIGO - PASO B ===
 
 // --- Lógica de Inicio de Sesión con Google ---
 if (loginButton) {
@@ -360,6 +430,42 @@ if (paymentStatusSelect) {
     paymentStatusSelect.addEventListener('change', updatePaymentStatusDisplay);
     // updatePaymentStatusDisplay(); // Opcional: Llamar al inicio para el primer estado
 }
+
+// (Al final de script.js, dentro de la sección de Event Listeners para la UI de facturación)
+
+// === INICIO: NUEVO CÓDIGO - PASO D (Lógica y Listeners para Descuento) ===
+/**
+ * Gestiona la habilitación del campo de valor de descuento y recalcula totales.
+ */
+function handleDiscountChange() {
+    if (discountTypeSelect && discountValueInput) {
+        if (discountTypeSelect.value === 'none') {
+            discountValueInput.value = ''; // Limpiar valor
+            discountValueInput.disabled = true;
+        } else {
+            discountValueInput.disabled = false;
+        }
+    }
+    if (typeof recalculateTotals === 'function') recalculateTotals();
+}
+
+if (discountTypeSelect) {
+    discountTypeSelect.addEventListener('change', handleDiscountChange);
+}
+
+if (discountValueInput) {
+    discountValueInput.addEventListener('input', () => { // 'input' para que actualice mientras escribes
+        if (typeof recalculateTotals === 'function') recalculateTotals();
+    });
+}
+
+// Llamar a handleDiscountChange una vez al inicio para establecer el estado correcto del campo de valor de descuento
+// Esto es importante si la página se recarga y el select de descuento no está en "none".
+if (typeof handleDiscountChange === 'function' && createInvoiceSection.style.display !== 'none') {
+    // Solo llamar si la sección de crear factura está visible para evitar errores si los elementos no existen aún
+    // O mejor aún, llamar dentro de handleNavigation cuando se muestra createInvoiceSection
+}
+// === FIN: NUEVO CÓDIGO - PASO D ===
 
 // Botones (placeholders)
 if (addItemBtn) {
