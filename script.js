@@ -18,10 +18,6 @@ import {
     serverTimestamp // Para guardar la fecha de creación en el servidor
 } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
 // === FIN: NUEVO CÓDIGO ===
-
-// Tu configuración de Firebase (la que me proporcionaste)
-const firebaseConfig = {
-    // ... (tu config) ...
 };
 
 // import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-analytics.js"; // Opcional, si usarás Analytics
