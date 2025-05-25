@@ -1,27 +1,14 @@
-// Importaciones de Firebase (usando la versión 11.8.1 como en tu configuración inicial)
+// Importaciones de Firebase
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
 import {
-    getAuth,
-    GoogleAuthProvider,
-    signInWithPopup,
-    onAuthStateChanged,
-    signOut
+    getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut
 } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
-// import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-analytics.js"; // Opcional
-
-// Importaciones de Firestore
 import { 
-    getFirestore, 
-    collection, 
-    addDoc,
-    serverTimestamp,
-    doc,            // Para referenciar un documento específico
-    getDoc,         // Para leer un documento
-    setDoc,         // Para crear o sobrescribir un documento (usado en la transacción)
-    runTransaction  // Para operaciones atómicas
+    getFirestore, collection, addDoc, serverTimestamp,
+    doc, getDoc, setDoc, runTransaction 
 } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
 
-// Tu configuración de Firebase
+// Configuración de Firebase
 const firebaseConfig = {
     apiKey: "AIzaSyABKvAAUxoyzvcjCXaSbwZzT0RCI32-vRQ",
     authDomain: "facturadorweb-5125f.firebaseapp.com",
@@ -37,7 +24,6 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const googleProvider = new GoogleAuthProvider();
 const db = getFirestore(app);
-// const analytics = getAnalytics(app);
 
 // --- Selección de Elementos del DOM (Login y UI Principal) ---
 const loginButton = document.getElementById('loginButton');
@@ -57,19 +43,28 @@ const appPageTitle = document.getElementById('appPageTitle');
 const invoiceForm = document.getElementById('invoiceForm');
 const invoiceDateInput = document.getElementById('invoiceDate');
 const invoiceNumberText = document.getElementById('invoiceNumberText');
+
+// Ítems del formulario
+const itemDescription = document.getElementById('itemDescription');
 const itemIsStreamingCheckbox = document.getElementById('itemIsStreaming');
 const itemQuantityInput = document.getElementById('itemQuantity');
-const itemDescription = document.getElementById('itemDescription');
 const itemPrice = document.getElementById('itemPrice');
 const itemApplyIVA = document.getElementById('itemApplyIVA');
+const addItemBtn = document.getElementById('addItemBtn');
+const invoiceItemsContainer = document.getElementById('invoiceItemsContainer');
+
+// Campos de perfil de streaming (NUEVO)
+const streamingProfileFieldsDiv = document.getElementById('streamingProfileFields');
+const itemProfileNameInput = document.getElementById('itemProfileName');
+const itemProfilePinInput = document.getElementById('itemProfilePin');
+
+// Estado de pago
 const paymentStatusSelect = document.getElementById('paymentStatus');
 const paymentStatusInfoDiv = document.getElementById('paymentStatusInfo');
 const paymentStatusDescriptionP = document.getElementById('paymentStatusDescription');
 const paymentStatusActionP = document.getElementById('paymentStatusAction');
-const addItemBtn = document.getElementById('addItemBtn');
-const saveInvoiceBtn = document.getElementById('saveInvoiceBtn');
-const generateInvoiceFileBtn = document.getElementById('generateInvoiceFileBtn');
-const invoiceItemsContainer = document.getElementById('invoiceItemsContainer');
+
+// Descuento y Totales
 const discountTypeSelect = document.getElementById('discountType');
 const discountValueInput = document.getElementById('discountValue');
 const subtotalAmountSpan = document.getElementById('subtotalAmount');
@@ -78,8 +73,12 @@ const taxableBaseAmountSpan = document.getElementById('taxableBaseAmount');
 const ivaAmountSpan = document.getElementById('ivaAmount');
 const totalAmountSpan = document.getElementById('totalAmount');
 
+// Botones de acción del formulario
+const saveInvoiceBtn = document.getElementById('saveInvoiceBtn'); // Este es el botón submit del form
+const generateInvoiceFileBtn = document.getElementById('generateInvoiceFileBtn');
+
 // --- Variables Globales para la Lógica de Facturación ---
-const paymentStatusDetails = {
+const paymentStatusDetails = { /* ... (Objeto paymentStatusDetails completo) ... */ 
     pending: { description: "La factura ha sido emitida y enviada al cliente, pero aún no se ha recibido el pago. El plazo de vencimiento todavía no ha llegado.", action: "Monitoreo regular, envío de recordatorios amigables antes de la fecha de vencimiento." },
     paid: { description: "El cliente ha realizado el pago completo de la factura y este ha sido confirmado.", action: "Agradecimiento al cliente, actualización de registros." },
     overdue: { description: "La fecha de vencimiento de la factura ha pasado y el pago no se ha recibido.", action: "Inicio del proceso de cobranza (recordatorios más insistentes, llamadas, aplicación de posibles intereses de mora según políticas). Se puede subclasificar por antigüedad de la mora (ej. Vencido 1-30 días, Vencido 31-60 días, etc.)." },
@@ -105,9 +104,17 @@ function setDefaultInvoiceDate() {
 }
 
 function updateQuantityBasedOnStreaming() {
-    if (itemIsStreamingCheckbox && itemQuantityInput) {
-        itemQuantityInput.disabled = itemIsStreamingCheckbox.checked;
-        if (itemIsStreamingCheckbox.checked) itemQuantityInput.value = 1;
+    if (itemIsStreamingCheckbox && itemQuantityInput && streamingProfileFieldsDiv) {
+        const isStreaming = itemIsStreamingCheckbox.checked;
+        itemQuantityInput.disabled = isStreaming;
+        if (isStreaming) {
+            itemQuantityInput.value = 1;
+            streamingProfileFieldsDiv.style.display = 'block'; // Mostrar campos de perfil
+        } else {
+            streamingProfileFieldsDiv.style.display = 'none'; // Ocultar campos de perfil
+            if (itemProfileNameInput) itemProfileNameInput.value = '';
+            if (itemProfilePinInput) itemProfilePinInput.value = '';
+        }
     }
 }
 
@@ -126,36 +133,23 @@ function updatePaymentStatusDisplay() {
 }
 
 function formatInvoiceNumber(number) {
-    if (number < 1000) {
-        return String(number).padStart(3, '0');
-    }
-    return String(number);
+    return String(number).padStart(3, '0'); // Mantiene al menos 3 dígitos, pero crecerá si es necesario (ej: 1000)
 }
 
 async function getCurrentLastInvoiceNumericValue(userId) {
-    if (!userId) {
-        console.warn("ID de usuario no proporcionado para obtener el último número de factura.");
-        return 0; 
-    }
+    if (!userId) { console.warn("ID de usuario no proporcionado para obtener último número."); return 0; }
     const counterRef = doc(db, "user_counters", userId);
     try {
         const counterDoc = await getDoc(counterRef);
-        if (counterDoc.exists() && counterDoc.data().lastInvoiceNumber !== undefined) {
-            return counterDoc.data().lastInvoiceNumber;
-        } else {
-            return 0; 
-        }
-    } catch (error) {
-        console.error("Error al leer el último número de factura:", error);
-        return 0; 
-    }
+        return (counterDoc.exists() && counterDoc.data().lastInvoiceNumber !== undefined) ? counterDoc.data().lastInvoiceNumber : 0;
+    } catch (error) { console.error("Error al leer último número de factura:", error); return 0; }
 }
 
 async function getNextInvoiceNumber(userId) {
-    if (!userId) throw new Error("ID de usuario no proporcionado para obtener el siguiente número de factura.");
+    if (!userId) throw new Error("ID de usuario no proporcionado para obtener siguiente número.");
     const counterRef = doc(db, "user_counters", userId);
     try {
-        const newInvoiceNumber = await runTransaction(db, async (transaction) => {
+        return await runTransaction(db, async (transaction) => {
             const counterDoc = await transaction.get(counterRef);
             let lastNumber = 0;
             if (counterDoc.exists() && counterDoc.data().lastInvoiceNumber !== undefined) {
@@ -165,11 +159,7 @@ async function getNextInvoiceNumber(userId) {
             transaction.set(counterRef, { lastInvoiceNumber: nextNumber }, { merge: true });
             return nextNumber;
         });
-        return newInvoiceNumber;
-    } catch (error) {
-        console.error("Error en transacción para obtener el siguiente número de factura:", error);
-        throw error;
-    }
+    } catch (error) { console.error("Error en transacción de número de factura:", error); throw error; }
 }
 
 async function displayNextPotentialInvoiceNumber() {
@@ -178,14 +168,10 @@ async function displayNextPotentialInvoiceNumber() {
         try {
             invoiceNumberText.textContent = "..."; 
             const lastNum = await getCurrentLastInvoiceNumericValue(user.uid);
-            const potentialNextNum = lastNum + 1;
-            invoiceNumberText.textContent = formatInvoiceNumber(potentialNextNum);
-        } catch (error) {
-            console.error("No se pudo cargar el número de factura potencial:", error);
-            invoiceNumberText.textContent = "Error";
-        }
+            invoiceNumberText.textContent = formatInvoiceNumber(lastNum + 1);
+        } catch (error) { invoiceNumberText.textContent = "Error"; }
     } else if (invoiceNumberText) {
-        invoiceNumberText.textContent = "000"; // O "N/A" si no hay usuario
+        invoiceNumberText.textContent = "000";
     }
 }
 
@@ -197,12 +183,17 @@ function renderItems() {
     } else {
         currentInvoiceItems.forEach(item => {
             const itemSubtotal = item.quantity * item.price;
+            let profileDetailsHTML = '';
+            if (item.isStreaming && item.profileName) {
+                profileDetailsHTML = `<p class="item-profile-details">Perfil: ${item.profileName} ${item.profilePin ? `(PIN: ${item.profilePin})` : ''}</p>`;
+            }
             const itemElement = document.createElement('div');
             itemElement.classList.add('invoice-item');
             itemElement.setAttribute('data-item-id', item.id);
             itemElement.innerHTML = `
                 <div class="item-details">
                     <p class="item-description-display"><strong>${item.description}</strong></p>
+                    ${profileDetailsHTML}
                     <p class="item-meta">Cantidad: ${item.quantity} x Precio: ${item.price.toLocaleString('es-CO', { style: 'currency', currency: 'COP' })}</p>
                 </div>
                 <div class="item-actions">
@@ -234,24 +225,22 @@ function recalculateTotals() {
     let discountAmount = 0;
     const selectedDiscountType = discountTypeSelect ? discountTypeSelect.value : 'none';
     let discountValue = discountValueInput ? parseFloat(discountValueInput.value) : 0;
-    if (isNaN(discountValue)) discountValue = 0; // Asegurar que no sea NaN
+    if (isNaN(discountValue)) discountValue = 0;
 
-    if (selectedDiscountType === 'percentage' && discountValue > 0) {
-        discountAmount = subtotal * (discountValue / 100);
-    } else if (selectedDiscountType === 'fixed' && discountValue > 0) {
-        discountAmount = discountValue;
-    }
+    if (selectedDiscountType === 'percentage' && discountValue > 0) discountAmount = subtotal * (discountValue / 100);
+    else if (selectedDiscountType === 'fixed' && discountValue > 0) discountAmount = discountValue;
     if (discountAmount > subtotal) discountAmount = subtotal;
-    if (discountAmount < 0) discountAmount = 0; // No permitir descuentos negativos
+    if (discountAmount < 0) discountAmount = 0;
 
     const taxableBaseAmount = subtotal - discountAmount;
     const grandTotal = taxableBaseAmount + totalIVA;
 
-    if (subtotalAmountSpan) subtotalAmountSpan.textContent = subtotal.toLocaleString('es-CO', { style: 'currency', currency: 'COP' });
-    if (discountAmountAppliedSpan) discountAmountAppliedSpan.textContent = discountAmount.toLocaleString('es-CO', { style: 'currency', currency: 'COP' });
-    if (taxableBaseAmountSpan) taxableBaseAmountSpan.textContent = taxableBaseAmount.toLocaleString('es-CO', { style: 'currency', currency: 'COP' });
-    if (ivaAmountSpan) ivaAmountSpan.textContent = totalIVA.toLocaleString('es-CO', { style: 'currency', currency: 'COP' });
-    if (totalAmountSpan) totalAmountSpan.textContent = grandTotal.toLocaleString('es-CO', { style: 'currency', currency: 'COP' });
+    const formatCOP = (value) => value.toLocaleString('es-CO', { style: 'currency', currency: 'COP' });
+    if (subtotalAmountSpan) subtotalAmountSpan.textContent = formatCOP(subtotal);
+    if (discountAmountAppliedSpan) discountAmountAppliedSpan.textContent = formatCOP(discountAmount);
+    if (taxableBaseAmountSpan) taxableBaseAmountSpan.textContent = formatCOP(taxableBaseAmount);
+    if (ivaAmountSpan) ivaAmountSpan.textContent = formatCOP(totalIVA);
+    if (totalAmountSpan) totalAmountSpan.textContent = formatCOP(grandTotal);
 }
 
 function handleDiscountChange() {
@@ -267,12 +256,8 @@ async function handleNavigation(sectionToShowId) {
     const navLinks = [navCreateInvoice, navViewInvoices, navClients];
     let targetTitle = "Sistema de Facturación";
 
-    sections.forEach(section => {
-        if (section) section.style.display = 'none';
-    });
-    navLinks.forEach(link => {
-        if (link) link.classList.remove('active-nav');
-    });
+    sections.forEach(section => { if (section) section.style.display = 'none'; });
+    navLinks.forEach(link => { if (link) link.classList.remove('active-nav'); });
 
     const currentSection = sections.find(s => s && s.id === sectionToShowId);
     if (currentSection) currentSection.style.display = 'block';
@@ -286,19 +271,13 @@ async function handleNavigation(sectionToShowId) {
         if (typeof updateQuantityBasedOnStreaming === 'function') updateQuantityBasedOnStreaming();
         if (typeof handleDiscountChange === 'function') handleDiscountChange();
         if (typeof renderItems === 'function') renderItems();
-        if (typeof displayNextPotentialInvoiceNumber === 'function') {
-            await displayNextPotentialInvoiceNumber();
-        }
+        if (typeof displayNextPotentialInvoiceNumber === 'function') await displayNextPotentialInvoiceNumber();
     } else if (sectionToShowId === 'viewInvoicesSection') {
         targetTitle = "Mis Facturas";
-        if (viewInvoicesSection && viewInvoicesSection.innerHTML.trim() === '') {
-            viewInvoicesSection.innerHTML = `<h2>Mis Facturas</h2><p>Funcionalidad en desarrollo.</p><div id="invoiceListContainer"></div>`;
-        }
+        if (viewInvoicesSection && viewInvoicesSection.innerHTML.trim() === '') viewInvoicesSection.innerHTML = `<h2>Mis Facturas</h2><p>Funcionalidad en desarrollo.</p><div id="invoiceListContainer"></div>`;
     } else if (sectionToShowId === 'clientsSection') {
         targetTitle = "Clientes";
-        if (clientsSection && clientsSection.innerHTML.trim() === '') {
-            clientsSection.innerHTML = `<h2>Clientes</h2><p>Funcionalidad en desarrollo.</p><div id="clientListContainer"></div>`;
-        }
+        if (clientsSection && clientsSection.innerHTML.trim() === '') clientsSection.innerHTML = `<h2>Clientes</h2><p>Funcionalidad en desarrollo.</p><div id="clientListContainer"></div>`;
     }
     if (appPageTitle) appPageTitle.textContent = targetTitle;
 }
@@ -308,41 +287,31 @@ if (loginButton) {
     loginButton.addEventListener('click', () => {
         showLoading(true);
         signInWithPopup(auth, googleProvider)
-            .then((result) => console.log("Usuario autenticado con Google:", result.user))
+            .then((result) => console.log("Usuario autenticado:", result.user.displayName))
             .catch((error) => {
-                console.error("Error durante el inicio de sesión con Google:", error);
-                let errorMessage = "Ocurrió un error al intentar iniciar sesión.";
-                if (error.code === 'auth/popup-closed-by-user') errorMessage = "Ventana de inicio de sesión cerrada.";
-                else if (error.code === 'auth/cancelled-popup-request') errorMessage = "Solicitud de inicio de sesión cancelada.";
-                alert(errorMessage);
+                console.error("Error en login:", error);
+                let msg = "Error al iniciar sesión.";
+                if (error.code === 'auth/popup-closed-by-user') msg = "Ventana de login cerrada.";
+                alert(msg);
             })
-            .finally(() => {
-                if (!auth.currentUser) showLoading(false);
-            });
+            .finally(() => { if (!auth.currentUser) showLoading(false); });
     });
 }
 
 if (logoutButton) {
     logoutButton.addEventListener('click', () => {
         showLoading(true);
-        signOut(auth)
-            .then(() => console.log("Usuario cerró sesión exitosamente."))
-            .catch((error) => {
-                console.error("Error al cerrar sesión:", error);
-                alert("Ocurrió un error al cerrar la sesión.");
-            });
+        signOut(auth).catch((error) => console.error("Error al cerrar sesión:", error));
     });
 }
 
 onAuthStateChanged(auth, (user) => {
     showLoading(false);
     if (user) {
-        console.log("Usuario conectado:", user.uid, user.displayName);
         if (loginContainer) loginContainer.style.display = 'none';
-        if (mainContent) mainContent.style.display = 'flex'; // O 'block' si prefieres que #mainContent sea un bloque
+        if (mainContent) mainContent.style.display = 'flex'; // O 'block'
         handleNavigation('createInvoiceSection');
     } else {
-        console.log("No hay usuario conectado.");
         if (loginContainer) loginContainer.style.display = 'flex';
         if (mainContent) mainContent.style.display = 'none';
     }
@@ -366,21 +335,28 @@ if (addItemBtn) {
         let quantity = parseInt(itemQuantityInput.value);
         const price = parseFloat(itemPrice.value);
         const applyIVA = itemApplyIVA.checked;
+        let profileName = '';
+        let profilePin = '';
 
-        if (!description) { alert("Por favor, ingresa una descripción para el ítem."); itemDescription.focus(); return; }
-        if (isNaN(quantity) || quantity <= 0) { alert("Por favor, ingresa una cantidad válida."); itemQuantityInput.focus(); return; }
-        if (isNaN(price) || price < 0) { alert("Por favor, ingresa un precio válido."); itemPrice.focus(); return; }
-        if (isStreaming) quantity = 1;
+        if (isStreaming) {
+            quantity = 1;
+            profileName = itemProfileNameInput ? itemProfileNameInput.value.trim() : '';
+            profilePin = itemProfilePinInput ? itemProfilePinInput.value.trim() : '';
+            if (!profileName) { alert("Ingresa el Nombre del Perfil."); if (itemProfileNameInput) itemProfileNameInput.focus(); return; }
+        }
 
-        currentInvoiceItems.push({ id: nextItemId++, description, isStreaming, quantity, price, applyIVA });
+        if (!description) { alert("Ingresa una descripción."); itemDescription.focus(); return; }
+        if (isNaN(quantity) || quantity <= 0) { alert("Ingresa una cantidad válida."); itemQuantityInput.focus(); return; }
+        if (isNaN(price) || price < 0) { alert("Ingresa un precio válido."); itemPrice.focus(); return; }
+
+        currentInvoiceItems.push({ id: nextItemId++, description, isStreaming, quantity, price, applyIVA, profileName: isStreaming ? profileName : null, profilePin: isStreaming ? profilePin : null });
         renderItems();
 
         itemDescription.value = '';
         itemIsStreamingCheckbox.checked = false;
-        itemQuantityInput.value = 1;
-        itemQuantityInput.disabled = false;
         itemPrice.value = '';
         itemApplyIVA.checked = false;
+        updateQuantityBasedOnStreaming(); // Llama para ocultar campos de perfil y resetear cantidad
         itemDescription.focus();
     });
 }
@@ -389,17 +365,13 @@ if (invoiceForm) {
     invoiceForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const user = auth.currentUser;
-        if (!user) { alert("Debes iniciar sesión para guardar una factura."); return; }
-        if (currentInvoiceItems.length === 0) { alert("Debes agregar al menos un ítem."); return; }
+        if (!user) { alert("Debes iniciar sesión."); return; }
+        if (currentInvoiceItems.length === 0) { alert("Agrega al menos un ítem."); return; }
 
-        const clientName = document.getElementById('clientName') ? document.getElementById('clientName').value.trim() : '';
-        const clientPhone = document.getElementById('clientPhone') ? document.getElementById('clientPhone').value.trim() : '';
-        const clientEmail = document.getElementById('clientEmail') ? document.getElementById('clientEmail').value.trim() : '';
-
-        if (!clientName || !clientPhone || !clientEmail) {
-            alert("Completa los campos obligatorios del cliente (Nombres, Celular, Correo).");
-            return;
-        }
+        const clientName = document.getElementById('clientName')?.value.trim();
+        const clientPhone = document.getElementById('clientPhone')?.value.trim();
+        const clientEmail = document.getElementById('clientEmail')?.value.trim();
+        if (!clientName || !clientPhone || !clientEmail) { alert("Completa los datos del cliente."); return; }
         
         if (typeof recalculateTotals === 'function') recalculateTotals();
 
@@ -409,11 +381,10 @@ if (invoiceForm) {
             if (saveInvoiceBtn) saveInvoiceBtn.disabled = true;
             if (generateInvoiceFileBtn) generateInvoiceFileBtn.disabled = true;
             showLoading(true);
-
             actualNumericInvoiceNumber = await getNextInvoiceNumber(user.uid);
             formattedInvoiceNumberStr = formatInvoiceNumber(actualNumericInvoiceNumber);
         } catch (error) {
-            alert("Error crítico al generar el número de factura. No se puede guardar.");
+            alert("Error al generar número de factura. No se puede guardar.");
             showLoading(false);
             if (saveInvoiceBtn) saveInvoiceBtn.disabled = false;
             if (generateInvoiceFileBtn) generateInvoiceFileBtn.disabled = false;
@@ -425,23 +396,23 @@ if (invoiceForm) {
             invoiceNumberFormatted: `FCT-${formattedInvoiceNumberStr}`,
             invoiceNumberNumeric: actualNumericInvoiceNumber,
             invoiceDate: invoiceDateInput.value,
-            serviceStartDate: document.getElementById('serviceStartDate') ? document.getElementById('serviceStartDate').value : null,
+            serviceStartDate: document.getElementById('serviceStartDate')?.value || null,
             emitter: {
-                name: document.getElementById('emitterName') ? document.getElementById('emitterName').value.trim() : '',
-                id: document.getElementById('emitterId') ? document.getElementById('emitterId').value.trim() : '',
-                address: document.getElementById('emitterAddress') ? document.getElementById('emitterAddress').value.trim() : '',
-                phone: document.getElementById('emitterPhone') ? document.getElementById('emitterPhone').value.trim() : '',
-                email: document.getElementById('emitterEmail') ? document.getElementById('emitterEmail').value.trim() : ''
+                name: document.getElementById('emitterName')?.value.trim() || '',
+                id: document.getElementById('emitterId')?.value.trim() || '',
+                address: document.getElementById('emitterAddress')?.value.trim() || '',
+                phone: document.getElementById('emitterPhone')?.value.trim() || '',
+                email: document.getElementById('emitterEmail')?.value.trim() || ''
             },
             client: { name: clientName, phone: clientPhone, email: clientEmail },
             items: currentInvoiceItems,
             discount: { type: discountTypeSelect.value, value: (parseFloat(discountValueInput.value) || 0) },
             totals: {
-                subtotal: parseFloat(subtotalAmountSpan.textContent.replace(/[^\d,-]/g, '').replace(',', '.')) || 0,
-                discountApplied: parseFloat(discountAmountAppliedSpan.textContent.replace(/[^\d,-]/g, '').replace(',', '.')) || 0,
-                taxableBase: parseFloat(taxableBaseAmountSpan.textContent.replace(/[^\d,-]/g, '').replace(',', '.')) || 0,
-                iva: parseFloat(ivaAmountSpan.textContent.replace(/[^\d,-]/g, '').replace(',', '.')) || 0,
-                grandTotal: parseFloat(totalAmountSpan.textContent.replace(/[^\d,-]/g, '').replace(',', '.')) || 0
+                subtotal: parseFloat(subtotalAmountSpan.textContent.replace(/[^\d,.-]/g, '').replace(',', '.')) || 0,
+                discountApplied: parseFloat(discountAmountAppliedSpan.textContent.replace(/[^\d,.-]/g, '').replace(',', '.')) || 0,
+                taxableBase: parseFloat(taxableBaseAmountSpan.textContent.replace(/[^\d,.-]/g, '').replace(',', '.')) || 0,
+                iva: parseFloat(ivaAmountSpan.textContent.replace(/[^\d,.-]/g, '').replace(',', '.')) || 0,
+                grandTotal: parseFloat(totalAmountSpan.textContent.replace(/[^\d,.-]/g, '').replace(',', '.')) || 0
             },
             paymentStatus: paymentStatusSelect.value,
             createdAt: serverTimestamp()
@@ -449,23 +420,14 @@ if (invoiceForm) {
 
         try {
             const docRef = await addDoc(collection(db, "facturas"), invoiceToSave);
-            console.log("Factura guardada con ID: ", docRef.id);
-            alert(`¡Factura FCT-${formattedInvoiceNumberStr} guardada exitosamente!`);
-
+            alert(`¡Factura FCT-${formattedInvoiceNumberStr} guardada exitosamente! ID: ${docRef.id}`);
             invoiceForm.reset();
-            currentInvoiceItems = [];
-            nextItemId = 0;
-            if (typeof renderItems === 'function') renderItems();
-            if (typeof setDefaultInvoiceDate === 'function') setDefaultInvoiceDate();
-            if (typeof updateQuantityBasedOnStreaming === 'function') updateQuantityBasedOnStreaming();
-            if (typeof handleDiscountChange === 'function') handleDiscountChange();
-            if (typeof displayNextPotentialInvoiceNumber === 'function') {
-                await displayNextPotentialInvoiceNumber(); // Mostrar el siguiente número potencial
-            }
-            
+            currentInvoiceItems = []; nextItemId = 0;
+            renderItems(); setDefaultInvoiceDate(); updateQuantityBasedOnStreaming(); handleDiscountChange();
+            await displayNextPotentialInvoiceNumber();
         } catch (error) {
-            console.error("Error al guardar la factura en Firestore: ", error);
-            alert("Error al guardar la factura. Por favor, inténtalo de nuevo.\nDetalle: " + error.message);
+            console.error("Error al guardar factura en Firestore: ", error);
+            alert(`Error al guardar: ${error.message}`);
         } finally {
             if (saveInvoiceBtn) saveInvoiceBtn.disabled = false;
             if (generateInvoiceFileBtn) generateInvoiceFileBtn.disabled = false;
@@ -476,7 +438,6 @@ if (invoiceForm) {
 
 if (generateInvoiceFileBtn) {
     generateInvoiceFileBtn.addEventListener('click', () => {
-        console.log("Botón 'Generar Factura (Archivo)' presionado.");
-        alert("Funcionalidad 'Generar Factura (Archivo)' pendiente de implementación.");
+        alert("Funcionalidad 'Generar Factura (Archivo)' pendiente.");
     });
 }
