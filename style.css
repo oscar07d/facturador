@@ -80,25 +80,30 @@ body {
     gap: 25px;
     transition: all var(--transition-speed) ease;
 }
+
 .login-container .logo-container {
     margin-bottom: 15px;
     width: 100%;
     max-width: 300px; 
 }
+
 .login-logo-completo .cls-1-login {
     fill: var(--logo-svg-fill-color);
 }
+
 .login-container h1 {
     font-size: 1.75rem;
     font-weight: 600;
     color: var(--text-color);
     margin-bottom: 5px;
 }
+
 .login-container p {
     font-size: 1rem;
     color: var(--text-muted-color);
     margin-bottom: 20px;
 }
+
 .google-btn {
     width: 100%;
     max-width: 320px;
@@ -118,22 +123,28 @@ body {
     color: #444;
     box-shadow: var(--box-shadow-light);
 }
+
 .google-btn:hover {
     background-color: #fdfdfd;
     border-color: #c6c6c6;
     box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
     transform: translateY(-2px);
 }
-.google-icon { width: 22px; height: 22px; }
+
+.google-icon {
+    width: 22px;
+    height: 22px;
+}
 
 /* === ESTILOS PARA EL CONTENIDO PRINCIPAL DE LA APP (POST-LOGIN) === */
 .main-content {
     width: 100%;
-    display: flex;
+    display: flex; /* Se gestiona por JS, pero este es su estado visible */
     flex-direction: column;
-    align-items: center;
+    align-items: center; 
 }
 
+/* --- Cabecera de la Aplicación --- */
 .app-header {
     background-color: var(--container-background);
     padding: 15px 30px;
@@ -142,39 +153,94 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    width: 100%;
+    width: 100%; 
     flex-wrap: wrap;
     margin-top: 20px;
 }
-.logo-app-container { max-width: 250px; height: auto; }
-.app-logo-completo { width: 100%; height: auto; display: block; }
-.app-logo-completo .cls-1-app { fill: var(--logo-svg-fill-color); }
-.app-title-container h1 { font-size: 1.6rem; color: var(--primary-color); margin: 0; font-weight: 600; text-align: center; }
-.user-actions #logoutButton { margin: 0; background-color: var(--danger-color); color: white; border: none; }
-.user-actions #logoutButton:hover { background-color: #c82333; }
 
+.logo-app-container {
+    max-width: 250px;
+    height: auto;
+}
+
+.app-logo-completo { /* Aplica a ambos logos si usan esta clase */
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.app-logo-completo .cls-1-app { /* Para el SVG del header de la app */
+    fill: var(--logo-svg-fill-color);
+}
+
+.app-title-container h1 {
+    font-size: 1.6rem;
+    color: var(--primary-color);
+    margin: 0;
+    font-weight: 600;
+    text-align: center;
+}
+
+.user-actions #logoutButton {
+    margin: 0;
+    background-color: var(--danger-color);
+    color: white;
+    border: none;
+}
+
+.user-actions #logoutButton:hover {
+    background-color: #c82333;
+}
+
+/* --- Navegación de la Aplicación --- */
 .app-nav {
     padding: 0px 30px;
     width: 100%;
-    max-width: 1200px;
+    max-width: 1200px; /* Coincide con #app max-width */
     box-shadow: 0 2px 8px rgba(0,0,0,0.08);
     border-radius: 0 0 var(--border-radius-l) var(--border-radius-l);
-    overflow: hidden; /* Importante para contener el gradiente grande */
-
-    /* Configuración del Gradiente Animado */
+    overflow: hidden; 
     background: linear-gradient(90deg, 
                                 var(--primary-hover-color), 
                                 var(--primary-color), 
                                 var(--primary-hover-color), 
-                                var(--primary-color)); /* Usamos tu color primario y su versión hover para el degradado */
-    background-size: 300% 100%; /* Hacemos el fondo del gradiente más ancho que el elemento */
-    animation: moveGradient 10s ease-in-out infinite; /* Aplicamos la animación */
+                                var(--primary-color));
+    background-size: 300% 100%;
+    animation: moveGradient 10s ease-in-out infinite;
 }
-.app-nav ul { list-style: none; padding: 0; margin: 0; display: flex; justify-content: flex-start; gap: 10px; }
-.app-nav ul li a { display: block; padding: 14px 20px; text-decoration: none; color: rgba(255, 255, 255, 0.85); font-weight: 500; border-bottom: 3px solid transparent; transition: color var(--transition-speed) ease, border-bottom-color var(--transition-speed) ease, background-color var(--transition-speed) ease; }
-.app-nav ul li a:hover { color: #ffffff; background-color: rgba(255,255,255,0.1); }
-.app-nav ul li a.active-nav { color: #ffffff; font-weight: 600; border-bottom-color: #ffffff; background-color: rgba(0,0,0,0.1); }
 
+.app-nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    justify-content: flex-start;
+    gap: 10px;
+}
+
+.app-nav ul li a {
+    display: block;
+    padding: 14px 20px;
+    text-decoration: none;
+    color: rgba(255, 255, 255, 0.85);
+    font-weight: 500;
+    border-bottom: 3px solid transparent;
+    transition: color var(--transition-speed) ease, border-bottom-color var(--transition-speed) ease, background-color var(--transition-speed) ease;
+}
+
+.app-nav ul li a:hover {
+    color: #ffffff;
+    background-color: rgba(255,255,255,0.1);
+}
+
+.app-nav ul li a.active-nav {
+    color: #ffffff;
+    font-weight: 600;
+    border-bottom-color: #ffffff;
+    background-color: rgba(0,0,0,0.1);
+}
+
+/* --- Contenedor Principal de la App de Facturación --- */
 .invoice-app-container {
     background-color: var(--container-background);
     padding: 30px;
@@ -183,26 +249,122 @@ body {
     width: 100%;
     margin-top: 10px;
 }
-.invoice-section.active-section { display: block; }
 
-.invoice-form { display: flex; flex-direction: column; gap: 30px; }
-.form-section { border: 1px solid var(--border-color); padding: 25px; border-radius: var(--border-radius-m); background-color: #fdfdfd; }
-.form-section legend { font-size: 1.25rem; font-weight: 600; color: var(--primary-color); padding: 0 10px; margin-left: 10px; }
-.optional-tag { font-size: 0.8rem; font-weight: 400; color: var(--text-muted-color); }
+.invoice-section.active-section {
+    display: block;
+}
 
-.form-grid { display: grid; gap: 20px; }
-.form-grid.two-columns, .form-grid.three-columns { grid-template-columns: 1fr; }
-.form-group.full-width { grid-column: 1 / -1; }
+/* --- Estilos Generales del Formulario de Factura --- */
+.invoice-form {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
 
-.form-group { display: flex; flex-direction: column; gap: 8px; }
-.form-group label { font-weight: 500; color: var(--text-color); font-size: 0.95rem; text-align: left; }
-.form-group input[type="text"], .form-group input[type="email"], .form-group input[type="tel"], .form-group input[type="date"], .form-group input[type="number"], .form-group select, .form-group textarea { width: 100%; padding: 12px 15px; border: 1px solid var(--border-color); border-radius: var(--border-radius-s); font-size: 1rem; font-family: 'Poppins', sans-serif; transition: border-color var(--transition-speed) ease, box-shadow var(--transition-speed) ease; }
-.form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25); }
-.invoice-number-display { font-size: 1.1rem; font-weight: 600; color: var(--text-color); padding: 10px 0; text-align: left; }
-.invoice-number-display span { color: var(--primary-color); }
+.form-section {
+    border: 1px solid var(--border-color);
+    padding: 25px;
+    border-radius: var(--border-radius-m);
+    background-color: #fdfdfd;
+}
 
-.btn { padding: 10px 20px; font-size: 0.95rem; font-weight: 500; border-radius: var(--border-radius-m); cursor: pointer; text-decoration: none; border: 1px solid transparent; transition: all var(--transition-speed) ease; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
-.btn:disabled { opacity: 0.6; cursor: not-allowed; }
+.form-section legend {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    padding: 0 10px;
+    margin-left: 10px;
+}
+
+.optional-tag {
+    font-size: 0.8rem;
+    font-weight: 400;
+    color: var(--text-muted-color);
+}
+
+/* --- Cuadrículas del Formulario --- */
+.form-grid {
+    display: grid;
+    gap: 20px;
+}
+
+.form-grid.two-columns,
+.form-grid.three-columns {
+    grid-template-columns: 1fr; /* Base para móvil, se sobrescribe en media queries */
+}
+
+.form-group.full-width {
+    grid-column: 1 / -1;
+}
+
+/* --- Grupos de Formulario y Elementos --- */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-group label {
+    font-weight: 500;
+    color: var(--text-color);
+    font-size: 0.95rem;
+    text-align: left;
+}
+
+.form-group input[type="text"],
+.form-group input[type="email"],
+.form-group input[type="tel"],
+.form-group input[type="date"],
+.form-group input[type="number"],
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-s);
+    font-size: 1rem;
+    font-family: 'Poppins', sans-serif;
+    transition: border-color var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.invoice-number-display {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-color);
+    padding: 10px 0;
+    text-align: left;
+}
+.invoice-number-display span {
+    color: var(--primary-color);
+}
+
+/* --- Botones --- */
+.btn {
+    padding: 10px 20px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    border-radius: var(--border-radius-m);
+    cursor: pointer;
+    text-decoration: none;
+    border: 1px solid transparent;
+    transition: all var(--transition-speed) ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
 .btn-primary { background-color: var(--primary-color); color: white; }
 .btn-primary:hover:not(:disabled) { background-color: var(--primary-hover-color); }
 .btn-secondary { background-color: var(--secondary-color); color: white; }
@@ -216,23 +378,202 @@ body {
 .btn-outline { background-color: transparent; color: var(--text-color); border-color: var(--border-color); }
 .user-actions .btn-outline { color: var(--danger-color); border-color: var(--danger-color); }
 .user-actions .btn-outline:hover:not(:disabled) { background-color: var(--danger-color); color: white; }
-.client-actions { display: flex; gap: 10px; margin-top: 5px; margin-bottom: 15px; flex-wrap: wrap; }
 
+.client-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 5px;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+}
+
+/* === Estilos para Checkboxes Personalizados === */
 .add-item-form .form-group label[for*="itemIsStreaming"], 
-.add-item-form .form-group label[for*="itemApplyIVA"] { display: inline-flex; align-items: center; font-weight: normal; font-size: 0.95rem; cursor: pointer; position: relative; user-select: none; }
-input[type="checkbox"].inline-checkbox { appearance: none; -webkit-appearance: none; -moz-appearance: none; width: 20px; height: 20px; min-width: 20px; border: 2px solid var(--border-color); border-radius: var(--border-radius-s); background-color: var(--container-background); margin-right: 10px; cursor: pointer; outline: none; transition: background-color var(--transition-speed) ease, border-color var(--transition-speed) ease; vertical-align: middle; position: relative; }
-input[type="checkbox"].inline-checkbox:focus-visible { border-color: var(--primary-color); box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25); }
-input[type="checkbox"].inline-checkbox:checked { background-color: var(--primary-color); border-color: var(--primary-color); }
-input[type="checkbox"].inline-checkbox:checked::after { content: ''; display: block; position: absolute; left: 6px; top: 2px; width: 5px; height: 10px; border: solid white; border-width: 0 2.5px 2.5px 0; transform: rotate(45deg); }
-input[type="checkbox"].inline-checkbox:disabled { background-color: #e9ecef; border-color: #ced4da; cursor: not-allowed; }
-label:has(input[type="checkbox"].inline-checkbox:disabled) { color: var(--text-muted-color); cursor: not-allowed; }
+.add-item-form .form-group label[for*="itemApplyIVA"] {
+    display: inline-flex;
+    align-items: center;
+    font-weight: normal;
+    font-size: 0.95rem;
+    cursor: pointer;
+    position: relative;
+    user-select: none; 
+    padding-left: 5px; 
+}
 
-#invoiceItemsContainer { margin-bottom: 25px; border: 1px dashed var(--border-color); padding: 15px; border-radius: var(--border-radius-s); min-height: 70px; display: flex; justify-content: center; align-items: center; }
-.invoice-item-placeholder { color: var(--text-muted-color); text-align: center; font-style: italic; padding: 10px; }
-.add-item-form { margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border-color); display: block; }
-.add-item-form h4 { font-size: 1.1rem; margin-bottom: 15px; font-weight: 500; color: var(--text-color); }
-.item-details-grid { align-items: end; }
-#addItemBtn { margin-top: 15px; }
+input[type="checkbox"].inline-checkbox {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    width: 20px;
+    height: 20px;
+    min-width: 20px;
+    border: 2px solid var(--border-color);
+    border-radius: var(--border-radius-s);
+    background-color: var(--container-background);
+    margin-right: 10px;
+    cursor: pointer;
+    outline: none;
+    transition: background-color var(--transition-speed) ease, border-color var(--transition-speed) ease;
+    vertical-align: middle; 
+    position: relative;
+}
+
+input[type="checkbox"].inline-checkbox:focus-visible {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+input[type="checkbox"].inline-checkbox:checked {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+input[type="checkbox"].inline-checkbox:checked::after {
+    content: '';
+    display: block;
+    position: absolute;
+    left: 6px;
+    top: 2px;
+    width: 5px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 2.5px 2.5px 0;
+    transform: rotate(45deg);
+}
+
+input[type="checkbox"].inline-checkbox:disabled {
+    background-color: #e9ecef;
+    border-color: #ced4da;
+    cursor: not-allowed;
+}
+label:has(input[type="checkbox"].inline-checkbox:disabled) {
+    color: var(--text-muted-color);
+    cursor: not-allowed;
+}
+
+/* === ESTILOS PARA ÍTEMS DE FACTURA (Lista y Formulario de Añadir) === */
+/* Contenedor de la lista de ítems agregados */
+#invoiceItemsContainer {
+    margin-bottom: 25px;
+    border: 1px solid var(--border-color);
+    padding: 0; 
+    border-radius: var(--border-radius-s);
+    min-height: 70px; 
+    display: flex;
+    flex-direction: column;
+}
+
+.invoice-item-placeholder {
+    color: var(--text-muted-color);
+    text-align: center;
+    font-style: italic;
+    padding: 20px; 
+    width: 100%; 
+}
+
+/* Estilos para cada ítem en la lista */
+.invoice-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 15px;
+    border-bottom: 1px solid var(--border-color);
+    flex-wrap: wrap;
+}
+.invoice-item:last-child {
+    border-bottom: none;
+}
+.invoice-item .item-details {
+    flex-grow: 1;
+    margin-right: 15px;
+}
+.invoice-item .item-description-display {
+    font-weight: 500;
+    color: var(--text-color);
+    margin-bottom: 4px;
+    font-size: 0.95rem;
+}
+.invoice-item .item-profile-details { /* Estilo para los detalles de perfil Nombre/PIN */
+    font-size: 0.8rem; 
+    color: var(--secondary-color); 
+    margin-top: 2px;
+    margin-bottom: 2px;
+    font-style: italic;
+}
+.invoice-item .item-meta {
+    font-size: 0.85rem;
+    color: var(--text-muted-color);
+}
+.invoice-item .item-actions {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex-shrink: 0;
+}
+.invoice-item .item-subtotal-display {
+    font-weight: 500;
+    color: var(--text-color);
+    font-size: 0.95rem;
+    min-width: 100px;
+    text-align: right;
+}
+.invoice-item .delete-item-btn {
+    padding: 5px 10px;
+    font-size: 0.8rem;
+}
+
+/* === AJUSTES PARA ORGANIZAR LA SECCIÓN "AÑADIR NUEVO ÍTEM" === */
+.add-item-form {
+    margin-top: 25px;
+    padding-top: 25px;
+    border-top: 2px solid var(--primary-color);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.add-item-form h4 {
+    font-size: 1.2rem;
+    margin-bottom: 0; /* El gap del flex container se encarga del espacio */
+    font-weight: 600;
+    color: var(--secondary-color);
+}
+
+/* El div que contiene el checkbox de Streaming */
+.add-item-form > .form-grid.item-details-grid:has(#itemIsStreaming),
+.add-item-form > div > .form-group.full-width:has(#itemIsStreaming) { /* Si el HTML es el que enviaste, el selector es más complejo */
+    /* Si el HTML es <div class="form-grid..."><div class="form-group full-width"><label for="itemIsStreaming">...</label></div></div> */
+    /* Este es el div.form-grid que contiene el checkbox */
+    display: block; /* Anulamos el grid si solo es para el checkbox y su label full-width */
+    margin-bottom: 0; 
+}
+.add-item-form .form-group.full-width label[for="itemIsStreaming"] {
+    padding: 5px 0; 
+}
+
+/* Contenedor para los campos de Perfil de Streaming (Nombre y PIN) */
+#streamingProfileFields {
+    /* display: none; es manejado por JS */
+    padding: 15px;
+    background-color: #f9f9f9;
+    border-radius: var(--border-radius-s);
+    margin-top: 0px; /* Ajustar si se ve mal con el checkbox */
+    /* El gap de .add-item-form maneja el espaciado vertical general */
+}
+#streamingProfileFields .form-grid.two-columns { /* El grid interno para Nombre y PIN */
+    gap: 15px;
+}
+
+/* Contenedor para Cantidad, Precio, IVA */
+.add-item-form > .form-grid.three-columns.item-details-grid {
+    gap: 15px; 
+}
+
+.add-item-form #addItemBtn {
+    margin-top: 0; /* El gap de .add-item-form maneja esto */
+    align-self: flex-start;
+    min-width: 150px;
+}
 
 /* === ESTILOS MEJORADOS PARA TOTALES Y ESTADO DE PAGO === */
 .totals-grid { display: grid; grid-template-columns: 1fr; gap: 25px; margin-top: 15px; }
@@ -251,6 +592,7 @@ label:has(input[type="checkbox"].inline-checkbox:disabled) { color: var(--text-m
 .status-info-box h4 { margin-bottom: 8px; font-size: 1rem; font-weight: 600; }
 .status-info-box p { font-size: 0.9rem; margin-bottom: 5px; }
 
+/* === Acciones del Formulario y Compartir === */
 .actions-section legend { color: var(--secondary-color); }
 .form-actions { display: flex; justify-content: flex-end; gap: 15px; margin-top: 20px; flex-wrap: wrap; }
 .form-actions.main-actions { margin-bottom: 25px; padding-bottom: 20px; border-bottom: 1px dashed var(--border-color); }
@@ -265,9 +607,11 @@ label:has(input[type="checkbox"].inline-checkbox:disabled) { color: var(--text-m
 .btn-share.email:hover:not(:disabled) { background-color: #c73123; }
 .btn-share svg { vertical-align: middle; }
 
+/* === Estilos para Mensajes de Validación === */
 .validation-message { font-size: 0.875rem; color: var(--danger-color); margin-top: 6px; padding: 5px 0; display: block; }
 input.input-error, select.input-error, textarea.input-error { border-color: var(--danger-color) !important; box-shadow: 0 0 0 2px rgba(220, 53, 69, 0.25) !important; }
 
+/* === Pantalla de Carga === */
 .loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(255, 255, 255, 0.95); display: none; justify-content: center; align-items: center; z-index: 10000; flex-direction: column; gap: 20px; backdrop-filter: blur(4px); }
 .loading-content { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 35px; background-color: var(--container-background); border-radius: var(--border-radius-l); box-shadow: var(--box-shadow-medium); }
 .loading-logo-spinner { width: 70px; height: auto; animation: spin 1.2s linear infinite; }
@@ -276,28 +620,19 @@ input.input-error, select.input-error, textarea.input-error { border-color: var(
 @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
 /* === MEDIA QUERIES PARA ADAPTABILIDAD === */
-/* Estilos para pantallas más grandes (PC) - A partir de 769px */
-@media (min-width: 769px) {
-    .form-grid.two-columns {
-        grid-template-columns: repeat(2, 1fr);
+@media (min-width: 769px) { /* Tablets en horizontal y PCs */
+    .form-grid.two-columns { grid-template-columns: repeat(2, 1fr); }
+    .form-grid.three-columns { grid-template-columns: repeat(3, 1fr); }
+    
+    /* Específico para el grid de Qty, Price, IVA en .add-item-form */
+    .add-item-form > .form-grid.three-columns.item-details-grid {
+         grid-template-columns: 1fr 1fr auto; /* Cantidad y Precio flexibles, IVA auto */
     }
-    .form-grid.three-columns {
-        grid-template-columns: repeat(3, 1fr);
-    }
-    .item-details-grid { 
-        grid-template-columns: auto 1fr 1fr; /* Checkbox auto, cantidad y precio dividen el resto */
-    }
-    .totals-grid {
-        grid-template-columns: 0.8fr 1.2fr; /* Dar un poco más de espacio al resumen que a los campos de descuento/estado */
-        align-items: flex-start;
-    }
-    .share-actions .button-group {
-        flex-direction: row; /* Botones de compartir en fila */
-    }
+    .totals-grid { grid-template-columns: 0.8fr 1.2fr; align-items: flex-start; }
+    .share-actions .button-group { flex-direction: row; }
 }
 
-/* Tablets medianas (hasta 992px) */
-@media (max-width: 992px) {
+@media (max-width: 992px) { /* Tablets medianas */
     .app-header { padding: 15px 20px; flex-direction: column; gap: 15px; }
     .logo-app-container { max-width: 220px; }
     .app-title-container h1 { font-size: 1.5rem; }
@@ -307,8 +642,7 @@ input.input-error, select.input-error, textarea.input-error { border-color: var(
     .form-section legend { font-size: 1.15rem; }
 }
 
-/* Tablets pequeñas y móviles grandes (hasta 768px) */
-@media (max-width: 768px) {
+@media (max-width: 768px) { /* Tablets pequeñas y móviles grandes */
     body { padding: 15px; }
     .login-container { max-width: 90%; padding: 25px;}
     .app-header { gap: 10px; }
@@ -317,7 +651,10 @@ input.input-error, select.input-error, textarea.input-error { border-color: var(
     .app-nav ul li a { padding: 12px 15px; font-size: 0.9rem; }
     .invoice-app-container { padding: 20px; }
     
-    .form-grid.two-columns, .form-grid.three-columns, .item-details-grid, .totals-grid {
+    .form-grid.two-columns, .form-grid.three-columns, 
+    .add-item-form > .form-grid.three-columns.item-details-grid,
+    #streamingProfileFields .form-grid.two-columns, /* Grid interno de campos de perfil */
+    .totals-grid {
         grid-template-columns: 1fr; /* Todo a una columna */
     }
     .form-actions { flex-direction: column; }
@@ -328,8 +665,7 @@ input.input-error, select.input-error, textarea.input-error { border-color: var(
     .share-actions .btn-share { width: 100%; margin-right: 0; }
 }
 
-/* Móviles pequeños (hasta 480px) */
-@media (max-width: 480px) {
+@media (max-width: 480px) { /* Móviles pequeños */
     body { padding: 10px; }
     .login-container { padding: 20px 18px; max-width: 95%; }
     .app-header { padding: 10px 15px; }
@@ -348,103 +684,10 @@ input.input-error, select.input-error, textarea.input-error { border-color: var(
     .loading-logo-spinner { width: 60px;}
     .loading-overlay p { font-size: 1rem;}
 }
+
 /* === ANIMACIÓN PARA EL GRADIENTE DEL APP-NAV === */
 @keyframes moveGradient {
-    0% {
-        background-position: 0% 50%; /* El gradiente comienza a la izquierda */
-    }
-    50% {
-        background-position: 100% 50%; /* El gradiente se mueve completamente a la derecha */
-    }
-    100% {
-        background-position: 0% 50%; /* El gradiente vuelve a la izquierda para un bucle suave */
-    }
-}
-/* === ESTILOS PARA LOS ÍTEMS DE LA FACTURA AGREGADOS === */
-#invoiceItemsContainer {
-    margin-bottom: 25px;
-    border: 1px solid var(--border-color); /* Cambiado de dashed a solid para consistencia */
-    padding: 0; /* El padding estará en los ítems individuales si es necesario */
-    border-radius: var(--border-radius-s);
-    min-height: 70px; 
-    display: flex;
-    flex-direction: column; /* Para apilar ítems o el placeholder */
-    /* justify-content: center; Ya no es necesario si los ítems ocupan el ancho */
-    /* align-items: center;   Ya no es necesario */
-}
-
-.invoice-item-placeholder {
-    color: var(--text-muted-color);
-    text-align: center;
-    font-style: italic;
-    padding: 20px; /* Más padding para el placeholder */
-    width: 100%; /* Asegurar que ocupe el espacio si es el único */
-}
-
-.invoice-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 12px 15px;
-    border-bottom: 1px solid var(--border-color);
-    flex-wrap: wrap; /* Para que se adapte en pantallas pequeñas */
-}
-
-.invoice-item:last-child {
-    border-bottom: none; /* Quitar el borde del último ítem */
-}
-
-.invoice-item .item-details {
-    flex-grow: 1; /* Permite que los detalles ocupen el espacio disponible */
-    margin-right: 15px; /* Espacio antes de los botones/subtotal */
-}
-
-.invoice-item .item-description-display {
-    font-weight: 500;
-    color: var(--text-color);
-    margin-bottom: 4px;
-    font-size: 0.95rem;
-}
-
-.invoice-item .item-meta {
-    font-size: 0.85rem;
-    color: var(--text-muted-color);
-}
-
-.invoice-item .item-actions {
-    display: flex;
-    align-items: center;
-    gap: 15px; /* Espacio entre subtotal y botón eliminar */
-    flex-shrink: 0; /* Para que no se encoja esta sección */
-}
-
-.invoice-item .item-subtotal-display {
-    font-weight: 500;
-    color: var(--text-color);
-    font-size: 0.95rem;
-    min-width: 100px; /* Para alinear un poco los subtotales */
-    text-align: right;
-}
-
-.invoice-item .delete-item-btn {
-    padding: 5px 10px; /* Botón de eliminar más pequeño */
-    font-size: 0.8rem;
-    /* Hereda estilos de .btn .btn-danger */
-}
-
-/* Ajustes para móviles en la lista de ítems */
-@media (max-width: 576px) {
-    .invoice-item {
-        flex-direction: column; /* Apilar detalles y acciones */
-        align-items: flex-start; /* Alinear a la izquierda */
-    }
-    .invoice-item .item-actions {
-        width: 100%;
-        justify-content: space-between; /* Espaciar subtotal y botón */
-        margin-top: 8px;
-    }
-    .invoice-item .item-subtotal-display {
-        min-width: auto; /* Quitar min-width en móvil */
-        text-align: left; /* Alinear a la izquierda */
-    }
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
 }
