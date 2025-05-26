@@ -41,6 +41,7 @@ const viewInvoicesSection = document.getElementById('viewInvoicesSection');
 const clientsSection = document.getElementById('clientsSection');
 const appPageTitle = document.getElementById('appPageTitle');
 const invoiceForm = document.getElementById('invoiceForm');
+const selectClient = document.getElementById('selectClient');
 const invoiceDateInput = document.getElementById('invoiceDate');
 const invoiceNumberText = document.getElementById('invoiceNumberText');
 
@@ -421,6 +422,25 @@ if (invoiceForm) {
         try {
             const docRef = await addDoc(collection(db, "facturas"), invoiceToSave);
             alert(`¡Factura FCT-${formattedInvoiceNumberStr} guardada exitosamente! ID: ${docRef.id}`);
+            // === INICIO: NUEVO CÓDIGO - Guardar nuevo cliente si es necesario ===
+            if (selectClient && selectClient.value === "") { // Si la opción era "-- Nuevo Cliente --"
+                const newClientData = {
+                    userId: user.uid, // Asociar cliente al usuario actual
+                    name: clientData.name, // clientData ya lo tienes definido arriba en este listener
+                    phone: clientData.phone,
+                    email: clientData.email,
+                    createdAt: serverTimestamp()
+                };
+                try {
+                    const clientDocRef = await addDoc(collection(db, "clientes"), newClientData);
+                    console.log("Nuevo cliente guardado con ID: ", clientDocRef.id);
+                    // No es necesario alertar al usuario por esto, es una acción secundaria
+                } catch (clientError) {
+                    console.error("Error al guardar el nuevo cliente: ", clientError);
+                    // Podrías considerar notificar al usuario de este error si es crítico
+                }
+            }
+            // === FIN: NUEVO CÓDIGO ===
             invoiceForm.reset();
             currentInvoiceItems = []; nextItemId = 0;
             renderItems(); setDefaultInvoiceDate(); updateQuantityBasedOnStreaming(); handleDiscountChange();
