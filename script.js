@@ -426,9 +426,9 @@ if (invoiceForm) {
             if (selectClient && selectClient.value === "") { // Si la opción era "-- Nuevo Cliente --"
                 const newClientData = {
                     userId: user.uid, // Asociar cliente al usuario actual
-                    name: clientData.name, // clientData ya lo tienes definido arriba en este listener
-                    phone: clientData.phone,
-                    email: clientData.email,
+                    name: clientName,   // Usar la constante clientName definida antes
+                    phone: clientPhone, // Usar la constante clientPhone
+                    email: clientEmail, // Usar la constante clientEmail
                     createdAt: serverTimestamp()
                 };
                 try {
