@@ -52,6 +52,11 @@ const clientsSection = document.getElementById('clientsSection');
 const appPageTitle = document.getElementById('appPageTitle');
 const invoiceForm = document.getElementById('invoiceForm');
 const selectClient = document.getElementById('selectClient');
+// === INICIO: NUEVO CÓDIGO - Selectores para campos de datos del cliente ===
+const clientNameInput = document.getElementById('clientName');
+const clientPhoneInput = document.getElementById('clientPhone');
+const clientEmailInput = document.getElementById('clientEmail');
+// === FIN: NUEVO CÓDIGO ===
 const invoiceDateInput = document.getElementById('invoiceDate');
 const invoiceNumberText = document.getElementById('invoiceNumberText');
 
@@ -100,6 +105,7 @@ const paymentStatusDetails = { /* ... (Objeto paymentStatusDetails completo) ...
     uncollectible: { description: "Después de múltiples intentos de cobro, se considera que la deuda no será recuperada.", action: "Se procede según las políticas de la empresa para dar de baja la cuenta por cobrar, lo cual puede tener implicaciones contables y fiscales." }
 };
 let currentInvoiceItems = [];
+let loadedClients = [];
 let nextItemId = 0;
 
 // --- Funciones Auxiliares y de UI ---
@@ -197,6 +203,7 @@ async function loadClientsIntoDropdown() {
     if (!user) {
         // Si no hay usuario, limpiar opciones excepto la primera y salir
         selectClient.innerHTML = '<option value="">-- Nuevo Cliente --</option>';
+        loadedClients = [];
         return;
     }
 
@@ -211,7 +218,8 @@ async function loadClientsIntoDropdown() {
         const querySnapshot = await getDocs(q);
 
         // Limpiar opciones existentes (excepto la primera de "-- Nuevo Cliente --")
-        selectClient.innerHTML = '<option value="">-- Nuevo Cliente --</option>'; 
+        selectClient.innerHTML = '<option value="">-- Nuevo Cliente --</option>';
+        loadedClients = [];
 
         if (querySnapshot.empty) {
             console.log("No se encontraron clientes para este usuario.");
@@ -222,12 +230,17 @@ async function loadClientsIntoDropdown() {
                 option.value = doc.id; // Guardamos el ID del documento del cliente
                 option.textContent = client.name; // Mostramos el nombre del cliente
                 selectClient.appendChild(option);
+
+                // === INICIO: NUEVO CÓDIGO - Guardar datos del cliente en el array ===
+                loadedClients.push({ id: doc.id, ...client });
+                // === FIN: NUEVO CÓDIGO ===
             });
             console.log("Clientes cargados en el desplegable.");
         }
     } catch (error) {
         console.error("Error al cargar clientes en el desplegable: ", error);
         selectClient.innerHTML = '<option value="">-- Nuevo Cliente --</option><option value="" disabled>Error al cargar clientes</option>';
+        loadedClients = [];
     }
 }
 // === FIN: NUEVO CÓDIGO ===
@@ -418,6 +431,41 @@ if (navClients) navClients.addEventListener('click', (e) => { e.preventDefault()
 if (itemIsStreamingCheckbox) itemIsStreamingCheckbox.addEventListener('change', updateQuantityBasedOnStreaming);
 if (paymentStatusSelect) paymentStatusSelect.addEventListener('change', updatePaymentStatusDisplay);
 
+// === INICIO: NUEVO CÓDIGO - Listener para el desplegable de clientes ===
+if (selectClient) {
+    selectClient.addEventListener('change', () => {
+        const selectedClientId = selectClient.value;
+
+        if (clientNameInput && clientPhoneInput && clientEmailInput) { // Verificar que los inputs existan
+            if (selectedClientId === "") {
+                // Opción "-- Nuevo Cliente --" seleccionada
+                clientNameInput.value = '';
+                clientPhoneInput.value = '';
+                clientEmailInput.value = '';
+                clientNameInput.disabled = false;
+                clientPhoneInput.disabled = false;
+                clientEmailInput.disabled = false;
+                clientNameInput.focus(); // Poner foco en el nombre para el nuevo cliente
+            } else {
+                // Buscar el cliente seleccionado en nuestro array 'loadedClients'
+                const selectedClient = loadedClients.find(client => client.id === selectedClientId);
+                if (selectedClient) {
+                    clientNameInput.value = selectedClient.name || '';
+                    clientPhoneInput.value = selectedClient.phone || '';
+                    clientEmailInput.value = selectedClient.email || '';
+                    
+                    // Opcional: Deshabilitar campos cuando se selecciona un cliente existente
+                    // para evitar edición accidental aquí. La edición se haría con el botón "Editar Cliente".
+                    // clientNameInput.disabled = true;
+                    // clientPhoneInput.disabled = true;
+                    // clientEmailInput.disabled = true;
+                }
+            }
+        }
+    });
+}
+// === FIN: NUEVO CÓDIGO ===
+
 if (discountTypeSelect) discountTypeSelect.addEventListener('change', handleDiscountChange);
 if (discountValueInput) discountValueInput.addEventListener('input', () => { if (typeof recalculateTotals === 'function') recalculateTotals(); });
 
@@ -539,8 +587,32 @@ if (invoiceForm) {
             }
             // === FIN: NUEVO CÓDIGO ===
             invoiceForm.reset();
-            currentInvoiceItems = []; nextItemId = 0;
-            renderItems(); setDefaultInvoiceDate(); updateQuantityBasedOnStreaming(); handleDiscountChange();
+            currentInvoiceItems = [];
+            nextItemId = 0;
+
+            // === INICIO: AQUÍ VA EL CÓDIGO DEL PUNTO E ===
+            // Asegurar limpieza y habilitación de campos de cliente
+            if (clientNameInput) {
+                clientNameInput.value = '';
+                clientNameInput.disabled = false;
+            }
+            if (clientPhoneInput) {
+                clientPhoneInput.value = '';
+                clientPhoneInput.disabled = false;
+            }
+            if (clientEmailInput) {
+                clientEmailInput.value = '';
+                clientEmailInput.disabled = false;
+            }
+            if(selectClient) { // Resetear el select a "-- Nuevo Cliente --"
+                selectClient.value = "";
+            }
+            // === FIN: CÓDIGO DEL PUNTO E ===
+            
+            renderItems();
+            setDefaultInvoiceDate();
+            updateQuantityBasedOnStreaming();
+            handleDiscountChange();
             await displayNextPotentialInvoiceNumber();
         } catch (error) {
             console.error("Error al guardar factura en Firestore: ", error);
