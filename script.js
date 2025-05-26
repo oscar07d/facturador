@@ -4,8 +4,18 @@ import {
     getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut
 } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
 import { 
-    getFirestore, collection, addDoc, serverTimestamp,
-    doc, getDoc, setDoc, runTransaction 
+    getFirestore,
+    collection,
+    addDoc,
+    serverTimestamp,
+    doc,
+    getDoc,
+    setDoc,
+    runTransaction,
+    query,
+    where,
+    getDocs,
+    orderBy
 } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
 
 // Configuración de Firebase
@@ -176,6 +186,52 @@ async function displayNextPotentialInvoiceNumber() {
     }
 }
 
+// === INICIO: NUEVO CÓDIGO - Función para cargar clientes en el desplegable ===
+/**
+ * Carga los clientes del usuario actual desde Firestore y los puebla en el select.
+ */
+async function loadClientsIntoDropdown() {
+    if (!selectClient) return; // Salir si el elemento select no existe
+
+    const user = auth.currentUser;
+    if (!user) {
+        // Si no hay usuario, limpiar opciones excepto la primera y salir
+        selectClient.innerHTML = '<option value="">-- Nuevo Cliente --</option>';
+        return;
+    }
+
+    try {
+        // Crear una consulta para obtener los clientes del usuario actual, ordenados por nombre
+        const q = query(
+            collection(db, "clientes"), 
+            where("userId", "==", user.uid),
+            orderBy("name", "asc") // Ordenar alfabéticamente por nombre
+        );
+
+        const querySnapshot = await getDocs(q);
+
+        // Limpiar opciones existentes (excepto la primera de "-- Nuevo Cliente --")
+        selectClient.innerHTML = '<option value="">-- Nuevo Cliente --</option>'; 
+
+        if (querySnapshot.empty) {
+            console.log("No se encontraron clientes para este usuario.");
+        } else {
+            querySnapshot.forEach((doc) => {
+                const client = doc.data();
+                const option = document.createElement('option');
+                option.value = doc.id; // Guardamos el ID del documento del cliente
+                option.textContent = client.name; // Mostramos el nombre del cliente
+                selectClient.appendChild(option);
+            });
+            console.log("Clientes cargados en el desplegable.");
+        }
+    } catch (error) {
+        console.error("Error al cargar clientes en el desplegable: ", error);
+        selectClient.innerHTML = '<option value="">-- Nuevo Cliente --</option><option value="" disabled>Error al cargar clientes</option>';
+    }
+}
+// === FIN: NUEVO CÓDIGO ===
+
 function renderItems() {
     if (!invoiceItemsContainer) return;
     invoiceItemsContainer.innerHTML = '';
@@ -255,34 +311,70 @@ function handleDiscountChange() {
 async function handleNavigation(sectionToShowId) {
     const sections = [createInvoiceSection, viewInvoicesSection, clientsSection];
     const navLinks = [navCreateInvoice, navViewInvoices, navClients];
-    let targetTitle = "Sistema de Facturación";
+    let targetTitle = "Sistema de Facturación"; // Título por defecto
 
-    sections.forEach(section => { if (section) section.style.display = 'none'; });
-    navLinks.forEach(link => { if (link) link.classList.remove('active-nav'); });
+    // 1. Ocultar todas las secciones y desactivar todos los links de navegación primero
+    sections.forEach(section => {
+        if (section) {
+            section.style.display = 'none';
+            section.classList.remove('active-section'); // Asegurarse de quitar la clase activa
+        }
+    });
+    navLinks.forEach(link => {
+        if (link) {
+            link.classList.remove('active-nav');
+        }
+    });
 
-    const currentSection = sections.find(s => s && s.id === sectionToShowId);
-    if (currentSection) currentSection.style.display = 'block';
-    
-    const currentLink = navLinks.find(l => l && (l.id.replace('nav', '').charAt(0).toLowerCase() + l.id.replace('nav', '').slice(1) + 'Section') === sectionToShowId);
-    if (currentLink) currentLink.classList.add('active-nav');
-
+    // 2. Lógica específica y mostrar la sección correcta
     if (sectionToShowId === 'createInvoiceSection') {
         targetTitle = "Crear Nueva Factura";
+        if (createInvoiceSection) {
+            createInvoiceSection.style.display = 'block';
+            createInvoiceSection.classList.add('active-section');
+        }
+        if (navCreateInvoice) navCreateInvoice.classList.add('active-nav');
+
+        // Llamadas a funciones específicas para la sección "Crear Factura"
         if (typeof setDefaultInvoiceDate === 'function') setDefaultInvoiceDate();
         if (typeof updateQuantityBasedOnStreaming === 'function') updateQuantityBasedOnStreaming();
         if (typeof handleDiscountChange === 'function') handleDiscountChange();
-        if (typeof renderItems === 'function') renderItems();
-        if (typeof displayNextPotentialInvoiceNumber === 'function') await displayNextPotentialInvoiceNumber();
+        if (typeof renderItems === 'function') renderItems(); 
+        if (typeof displayNextPotentialInvoiceNumber === 'function') {
+            await displayNextPotentialInvoiceNumber(); 
+        }
+        if (typeof loadClientsIntoDropdown === 'function') { // <--- AQUÍ ESTÁ LA LLAMADA CORRECTA
+            await loadClientsIntoDropdown();
+        }
+
     } else if (sectionToShowId === 'viewInvoicesSection') {
         targetTitle = "Mis Facturas";
-        if (viewInvoicesSection && viewInvoicesSection.innerHTML.trim() === '') viewInvoicesSection.innerHTML = `<h2>Mis Facturas</h2><p>Funcionalidad en desarrollo.</p><div id="invoiceListContainer"></div>`;
+        if (viewInvoicesSection) {
+            viewInvoicesSection.style.display = 'block';
+            viewInvoicesSection.classList.add('active-section');
+        }
+        if (navViewInvoices) navViewInvoices.classList.add('active-nav');
+        
+        if (viewInvoicesSection && viewInvoicesSection.innerHTML.trim() === '') { 
+            viewInvoicesSection.innerHTML = `<h2>Mis Facturas</h2><p>Listado de facturas aparecerá aquí. Funcionalidad en desarrollo.</p><div id="invoiceListContainer"></div>`;
+        }
+
     } else if (sectionToShowId === 'clientsSection') {
         targetTitle = "Clientes";
-        if (clientsSection && clientsSection.innerHTML.trim() === '') clientsSection.innerHTML = `<h2>Clientes</h2><p>Funcionalidad en desarrollo.</p><div id="clientListContainer"></div>`;
+        if (clientsSection) {
+            clientsSection.style.display = 'block';
+            clientsSection.classList.add('active-section');
+        }
+        if (navClients) navClients.classList.add('active-nav');
+
+        if (clientsSection && clientsSection.innerHTML.trim() === '') { 
+            clientsSection.innerHTML = `<h2>Clientes</h2><p>Listado de clientes aparecerá aquí. Funcionalidad en desarrollo.</p><div id="clientListContainer"></div>`;
+        }
     }
+
+    // 3. Actualizar el título de la página de la aplicación
     if (appPageTitle) appPageTitle.textContent = targetTitle;
 }
-
 // --- Lógica de Autenticación y Estado ---
 if (loginButton) {
     loginButton.addEventListener('click', () => {
@@ -434,6 +526,11 @@ if (invoiceForm) {
                 try {
                     const clientDocRef = await addDoc(collection(db, "clientes"), newClientData);
                     console.log("Nuevo cliente guardado con ID: ", clientDocRef.id);
+                    // === INICIO: NUEVO CÓDIGO - Recargar clientes en el desplegable ===
+                    if (typeof loadClientsIntoDropdown === 'function') {
+                        await loadClientsIntoDropdown();
+                    }
+                    // === FIN: NUEVO CÓDIGO ===
                     // No es necesario alertar al usuario por esto, es una acción secundaria
                 } catch (clientError) {
                     console.error("Error al guardar el nuevo cliente: ", clientError);
