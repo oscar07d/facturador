@@ -88,219 +88,223 @@
 				<button id="logoutButton" class="btn btn-outline">Cerrar Sesión</button>
 			</div>
 		</header>
-		<nav class="app-nav">
-			<ul>
-				<li><a href="#" id="navCreateInvoice" class="active-nav">Crear Factura</a></li>
-				<li><a href="#" id="navViewInvoices">Mis Facturas</a></li>
-				<li><a href="#" id="navClients">Clientes</a></li>
-			</ul>
-		</nav>
-		<main class="invoice-app-container">
-			<section id="createInvoiceSection" class="invoice-section active-section">
-				<form id="invoiceForm" class="invoice-form">
-					<fieldset class="form-section">
-						<legend>Datos del Emisor (Tu Comercio) <span class="optional-tag">(Opcional)</span></legend>
-						<div class="form-grid two-columns">
-							<div class="form-group">
-								<label for="emitterName">Nombre del Comercio:</label>
-								<input type="text" id="emitterName" name="emitterName">
-							</div>
-							<div class="form-group">
-								<label for="emitterId">NIT/C.C./Identificación:</label>
-								<input type="text" id="emitterId" name="emitterId">
-							</div>
-							<div class="form-group">
-								<label for="emitterAddress">Dirección:</label>
-								<input type="text" id="emitterAddress" name="emitterAddress">
-							</div>
-							<div class="form-group">
-								<label for="emitterPhone">Teléfono:</label>
-								<input type="tel" id="emitterPhone" name="emitterPhone">
-							</div>
-							<div class="form-group">
-								<label for="emitterEmail">Correo Electrónico:</label>
-								<input type="email" id="emitterEmail" name="emitterEmail">
-							</div>
-						</div>
-					</fieldset>
-					<fieldset class="form-section">
-						<legend>Datos del Cliente</legend>
-						<div class="form-group">
-							<label for="selectClient">Seleccionar Cliente Existente:</label>
-							<select id="selectClient" name="selectClient">
-								<option value="">-- Nuevo Cliente --</option>
-								<option value="cliente1_id">Cliente Ejemplo 1 (Existente)</option> 
-							</select>
-						</div>
-						<div class="client-actions">
-							<button type="button" id="editClientBtn" class="btn btn-secondary" disabled>Editar Cliente</button>
-							<button type="button" id="deleteClientBtn" class="btn btn-danger" disabled>Eliminar Cliente</button>
-							</div>
-						<div class="form-grid two-columns">
-							<div class="form-group">
-								<label for="clientName">Nombres y Apellidos:</label>
-								<input type="text" id="clientName" name="clientName" required>
-							</div>
-							<div class="form-group">
-								<label for="clientPhone">Celular:</label>
-								<input type="tel" id="clientPhone" name="clientPhone" required>
-							</div>
-							<div class="form-group full-width">
-								<label for="clientEmail">Correo Electrónico:</label>
-								<input type="email" id="clientEmail" name="clientEmail" required>
-							</div>
-						</div>
-					</fieldset>
-					<fieldset class="form-section">
-						<legend>Detalles de la Factura</legend>
-						<div class="form-grid three-columns">
-							<div class="form-group">
-								<label>Número de Factura:</label>
-								<p class="invoice-number-display">
-									FCT-<span id="invoiceNumberText">000</span>
-								</p>
-							</div>
-							<div class="form-group">
-								<label for="invoiceDate">Fecha de Factura:</label>
-								<input type="date" id="invoiceDate" name="invoiceDate" required>
-							</div>
-							<div class="form-group">
-								<label for="serviceStartDate">Fecha Inicio de Servicio (Pagos Mensuales):</label>
-								<input type="date" id="serviceStartDate" name="serviceStartDate">
-							</div>
-						</div>
-					</fieldset>
-					<fieldset class="form-section">
-						<legend>Ítems de la Factura</legend>
-						<div id="invoiceItemsContainer"> <div class="invoice-item-placeholder">Aún no has agregado ítems.</div>
-						</div>
-						<div class="add-item-form"> <h4>Añadir Nuevo Ítem</h4>
-							<div class="form-group">
-								<label for="itemDescription">Descripción (Producto o Servicio):</label>
-								<input type="text" id="itemDescription" name="itemDescription">
-							</div>
-							<div class="form-grid two-columns item-details-grid"> 
-								<div class="form-group full-width"> 
-									<label for="itemIsStreaming">
-										<input type="checkbox" id="itemIsStreaming" name="itemIsStreaming" class="inline-checkbox">
-										¿Es Plataforma de Streaming?
-									</label>
-								</div>
-							</div>
-							<div id="streamingProfileFields" style="display: none;">
-								<div class="form-grid two-columns">
-									<div class="form-group">
-										<label for="itemProfileName">Nombre del Perfil:</label>
-										<input type="text" id="itemProfileName" name="itemProfileName">
-									</div>
-									<div class="form-group">
-										<label for="itemProfilePin">PIN del Perfil:</label>
-										<input type="text" id="itemProfilePin" name="itemProfilePin"> 
-									</div>
-								</div>
-							</div>
-							<div class="form-grid three-columns item-details-grid">
-								 <div class="form-group">
-									<label for="itemQuantity">Cantidad:</label>
-									<input type="number" id="itemQuantity" name="itemQuantity" value="1" min="1">
-								</div>
-								<div class="form-group">
-									<label for="itemPrice">Precio Unitario (COP):</label>
-									<input type="number" id="itemPrice" name="itemPrice" min="0" step="any">
-								</div>
-								<div class="form-group"> 
-									<label for="itemApplyIVA">
-										<input type="checkbox" id="itemApplyIVA" name="itemApplyIVA" class="inline-checkbox">
-										Aplicar IVA (19%)
-									</label>
-								</div>
-							</div>
-							<button type="button" id="addItemBtn" class="btn btn-primary">Agregar Ítem</button>
-						</div>
-					</fieldset>
-					<fieldset class="form-section">
-						<legend>Totales y Estado de Pago</legend>
-						<div class="totals-grid">
-							<div class="totals-fields">
-								<div class="form-group">
-									<label for="discountType">Tipo de Descuento:</label>
-									<select id="discountType" name="discountType">
-										<option value="none">Sin descuento</option>
-										<option value="percentage">Porcentaje (%)</option>
-										<option value="fixed">Valor Fijo (COP)</option>
-									</select>
-								</div>
-								<div class="form-group">
-									<label for="discountValue">Valor del Descuento:</label>
-									<input type="number" id="discountValue" name="discountValue" min="0" step="any" disabled>
-								</div>
-								<div class="form-group">
-									<label for="paymentStatus">Estado del Pago:</label>
-									<select id="paymentStatus" name="paymentStatus" required>
-										<option value="pending">Pendiente de Pago</option>
-										<option value="paid">Pagado</option>
-										<option value="overdue">Vencido</option>
-										<option value="in_process">En Proceso de Pago</option>
-										<option value="partial_payment">Pago Parcial</option>
-										<option value="disputed">Disputado</option>
-										<option value="cancelled">Cancelado</option>
-										<option value="uncollectible">Incobrable</option>
-									</select>
-								</div>
-							</div>
-							<div class="totals-summary-box">
-								<h4>Resumen de la Factura</h4>
-								<p><span class="summary-label">Subtotal:</span> <span class="summary-value"><span id="subtotalAmount">0.00</span> COP</span></p>
-								<p><span class="summary-label">Descuento Aplicado:</span> <span class="summary-value"><span id="discountAmountApplied">0.00</span> COP</span></p>
-								<p><span class="summary-label">Base Imponible:</span> <span class="summary-value"><span id="taxableBaseAmount">0.00</span> COP</span></p>
-								<p><span class="summary-label">IVA (19%):</span> <span class="summary-value"><span id="ivaAmount">0.00</span> COP</span></p>
-								<h3 class="grand-total"><span class="summary-label">TOTAL FACTURA:</span> <span class="summary-value"><span id="totalAmount">0.00</span> COP</span></h3>
-							</div>
-						</div>
-						<div id="paymentStatusInfo" class="status-info-box" style="display: none;">
-							<h4>Información del Estado:</h4>
-							<p id="paymentStatusDescription"></p>
-							<p><strong>Acción Sugerida:</strong> <span id="paymentStatusAction"></span></p>
-						</div>
-					</fieldset>
-					<fieldset class="form-section actions-section">
-						<legend>Acciones Finales</legend>
-						<div class="form-actions main-actions">
-							<button type="submit" id="saveInvoiceBtn" class="btn btn-success">
-								<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="18px" height="18px" style="margin-right: 8px;"><path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/></svg>
-								Guardar Venta
-							</button>
-							<button type="button" id="generateInvoiceFileBtn" class="btn btn-info">
-								<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="18px" height="18px" style="margin-right: 8px;"><path d="M8 16h8v2H8zm0-4h8v2H8zm6-10H6c-1.1 0-2 .9-2 2v16c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11z"/></svg>
-								Generar Factura (Archivo)
-							</button>
-						</div>
-						<div class="share-actions">
-							<p>Compartir Factura (después de generar):</p>
-							<button type="button" id="shareWhatsappBtn" class="btn btn-share whatsapp" disabled>
-								<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16" style="margin-right: 8px;"><path d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.933 7.933 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.898 7.898 0 0 0 13.6 2.326zM7.994 14.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.729.729 0 0 0-.529.247c-.182.198-.691.677-.691 1.654 0 .977.71 1.916.81 2.049.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z"/></svg>
-								WhatsApp
-							</button>
-							<button type="button" id="shareEmailBtn" class="btn btn-share email" disabled>
-								<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16" style="margin-right: 8px;"><path d="M.05 3.555A2 2 0 0 1 2 2h12a2 2 0 0 1 1.95 1.555L8 8.414.05 3.555ZM0 4.697v7.104l5.803-3.558L0 4.697ZM6.761 8.83l-6.57 4.027A2 2 0 0 0 2 14h12a2 2 0 0 0 1.808-1.144l-6.57-4.027L8 9.586l-1.239-.757Zm3.436-.586L16 11.801V4.697l-5.803 3.546Z"/></svg>
-								Correo (Gmail)
-							</button>
-						</div>
-					</fieldset>
-				</form>
-			</section>
-			<section id="viewInvoicesSection" class="invoice-section" style="display: none;">
-				<h2>Mis Facturas</h2>
-				<p>Próximamente: Aquí podrás buscar y ver tus facturas creadas.</p>
-			</section>
-			<section id="clientsSection" class="invoice-section" style="display: none;">
-				<h2>Clientes</h2>
-				<p>Próximamente: Aquí podrás buscar y gestionar tus clientes.</p>
-			</section>
-		</main>
-    </div>
+        <nav class="app-nav">
+            <ul>
+                <li><a href="#" id="navCreateInvoice" class="active-nav">Crear Factura</a></li>
+                <li><a href="#" id="navViewInvoices">Mis Facturas</a></li>
+                <li><a href="#" id="navClients">Clientes</a></li>
+            </ul>
+        </nav>
+        <main class="invoice-app-container">
+            <section id="createInvoiceSection" class="invoice-section active-section">
+                <form id="invoiceForm" class="invoice-form">
+                    <fieldset class="form-section">
+                        <legend>Datos del Emisor (Tu Comercio) <span class="optional-tag">(Opcional)</span></legend>
+                        <div class="form-grid two-columns">
+                            <div class="form-group"><label for="emitterName">Nombre del Comercio:</label><input type="text" id="emitterName" name="emitterName"></div>
+                            <div class="form-group"><label for="emitterId">NIT/C.C./Identificación:</label><input type="text" id="emitterId" name="emitterId"></div>
+                            <div class="form-group"><label for="emitterAddress">Dirección:</label><input type="text" id="emitterAddress" name="emitterAddress"></div>
+                            <div class="form-group"><label for="emitterPhone">Teléfono:</label><input type="tel" id="emitterPhone" name="emitterPhone"></div>
+                            <div class="form-group"><label for="emitterEmail">Correo Electrónico:</label><input type="email" id="emitterEmail" name="emitterEmail"></div>
+                        </div>
+                    </fieldset>
+                    <fieldset class="form-section">
+                        <legend>Datos del Cliente</legend>
+                        <div class="form-group"><label for="selectClient">Seleccionar Cliente Existente:</label><select id="selectClient" name="selectClient"><option value="">-- Nuevo Cliente --</option><option value="cliente1_id">Cliente Ejemplo 1 (Existente)</option></select></div>
+                        <div class="client-actions"><button type="button" id="editClientBtn" class="btn btn-secondary" disabled>Editar Cliente</button><button type="button" id="deleteClientBtn" class="btn btn-danger" disabled>Eliminar Cliente</button></div>
+                        <div class="form-grid two-columns">
+                            <div class="form-group"><label for="clientName">Nombres y Apellidos:</label><input type="text" id="clientName" name="clientName" required></div>
+                            <div class="form-group"><label for="clientPhone">Celular:</label><input type="tel" id="clientPhone" name="clientPhone" required></div>
+                            <div class="form-group full-width"><label for="clientEmail">Correo Electrónico:</label><input type="email" id="clientEmail" name="clientEmail" required></div>
+                        </div>
+                    </fieldset>
+                    <fieldset class="form-section">
+                        <legend>Detalles de la Factura</legend>
+                        <div class="form-grid three-columns">
+                            <div class="form-group"><label>Número de Factura:</label><p class="invoice-number-display">FCT-<span id="invoiceNumberText">000</span></p></div>
+                            <div class="form-group"><label for="invoiceDate">Fecha de Factura:</label><input type="date" id="invoiceDate" name="invoiceDate" required></div>
+                            <div class="form-group"><label for="serviceStartDate">Fecha Inicio de Servicio (Pagos Mensuales):</label><input type="date" id="serviceStartDate" name="serviceStartDate"></div>
+                        </div>
+                    </fieldset>
+                    <fieldset class="form-section">
+                        <legend>Ítems de la Factura</legend>
+                        <div id="invoiceItemsContainer"><div class="invoice-item-placeholder">Aún no has agregado ítems.</div></div>
+                        <div class="add-item-form">
+                            <h4>Añadir Nuevo Ítem</h4>
+                            <div class="form-group">
+                                <label for="itemDescription">Descripción (Producto o Servicio):</label>
+                                <input type="text" id="itemDescription" name="itemDescription">
+                            </div>
+                            <div class="form-grid two-columns item-details-grid"> 
+                                <div class="form-group full-width"> 
+                                    <label for="itemIsStreaming">
+                                        <input type="checkbox" id="itemIsStreaming" name="itemIsStreaming" class="inline-checkbox">
+                                        ¿Es Plataforma de Streaming?
+                                    </label>
+                                </div>
+                            </div>
+                            <div id="streamingProfileFields" style="display: none;">
+                                <div class="form-grid two-columns">
+                                    <div class="form-group">
+                                        <label for="itemProfileName">Nombre del Perfil:</label>
+                                        <input type="text" id="itemProfileName" name="itemProfileName">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="itemProfilePin">PIN del Perfil:</label>
+                                        <input type="text" id="itemProfilePin" name="itemProfilePin"> 
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-grid three-columns item-details-grid">
+                                 <div class="form-group">
+                                    <label for="itemQuantity">Cantidad:</label>
+                                    <input type="number" id="itemQuantity" name="itemQuantity" value="1" min="1">
+                                </div>
+                                <div class="form-group">
+                                    <label for="itemPrice">Precio Unitario (COP):</label>
+                                    <input type="number" id="itemPrice" name="itemPrice" min="0" step="any">
+                                </div>
+                                <div class="form-group"> 
+                                    <label for="itemApplyIVA">
+                                        <input type="checkbox" id="itemApplyIVA" name="itemApplyIVA" class="inline-checkbox">
+                                        Aplicar IVA (19%)
+                                    </label>
+                                </div>
+                            </div>
+                            <button type="button" id="addItemBtn" class="btn btn-primary">Agregar Ítem</button>
+                        </div>
+                    </fieldset>
+                    <fieldset class="form-section">
+                        <legend>Totales y Estado de Pago</legend>
+                        <div class="totals-grid">
+                            <div class="totals-fields">
+                                <div class="form-group"><label for="discountType">Tipo de Descuento:</label><select id="discountType" name="discountType"><option value="none">Sin descuento</option><option value="percentage">Porcentaje (%)</option><option value="fixed">Valor Fijo (COP)</option></select></div>
+                                <div class="form-group"><label for="discountValue">Valor del Descuento:</label><input type="number" id="discountValue" name="discountValue" min="0" step="any" disabled></div>
+                                <div class="form-group"><label for="paymentStatus">Estado del Pago:</label><select id="paymentStatus" name="paymentStatus" required><option value="pending">Pendiente de Pago</option><option value="paid">Pagado</option><option value="overdue">Vencido</option><option value="in_process">En Proceso de Pago</option><option value="partial_payment">Pago Parcial</option><option value="disputed">Disputado</option><option value="cancelled">Cancelado</option><option value="uncollectible">Incobrable</option></select></div>
+                            </div>
+                            <div class="totals-summary-box">
+                                <h4>Resumen de la Factura</h4>
+                                <p><span class="summary-label">Subtotal:</span> <span class="summary-value"><span id="subtotalAmount">0.00</span> COP</span></p>
+                                <p><span class="summary-label">Descuento Aplicado:</span> <span class="summary-value"><span id="discountAmountApplied">0.00</span> COP</span></p>
+                                <p><span class="summary-label">Base Imponible:</span> <span class="summary-value"><span id="taxableBaseAmount">0.00</span> COP</span></p>
+                                <p><span class="summary-label">IVA (19%):</span> <span class="summary-value"><span id="ivaAmount">0.00</span> COP</span></p>
+                                <h3 class="grand-total"><span class="summary-label">TOTAL FACTURA:</span> <span class="summary-value"><span id="totalAmount">0.00</span> COP</span></h3>
+                            </div>
+                        </div>
+                        <div id="paymentStatusInfo" class="status-info-box" style="display: none;">
+                            <h4>Información del Estado:</h4>
+                            <p id="paymentStatusDescription"></p>
+                            <p><strong>Acción Sugerida:</strong> <span id="paymentStatusAction"></span></p>
+                        </div>
+                    </fieldset>
+                    <fieldset class="form-section actions-section">
+                        <legend>Acciones Finales</legend>
+                        <div class="form-actions main-actions">
+                            <button type="submit" id="saveInvoiceBtn" class="btn btn-success"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="18px" height="18px" style="margin-right: 8px;"><path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/></svg>Guardar Venta</button>
+                            <button type="button" id="generateInvoiceFileBtn" class="btn btn-info"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="18px" height="18px" style="margin-right: 8px;"><path d="M8 16h8v2H8zm0-4h8v2H8zm6-10H6c-1.1 0-2 .9-2 2v16c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11z"/></svg>Generar Factura (Archivo)</button>
+                        </div>
+                        <div class="share-actions">
+                            <p>Compartir Factura (después de generar):</p>
+                            <button type="button" id="shareWhatsappBtn" class="btn btn-share whatsapp" disabled><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16" style="margin-right: 8px;"><path d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.933 7.933 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.898 7.898 0 0 0 13.6 2.326zM7.994 14.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.729.729 0 0 0-.529.247c-.182.198-.691.677-.691 1.654 0 .977.71 1.916.81 2.049.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z"/></svg>WhatsApp</button>
+                                <button type="button" id="shareEmailBtn" class="btn btn-share email" disabled><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16" style="margin-right: 8px;"><path d="M.05 3.555A2 2 0 0 1 2 2h12a2 2 0 0 1 1.95 1.555L8 8.414.05 3.555ZM0 4.697v7.104l5.803-3.558L0 4.697ZM6.761 8.83l-6.57 4.027A2 2 0 0 0 2 14h12a2 2 0 0 0 1.808-1.144l-6.57-4.027L8 9.586l-1.239-.757Zm3.436-.586L16 11.801V4.697l-5.803 3.546Z"/></svg>Correo (Gmail)</button>
+                            </div>
+                        </fieldset>
+                    </form>
+                </section>
+    
+                <section id="viewInvoicesSection" class="invoice-section" style="display: none;">
+                    <h2>Mis Facturas</h2>
+                    <p>Próximamente: Aquí podrás buscar y ver tus facturas creadas.</p>
+                </section>
+    
+                <section id="clientsSection" class="invoice-section" style="display: none;">
+                    <h2>Clientes</h2>
+                    <p>Próximamente: Aquí podrás buscar y gestionar tus clientes.</p>
+                </section>
+            </main>
+            
+        </div>
 
-    <script type="module" src="script.js"></script>
+        <div id="invoice-export-template" style="display: none; width: 800px; margin: 20px auto; font-family: Arial, sans-serif; border: 1px solid #eee; padding: 20px;">
+            <div class="export-header" style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #007bff; padding-bottom: 15px; margin-bottom: 20px;">
+                <div class="export-logo-container" style="flex: 1;">
+                    <div id="export-logo-placeholder" style="width: 150px; height: 70px; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center; font-size: 12px; color: #888;">Logo Aquí</div>
+                </div>
+                <div class="export-title-status" style="flex: 2; text-align: center;">
+                    <h1 style="margin: 0 0 10px 0; font-size: 28px; color: #007bff;">FACTURA</h1>
+                    <div id="export-payment-status" class="payment-status-badge" style="display: inline-block; padding: 8px 15px; border-radius: 20px; font-size: 14px; font-weight: bold; margin-top: 5px;">
+                        {ESTADO_PAGO}
+                    </div>
+                </div>
+                <div class="export-header-spacer" style="flex: 1;"></div>
+            </div>
+            <div class="export-info-section" style="display: flex; justify-content: space-between; margin-bottom: 25px; font-size: 13px; line-height: 1.6;">
+                <div class="export-client-info" style="width: 48%;">
+                    <h3 style="margin-top: 0; margin-bottom: 10px; font-size: 15px; color: #555; border-bottom: 1px solid #eee; padding-bottom: 5px;">FACTURAR A:</h3>
+                    <p><strong><span id="export-client-name">{NOMBRE_CLIENTE}</span></strong></p>
+                    <p id="export-client-email-line" style="display: none;">Correo: <span id="export-client-email">{CORREO_CLIENTE}</span></p>
+                    <p>Celular: <span id="export-client-phone">{CELULAR_CLIENTE}</span></p>
+                </div>
+                <div class="export-company-info" style="width: 48%; text-align: right;">
+                    <h3 id="export-emitter-name" style="margin-top: 0; margin-bottom: 10px; font-size: 16px; color: #333;">{NOMBRE_COMERCIO}</h3>
+                    <p id="export-emitter-address-line" style="display: none;"><span id="export-emitter-address">{DIRECCION_EMPRESA}</span></p>
+                    <p id="export-emitter-id-line" style="display: none;">NIT/ID: <span id="export-emitter-id">{NIT_EMPRESA}</span></p>
+                    <p id="export-emitter-phone-line" style="display: none;">Tel: <span id="export-emitter-phone">{TELEFONO_EMPRESA}</span></p>
+                    <p id="export-emitter-email-line" style="display: none;">Email: <span id="export-emitter-email">{CORREO_EMPRESA}</span></p>
+                    <p id="export-image-generation-date-line" style="font-size: 11px; color: #777; margin-top: 10px;">Generado: <span id="export-image-generation-date">{FECHA_GENERACION_IMAGEN}</span></p>
+                </div>
+            </div>
+            <div class="export-items-section" style="margin-bottom: 25px;">
+                <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+                    <thead>
+                        <tr id="export-items-header-row" style="color: white;">
+                            <th style="text-align: left; padding: 10px; border-bottom: 1px solid #ddd; width: 35%;">DESCRIPCIÓN</th>
+                            <th id="export-header-profile" style="text-align: left; padding: 10px; border-bottom: 1px solid #ddd; display: none;">PERFIL</th>
+                            <th id="export-header-pin" style="text-align: left; padding: 10px; border-bottom: 1px solid #ddd; display: none;">PIN</th>
+                            <th style="text-align: right; padding: 10px; border-bottom: 1px solid #ddd;">CANT.</th>
+                            <th style="text-align: right; padding: 10px; border-bottom: 1px solid #ddd;">P.U.</th>
+                            <th style="text-align: right; padding: 10px; border-bottom: 1px solid #ddd;">TOTAL</th>
+                        </tr>
+                    </thead>
+                    <tbody id="export-invoice-items-body">
+                    </tbody>
+                </table>
+            </div>
+            <div class="export-totals-section" style="display: flex; justify-content: flex-end; margin-bottom: 25px; font-size: 14px;">
+                <div style="width: 50%; max-width: 350px;">
+                    <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #eee;"><span>Subtotal:</span><span id="export-subtotal">{SUBTOTAL}</span></div>
+                    <div id="export-iva-line" style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #eee; display:none;"><span>IVA (19%):</span><span id="export-iva">{IVA}</span></div>
+                    <div id="export-discount-line" style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #eee; display:none;"><span>Descuento Aplicado:</span><span id="export-discount">{DESCUENTO}</span></div>
+                    <div style="display: flex; justify-content: space-between; padding: 10px 0; font-weight: bold; font-size: 16px; border-top: 2px solid #333; margin-top:5px;"><span>TOTAL A PAGAR:</span><span id="export-grand-total">{TOTAL_PAGAR}</span></div>
+                </div>
+            </div>
+            <div class="export-footer" style="display: flex; justify-content: space-between; font-size: 12px; color: #555; border-top: 1px solid #eee; padding-top: 15px;">
+                <div class="export-footer-left">
+                    <p>Fecha de Emisión (Factura): <span id="export-invoice-date">{FECHA_EMISION_FACTURA}</span></p>
+                    <p>N.º de Factura: <span id="export-invoice-sequential-number">{FCT-XXX}</span></p>
+                </div>
+                <div class="export-footer-right" style="text-align: right;">
+                    <p id="export-due-date-line" style="display: none;">Fecha de Pago: <span id="export-due-date">{FECHA_DE_PAGO_RECURRENTE}</span></p>
+                    <p>Código de Consulta: <span id="export-unique-alphanumeric-code">{CODIGO_ALFANUMERICO}</span></p>
+                </div>
+            </div>
+        </div>
+        <div id="loadingOverlay" class="loading-overlay">
+            <div class="loading-content">
+                <svg id="Capa_2_loading_logo_overlay" data-name="Capa 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 306.53 264.67" class="loading-logo-spinner">
+                  <g id="Capa_2-2_loading_logo_overlay" data-name="Capa 2">
+                    <g id="Logo_Negro_loading_logo_overlay" data-name="Logo Negro">
+                      <g id="Logo_loading_logo_overlay">
+                        <path class="logo-path-spinner" d="M191.61,0c-63.46,0-114.92,51.46-114.92,114.92s51.46,114.92,114.92,114.92,114.92-51.46,114.92-114.92S255.08,0,191.61,0Zm0,172.38c-31.73,0-57.46-25.73-57.46-57.46s25.73-57.46,57.46-57.46,57.46,25.73,57.46,57.46-25.73,57.46-57.46,57.46Z"/>
+                        <path class="logo-path-spinner" d="M184.6,241.14c-19.34,14.77-43.48,23.53-69.68,23.53C51.46,264.67,0,213.23,0,149.75,0,94.12,39.53,47.72,92.05,37.1c-16.81,21.48-26.85,48.5-26.85,77.81,0,67.34,52.95,122.56,119.4,126.22Z"/>
+                      </g>
+                    </g>
+                  </g>
+                </svg>
+                <p>Iniciando sesión...</p>
+            </div>
+        </div>
+
+    </div> <script type="module" src="script.js"></script>
 </body>
 </html>
-}
