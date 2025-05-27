@@ -50,6 +50,7 @@ const createInvoiceSection = document.getElementById('createInvoiceSection');
 const viewInvoicesSection = document.getElementById('viewInvoicesSection');
 const clientsSection = document.getElementById('clientsSection');
 const appPageTitle = document.getElementById('appPageTitle');
+const invoiceListContainer = document.getElementById('invoiceListContainer');
 const invoiceForm = document.getElementById('invoiceForm');
 const selectClient = document.getElementById('selectClient');
 // === INICIO: NUEVO CÓDIGO - Selectores para campos de datos del cliente ===
@@ -191,6 +192,95 @@ async function displayNextPotentialInvoiceNumber() {
         invoiceNumberText.textContent = "000";
     }
 }
+
+// === INICIO: NUEVO CÓDIGO - Función para cargar y mostrar facturas ===
+/**
+ * Carga las facturas del usuario actual desde Firestore y las muestra en la lista.
+ */
+async function loadAndDisplayInvoices() {
+    if (!invoiceListContainer) { // Asegurarse que el contenedor exista
+        console.log("Contenedor de lista de facturas no encontrado, creando uno...");
+        // Esto es un fallback, idealmente el div ya existe desde handleNavigation
+        if (viewInvoicesSection && !document.getElementById('invoiceListContainer')) {
+            const container = document.createElement('div');
+            container.id = 'invoiceListContainer';
+            viewInvoicesSection.appendChild(container);
+            // invoiceListContainer = container; // No podemos reasignar const, pero el selector original debería funcionar si se llama después de handleNavigation
+        } else if (!viewInvoicesSection) {
+             console.error("La sección viewInvoicesSection no existe.");
+             return;
+        }
+         // Re-seleccionar en caso de que se haya creado dinámicamente, aunque es mejor asegurar que exista antes.
+         // Esta re-selección no es ideal. Es mejor que el div se cree en handleNavigation ANTES de llamar a esta función.
+    }
+    
+    const user = auth.currentUser;
+    if (!user) {
+        if(invoiceListContainer) invoiceListContainer.innerHTML = '<p>Debes iniciar sesión para ver tus facturas.</p>';
+        return;
+    }
+
+    if(invoiceListContainer) invoiceListContainer.innerHTML = '<p>Cargando facturas...</p>'; // Mensaje de carga
+
+    try {
+        const q = query(
+            collection(db, "facturas"),
+            where("userId", "==", user.uid),
+            orderBy("createdAt", "desc") // Mostrar las más recientes primero
+        );
+
+        const querySnapshot = await getDocs(q);
+
+        if(invoiceListContainer) invoiceListContainer.innerHTML = ''; // Limpiar mensaje de carga
+
+        if (querySnapshot.empty) {
+            if(invoiceListContainer) invoiceListContainer.innerHTML = '<p>No tienes facturas guardadas todavía.</p>';
+            console.log("No se encontraron facturas para este usuario.");
+        } else {
+            querySnapshot.forEach((doc) => {
+                const invoice = doc.data();
+                const invoiceId = doc.id;
+
+                const itemElement = document.createElement('div');
+                itemElement.classList.add('invoice-list-item');
+                itemElement.setAttribute('data-invoice-id', invoiceId);
+
+                // Determinar clase y texto para el estado de pago
+                let statusClassName = invoice.paymentStatus || 'pending';
+                let statusText = paymentStatusDetails[statusClassName] ? paymentStatusDetails[statusClassName].description.split('.')[0] : statusClassName.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase());
+
+
+                itemElement.innerHTML = `
+                    <div class="invoice-list-header">
+                        <span class="invoice-list-number">${invoice.invoiceNumberFormatted || 'N/A'}</span>
+                        <span class="status-badge status-${statusClassName.toLowerCase()}">${statusText}</span>
+                    </div>
+                    <div class="invoice-list-client">${invoice.client?.name || 'Cliente no especificado'}</div>
+                    <div class="invoice-list-details">
+                        <span class="invoice-list-date">Fecha: ${invoice.invoiceDate || 'N/A'}</span>
+                        <span class="invoice-list-total">${(invoice.totals?.grandTotal || 0).toLocaleString('es-CO', { style: 'currency', currency: 'COP' })}</span>
+                    </div>
+                    <div class="invoice-list-actions">
+                        <button type="button" class="btn btn-sm btn-info view-details-btn">Ver Detalles</button>
+                        {/* Más acciones en el futuro: Editar, Eliminar, etc. */}
+                    </div>
+                `;
+                
+                // Placeholder para el botón "Ver Detalles"
+                itemElement.querySelector('.view-details-btn').addEventListener('click', () => {
+                    alert(`Funcionalidad "Ver Detalles" para factura ${invoice.invoiceNumberFormatted} (ID: ${invoiceId}) pendiente.`);
+                });
+
+                if(invoiceListContainer) invoiceListContainer.appendChild(itemElement);
+            });
+            console.log("Facturas cargadas y mostradas.");
+        }
+    } catch (error) {
+        console.error("Error al cargar las facturas: ", error);
+        if(invoiceListContainer) invoiceListContainer.innerHTML = '<p>Error al cargar las facturas. Intenta de nuevo.</p>';
+    }
+}
+// === FIN: NUEVO CÓDIGO ===
 
 // === INICIO: NUEVO CÓDIGO - Función para cargar clientes en el desplegable ===
 /**
@@ -368,10 +458,19 @@ async function handleNavigation(sectionToShowId) {
         }
         if (navViewInvoices) navViewInvoices.classList.add('active-nav');
         
-        if (viewInvoicesSection && viewInvoicesSection.innerHTML.trim() === '') { 
-            viewInvoicesSection.innerHTML = `<h2>Mis Facturas</h2><p>Listado de facturas aparecerá aquí. Funcionalidad en desarrollo.</p><div id="invoiceListContainer"></div>`;
+        if (viewInvoicesSection && !document.getElementById('invoiceListContainer')) {
+            viewInvoicesSection.innerHTML = `<h2>Mis Facturas</h2><div id="invoiceListContainer"><p>Cargando facturas...</p></div>`;
+        } else if (viewInvoicesSection && document.getElementById('invoiceListContainer')) {
+            // Si ya existe, podemos poner un mensaje de carga mientras se actualiza
+            document.getElementById('invoiceListContainer').innerHTML = `<p>Cargando facturas...</p>`;
         }
 
+        // === INICIO: NUEVO CÓDIGO - Llamar a cargar facturas ===
+        if (typeof loadAndDisplayInvoices === 'function') {
+            await loadAndDisplayInvoices();
+        }
+        // === FIN: NUEVO CÓDIGO ===
+        
     } else if (sectionToShowId === 'clientsSection') {
         targetTitle = "Clientes";
         if (clientsSection) {
