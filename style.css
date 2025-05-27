@@ -691,3 +691,101 @@ input.input-error, select.input-error, textarea.input-error { border-color: var(
     50% { background-position: 100% 50%; }
     100% { background-position: 0% 50%; }
 }
+
+/* === ESTILOS PARA LA LISTA DE FACTURAS ("MIS FACTURAS") === */
+#invoiceListContainer {
+    margin-top: 20px;
+    display: grid;
+    grid-template-columns: 1fr; /* Una columna por defecto para móviles */
+    gap: 20px;
+}
+
+.invoice-list-item {
+    background-color: #fff;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-m);
+    padding: 15px 20px;
+    box-shadow: var(--box-shadow-light);
+    transition: box-shadow var(--transition-speed) ease;
+}
+
+.invoice-list-item:hover {
+    box-shadow: var(--box-shadow-medium);
+}
+
+.invoice-list-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px dashed var(--border-color);
+}
+
+.invoice-list-number {
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: var(--primary-color);
+}
+
+.invoice-list-client {
+    font-size: 1rem;
+    color: var(--text-color);
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.invoice-list-details {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9rem;
+    color: var(--text-muted-color);
+    margin-bottom: 15px;
+    flex-wrap: wrap; /* Para que se adapte si no hay espacio */
+}
+
+.invoice-list-total {
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.status-badge {
+    padding: 4px 10px;
+    border-radius: var(--border-radius-s);
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: white;
+    text-transform: capitalize;
+}
+
+/* Colores para los badges de estado (puedes personalizarlos) */
+.status-pending { background-color: #ffc107; color: #333; } /* Amarillo */
+.status-paid { background-color: var(--success-color); } /* Verde */
+.status-overdue { background-color: var(--danger-color); } /* Rojo */
+.status-in_process { background-color: #17a2b8; } /* Info/Cian */
+.status-partial_payment { background-color: #fd7e14; } /* Naranja */
+.status-disputed { background-color: #6f42c1; } /* Púrpura */
+.status-cancelled { background-color: var(--secondary-color); } /* Gris */
+.status-uncollectible { background-color: #343a40; } /* Gris oscuro/Negro */
+
+
+.invoice-list-actions {
+    text-align: right; /* Alinea los botones a la derecha */
+}
+
+.invoice-list-actions .btn-sm { /* Para hacer los botones de acción en la lista más pequeños */
+    padding: 6px 12px;
+    font-size: 0.85rem;
+}
+
+/* Media query para mostrar facturas en más columnas en pantallas grandes */
+@media (min-width: 992px) { /* Para PCs */
+    #invoiceListContainer {
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); /* 2 o 3 columnas según el espacio */
+    }
+}
+@media (min-width: 577px) and (max-width: 991px) { /* Para tablets */
+    #invoiceListContainer {
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); /* 1 o 2 columnas */
+    }
+}
