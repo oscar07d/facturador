@@ -243,32 +243,61 @@ function handleDiscountChange() { /* ... (Tu función existente sin cambios) ...
     if (typeof recalculateTotals === 'function') recalculateTotals();
 }
 
-async function loadClientsIntoDropdown() { /* ... (Tu función existente con el filtro isDeleted != true) ... */ 
-    if (!selectClient) return;
-    const user = auth.currentUser;
-    if (!user) {
-        selectClient.innerHTML = '<option value="">-- Nuevo Cliente --</option>';
-        loadedClients = [];
+async function loadClientsIntoDropdown() {
+    console.log("Iniciando loadClientsIntoDropdown..."); // LOG 1: Para saber si la función se llama
+    if (!selectClient) {
+        console.error("Error en loadClientsIntoDropdown: El elemento <select id='selectClient'> no fue encontrado.");
         return;
     }
-    try {
-        const q = query(collection(db, "clientes"), where("userId", "==", user.uid), where("isDeleted", "!=", true), orderBy("name", "asc"));
-        const querySnapshot = await getDocs(q);
+
+    const user = auth.currentUser;
+    if (!user) {
+        console.log("loadClientsIntoDropdown: No hay usuario autenticado. Limpiando opciones del select.");
         selectClient.innerHTML = '<option value="">-- Nuevo Cliente --</option>';
-        loadedClients = [];
-        if (!querySnapshot.empty) {
+        loadedClients = []; // Limpiar el array de clientes cargados
+        return;
+    }
+    console.log("loadClientsIntoDropdown: Usuario encontrado. UID:", user.uid); // LOG 2: Confirmar ID de usuario
+
+    try {
+        selectClient.innerHTML = '<option value="">-- Cargando clientes... --</option>'; // Estado de carga en el desplegable
+        loadedClients = []; // Limpiar el array antes de una nueva carga
+
+        const q = query(
+            collection(db, "clientes"), 
+            where("userId", "==", user.uid),
+            where("isDeleted", "!=", true), // Solo clientes no marcados como eliminados
+            orderBy("name", "asc")          // Ordenados por nombre
+        );
+        console.log("loadClientsIntoDropdown: Ejecutando consulta a Firestore para clientes..."); // LOG 3
+
+        const querySnapshot = await getDocs(q);
+        console.log("loadClientsIntoDropdown: Consulta a Firestore ejecutada."); // LOG 4
+
+        // Volver a poner la opción por defecto primero
+        selectClient.innerHTML = '<option value="">-- Nuevo Cliente --</option>'; 
+
+        if (querySnapshot.empty) {
+            console.log("loadClientsIntoDropdown: La consulta no devolvió clientes (puede que no existan o estén marcados como 'isDeleted: true')."); // LOG 5
+        } else {
+            let clientCount = 0;
             querySnapshot.forEach((doc) => {
+                clientCount++;
                 const client = doc.data();
                 const option = document.createElement('option');
-                option.value = doc.id;
+                option.value = doc.id; 
                 option.textContent = client.name;
                 selectClient.appendChild(option);
+                
+                // Guardar los datos completos del cliente para el autorrelleno
                 loadedClients.push({ id: doc.id, ...client });
             });
+            console.log(`loadClientsIntoDropdown: ${clientCount} cliente(s) cargado(s) y añadido(s) al desplegable.`); // LOG 6
         }
     } catch (error) {
-        console.error("Error al cargar clientes:", error);
-        selectClient.innerHTML = '<option value="">-- Nuevo Cliente --</option><option value="" disabled>Error al cargar</option>';
+        // Este catch debería atrapar el error de índice si aún existe para esta consulta
+        console.error("Error detallado al cargar clientes en el desplegable (puede ser un problema de índice o de permisos):", error); // LOG 7
+        selectClient.innerHTML = '<option value="">-- Nuevo Cliente --</option><option value="" disabled>Error al cargar clientes</option>';
         loadedClients = [];
     }
 }
