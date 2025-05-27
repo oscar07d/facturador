@@ -254,7 +254,11 @@ async function loadClientsIntoDropdown() {
     try {
         selectClient.innerHTML = '<option value="">-- Cargando clientes... --</option>';
         loadedClients = []; 
-        const q = query(collection(db, "clientes"), where("userId", "==", user.uid), where("isDeleted", "!=", true), orderBy("name", "asc"));
+        const q = query(
+            collection(db, "clientes"),
+            where("userId", "==", user.uid),
+            // where("isDeleted", "!=", true), //
+            orderBy("name", "asc"));
         const querySnapshot = await getDocs(q);
         selectClient.innerHTML = '<option value="">-- Nuevo Cliente --</option>'; 
         if (!querySnapshot.empty) {
