@@ -1,16 +1,23 @@
-// Importaciones de Firebase
+// Importaciones de Firebase (usando la versión 11.8.1 como en tu configuración inicial)
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
 import {
-    getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut
+    getAuth,
+    GoogleAuthProvider,
+    signInWithPopup,
+    onAuthStateChanged,
+    signOut
 } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
+// import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-analytics.js"; // Opcional
+
+// Importaciones de Firestore
 import { 
-    getFirestore,
-    collection,
+    getFirestore, 
+    collection, 
     addDoc,
     serverTimestamp,
     doc,
     getDoc,
-    setDoc,
+    setDoc, 
     runTransaction,
     query,
     where,
@@ -18,7 +25,7 @@ import {
     orderBy
 } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
 
-// Configuración de Firebase
+// Tu configuración de Firebase
 const firebaseConfig = {
     apiKey: "AIzaSyABKvAAUxoyzvcjCXaSbwZzT0RCI32-vRQ",
     authDomain: "facturadorweb-5125f.firebaseapp.com",
@@ -34,6 +41,7 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const googleProvider = new GoogleAuthProvider();
 const db = getFirestore(app);
+// const analytics = getAnalytics(app);
 
 // --- Selección de Elementos del DOM (Login y UI Principal) ---
 const loginButton = document.getElementById('loginButton');
@@ -50,38 +58,30 @@ const createInvoiceSection = document.getElementById('createInvoiceSection');
 const viewInvoicesSection = document.getElementById('viewInvoicesSection');
 const clientsSection = document.getElementById('clientsSection');
 const appPageTitle = document.getElementById('appPageTitle');
-const invoiceListContainer = document.getElementById('invoiceListContainer');
+let invoiceListContainer = document.getElementById('invoiceListContainer'); // Se usará let para poder reasignar si es necesario, aunque es mejor asegurar que exista desde el HTML
+
+// Formulario de Factura
 const invoiceForm = document.getElementById('invoiceForm');
 const selectClient = document.getElementById('selectClient');
-// === INICIO: NUEVO CÓDIGO - Selectores para campos de datos del cliente ===
 const clientNameInput = document.getElementById('clientName');
 const clientPhoneInput = document.getElementById('clientPhone');
 const clientEmailInput = document.getElementById('clientEmail');
-// === FIN: NUEVO CÓDIGO ===
 const invoiceDateInput = document.getElementById('invoiceDate');
 const invoiceNumberText = document.getElementById('invoiceNumberText');
-
-// Ítems del formulario
 const itemDescription = document.getElementById('itemDescription');
 const itemIsStreamingCheckbox = document.getElementById('itemIsStreaming');
+const streamingProfileFieldsDiv = document.getElementById('streamingProfileFields');
+const itemProfileNameInput = document.getElementById('itemProfileName');
+const itemProfilePinInput = document.getElementById('itemProfilePin');
 const itemQuantityInput = document.getElementById('itemQuantity');
 const itemPrice = document.getElementById('itemPrice');
 const itemApplyIVA = document.getElementById('itemApplyIVA');
 const addItemBtn = document.getElementById('addItemBtn');
 const invoiceItemsContainer = document.getElementById('invoiceItemsContainer');
-
-// Campos de perfil de streaming (NUEVO)
-const streamingProfileFieldsDiv = document.getElementById('streamingProfileFields');
-const itemProfileNameInput = document.getElementById('itemProfileName');
-const itemProfilePinInput = document.getElementById('itemProfilePin');
-
-// Estado de pago
 const paymentStatusSelect = document.getElementById('paymentStatus');
 const paymentStatusInfoDiv = document.getElementById('paymentStatusInfo');
 const paymentStatusDescriptionP = document.getElementById('paymentStatusDescription');
 const paymentStatusActionP = document.getElementById('paymentStatusAction');
-
-// Descuento y Totales
 const discountTypeSelect = document.getElementById('discountType');
 const discountValueInput = document.getElementById('discountValue');
 const subtotalAmountSpan = document.getElementById('subtotalAmount');
@@ -89,9 +89,7 @@ const discountAmountAppliedSpan = document.getElementById('discountAmountApplied
 const taxableBaseAmountSpan = document.getElementById('taxableBaseAmount');
 const ivaAmountSpan = document.getElementById('ivaAmount');
 const totalAmountSpan = document.getElementById('totalAmount');
-
-// Botones de acción del formulario
-const saveInvoiceBtn = document.getElementById('saveInvoiceBtn'); // Este es el botón submit del form
+const saveInvoiceBtn = document.getElementById('saveInvoiceBtn');
 const generateInvoiceFileBtn = document.getElementById('generateInvoiceFileBtn');
 
 // --- Variables Globales para la Lógica de Facturación ---
@@ -106,8 +104,8 @@ const paymentStatusDetails = { /* ... (Objeto paymentStatusDetails completo) ...
     uncollectible: { description: "Después de múltiples intentos de cobro, se considera que la deuda no será recuperada.", action: "Se procede según las políticas de la empresa para dar de baja la cuenta por cobrar, lo cual puede tener implicaciones contables y fiscales." }
 };
 let currentInvoiceItems = [];
-let loadedClients = [];
 let nextItemId = 0;
+let loadedClients = [];
 
 // --- Funciones Auxiliares y de UI ---
 const showLoading = (show) => {
@@ -127,9 +125,9 @@ function updateQuantityBasedOnStreaming() {
         itemQuantityInput.disabled = isStreaming;
         if (isStreaming) {
             itemQuantityInput.value = 1;
-            streamingProfileFieldsDiv.style.display = 'block'; // Mostrar campos de perfil
+            streamingProfileFieldsDiv.style.display = 'block';
         } else {
-            streamingProfileFieldsDiv.style.display = 'none'; // Ocultar campos de perfil
+            streamingProfileFieldsDiv.style.display = 'none';
             if (itemProfileNameInput) itemProfileNameInput.value = '';
             if (itemProfilePinInput) itemProfilePinInput.value = '';
         }
@@ -151,7 +149,7 @@ function updatePaymentStatusDisplay() {
 }
 
 function formatInvoiceNumber(number) {
-    return String(number).padStart(3, '0'); // Mantiene al menos 3 dígitos, pero crecerá si es necesario (ej: 1000)
+    return String(number).padStart(3, '0');
 }
 
 async function getCurrentLastInvoiceNumericValue(userId) {
@@ -192,148 +190,6 @@ async function displayNextPotentialInvoiceNumber() {
         invoiceNumberText.textContent = "000";
     }
 }
-
-// === INICIO: NUEVO CÓDIGO - Función para cargar y mostrar facturas ===
-/**
- * Carga las facturas del usuario actual desde Firestore y las muestra en la lista.
- */
-async function loadAndDisplayInvoices() {
-    if (!invoiceListContainer) { // Asegurarse que el contenedor exista
-        console.log("Contenedor de lista de facturas no encontrado, creando uno...");
-        // Esto es un fallback, idealmente el div ya existe desde handleNavigation
-        if (viewInvoicesSection && !document.getElementById('invoiceListContainer')) {
-            const container = document.createElement('div');
-            container.id = 'invoiceListContainer';
-            viewInvoicesSection.appendChild(container);
-            // invoiceListContainer = container; // No podemos reasignar const, pero el selector original debería funcionar si se llama después de handleNavigation
-        } else if (!viewInvoicesSection) {
-             console.error("La sección viewInvoicesSection no existe.");
-             return;
-        }
-         // Re-seleccionar en caso de que se haya creado dinámicamente, aunque es mejor asegurar que exista antes.
-         // Esta re-selección no es ideal. Es mejor que el div se cree en handleNavigation ANTES de llamar a esta función.
-    }
-    
-    const user = auth.currentUser;
-    if (!user) {
-        if(invoiceListContainer) invoiceListContainer.innerHTML = '<p>Debes iniciar sesión para ver tus facturas.</p>';
-        return;
-    }
-
-    if(invoiceListContainer) invoiceListContainer.innerHTML = '<p>Cargando facturas...</p>'; // Mensaje de carga
-
-    try {
-        const q = query(
-            collection(db, "facturas"),
-            where("userId", "==", user.uid),
-            orderBy("createdAt", "desc") // Mostrar las más recientes primero
-        );
-
-        const querySnapshot = await getDocs(q);
-
-        if(invoiceListContainer) invoiceListContainer.innerHTML = ''; // Limpiar mensaje de carga
-
-        if (querySnapshot.empty) {
-            if(invoiceListContainer) invoiceListContainer.innerHTML = '<p>No tienes facturas guardadas todavía.</p>';
-            console.log("No se encontraron facturas para este usuario.");
-        } else {
-            querySnapshot.forEach((doc) => {
-                const invoice = doc.data();
-                const invoiceId = doc.id;
-
-                const itemElement = document.createElement('div');
-                itemElement.classList.add('invoice-list-item');
-                itemElement.setAttribute('data-invoice-id', invoiceId);
-
-                // Determinar clase y texto para el estado de pago
-                let statusClassName = invoice.paymentStatus || 'pending';
-                let statusText = paymentStatusDetails[statusClassName] ? paymentStatusDetails[statusClassName].description.split('.')[0] : statusClassName.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase());
-
-
-                itemElement.innerHTML = `
-                    <div class="invoice-list-header">
-                        <span class="invoice-list-number">${invoice.invoiceNumberFormatted || 'N/A'}</span>
-                        <span class="status-badge status-${statusClassName.toLowerCase()}">${statusText}</span>
-                    </div>
-                    <div class="invoice-list-client">${invoice.client?.name || 'Cliente no especificado'}</div>
-                    <div class="invoice-list-details">
-                        <span class="invoice-list-date">Fecha: ${invoice.invoiceDate || 'N/A'}</span>
-                        <span class="invoice-list-total">${(invoice.totals?.grandTotal || 0).toLocaleString('es-CO', { style: 'currency', currency: 'COP' })}</span>
-                    </div>
-                    <div class="invoice-list-actions">
-                        <button type="button" class="btn btn-sm btn-info view-details-btn">Ver Detalles</button>
-                        {/* Más acciones en el futuro: Editar, Eliminar, etc. */}
-                    </div>
-                `;
-                
-                // Placeholder para el botón "Ver Detalles"
-                itemElement.querySelector('.view-details-btn').addEventListener('click', () => {
-                    alert(`Funcionalidad "Ver Detalles" para factura ${invoice.invoiceNumberFormatted} (ID: ${invoiceId}) pendiente.`);
-                });
-
-                if(invoiceListContainer) invoiceListContainer.appendChild(itemElement);
-            });
-            console.log("Facturas cargadas y mostradas.");
-        }
-    } catch (error) {
-        console.error("Error al cargar las facturas: ", error);
-        if(invoiceListContainer) invoiceListContainer.innerHTML = '<p>Error al cargar las facturas. Intenta de nuevo.</p>';
-    }
-}
-// === FIN: NUEVO CÓDIGO ===
-
-// === INICIO: NUEVO CÓDIGO - Función para cargar clientes en el desplegable ===
-/**
- * Carga los clientes del usuario actual desde Firestore y los puebla en el select.
- */
-async function loadClientsIntoDropdown() {
-    if (!selectClient) return; // Salir si el elemento select no existe
-
-    const user = auth.currentUser;
-    if (!user) {
-        // Si no hay usuario, limpiar opciones excepto la primera y salir
-        selectClient.innerHTML = '<option value="">-- Nuevo Cliente --</option>';
-        loadedClients = [];
-        return;
-    }
-
-    try {
-        // Crear una consulta para obtener los clientes del usuario actual, ordenados por nombre
-        const q = query(
-            collection(db, "clientes"), 
-            where("userId", "==", user.uid),
-            orderBy("name", "asc") // Ordenar alfabéticamente por nombre
-        );
-
-        const querySnapshot = await getDocs(q);
-
-        // Limpiar opciones existentes (excepto la primera de "-- Nuevo Cliente --")
-        selectClient.innerHTML = '<option value="">-- Nuevo Cliente --</option>';
-        loadedClients = [];
-
-        if (querySnapshot.empty) {
-            console.log("No se encontraron clientes para este usuario.");
-        } else {
-            querySnapshot.forEach((doc) => {
-                const client = doc.data();
-                const option = document.createElement('option');
-                option.value = doc.id; // Guardamos el ID del documento del cliente
-                option.textContent = client.name; // Mostramos el nombre del cliente
-                selectClient.appendChild(option);
-
-                // === INICIO: NUEVO CÓDIGO - Guardar datos del cliente en el array ===
-                loadedClients.push({ id: doc.id, ...client });
-                // === FIN: NUEVO CÓDIGO ===
-            });
-            console.log("Clientes cargados en el desplegable.");
-        }
-    } catch (error) {
-        console.error("Error al cargar clientes en el desplegable: ", error);
-        selectClient.innerHTML = '<option value="">-- Nuevo Cliente --</option><option value="" disabled>Error al cargar clientes</option>';
-        loadedClients = [];
-    }
-}
-// === FIN: NUEVO CÓDIGO ===
 
 function renderItems() {
     if (!invoiceItemsContainer) return;
@@ -411,82 +267,135 @@ function handleDiscountChange() {
     if (typeof recalculateTotals === 'function') recalculateTotals();
 }
 
+async function loadClientsIntoDropdown() {
+    if (!selectClient) return;
+    const user = auth.currentUser;
+    if (!user) {
+        selectClient.innerHTML = '<option value="">-- Nuevo Cliente --</option>';
+        loadedClients = [];
+        return;
+    }
+    try {
+        const q = query(collection(db, "clientes"), where("userId", "==", user.uid), orderBy("name", "asc"));
+        const querySnapshot = await getDocs(q);
+        selectClient.innerHTML = '<option value="">-- Nuevo Cliente --</option>';
+        loadedClients = [];
+        if (!querySnapshot.empty) {
+            querySnapshot.forEach((doc) => {
+                const client = doc.data();
+                const option = document.createElement('option');
+                option.value = doc.id;
+                option.textContent = client.name;
+                selectClient.appendChild(option);
+                loadedClients.push({ id: doc.id, ...client });
+            });
+        }
+    } catch (error) {
+        console.error("Error al cargar clientes:", error);
+        selectClient.innerHTML = '<option value="">-- Nuevo Cliente --</option><option value="" disabled>Error al cargar</option>';
+        loadedClients = [];
+    }
+}
+
+async function loadAndDisplayInvoices() {
+    const currentInvoiceListContainer = document.getElementById('invoiceListContainer'); // Re-seleccionar por si acaso
+    if (!currentInvoiceListContainer) {
+        console.error("Contenedor #invoiceListContainer no existe al llamar a loadAndDisplayInvoices.");
+        if (viewInvoicesSection) viewInvoicesSection.innerHTML = `<h2>Mis Facturas</h2><p>Error: Contenedor de lista no encontrado.</p>`;
+        return; 
+    }
+    
+    const user = auth.currentUser;
+    if (!user) {
+        currentInvoiceListContainer.innerHTML = '<p>Debes iniciar sesión para ver tus facturas.</p>';
+        return;
+    }
+
+    currentInvoiceListContainer.innerHTML = '<p>Cargando facturas...</p>';
+
+    try {
+        const q = query(collection(db, "facturas"), where("userId", "==", user.uid), orderBy("createdAt", "desc"));
+        const querySnapshot = await getDocs(q);
+        currentInvoiceListContainer.innerHTML = '';
+
+        if (querySnapshot.empty) {
+            currentInvoiceListContainer.innerHTML = '<p>No tienes facturas guardadas todavía.</p>';
+        } else {
+            querySnapshot.forEach((doc) => {
+                const invoice = doc.data();
+                const invoiceId = doc.id;
+                const itemElement = document.createElement('div');
+                itemElement.classList.add('invoice-list-item');
+                itemElement.setAttribute('data-invoice-id', invoiceId);
+                let statusClassName = invoice.paymentStatus || 'pending';
+                let statusText = paymentStatusDetails[statusClassName] ? paymentStatusDetails[statusClassName].description.split('.')[0] : statusClassName.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+
+                itemElement.innerHTML = `
+                    <div class="invoice-list-header">
+                        <span class="invoice-list-number">${invoice.invoiceNumberFormatted || 'N/A'}</span>
+                        <span class="status-badge status-${statusClassName.toLowerCase()}">${statusText}</span>
+                    </div>
+                    <div class="invoice-list-client">${invoice.client?.name || 'Cliente no especificado'}</div>
+                    <div class="invoice-list-details">
+                        <span class="invoice-list-date">Fecha: ${invoice.invoiceDate || 'N/A'}</span>
+                        <span class="invoice-list-total">${(invoice.totals?.grandTotal || 0).toLocaleString('es-CO', { style: 'currency', currency: 'COP' })}</span>
+                    </div>
+                    <div class="invoice-list-actions">
+                        <button type="button" class="btn btn-sm btn-info view-details-btn">Ver Detalles</button>
+                    </div>
+                `;
+                itemElement.querySelector('.view-details-btn').addEventListener('click', () => {
+                    alert(`Funcionalidad "Ver Detalles" para factura ${invoice.invoiceNumberFormatted} (ID: ${invoiceId}) pendiente.`);
+                });
+                currentInvoiceListContainer.appendChild(itemElement);
+            });
+        }
+    } catch (error) {
+        console.error("Error al cargar las facturas: ", error);
+        currentInvoiceListContainer.innerHTML = '<p>Error al cargar las facturas. Intenta de nuevo.</p>';
+    }
+}
+
 async function handleNavigation(sectionToShowId) {
     const sections = [createInvoiceSection, viewInvoicesSection, clientsSection];
     const navLinks = [navCreateInvoice, navViewInvoices, navClients];
-    let targetTitle = "Sistema de Facturación"; // Título por defecto
+    let targetTitle = "Sistema de Facturación";
 
-    // 1. Ocultar todas las secciones y desactivar todos los links de navegación primero
-    sections.forEach(section => {
-        if (section) {
-            section.style.display = 'none';
-            section.classList.remove('active-section'); // Asegurarse de quitar la clase activa
-        }
-    });
-    navLinks.forEach(link => {
-        if (link) {
-            link.classList.remove('active-nav');
-        }
-    });
+    sections.forEach(section => { if (section) section.style.display = 'none'; });
+    navLinks.forEach(link => { if (link) link.classList.remove('active-nav'); });
 
-    // 2. Lógica específica y mostrar la sección correcta
+    const currentSection = sections.find(s => s && s.id === sectionToShowId);
+    if (currentSection) currentSection.style.display = 'block';
+    
+    const currentLink = navLinks.find(l => l && (l.id.replace('nav', '').charAt(0).toLowerCase() + l.id.replace('nav', '').slice(1) + 'Section') === sectionToShowId);
+    if (currentLink) currentLink.classList.add('active-nav');
+
     if (sectionToShowId === 'createInvoiceSection') {
         targetTitle = "Crear Nueva Factura";
-        if (createInvoiceSection) {
-            createInvoiceSection.style.display = 'block';
-            createInvoiceSection.classList.add('active-section');
-        }
-        if (navCreateInvoice) navCreateInvoice.classList.add('active-nav');
-
-        // Llamadas a funciones específicas para la sección "Crear Factura"
         if (typeof setDefaultInvoiceDate === 'function') setDefaultInvoiceDate();
         if (typeof updateQuantityBasedOnStreaming === 'function') updateQuantityBasedOnStreaming();
         if (typeof handleDiscountChange === 'function') handleDiscountChange();
-        if (typeof renderItems === 'function') renderItems(); 
-        if (typeof displayNextPotentialInvoiceNumber === 'function') {
-            await displayNextPotentialInvoiceNumber(); 
-        }
-        if (typeof loadClientsIntoDropdown === 'function') { // <--- AQUÍ ESTÁ LA LLAMADA CORRECTA
-            await loadClientsIntoDropdown();
-        }
-
+        if (typeof renderItems === 'function') renderItems();
+        if (typeof displayNextPotentialInvoiceNumber === 'function') await displayNextPotentialInvoiceNumber();
+        if (typeof loadClientsIntoDropdown === 'function') await loadClientsIntoDropdown();
     } else if (sectionToShowId === 'viewInvoicesSection') {
         targetTitle = "Mis Facturas";
-        if (viewInvoicesSection) {
-            viewInvoicesSection.style.display = 'block';
-            viewInvoicesSection.classList.add('active-section');
-        }
-        if (navViewInvoices) navViewInvoices.classList.add('active-nav');
-        
+        // Asegurar que el contenedor exista o se cree antes de llamar a loadAndDisplayInvoices
         if (viewInvoicesSection && !document.getElementById('invoiceListContainer')) {
-            viewInvoicesSection.innerHTML = `<h2>Mis Facturas</h2><div id="invoiceListContainer"><p>Cargando facturas...</p></div>`;
-        } else if (viewInvoicesSection && document.getElementById('invoiceListContainer')) {
-            // Si ya existe, podemos poner un mensaje de carga mientras se actualiza
-            document.getElementById('invoiceListContainer').innerHTML = `<p>Cargando facturas...</p>`;
+            viewInvoicesSection.innerHTML = `<h2>Mis Facturas</h2><div id="invoiceListContainer"></div>`;
         }
-
-        // === INICIO: NUEVO CÓDIGO - Llamar a cargar facturas ===
         if (typeof loadAndDisplayInvoices === 'function') {
             await loadAndDisplayInvoices();
         }
-        // === FIN: NUEVO CÓDIGO ===
-        
     } else if (sectionToShowId === 'clientsSection') {
         targetTitle = "Clientes";
-        if (clientsSection) {
-            clientsSection.style.display = 'block';
-            clientsSection.classList.add('active-section');
-        }
-        if (navClients) navClients.classList.add('active-nav');
-
-        if (clientsSection && clientsSection.innerHTML.trim() === '') { 
-            clientsSection.innerHTML = `<h2>Clientes</h2><p>Listado de clientes aparecerá aquí. Funcionalidad en desarrollo.</p><div id="clientListContainer"></div>`;
+        if (clientsSection && clientsSection.innerHTML.trim() === '') { // Solo si está realmente vacío
+            clientsSection.innerHTML = `<h2>Clientes</h2><p>Funcionalidad en desarrollo.</p><div id="clientListContainer"></div>`;
         }
     }
-
-    // 3. Actualizar el título de la página de la aplicación
     if (appPageTitle) appPageTitle.textContent = targetTitle;
 }
+
 // --- Lógica de Autenticación y Estado ---
 if (loginButton) {
     loginButton.addEventListener('click', () => {
@@ -497,6 +406,7 @@ if (loginButton) {
                 console.error("Error en login:", error);
                 let msg = "Error al iniciar sesión.";
                 if (error.code === 'auth/popup-closed-by-user') msg = "Ventana de login cerrada.";
+                else if (error.code === 'auth/cancelled-popup-request') msg = "Solicitud de inicio de sesión cancelada.";
                 alert(msg);
             })
             .finally(() => { if (!auth.currentUser) showLoading(false); });
@@ -514,7 +424,7 @@ onAuthStateChanged(auth, (user) => {
     showLoading(false);
     if (user) {
         if (loginContainer) loginContainer.style.display = 'none';
-        if (mainContent) mainContent.style.display = 'flex'; // O 'block'
+        if (mainContent) mainContent.style.display = 'flex';
         handleNavigation('createInvoiceSection');
     } else {
         if (loginContainer) loginContainer.style.display = 'flex';
@@ -530,40 +440,27 @@ if (navClients) navClients.addEventListener('click', (e) => { e.preventDefault()
 if (itemIsStreamingCheckbox) itemIsStreamingCheckbox.addEventListener('change', updateQuantityBasedOnStreaming);
 if (paymentStatusSelect) paymentStatusSelect.addEventListener('change', updatePaymentStatusDisplay);
 
-// === INICIO: NUEVO CÓDIGO - Listener para el desplegable de clientes ===
-if (selectClient) {
+if (selectClient) { // Listener para el desplegable de clientes
     selectClient.addEventListener('change', () => {
         const selectedClientId = selectClient.value;
-
-        if (clientNameInput && clientPhoneInput && clientEmailInput) { // Verificar que los inputs existan
+        if (clientNameInput && clientPhoneInput && clientEmailInput) {
             if (selectedClientId === "") {
-                // Opción "-- Nuevo Cliente --" seleccionada
-                clientNameInput.value = '';
-                clientPhoneInput.value = '';
-                clientEmailInput.value = '';
-                clientNameInput.disabled = false;
-                clientPhoneInput.disabled = false;
-                clientEmailInput.disabled = false;
-                clientNameInput.focus(); // Poner foco en el nombre para el nuevo cliente
+                clientNameInput.value = ''; clientPhoneInput.value = ''; clientEmailInput.value = '';
+                clientNameInput.disabled = false; clientPhoneInput.disabled = false; clientEmailInput.disabled = false;
+                clientNameInput.focus();
             } else {
-                // Buscar el cliente seleccionado en nuestro array 'loadedClients'
                 const selectedClient = loadedClients.find(client => client.id === selectedClientId);
                 if (selectedClient) {
                     clientNameInput.value = selectedClient.name || '';
                     clientPhoneInput.value = selectedClient.phone || '';
                     clientEmailInput.value = selectedClient.email || '';
-                    
-                    // Opcional: Deshabilitar campos cuando se selecciona un cliente existente
-                    // para evitar edición accidental aquí. La edición se haría con el botón "Editar Cliente".
-                    // clientNameInput.disabled = true;
-                    // clientPhoneInput.disabled = true;
-                    // clientEmailInput.disabled = true;
+                    // Opcional: deshabilitar campos
+                    // clientNameInput.disabled = true; clientPhoneInput.disabled = true; clientEmailInput.disabled = true;
                 }
             }
         }
     });
 }
-// === FIN: NUEVO CÓDIGO ===
 
 if (discountTypeSelect) discountTypeSelect.addEventListener('change', handleDiscountChange);
 if (discountValueInput) discountValueInput.addEventListener('input', () => { if (typeof recalculateTotals === 'function') recalculateTotals(); });
@@ -596,7 +493,7 @@ if (addItemBtn) {
         itemIsStreamingCheckbox.checked = false;
         itemPrice.value = '';
         itemApplyIVA.checked = false;
-        updateQuantityBasedOnStreaming(); // Llama para ocultar campos de perfil y resetear cantidad
+        updateQuantityBasedOnStreaming();
         itemDescription.focus();
     });
 }
@@ -608,9 +505,9 @@ if (invoiceForm) {
         if (!user) { alert("Debes iniciar sesión."); return; }
         if (currentInvoiceItems.length === 0) { alert("Agrega al menos un ítem."); return; }
 
-        const clientName = document.getElementById('clientName')?.value.trim();
-        const clientPhone = document.getElementById('clientPhone')?.value.trim();
-        const clientEmail = document.getElementById('clientEmail')?.value.trim();
+        const clientName = clientNameInput?.value.trim(); // Usar las variables globales ya seleccionadas
+        const clientPhone = clientPhoneInput?.value.trim();
+        const clientEmail = clientEmailInput?.value.trim();
         if (!clientName || !clientPhone || !clientEmail) { alert("Completa los datos del cliente."); return; }
         
         if (typeof recalculateTotals === 'function') recalculateTotals();
@@ -624,7 +521,7 @@ if (invoiceForm) {
             actualNumericInvoiceNumber = await getNextInvoiceNumber(user.uid);
             formattedInvoiceNumberStr = formatInvoiceNumber(actualNumericInvoiceNumber);
         } catch (error) {
-            alert("Error al generar número de factura. No se puede guardar.");
+            alert("Error crítico al generar número de factura. No se puede guardar.");
             showLoading(false);
             if (saveInvoiceBtn) saveInvoiceBtn.disabled = false;
             if (generateInvoiceFileBtn) generateInvoiceFileBtn.disabled = false;
@@ -661,58 +558,28 @@ if (invoiceForm) {
         try {
             const docRef = await addDoc(collection(db, "facturas"), invoiceToSave);
             alert(`¡Factura FCT-${formattedInvoiceNumberStr} guardada exitosamente! ID: ${docRef.id}`);
-            // === INICIO: NUEVO CÓDIGO - Guardar nuevo cliente si es necesario ===
-            if (selectClient && selectClient.value === "") { // Si la opción era "-- Nuevo Cliente --"
-                const newClientData = {
-                    userId: user.uid, // Asociar cliente al usuario actual
-                    name: clientName,   // Usar la constante clientName definida antes
-                    phone: clientPhone, // Usar la constante clientPhone
-                    email: clientEmail, // Usar la constante clientEmail
-                    createdAt: serverTimestamp()
-                };
+
+            // Guardar cliente si es nuevo
+            if (selectClient && selectClient.value === "") {
+                const newClientData = { userId: user.uid, name: clientName, phone: clientPhone, email: clientEmail, createdAt: serverTimestamp() };
                 try {
                     const clientDocRef = await addDoc(collection(db, "clientes"), newClientData);
                     console.log("Nuevo cliente guardado con ID: ", clientDocRef.id);
-                    // === INICIO: NUEVO CÓDIGO - Recargar clientes en el desplegable ===
-                    if (typeof loadClientsIntoDropdown === 'function') {
-                        await loadClientsIntoDropdown();
-                    }
-                    // === FIN: NUEVO CÓDIGO ===
-                    // No es necesario alertar al usuario por esto, es una acción secundaria
-                } catch (clientError) {
-                    console.error("Error al guardar el nuevo cliente: ", clientError);
-                    // Podrías considerar notificar al usuario de este error si es crítico
-                }
+                    if (typeof loadClientsIntoDropdown === 'function') await loadClientsIntoDropdown(); // Recargar desplegable
+                } catch (clientError) { console.error("Error al guardar nuevo cliente: ", clientError); }
             }
-            // === FIN: NUEVO CÓDIGO ===
-            invoiceForm.reset();
-            currentInvoiceItems = [];
-            nextItemId = 0;
-
-            // === INICIO: AQUÍ VA EL CÓDIGO DEL PUNTO E ===
-            // Asegurar limpieza y habilitación de campos de cliente
-            if (clientNameInput) {
-                clientNameInput.value = '';
-                clientNameInput.disabled = false;
-            }
-            if (clientPhoneInput) {
-                clientPhoneInput.value = '';
-                clientPhoneInput.disabled = false;
-            }
-            if (clientEmailInput) {
-                clientEmailInput.value = '';
-                clientEmailInput.disabled = false;
-            }
-            if(selectClient) { // Resetear el select a "-- Nuevo Cliente --"
-                selectClient.value = "";
-            }
-            // === FIN: CÓDIGO DEL PUNTO E ===
             
-            renderItems();
-            setDefaultInvoiceDate();
-            updateQuantityBasedOnStreaming();
-            handleDiscountChange();
+            // Resetear formulario
+            invoiceForm.reset();
+            currentInvoiceItems = []; nextItemId = 0;
+            if (clientNameInput) { clientNameInput.value = ''; clientNameInput.disabled = false; }
+            if (clientPhoneInput) { clientPhoneInput.value = ''; clientPhoneInput.disabled = false; }
+            if (clientEmailInput) { clientEmailInput.value = ''; clientEmailInput.disabled = false; }
+            if(selectClient) selectClient.value = "";
+            
+            renderItems(); setDefaultInvoiceDate(); updateQuantityBasedOnStreaming(); handleDiscountChange();
             await displayNextPotentialInvoiceNumber();
+            
         } catch (error) {
             console.error("Error al guardar factura en Firestore: ", error);
             alert(`Error al guardar: ${error.message}`);
