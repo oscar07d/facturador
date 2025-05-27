@@ -131,6 +131,7 @@ function updatePaymentStatusDisplay() { /* ... (Tu función existente sin cambio
 function formatInvoiceNumber(number) { return String(number).padStart(3, '0'); }
 
 async function getCurrentLastInvoiceNumericValue(userId) { /* ... (Tu función existente sin cambios) ... */ 
+    console.log("Intentando obtener el último número para userId:", userId);
     if (!userId) { console.warn("ID de usuario no proporcionado para obtener último número."); return 0; }
     const counterRef = doc(db, "user_counters", userId);
     try {
