@@ -266,6 +266,17 @@ async function loadClientsIntoDropdown() {
                 const client = doc.data();
                 const option = document.createElement('option');
                 option.value = doc.id; 
+
+                // === INICIO DE LA MODIFICACIÓN PARA EL TEXTO DE LA OPCIÓN ===
+                let displayText = client.name;
+                if (client.email) {
+                    displayText += ` (${client.email})`;
+                } else if (client.phone) {
+                    displayText += ` (Tel: ${client.phone})`;
+                }
+                option.textContent = displayText;
+                // === FIN DE LA MODIFICACIÓN ===
+                
                 option.textContent = client.name;
                 selectClient.appendChild(option);
                 loadedClients.push({ id: doc.id, ...client });
