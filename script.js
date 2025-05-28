@@ -422,7 +422,7 @@ async function loadClientsIntoDropdown() {
                 
                 clientOption.innerHTML = `
                     <span class="option-client-name">${clientDisplayName}</span>
-                    <span class="pills-container"> {/* Contenedor para UNA píldora */}
+                    <span class="pills-container">
                         <span class="option-status-pill ${claseCssEstadoFactura}">${textoPildora}</span>
                     </span>
                 `;
