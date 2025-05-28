@@ -40,45 +40,37 @@ const auth = getAuth(app);
 const googleProvider = new GoogleAuthProvider();
 const db = getFirestore(app);
 
-// --- Selección de Elementos del DOM (Login y UI Principal) ---
+// --- Selección de Elementos del DOM ---
 const loginButton = document.getElementById('loginButton');
 const logoutButton = document.getElementById('logoutButton');
 const loadingOverlay = document.getElementById('loadingOverlay');
 const loginContainer = document.querySelector('.login-container');
 const mainContent = document.getElementById('mainContent');
 
-// --- Selección de Elementos del DOM (Interfaz de Facturación) ---
-// Navegación
 const navCreateInvoice = document.getElementById('navCreateInvoice');
 const navViewInvoices = document.getElementById('navViewInvoices');
 const navClients = document.getElementById('navClients');
-
-// Secciones
 const createInvoiceSection = document.getElementById('createInvoiceSection');
 const viewInvoicesSection = document.getElementById('viewInvoicesSection');
 const clientsSection = document.getElementById('clientsSection');
 const appPageTitle = document.getElementById('appPageTitle');
 
-// Formulario de Factura y sus partes
 const invoiceForm = document.getElementById('invoiceForm');
 
-// Cliente (Desplegable Personalizado y Campos)
 const customClientSelect = document.getElementById('customClientSelect');
 const customClientSelectDisplay = document.getElementById('customClientSelectDisplay');
 const selectedClientNameDisplay = document.getElementById('selectedClientNameDisplay');
 const customClientOptions = document.getElementById('customClientOptions');
 const hiddenSelectedClientIdInput = document.getElementById('selectedClientId');
+
 const clientNameInput = document.getElementById('clientName');
 const clientPhoneInput = document.getElementById('clientPhone');
 const clientEmailInput = document.getElementById('clientEmail');
 const editClientBtn = document.getElementById('editClientBtn');
 const deleteClientBtn = document.getElementById('deleteClientBtn');
 
-// Detalles de Factura
 const invoiceDateInput = document.getElementById('invoiceDate');
 const invoiceNumberText = document.getElementById('invoiceNumberText');
-
-// Ítems
 const itemDescription = document.getElementById('itemDescription');
 const itemIsStreamingCheckbox = document.getElementById('itemIsStreaming');
 const streamingProfileFieldsDiv = document.getElementById('streamingProfileFields');
@@ -90,13 +82,11 @@ const itemApplyIVA = document.getElementById('itemApplyIVA');
 const addItemBtn = document.getElementById('addItemBtn');
 const invoiceItemsContainer = document.getElementById('invoiceItemsContainer');
 
-// Estado de Pago
 const paymentStatusSelect = document.getElementById('paymentStatus');
 const paymentStatusInfoDiv = document.getElementById('paymentStatusInfo');
 const paymentStatusDescriptionP = document.getElementById('paymentStatusDescription');
 const paymentStatusActionP = document.getElementById('paymentStatusAction');
 
-// Descuento y Totales
 const discountTypeSelect = document.getElementById('discountType');
 const discountValueInput = document.getElementById('discountValue');
 const subtotalAmountSpan = document.getElementById('subtotalAmount');
@@ -105,7 +95,6 @@ const taxableBaseAmountSpan = document.getElementById('taxableBaseAmount');
 const ivaAmountSpan = document.getElementById('ivaAmount');
 const totalAmountSpan = document.getElementById('totalAmount');
 
-// Botones de Acción del Formulario
 const saveInvoiceBtn = document.getElementById('saveInvoiceBtn');
 const generateInvoiceFileBtn = document.getElementById('generateInvoiceFileBtn');
 
@@ -114,11 +103,18 @@ const paymentStatusDetails = {
     pending: { text: "Pendiente", description: "La factura ha sido emitida y enviada al cliente, pero aún no se ha recibido el pago. El plazo de vencimiento todavía no ha llegado.", action: "Monitoreo regular, envío de recordatorios amigables antes de la fecha de vencimiento." },
     paid: { text: "Pagado", description: "El cliente ha realizado el pago completo de la factura y este ha sido confirmado.", action: "Agradecimiento al cliente, actualización de registros." },
     overdue: { text: "Vencido", description: "La fecha de vencimiento de la factura ha pasado y el pago no se ha recibido.", action: "Inicio del proceso de cobranza." },
-    in_process: { text: "En Proceso", description: "El cliente ha informado que ha realizado el pago, o el pago está siendo procesado.", action: "Seguimiento para confirmar la recepción." },
-    partial_payment: { text: "Pago Parcial", description: "El cliente ha realizado un abono, pero no ha cubierto el total de la factura.", action: "Contactar para acordar pago restante." },
-    disputed: { text: "Disputado", description: "El cliente ha manifestado una inconformidad con la factura o el servicio.", action: "Investigación interna." },
-    cancelled: { text: "Cancelado", description: "La factura ha sido anulada.", action: "Informar al cliente y actualizar registros." },
-    uncollectible: { text: "Incobrable", description: "Se considera que la deuda no será recuperada.", action: "Proceder según políticas." }
+    in_process: { text: "En Proceso", description: "El cliente ha informado que ha realizado el pago, o el pago está siendo procesado por el banco o la pasarela de pagos.", action: "Seguimiento para confirmar la recepción efectiva del pago." },
+    partial_payment: { text: "Pago Parcial", description: "El cliente ha realizado un abono, pero no ha cubierto el total de la factura.", action: "Contactar al cliente para aclarar la situación y acordar el pago del saldo restante." },
+    disputed: { text: "Disputado", description: "El cliente ha manifestado una inconformidad con la factura o el servicio.", action: "Investigación interna de la disputa, comunicación con el cliente." },
+    cancelled: { text: "Cancelado", description: "La factura ha sido anulada, ya sea por un error, por la cancelación del servicio/producto, o por un acuerdo con el cliente.", action: "Asegurarse de que el cliente esté informado y que los registros contables reflejen la anulación." },
+    uncollectible: { text: "Incobrable", description: "Después de múltiples intentos de cobro, se considera que la deuda no será recuperada.", action: "Se procede según las políticas de la empresa para dar de baja la cuenta por cobrar." },
+    nuevo: { text: "Nuevo", description: "Cliente recién registrado, sin historial de facturación.", action: "Crear primera factura." }, // Para estadoGeneralCliente
+    activo: { text: "Activo", description: "Cliente con actividad reciente y al día.", action: "Continuar seguimiento normal." }, // Para estadoGeneralCliente
+    'al día': { text: "Al Día", description: "Cliente con pagos al día.", action: "Excelente." }, // Para estadoGeneralCliente
+    'con pendientes': { text: "Con Pendientes", description: "Cliente tiene facturas pendientes de pago.", action: "Revisar y enviar recordatorios." }, // Para estadoGeneralCliente
+    moroso: { text: "Moroso", description: "Cliente tiene facturas vencidas.", action: "Iniciar proceso de cobranza." }, // Para estadoGeneralCliente
+    inactivo: { text: "Inactivo", description: "Cliente marcado como inactivo o eliminado.", action: "Archivar o revisar." }, // Para estadoGeneralCliente
+    'n/a': { text: "N/A", description: "No aplica o sin información.", action: "Verificar datos."} // Para estadoUltimaFacturaCliente
 };
 let currentInvoiceItems = [];
 let nextItemId = 0;
@@ -325,7 +321,6 @@ function handleDiscountChange() {
     }
 }
 
-// --- Funciones para el Desplegable de Clientes Personalizado ---
 function handleClientSelection(clientId, clientNameText, clientData = null) {
     if (selectedClientNameDisplay) {
         selectedClientNameDisplay.innerHTML = ''; 
@@ -337,35 +332,22 @@ function handleClientSelection(clientId, clientNameText, clientData = null) {
         if (clientId && clientData) { 
             const pillsContainer = document.createElement('span');
             pillsContainer.classList.add('pills-container');
-
-            // Píldora 1: Estado General del Cliente
-            let estadoGeneral = clientData.estadoGeneralCliente || "Activo"; // Valor por defecto si no existe
-            let claseCssEstadoGeneral = "status-client-default"; 
-            if (estadoGeneral === "Nuevo") claseCssEstadoGeneral = "status-client-nuevo";
-            else if (estadoGeneral === "Activo" || estadoGeneral === "Al día") claseCssEstadoGeneral = "status-client-al-dia";
-            else if (estadoGeneral === "Con Pendientes") claseCssEstadoGeneral = "status-client-con-pendientes";
-            else if (estadoGeneral === "Moroso") claseCssEstadoGeneral = "status-client-moroso";
-            else if (estadoGeneral === "Inactivo") claseCssEstadoGeneral = "status-client-inactivo";
             
-            const pill1 = document.createElement('span');
-            pill1.classList.add('option-status-pill', claseCssEstadoGeneral);
-            pill1.textContent = estadoGeneral;
-            pillsContainer.appendChild(pill1);
-
-            // Píldora 2: Estado de Última Factura
-            let estadoFactura = clientData.estadoUltimaFacturaCliente || "N/A";
+            // Píldora de Estado de Última Factura (usa los mismos estados/textos que en "Mis Facturas")
+            let estadoFactura = clientData.estadoUltimaFacturaCliente || "N/A"; // Viene del documento del cliente
             let claseCssEstadoFactura = `invoice-status-${estadoFactura.toLowerCase().replace(/ /g, '_')}`;
-            if (estadoFactura === "N/A") claseCssEstadoFactura = "invoice-status-na";
+            if (estadoFactura === "N/A") claseCssEstadoFactura = "invoice-status-na"; // Clase CSS específica para N/A
             
-            let textoEstadoFactura = paymentStatusDetails[estadoFactura.toLowerCase().replace(/ /g, '_')]?.text || estadoFactura;
+            // Obtener el texto corto del estado de la factura desde paymentStatusDetails
+            let textoPildoraFactura = paymentStatusDetails[estadoFactura.toLowerCase().replace(/ /g, '_')]?.text || estadoFactura;
             if (estadoFactura === "N/A" && !paymentStatusDetails[estadoFactura.toLowerCase().replace(/ /g, '_')]) {
-                textoEstadoFactura = "N/A";
+                textoPildoraFactura = "N/A";
             }
 
-            const pill2 = document.createElement('span');
-            pill2.classList.add('option-status-pill', claseCssEstadoFactura);
-            pill2.textContent = textoEstadoFactura;
-            pillsContainer.appendChild(pill2);
+            const pillFactura = document.createElement('span');
+            pillFactura.classList.add('option-status-pill', claseCssEstadoFactura);
+            pillFactura.textContent = textoPildoraFactura;
+            pillsContainer.appendChild(pillFactura);
             
             selectedClientNameDisplay.appendChild(pillsContainer);
         }
@@ -425,30 +407,23 @@ async function loadClientsIntoDropdown() {
                 clientOption.setAttribute('data-value', docSnap.id);
 
                 let clientDisplayName = client.name;
-                // No añadimos email/teléfono aquí para dar más espacio a las píldoras
+                // No se añade email/teléfono al display de la opción para no hacerlo muy largo con la píldora.
 
-                let estadoGeneral = client.estadoGeneralCliente || "Activo"; // Valor por defecto
-                let claseCssEstadoGeneral = "status-client-default";
-                if (estadoGeneral === "Nuevo") claseCssEstadoGeneral = "status-client-nuevo";
-                else if (estadoGeneral === "Activo" || estadoGeneral === "Al día") claseCssEstadoGeneral = "status-client-al-dia";
-                else if (estadoGeneral === "Con Pendientes") claseCssEstadoGeneral = "status-client-con-pendientes";
-                else if (estadoGeneral === "Moroso") claseCssEstadoGeneral = "status-client-moroso";
-                else if (estadoGeneral === "Inactivo") claseCssEstadoGeneral = "status-client-inactivo";
+                // Píldora de Estado de Última Factura (o estado relevante del cliente)
+                let estadoFacturaCliente = client.estadoUltimaFacturaCliente || "N/A"; // Este campo debe existir en tus documentos de cliente
+                let claseCssEstadoFactura = `invoice-status-${estadoFacturaCliente.toLowerCase().replace(/ /g, '_')}`;
+                if (estadoFacturaCliente === "N/A") claseCssEstadoFactura = "invoice-status-na";
 
-                let estadoFactura = client.estadoUltimaFacturaCliente || "N/A";
-                let claseCssEstadoFactura = `invoice-status-${estadoFactura.toLowerCase().replace(/ /g, '_')}`;
-                if (estadoFactura === "N/A") claseCssEstadoFactura = "invoice-status-na";
-                
-                let textoEstadoFactura = paymentStatusDetails[estadoFactura.toLowerCase().replace(/ /g, '_')]?.text || estadoFactura;
-                if(estadoFactura === "N/A" && !paymentStatusDetails[estadoFactura.toLowerCase().replace(/ /g, '_')]) {
-                    textoEstadoFactura = "N/A";
+                // Usar el texto corto definido en paymentStatusDetails para la píldora
+                let textoPildora = paymentStatusDetails[estadoFacturaCliente.toLowerCase().replace(/ /g, '_')]?.text || estadoFacturaCliente;
+                if (estadoFacturaCliente === "N/A" && !paymentStatusDetails[estadoFacturaCliente.toLowerCase().replace(/ /g, '_')]) {
+                    textoPildora = "N/A";
                 }
-
+                
                 clientOption.innerHTML = `
                     <span class="option-client-name">${clientDisplayName}</span>
-                    <span class="pills-container">
-                        <span class="option-status-pill ${claseCssEstadoGeneral}">${estadoGeneral}</span>
-                        <span class="option-status-pill ${claseCssEstadoFactura}">${textoEstadoFactura}</span>
+                    <span class="pills-container"> {/* Contenedor para UNA píldora */}
+                        <span class="option-status-pill ${claseCssEstadoFactura}">${textoPildora}</span>
                     </span>
                 `;
                 clientOption.addEventListener('click', () => handleClientSelection(docSnap.id, client.name, client));
@@ -470,7 +445,12 @@ async function softDeleteClient(clientId) {
     }
     const clientRef = doc(db, "clientes", clientId);
     try {
-        await updateDoc(clientRef, { isDeleted: true, deletedAt: serverTimestamp() });
+        await updateDoc(clientRef, { 
+            isDeleted: true, 
+            deletedAt: serverTimestamp(),
+            // Opcional: Cambiar estado general al eliminar
+            // estadoGeneralCliente: "Inactivo" 
+        });
         alert("Cliente marcado como inactivo.");
         return true;
     } catch (error) { 
@@ -481,6 +461,7 @@ async function softDeleteClient(clientId) {
 }
 
 async function handleNavigation(sectionToShowId) {
+    // ... (Código de handleNavigation existente, asegurándose de que llame a loadClientsIntoDropdown) ...
     const sections = [createInvoiceSection, viewInvoicesSection, clientsSection];
     const navLinks = [navCreateInvoice, navViewInvoices, navClients];
     let targetTitle = "Sistema de Facturación";
@@ -513,7 +494,7 @@ async function handleNavigation(sectionToShowId) {
         if (typeof loadAndDisplayInvoices === 'function') await loadAndDisplayInvoices();
     } else if (sectionToShowId === 'clientsSection') {
         targetTitle = "Clientes";
-        if (clientsSection && clientsSection.innerHTML.trim() === '') { // Evitar sobreescribir si ya tiene contenido
+        if (clientsSection && clientsSection.innerHTML.trim() === '') {
             clientsSection.innerHTML = `<h2>Clientes</h2><p>Funcionalidad en desarrollo.</p><div id="clientListContainer"></div>`;
         }
     }
@@ -521,6 +502,7 @@ async function handleNavigation(sectionToShowId) {
 }
 
 async function loadAndDisplayInvoices() {
+    // ... (Código de loadAndDisplayInvoices existente) ...
     const currentInvoiceListContainer = document.getElementById('invoiceListContainer');
     if (!currentInvoiceListContainer) {
         if(viewInvoicesSection) viewInvoicesSection.innerHTML = `<h2>Mis Facturas</h2><p>Error: Contenedor no encontrado.</p>`;
@@ -576,7 +558,7 @@ if (loginButton) {
     loginButton.addEventListener('click', () => {
         showLoading(true);
         signInWithPopup(auth, googleProvider)
-            .then((result) => { /* onAuthStateChanged maneja el post-login */ })
+            .then((result) => { /* onAuthStateChanged lo maneja */ })
             .catch((error) => {
                 console.error("Error en login:", error);
                 let msg = "Error al iniciar sesión.";
@@ -590,7 +572,6 @@ if (loginButton) {
             });
     });
 }
-
 if (logoutButton) { 
     logoutButton.addEventListener('click', () => {
         showLoading(true); 
@@ -600,7 +581,6 @@ if (logoutButton) {
         });
     });
 }
-
 onAuthStateChanged(auth, (user) => { 
     showLoading(false); 
     if (user) {
@@ -734,6 +714,7 @@ if (invoiceForm) {
                 if (selectedClientNameDisplay && hiddenSelectedClientIdInput.value === selectedClientId) {
                      handleClientSelection(selectedClientId, clientName, loadedClients[clientIndex]); 
                 }
+
             } catch (error) {
                 console.error("Error al actualizar cliente:", error);
                 alert("Error al actualizar datos del cliente. Se guardará la factura con los datos anteriores.");
@@ -799,23 +780,26 @@ if (invoiceForm) {
             const docRef = await addDoc(collection(db, "facturas"), invoiceToSave);
             alert(`¡Factura FCT-${formattedInvoiceNumberStr} guardada! ID: ${docRef.id}`);
 
+            // Si es un cliente nuevo, guardarlo y asignarle estados por defecto
             if (hiddenSelectedClientIdInput && hiddenSelectedClientIdInput.value === "") {
                 const newClientData = { 
                     userId: user.uid, name: clientName, phone: clientPhone, email: clientEmail, 
                     createdAt: serverTimestamp(), 
                     isDeleted: false, 
                     estadoGeneralCliente: "Nuevo", 
-                    estadoUltimaFacturaCliente: invoiceToSave.paymentStatus 
+                    estadoUltimaFacturaCliente: invoiceToSave.paymentStatus // Usar el estado de esta primera factura
                 };
                 try {
                     await addDoc(collection(db, "clientes"), newClientData);
                 } catch (clientError) { console.error("Error al guardar nuevo cliente:", clientError); }
             } else if (selectedClientId) { 
+                // Si es un cliente existente, ACTUALIZAR su estadoUltimaFacturaCliente
                 const clientRef = doc(db, "clientes", selectedClientId);
                 try {
                     await updateDoc(clientRef, {
                         estadoUltimaFacturaCliente: invoiceToSave.paymentStatus,
                         // Aquí también podríamos actualizar 'estadoGeneralCliente' basado en una lógica más compleja
+                        // Por ahora, solo actualizamos el de la última factura.
                         updatedAt: serverTimestamp() 
                     });
                 } catch (clientUpdateError) {
@@ -840,7 +824,7 @@ if (invoiceForm) {
         } finally { 
             if (saveInvoiceBtn) saveInvoiceBtn.disabled = false;
             if (generateInvoiceFileBtn) generateInvoiceFileBtn.disabled = false;
-            showLoading(false); // Mover showLoading(false) aquí para asegurar que siempre se oculte
+            showLoading(false);
             console.log("Proceso de guardado finalizado, pantalla de carga oculta.");
         }
     });
