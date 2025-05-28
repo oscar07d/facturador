@@ -58,12 +58,12 @@ const createInvoiceSection = document.getElementById('createInvoiceSection');
 const viewInvoicesSection = document.getElementById('viewInvoicesSection');
 const clientsSection = document.getElementById('clientsSection');
 const appPageTitle = document.getElementById('appPageTitle');
-let invoiceListContainer = document.getElementById('invoiceListContainer'); // Se usa en loadAndDisplayInvoices
+// invoiceListContainer se selecciona dentro de loadAndDisplayInvoices y handleNavigation por si se crea dinámicamente
 
 // Formulario de Factura y sus partes
 const invoiceForm = document.getElementById('invoiceForm');
 
-// Cliente
+// Cliente (Desplegable Personalizado y Campos)
 const customClientSelect = document.getElementById('customClientSelect');
 const customClientSelectDisplay = document.getElementById('customClientSelectDisplay');
 const selectedClientNameDisplay = document.getElementById('selectedClientNameDisplay');
@@ -107,7 +107,7 @@ const ivaAmountSpan = document.getElementById('ivaAmount');
 const totalAmountSpan = document.getElementById('totalAmount');
 
 // Botones de Acción del Formulario
-const saveInvoiceBtn = document.getElementById('saveInvoiceBtn'); // Este es el botón submit del form
+const saveInvoiceBtn = document.getElementById('saveInvoiceBtn');
 const generateInvoiceFileBtn = document.getElementById('generateInvoiceFileBtn');
 
 // --- Variables Globales ---
@@ -115,11 +115,11 @@ const paymentStatusDetails = {
     pending: { text: "Pendiente", description: "La factura ha sido emitida y enviada al cliente, pero aún no se ha recibido el pago. El plazo de vencimiento todavía no ha llegado.", action: "Monitoreo regular, envío de recordatorios amigables antes de la fecha de vencimiento." },
     paid: { text: "Pagado", description: "El cliente ha realizado el pago completo de la factura y este ha sido confirmado.", action: "Agradecimiento al cliente, actualización de registros." },
     overdue: { text: "Vencido", description: "La fecha de vencimiento de la factura ha pasado y el pago no se ha recibido.", action: "Inicio del proceso de cobranza." },
-    in_process: { text: "En Proceso", description: "El cliente ha informado que ha realizado el pago, o el pago está siendo procesado.", action: "Seguimiento para confirmar la recepción." },
-    partial_payment: { text: "Pago Parcial", description: "El cliente ha realizado un abono, pero no ha cubierto el total de la factura.", action: "Contactar al cliente para aclarar y acordar el pago del saldo restante." },
+    in_process: { text: "En Proceso", description: "El cliente ha informado que ha realizado el pago, o el pago está siendo procesado por el banco o la pasarela de pagos.", action: "Seguimiento para confirmar la recepción efectiva del pago." },
+    partial_payment: { text: "Pago Parcial", description: "El cliente ha realizado un abono, pero no ha cubierto el total de la factura.", action: "Contactar al cliente para aclarar la situación y acordar el pago del saldo restante." },
     disputed: { text: "Disputado", description: "El cliente ha manifestado una inconformidad con la factura o el servicio.", action: "Investigación interna de la disputa, comunicación con el cliente." },
-    cancelled: { text: "Cancelado", description: "La factura ha sido anulada.", action: "Asegurarse de que el cliente esté informado y que los registros contables reflejen la anulación." },
-    uncollectible: { text: "Incobrable", description: "Después de múltiples intentos de cobro, se considera que la deuda no será recuperada.", action: "Se procede según las políticas de la empresa para dar de baja la cuenta." }
+    cancelled: { text: "Cancelado", description: "La factura ha sido anulada, ya sea por un error, por la cancelación del servicio/producto, o por un acuerdo con el cliente.", action: "Asegurarse de que el cliente esté informado y que los registros contables reflejen la anulación." },
+    uncollectible: { text: "Incobrable", description: "Después de múltiples intentos de cobro, se considera que la deuda no será recuperada.", action: "Se procede según las políticas de la empresa para dar de baja la cuenta por cobrar." }
 };
 let currentInvoiceItems = [];
 let nextItemId = 0;
@@ -174,9 +174,10 @@ function formatInvoiceNumber(number) {
 }
 
 async function getCurrentLastInvoiceNumericValue(userId) {
+    // console.log("Intentando obtener el último número para userId:", userId); // Descomentar para depurar
     if (!userId) {
         console.warn("ID de usuario no proporcionado para obtener el último número de factura.");
-        return 0;
+        return 0; 
     }
     const counterRef = doc(db, "user_counters", userId);
     try {
@@ -184,11 +185,11 @@ async function getCurrentLastInvoiceNumericValue(userId) {
         if (counterDoc.exists() && counterDoc.data().lastInvoiceNumber !== undefined) {
             return counterDoc.data().lastInvoiceNumber;
         } else {
-            return 0;
+            return 0; 
         }
     } catch (error) {
         console.error("Error al leer el último número de factura:", error);
-        return 0;
+        return 0; 
     }
 }
 
@@ -267,7 +268,7 @@ function renderItems() {
 
 function deleteItem(itemId) {
     currentInvoiceItems = currentInvoiceItems.filter(item => item.id !== itemId);
-    renderItems(); // Esto ya llama a recalculateTotals
+    renderItems(); 
 }
 
 function recalculateTotals() {
@@ -319,7 +320,7 @@ function handleClientSelection(clientId, clientNameDisplay, clientData = null) {
         nameSpan.textContent = clientNameDisplay;
         selectedClientNameDisplay.appendChild(nameSpan);
 
-        if (clientId && clientData) {
+        if (clientId && clientData) { // Solo añadir píldoras si es un cliente existente con datos
             const pillsContainer = document.createElement('span');
             pillsContainer.classList.add('pills-container');
 
@@ -403,7 +404,12 @@ async function loadClientsIntoDropdown() {
                 let estadoFactura = client.estadoUltimaFacturaCliente || "N/A";
                 let claseCssEstadoFactura = `invoice-status-${estadoFactura.toLowerCase().replace(/ /g, '_')}`;
                 if (estadoFactura === "N/A") claseCssEstadoFactura = "invoice-status-na";
+                
                 let textoEstadoFactura = paymentStatusDetails[estadoFactura.toLowerCase().replace(/ /g, '_')]?.text || estadoFactura;
+                if(estadoFactura === "N/A" && !paymentStatusDetails[estadoFactura.toLowerCase().replace(/ /g, '_')]) {
+                    textoEstadoFactura = "N/A"; // Asegurar que muestre N/A si no hay mapeo
+                }
+
 
                 clientOption.innerHTML = `
                     <span class="option-client-name">${client.name}</span>
@@ -459,8 +465,10 @@ async function handleNavigation(sectionToShowId) {
     } else if (sectionToShowId === 'viewInvoicesSection') {
         targetTitle = "Mis Facturas";
         const currentInvoiceListContainer = document.getElementById('invoiceListContainer');
-        if (viewInvoicesSection && !currentInvoiceListContainer) {
-            viewInvoicesSection.innerHTML = `<h2>Mis Facturas</h2><div id="invoiceListContainer"></div>`;
+        if (viewInvoicesSection && !currentInvoiceListContainer) { // Si el contenedor no está, lo crea.
+            viewInvoicesSection.innerHTML = `<h2>Mis Facturas</h2><div id="invoiceListContainer"><p>Cargando facturas...</p></div>`;
+        } else if (currentInvoiceListContainer) { // Si ya existe, solo pone el mensaje de carga.
+            currentInvoiceListContainer.innerHTML = `<p>Cargando facturas...</p>`;
         }
         if (typeof loadAndDisplayInvoices === 'function') await loadAndDisplayInvoices();
     } else if (sectionToShowId === 'clientsSection') {
@@ -697,7 +705,7 @@ if (invoiceForm) {
             actualNumericInvoiceNumber = await getNextInvoiceNumber(user.uid);
             formattedInvoiceNumberStr = formatInvoiceNumber(actualNumericInvoiceNumber);
         } catch (error) { 
-            alert("Error al generar número de factura.");
+            alert("Error crítico al generar número de factura. No se guardó la factura.");
             showLoading(false);
             if (saveInvoiceBtn) saveInvoiceBtn.disabled = false;
             if (generateInvoiceFileBtn) generateInvoiceFileBtn.disabled = false;
@@ -717,7 +725,7 @@ if (invoiceForm) {
                 phone: document.getElementById('emitterPhone')?.value.trim() || '',
                 email: document.getElementById('emitterEmail')?.value.trim() || ''
             },
-            client: { name: clientName, phone: clientPhone, email: clientEmail },
+            client: { name: clientName, phone: clientPhone, email: clientEmail }, 
             items: currentInvoiceItems,
             discount: { type: discountTypeSelect.value, value: (parseFloat(discountValueInput.value) || 0) },
             totals: {
@@ -739,8 +747,8 @@ if (invoiceForm) {
                 const newClientData = { 
                     userId: user.uid, name: clientName, phone: clientPhone, email: clientEmail, 
                     createdAt: serverTimestamp(), isDeleted: false, 
-                    estadoGeneralCliente: "Nuevo", // Estado general por defecto
-                    estadoUltimaFacturaCliente: "N/A" // Estado de factura por defecto
+                    estadoGeneralCliente: "Nuevo", 
+                    estadoUltimaFacturaCliente: "N/A" 
                 };
                 try {
                     await addDoc(collection(db, "clientes"), newClientData);
@@ -749,7 +757,7 @@ if (invoiceForm) {
             
             invoiceForm.reset();
             currentInvoiceItems = []; nextItemId = 0;
-            handleClientSelection("", "-- Nuevo Cliente --"); // Resetea campos y estado del desplegable
+            handleClientSelection("", "-- Nuevo Cliente --"); 
             
             renderItems(); setDefaultInvoiceDate(); updateQuantityBasedOnStreaming(); handleDiscountChange();
             await loadClientsIntoDropdown(); 
