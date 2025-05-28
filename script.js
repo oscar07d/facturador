@@ -114,11 +114,11 @@ const paymentStatusDetails = {
     pending: { text: "Pendiente", description: "La factura ha sido emitida y enviada al cliente, pero aún no se ha recibido el pago. El plazo de vencimiento todavía no ha llegado.", action: "Monitoreo regular, envío de recordatorios amigables antes de la fecha de vencimiento." },
     paid: { text: "Pagado", description: "El cliente ha realizado el pago completo de la factura y este ha sido confirmado.", action: "Agradecimiento al cliente, actualización de registros." },
     overdue: { text: "Vencido", description: "La fecha de vencimiento de la factura ha pasado y el pago no se ha recibido.", action: "Inicio del proceso de cobranza." },
-    in_process: { text: "En Proceso", description: "El cliente ha informado que ha realizado el pago, o el pago está siendo procesado por el banco o la pasarela de pagos.", action: "Seguimiento para confirmar la recepción efectiva del pago." },
-    partial_payment: { text: "Pago Parcial", description: "El cliente ha realizado un abono, pero no ha cubierto el total de la factura.", action: "Contactar al cliente para aclarar la situación y acordar el pago del saldo restante." },
-    disputed: { text: "Disputado", description: "El cliente ha manifestado una inconformidad con la factura o el servicio.", action: "Investigación interna de la disputa, comunicación con el cliente." },
-    cancelled: { text: "Cancelado", description: "La factura ha sido anulada, ya sea por un error, por la cancelación del servicio/producto, o por un acuerdo con el cliente.", action: "Asegurarse de que el cliente esté informado y que los registros contables reflejen la anulación." },
-    uncollectible: { text: "Incobrable", description: "Después de múltiples intentos de cobro, se considera que la deuda no será recuperada.", action: "Se procede según las políticas de la empresa para dar de baja la cuenta por cobrar." }
+    in_process: { text: "En Proceso", description: "El cliente ha informado que ha realizado el pago, o el pago está siendo procesado.", action: "Seguimiento para confirmar la recepción." },
+    partial_payment: { text: "Pago Parcial", description: "El cliente ha realizado un abono, pero no ha cubierto el total de la factura.", action: "Contactar para acordar pago restante." },
+    disputed: { text: "Disputado", description: "El cliente ha manifestado una inconformidad con la factura o el servicio.", action: "Investigación interna." },
+    cancelled: { text: "Cancelado", description: "La factura ha sido anulada.", action: "Informar al cliente y actualizar registros." },
+    uncollectible: { text: "Incobrable", description: "Se considera que la deuda no será recuperada.", action: "Proceder según políticas." }
 };
 let currentInvoiceItems = [];
 let nextItemId = 0;
@@ -232,7 +232,7 @@ async function displayNextPotentialInvoiceNumber() {
 }
 
 function renderItems() {
-    if (!invoiceItemsContainer) return;
+    if (!invoiceItemsContainer) { return; }
     invoiceItemsContainer.innerHTML = '';
     if (currentInvoiceItems.length === 0) {
         invoiceItemsContainer.innerHTML = '<div class="invoice-item-placeholder">Aún no has agregado ítems.</div>';
@@ -325,6 +325,7 @@ function handleDiscountChange() {
     }
 }
 
+// --- Funciones para el Desplegable de Clientes Personalizado ---
 function handleClientSelection(clientId, clientNameText, clientData = null) {
     if (selectedClientNameDisplay) {
         selectedClientNameDisplay.innerHTML = ''; 
@@ -337,8 +338,9 @@ function handleClientSelection(clientId, clientNameText, clientData = null) {
             const pillsContainer = document.createElement('span');
             pillsContainer.classList.add('pills-container');
 
-            let estadoGeneral = clientData.estadoGeneralCliente || "Activo";
-            let claseCssEstadoGeneral = "status-client-default";
+            // Píldora 1: Estado General del Cliente
+            let estadoGeneral = clientData.estadoGeneralCliente || "Activo"; // Valor por defecto si no existe
+            let claseCssEstadoGeneral = "status-client-default"; 
             if (estadoGeneral === "Nuevo") claseCssEstadoGeneral = "status-client-nuevo";
             else if (estadoGeneral === "Activo" || estadoGeneral === "Al día") claseCssEstadoGeneral = "status-client-al-dia";
             else if (estadoGeneral === "Con Pendientes") claseCssEstadoGeneral = "status-client-con-pendientes";
@@ -350,13 +352,14 @@ function handleClientSelection(clientId, clientNameText, clientData = null) {
             pill1.textContent = estadoGeneral;
             pillsContainer.appendChild(pill1);
 
+            // Píldora 2: Estado de Última Factura
             let estadoFactura = clientData.estadoUltimaFacturaCliente || "N/A";
             let claseCssEstadoFactura = `invoice-status-${estadoFactura.toLowerCase().replace(/ /g, '_')}`;
             if (estadoFactura === "N/A") claseCssEstadoFactura = "invoice-status-na";
             
             let textoEstadoFactura = paymentStatusDetails[estadoFactura.toLowerCase().replace(/ /g, '_')]?.text || estadoFactura;
-             if(estadoFactura === "N/A" && !paymentStatusDetails[estadoFactura.toLowerCase().replace(/ /g, '_')]) {
-                textoEstadoFactura = "N/A"; 
+            if (estadoFactura === "N/A" && !paymentStatusDetails[estadoFactura.toLowerCase().replace(/ /g, '_')]) {
+                textoEstadoFactura = "N/A";
             }
 
             const pill2 = document.createElement('span');
@@ -398,7 +401,7 @@ async function loadClientsIntoDropdown() {
     const user = auth.currentUser;
     
     customClientOptions.innerHTML = ''; 
-    handleClientSelection("", "-- Nuevo Cliente --"); // Resetea el display y campos del formulario
+    handleClientSelection("", "-- Nuevo Cliente --"); 
 
     if (!user) {
         console.log("loadClientsIntoDropdown: No hay usuario.");
@@ -414,9 +417,7 @@ async function loadClientsIntoDropdown() {
         );
         const querySnapshot = await getDocs(q);
 
-        if (querySnapshot.empty) {
-            console.log("loadClientsIntoDropdown: No se encontraron clientes activos para este usuario.");
-        } else {
+        if (!querySnapshot.empty) {
             querySnapshot.forEach((docSnap) => {
                 const client = docSnap.data();
                 const clientOption = document.createElement('div');
@@ -424,10 +425,9 @@ async function loadClientsIntoDropdown() {
                 clientOption.setAttribute('data-value', docSnap.id);
 
                 let clientDisplayName = client.name;
-                // No se añade email/teléfono al display principal de la opción, solo el nombre
-                // El email/teléfono podrían ser tooltips o mostrarse al seleccionar si se desea
+                // No añadimos email/teléfono aquí para dar más espacio a las píldoras
 
-                let estadoGeneral = client.estadoGeneralCliente || "Activo";
+                let estadoGeneral = client.estadoGeneralCliente || "Activo"; // Valor por defecto
                 let claseCssEstadoGeneral = "status-client-default";
                 if (estadoGeneral === "Nuevo") claseCssEstadoGeneral = "status-client-nuevo";
                 else if (estadoGeneral === "Activo" || estadoGeneral === "Al día") claseCssEstadoGeneral = "status-client-al-dia";
@@ -465,7 +465,7 @@ async function loadClientsIntoDropdown() {
 async function softDeleteClient(clientId) {
     const user = auth.currentUser;
     if (!user || !clientId) { 
-        alert("Acción no permitida o cliente no seleccionado."); 
+        alert("Acción no permitida."); 
         return false; 
     }
     const clientRef = doc(db, "clientes", clientId);
@@ -474,8 +474,8 @@ async function softDeleteClient(clientId) {
         alert("Cliente marcado como inactivo.");
         return true;
     } catch (error) { 
-        console.error("Error al marcar cliente como eliminado:", error); 
-        alert("Error al eliminar el cliente."); 
+        console.error("Error al eliminar cliente:", error); 
+        alert("Error al eliminar."); 
         return false; 
     }
 }
@@ -513,7 +513,7 @@ async function handleNavigation(sectionToShowId) {
         if (typeof loadAndDisplayInvoices === 'function') await loadAndDisplayInvoices();
     } else if (sectionToShowId === 'clientsSection') {
         targetTitle = "Clientes";
-        if (clientsSection && clientsSection.innerHTML.trim() === '') {
+        if (clientsSection && clientsSection.innerHTML.trim() === '') { // Evitar sobreescribir si ya tiene contenido
             clientsSection.innerHTML = `<h2>Clientes</h2><p>Funcionalidad en desarrollo.</p><div id="clientListContainer"></div>`;
         }
     }
@@ -576,34 +576,33 @@ if (loginButton) {
     loginButton.addEventListener('click', () => {
         showLoading(true);
         signInWithPopup(auth, googleProvider)
-            .then((result) => { /* No es necesario hacer nada aquí, onAuthStateChanged lo maneja */ })
+            .then((result) => { /* onAuthStateChanged maneja el post-login */ })
             .catch((error) => {
                 console.error("Error en login:", error);
                 let msg = "Error al iniciar sesión.";
                 if (error.code === 'auth/popup-closed-by-user') msg = "Ventana de login cerrada.";
-                else if (error.code === 'auth/cancelled-popup-request') msg = "Solicitud de inicio de sesión cancelada.";
                 alert(msg);
             })
             .finally(() => { 
-                // showLoading(false) es llamado por onAuthStateChanged
-                if (!auth.currentUser && loadingOverlay.style.display !== 'none') { // Solo si el login falló realmente y no hubo cambio de estado
+                if (!auth.currentUser && loadingOverlay.style.display !== 'none') {
                     showLoading(false);
                 }
             });
     });
 }
+
 if (logoutButton) { 
     logoutButton.addEventListener('click', () => {
-        showLoading(true); // Mostrar carga mientras se cierra sesión
+        showLoading(true); 
         signOut(auth).catch((error) => {
-            console.error("Error al cerrar sesión:", error)
-            showLoading(false); // Asegurarse de ocultar en caso de error aquí también
+            console.error("Error al cerrar sesión:", error);
+            showLoading(false); 
         });
-        // onAuthStateChanged ocultará la carga después del signOut exitoso
     });
 }
+
 onAuthStateChanged(auth, (user) => { 
-    showLoading(false); // Ocultar carga en cualquier cambio de estado de autenticación
+    showLoading(false); 
     if (user) {
         if (loginContainer) loginContainer.style.display = 'none';
         if (mainContent) mainContent.style.display = 'flex'; 
@@ -634,7 +633,7 @@ if (customClientSelect) {
 }
 document.addEventListener('click', (event) => {
     if (customClientSelect && !customClientSelect.contains(event.target) && customClientOptions) {
-        if (customClientOptions.style.display === 'block') { // Solo si está abierto
+        if (customClientOptions.style.display === 'block') {
             customClientOptions.style.display = 'none';
             customClientSelect.classList.remove('open');
         }
@@ -733,9 +732,8 @@ if (invoiceForm) {
                     loadedClients[clientIndex] = { ...loadedClients[clientIndex], name, phone, email, updatedAt: new Date() }; 
                 }
                 if (selectedClientNameDisplay && hiddenSelectedClientIdInput.value === selectedClientId) {
-                     handleClientSelection(selectedClientId, clientName, loadedClients[clientIndex]);
+                     handleClientSelection(selectedClientId, clientName, loadedClients[clientIndex]); 
                 }
-
             } catch (error) {
                 console.error("Error al actualizar cliente:", error);
                 alert("Error al actualizar datos del cliente. Se guardará la factura con los datos anteriores.");
@@ -817,6 +815,7 @@ if (invoiceForm) {
                 try {
                     await updateDoc(clientRef, {
                         estadoUltimaFacturaCliente: invoiceToSave.paymentStatus,
+                        // Aquí también podríamos actualizar 'estadoGeneralCliente' basado en una lógica más compleja
                         updatedAt: serverTimestamp() 
                     });
                 } catch (clientUpdateError) {
@@ -841,7 +840,7 @@ if (invoiceForm) {
         } finally { 
             if (saveInvoiceBtn) saveInvoiceBtn.disabled = false;
             if (generateInvoiceFileBtn) generateInvoiceFileBtn.disabled = false;
-            showLoading(false);
+            showLoading(false); // Mover showLoading(false) aquí para asegurar que siempre se oculte
             console.log("Proceso de guardado finalizado, pantalla de carga oculta.");
         }
     });
