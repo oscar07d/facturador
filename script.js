@@ -1,4 +1,7 @@
 // Importaciones de Firebase
+alert("script.js ¡cargado!"); 
+console.log("script.js está comenzando a ejecutarse.");
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
 import {
     getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut
