@@ -1,15 +1,25 @@
 // Importaciones de Firebase
-alert("script.js ¡cargado!"); 
-console.log("script.js está comenzando a ejecutarse.");
-
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
 import {
-    getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut
+    getAuth,
+    GoogleAuthProvider,
+    signInWithPopup,
+    onAuthStateChanged,
+    signOut
 } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
 import { 
-    getFirestore, collection, addDoc, serverTimestamp,
-    doc, getDoc, setDoc, runTransaction,
-    query, where, getDocs, orderBy,
+    getFirestore,
+    collection,
+    addDoc,
+    serverTimestamp,
+    doc,
+    getDoc,
+    setDoc,
+    runTransaction,
+    query,
+    where,
+    getDocs,
+    orderBy,
     updateDoc 
 } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
 
@@ -30,38 +40,46 @@ const auth = getAuth(app);
 const googleProvider = new GoogleAuthProvider();
 const db = getFirestore(app);
 
-// --- Selección de Elementos del DOM ---
+// --- Selección de Elementos del DOM (Login y UI Principal) ---
 const loginButton = document.getElementById('loginButton');
 const logoutButton = document.getElementById('logoutButton');
 const loadingOverlay = document.getElementById('loadingOverlay');
 const loginContainer = document.querySelector('.login-container');
 const mainContent = document.getElementById('mainContent');
 
+// --- Selección de Elementos del DOM (Interfaz de Facturación) ---
+// Navegación
 const navCreateInvoice = document.getElementById('navCreateInvoice');
 const navViewInvoices = document.getElementById('navViewInvoices');
 const navClients = document.getElementById('navClients');
+
+// Secciones
 const createInvoiceSection = document.getElementById('createInvoiceSection');
 const viewInvoicesSection = document.getElementById('viewInvoicesSection');
 const clientsSection = document.getElementById('clientsSection');
 const appPageTitle = document.getElementById('appPageTitle');
-let invoiceListContainer = document.getElementById('invoiceListContainer');
+let invoiceListContainer = document.getElementById('invoiceListContainer'); // Se usa en loadAndDisplayInvoices
 
+// Formulario de Factura y sus partes
 const invoiceForm = document.getElementById('invoiceForm');
 
+// Cliente
 const customClientSelect = document.getElementById('customClientSelect');
 const customClientSelectDisplay = document.getElementById('customClientSelectDisplay');
 const selectedClientNameDisplay = document.getElementById('selectedClientNameDisplay');
 const customClientOptions = document.getElementById('customClientOptions');
 const hiddenSelectedClientIdInput = document.getElementById('selectedClientId');
-
 const clientNameInput = document.getElementById('clientName');
 const clientPhoneInput = document.getElementById('clientPhone');
 const clientEmailInput = document.getElementById('clientEmail');
 const editClientBtn = document.getElementById('editClientBtn');
 const deleteClientBtn = document.getElementById('deleteClientBtn');
 
+// Detalles de Factura
 const invoiceDateInput = document.getElementById('invoiceDate');
 const invoiceNumberText = document.getElementById('invoiceNumberText');
+
+// Ítems
 const itemDescription = document.getElementById('itemDescription');
 const itemIsStreamingCheckbox = document.getElementById('itemIsStreaming');
 const streamingProfileFieldsDiv = document.getElementById('streamingProfileFields');
@@ -73,11 +91,13 @@ const itemApplyIVA = document.getElementById('itemApplyIVA');
 const addItemBtn = document.getElementById('addItemBtn');
 const invoiceItemsContainer = document.getElementById('invoiceItemsContainer');
 
+// Estado de Pago
 const paymentStatusSelect = document.getElementById('paymentStatus');
 const paymentStatusInfoDiv = document.getElementById('paymentStatusInfo');
 const paymentStatusDescriptionP = document.getElementById('paymentStatusDescription');
 const paymentStatusActionP = document.getElementById('paymentStatusAction');
 
+// Descuento y Totales
 const discountTypeSelect = document.getElementById('discountType');
 const discountValueInput = document.getElementById('discountValue');
 const subtotalAmountSpan = document.getElementById('subtotalAmount');
@@ -86,19 +106,20 @@ const taxableBaseAmountSpan = document.getElementById('taxableBaseAmount');
 const ivaAmountSpan = document.getElementById('ivaAmount');
 const totalAmountSpan = document.getElementById('totalAmount');
 
-const saveInvoiceBtn = document.getElementById('saveInvoiceBtn');
+// Botones de Acción del Formulario
+const saveInvoiceBtn = document.getElementById('saveInvoiceBtn'); // Este es el botón submit del form
 const generateInvoiceFileBtn = document.getElementById('generateInvoiceFileBtn');
 
 // --- Variables Globales ---
 const paymentStatusDetails = {
-    pending: { text: "Pendiente", description: "La factura ha sido emitida y enviada al cliente, pero aún no se ha recibido el pago...", action: "Monitoreo regular, envío de recordatorios..." },
-    paid: { text: "Pagado", description: "El cliente ha realizado el pago completo...", action: "Agradecimiento al cliente, actualización de registros." },
-    overdue: { text: "Vencido", description: "La fecha de vencimiento ha pasado y el pago no se ha recibido.", action: "Inicio del proceso de cobranza..." },
-    in_process: { text: "En Proceso", description: "El cliente ha informado que el pago está en trámite...", action: "Seguimiento para confirmar recepción." },
-    partial_payment: { text: "Pago Parcial", description: "El cliente ha realizado un abono parcial.", action: "Contactar para acordar pago restante." },
-    disputed: { text: "Disputado", description: "El cliente ha manifestado una inconformidad.", action: "Investigación interna y comunicación." },
-    cancelled: { text: "Cancelado", description: "La factura ha sido anulada.", action: "Informar al cliente y actualizar registros." },
-    uncollectible: { text: "Incobrable", description: "Se considera que la deuda no será recuperada.", action: "Proceder según políticas para dar de baja." }
+    pending: { text: "Pendiente", description: "La factura ha sido emitida y enviada al cliente, pero aún no se ha recibido el pago. El plazo de vencimiento todavía no ha llegado.", action: "Monitoreo regular, envío de recordatorios amigables antes de la fecha de vencimiento." },
+    paid: { text: "Pagado", description: "El cliente ha realizado el pago completo de la factura y este ha sido confirmado.", action: "Agradecimiento al cliente, actualización de registros." },
+    overdue: { text: "Vencido", description: "La fecha de vencimiento de la factura ha pasado y el pago no se ha recibido.", action: "Inicio del proceso de cobranza." },
+    in_process: { text: "En Proceso", description: "El cliente ha informado que ha realizado el pago, o el pago está siendo procesado.", action: "Seguimiento para confirmar la recepción." },
+    partial_payment: { text: "Pago Parcial", description: "El cliente ha realizado un abono, pero no ha cubierto el total de la factura.", action: "Contactar al cliente para aclarar y acordar el pago del saldo restante." },
+    disputed: { text: "Disputado", description: "El cliente ha manifestado una inconformidad con la factura o el servicio.", action: "Investigación interna de la disputa, comunicación con el cliente." },
+    cancelled: { text: "Cancelado", description: "La factura ha sido anulada.", action: "Asegurarse de que el cliente esté informado y que los registros contables reflejen la anulación." },
+    uncollectible: { text: "Incobrable", description: "Después de múltiples intentos de cobro, se considera que la deuda no será recuperada.", action: "Se procede según las políticas de la empresa para dar de baja la cuenta." }
 };
 let currentInvoiceItems = [];
 let nextItemId = 0;
@@ -106,8 +127,18 @@ let loadedClients = [];
 let isEditingClient = false;
 
 // --- Funciones Auxiliares y de UI ---
-const showLoading = (show) => { if (loadingOverlay) loadingOverlay.style.display = show ? 'flex' : 'none'; };
-function setDefaultInvoiceDate() { if (invoiceDateInput) { const today = new Date(); invoiceDateInput.value = today.toISOString().split('T')[0]; } }
+const showLoading = (show) => {
+    if (loadingOverlay) {
+        loadingOverlay.style.display = show ? 'flex' : 'none';
+    }
+};
+
+function setDefaultInvoiceDate() {
+    if (invoiceDateInput) {
+        const today = new Date();
+        invoiceDateInput.value = today.toISOString().split('T')[0];
+    }
+}
 
 function updateQuantityBasedOnStreaming() {
     if (itemIsStreamingCheckbox && itemQuantityInput && streamingProfileFieldsDiv) {
@@ -137,22 +168,37 @@ function updatePaymentStatusDisplay() {
         }
     }
 }
-function formatInvoiceNumber(number) { return String(number).padStart(3, '0'); }
+
+function formatInvoiceNumber(number) {
+    return String(number).padStart(3, '0');
+}
 
 async function getCurrentLastInvoiceNumericValue(userId) {
-    if (!userId) { console.warn("ID de usuario no proporcionado."); return 0; }
+    if (!userId) {
+        console.warn("ID de usuario no proporcionado para obtener el último número de factura.");
+        return 0;
+    }
     const counterRef = doc(db, "user_counters", userId);
     try {
         const counterDoc = await getDoc(counterRef);
-        return (counterDoc.exists() && counterDoc.data().lastInvoiceNumber !== undefined) ? counterDoc.data().lastInvoiceNumber : 0;
-    } catch (error) { console.error("Error al leer último número de factura:", error); return 0; }
+        if (counterDoc.exists() && counterDoc.data().lastInvoiceNumber !== undefined) {
+            return counterDoc.data().lastInvoiceNumber;
+        } else {
+            return 0;
+        }
+    } catch (error) {
+        console.error("Error al leer el último número de factura:", error);
+        return 0;
+    }
 }
 
 async function getNextInvoiceNumber(userId) {
-    if (!userId) throw new Error("ID de usuario no proporcionado.");
+    if (!userId) {
+        throw new Error("ID de usuario no proporcionado para obtener el siguiente número de factura.");
+    }
     const counterRef = doc(db, "user_counters", userId);
     try {
-        return await runTransaction(db, async (transaction) => {
+        const newInvoiceNumber = await runTransaction(db, async (transaction) => {
             const counterDoc = await transaction.get(counterRef);
             let lastNumber = 0;
             if (counterDoc.exists() && counterDoc.data().lastInvoiceNumber !== undefined) {
@@ -162,7 +208,11 @@ async function getNextInvoiceNumber(userId) {
             transaction.set(counterRef, { lastInvoiceNumber: nextNumber }, { merge: true });
             return nextNumber;
         });
-    } catch (error) { console.error("Error en transacción de número de factura:", error); throw error; }
+        return newInvoiceNumber;
+    } catch (error) {
+        console.error("Error en transacción para obtener el siguiente número de factura:", error);
+        throw error;
+    }
 }
 
 async function displayNextPotentialInvoiceNumber() {
@@ -171,21 +221,98 @@ async function displayNextPotentialInvoiceNumber() {
         try {
             invoiceNumberText.textContent = "..."; 
             const lastNum = await getCurrentLastInvoiceNumericValue(user.uid);
-            invoiceNumberText.textContent = formatInvoiceNumber(lastNum + 1);
-        } catch (error) { invoiceNumberText.textContent = "Error"; }
+            const potentialNextNum = lastNum + 1;
+            invoiceNumberText.textContent = formatInvoiceNumber(potentialNextNum);
+        } catch (error) {
+            console.error("No se pudo cargar el número de factura potencial:", error);
+            invoiceNumberText.textContent = "Error";
+        }
     } else if (invoiceNumberText) {
-        invoiceNumberText.textContent = "000";
+        invoiceNumberText.textContent = "000"; 
     }
 }
 
-function renderItems() { /* ... (Tu función existente) ... */ }
-function deleteItem(itemId) { /* ... (Tu función existente) ... */ }
-function recalculateTotals() { /* ... (Tu función existente) ... */ }
-function handleDiscountChange() { /* ... (Tu función existente) ... */ }
+function renderItems() {
+    if (!invoiceItemsContainer) return;
+    invoiceItemsContainer.innerHTML = '';
+    if (currentInvoiceItems.length === 0) {
+        invoiceItemsContainer.innerHTML = '<div class="invoice-item-placeholder">Aún no has agregado ítems.</div>';
+    } else {
+        currentInvoiceItems.forEach(item => {
+            const itemSubtotal = item.quantity * item.price;
+            let profileDetailsHTML = '';
+            if (item.isStreaming && item.profileName) {
+                profileDetailsHTML = `<p class="item-profile-details">Perfil: ${item.profileName} ${item.profilePin ? `(PIN: ${item.profilePin})` : ''}</p>`;
+            }
+            const itemElement = document.createElement('div');
+            itemElement.classList.add('invoice-item');
+            itemElement.setAttribute('data-item-id', item.id);
+            itemElement.innerHTML = `
+                <div class="item-details">
+                    <p class="item-description-display"><strong>${item.description}</strong></p>
+                    ${profileDetailsHTML}
+                    <p class="item-meta">Cantidad: ${item.quantity} x Precio: ${item.price.toLocaleString('es-CO', { style: 'currency', currency: 'COP' })}</p>
+                </div>
+                <div class="item-actions">
+                    <p class="item-subtotal-display">${itemSubtotal.toLocaleString('es-CO', { style: 'currency', currency: 'COP' })}</p>
+                    <button type="button" class="btn btn-danger btn-sm delete-item-btn">Eliminar</button>
+                </div>
+            `;
+            itemElement.querySelector('.delete-item-btn').addEventListener('click', () => deleteItem(item.id));
+            invoiceItemsContainer.appendChild(itemElement);
+        });
+    }
+    if (typeof recalculateTotals === 'function') recalculateTotals();
+}
+
+function deleteItem(itemId) {
+    currentInvoiceItems = currentInvoiceItems.filter(item => item.id !== itemId);
+    renderItems(); // Esto ya llama a recalculateTotals
+}
+
+function recalculateTotals() {
+    let subtotal = 0;
+    let totalIVA = 0;
+    currentInvoiceItems.forEach(item => {
+        const itemTotal = item.quantity * item.price;
+        subtotal += itemTotal;
+        if (item.applyIVA) totalIVA += itemTotal * 0.19;
+    });
+
+    let discountAmount = 0;
+    const selectedDiscountType = discountTypeSelect ? discountTypeSelect.value : 'none';
+    let discountValue = discountValueInput ? parseFloat(discountValueInput.value) : 0;
+    if (isNaN(discountValue)) discountValue = 0;
+
+    if (selectedDiscountType === 'percentage' && discountValue > 0) {
+        discountAmount = subtotal * (discountValue / 100);
+    } else if (selectedDiscountType === 'fixed' && discountValue > 0) {
+        discountAmount = discountValue;
+    }
+    if (discountAmount > subtotal) discountAmount = subtotal;
+    if (discountAmount < 0) discountAmount = 0;
+
+    const taxableBaseAmount = subtotal - discountAmount;
+    const grandTotal = taxableBaseAmount + totalIVA;
+
+    const formatCOP = (value) => value.toLocaleString('es-CO', { style: 'currency', currency: 'COP' });
+    if (subtotalAmountSpan) subtotalAmountSpan.textContent = formatCOP(subtotal);
+    if (discountAmountAppliedSpan) discountAmountAppliedSpan.textContent = formatCOP(discountAmount);
+    if (taxableBaseAmountSpan) taxableBaseAmountSpan.textContent = formatCOP(taxableBaseAmount);
+    if (ivaAmountSpan) ivaAmountSpan.textContent = formatCOP(totalIVA);
+    if (totalAmountSpan) totalAmountSpan.textContent = formatCOP(grandTotal);
+}
+
+function handleDiscountChange() {
+    if (discountTypeSelect && discountValueInput) {
+        discountValueInput.disabled = (discountTypeSelect.value === 'none');
+        if (discountTypeSelect.value === 'none') discountValueInput.value = '';
+    }
+    if (typeof recalculateTotals === 'function') recalculateTotals();
+}
 
 function handleClientSelection(clientId, clientNameDisplay, clientData = null) {
     if (selectedClientNameDisplay) {
-        // Limpiar el display actual y luego reconstruir
         selectedClientNameDisplay.innerHTML = ''; 
         const nameSpan = document.createElement('span');
         nameSpan.classList.add('option-client-name');
@@ -196,7 +323,6 @@ function handleClientSelection(clientId, clientNameDisplay, clientData = null) {
             const pillsContainer = document.createElement('span');
             pillsContainer.classList.add('pills-container');
 
-            // Píldora 1: Estado General del Cliente
             let estadoGeneral = clientData.estadoGeneralCliente || "Activo";
             let claseCssEstadoGeneral = "status-client-default";
             if (estadoGeneral === "Nuevo") claseCssEstadoGeneral = "status-client-nuevo";
@@ -210,11 +336,9 @@ function handleClientSelection(clientId, clientNameDisplay, clientData = null) {
             pill1.textContent = estadoGeneral;
             pillsContainer.appendChild(pill1);
 
-            // Píldora 2: Estado de Última Factura (o estado relevante)
             let estadoFactura = clientData.estadoUltimaFacturaCliente || "N/A";
             let claseCssEstadoFactura = `invoice-status-${estadoFactura.toLowerCase().replace(/ /g, '_')}`;
             if (estadoFactura === "N/A") claseCssEstadoFactura = "invoice-status-na";
-
             let textoEstadoFactura = paymentStatusDetails[estadoFactura.toLowerCase().replace(/ /g, '_')]?.text || estadoFactura;
 
             const pill2 = document.createElement('span');
@@ -253,7 +377,7 @@ async function loadClientsIntoDropdown() {
     const user = auth.currentUser;
     
     customClientOptions.innerHTML = ''; 
-    handleClientSelection("", "-- Nuevo Cliente --"); // Llama para resetear el display y los campos
+    handleClientSelection("", "-- Nuevo Cliente --"); 
 
     if (!user) return;
 
@@ -279,9 +403,7 @@ async function loadClientsIntoDropdown() {
                 let estadoFactura = client.estadoUltimaFacturaCliente || "N/A";
                 let claseCssEstadoFactura = `invoice-status-${estadoFactura.toLowerCase().replace(/ /g, '_')}`;
                 if (estadoFactura === "N/A") claseCssEstadoFactura = "invoice-status-na";
-                
                 let textoEstadoFactura = paymentStatusDetails[estadoFactura.toLowerCase().replace(/ /g, '_')]?.text || estadoFactura;
-
 
                 clientOption.innerHTML = `
                     <span class="option-client-name">${client.name}</span>
@@ -301,18 +423,144 @@ async function loadClientsIntoDropdown() {
     }
 }
 
-async function softDeleteClient(clientId) { /* ... (Tu función existente) ... */ }
+async function softDeleteClient(clientId) {
+    const user = auth.currentUser;
+    if (!user || !clientId) { alert("Acción no permitida."); return false; }
+    const clientRef = doc(db, "clientes", clientId);
+    try {
+        await updateDoc(clientRef, { isDeleted: true, deletedAt: serverTimestamp() });
+        alert("Cliente marcado como inactivo.");
+        return true;
+    } catch (error) { console.error("Error al eliminar cliente:", error); alert("Error al eliminar."); return false; }
+}
 
-async function handleNavigation(sectionToShowId) { /* ... (Tu función existente con la llamada a loadClientsIntoDropdown) ... */ }
-async function loadAndDisplayInvoices() { /* ... (Tu función existente) ... */ }
+async function handleNavigation(sectionToShowId) {
+    const sections = [createInvoiceSection, viewInvoicesSection, clientsSection];
+    const navLinks = [navCreateInvoice, navViewInvoices, navClients];
+    let targetTitle = "Sistema de Facturación";
+
+    sections.forEach(section => { if (section) section.style.display = 'none'; });
+    navLinks.forEach(link => { if (link) link.classList.remove('active-nav'); });
+
+    const currentSection = sections.find(s => s && s.id === sectionToShowId);
+    if (currentSection) currentSection.style.display = 'block';
+    
+    const currentLink = navLinks.find(l => l && (l.id.replace('nav', '').charAt(0).toLowerCase() + l.id.replace('nav', '').slice(1) + 'Section') === sectionToShowId);
+    if (currentLink) currentLink.classList.add('active-nav');
+
+    if (sectionToShowId === 'createInvoiceSection') {
+        targetTitle = "Crear Nueva Factura";
+        if (typeof setDefaultInvoiceDate === 'function') setDefaultInvoiceDate();
+        if (typeof updateQuantityBasedOnStreaming === 'function') updateQuantityBasedOnStreaming();
+        if (typeof handleDiscountChange === 'function') handleDiscountChange();
+        if (typeof renderItems === 'function') renderItems();
+        if (typeof displayNextPotentialInvoiceNumber === 'function') await displayNextPotentialInvoiceNumber();
+        if (typeof loadClientsIntoDropdown === 'function') await loadClientsIntoDropdown();
+    } else if (sectionToShowId === 'viewInvoicesSection') {
+        targetTitle = "Mis Facturas";
+        const currentInvoiceListContainer = document.getElementById('invoiceListContainer');
+        if (viewInvoicesSection && !currentInvoiceListContainer) {
+            viewInvoicesSection.innerHTML = `<h2>Mis Facturas</h2><div id="invoiceListContainer"></div>`;
+        }
+        if (typeof loadAndDisplayInvoices === 'function') await loadAndDisplayInvoices();
+    } else if (sectionToShowId === 'clientsSection') {
+        targetTitle = "Clientes";
+        if (clientsSection && clientsSection.innerHTML.trim() === '') {
+            clientsSection.innerHTML = `<h2>Clientes</h2><p>Funcionalidad en desarrollo.</p><div id="clientListContainer"></div>`;
+        }
+    }
+    if (appPageTitle) appPageTitle.textContent = targetTitle;
+}
+
+async function loadAndDisplayInvoices() {
+    const currentInvoiceListContainer = document.getElementById('invoiceListContainer');
+    if (!currentInvoiceListContainer) {
+        if(viewInvoicesSection) viewInvoicesSection.innerHTML = `<h2>Mis Facturas</h2><p>Error: Contenedor no encontrado.</p>`;
+        return; 
+    }
+    const user = auth.currentUser;
+    if (!user) { currentInvoiceListContainer.innerHTML = '<p>Debes iniciar sesión.</p>'; return; }
+    currentInvoiceListContainer.innerHTML = '<p>Cargando facturas...</p>';
+    try {
+        const q = query(collection(db, "facturas"), where("userId", "==", user.uid), orderBy("createdAt", "desc"));
+        const querySnapshot = await getDocs(q);
+        currentInvoiceListContainer.innerHTML = '';
+        if (querySnapshot.empty) {
+            currentInvoiceListContainer.innerHTML = '<p>No tienes facturas guardadas.</p>';
+        } else {
+            querySnapshot.forEach((docSnap) => {
+                const invoice = docSnap.data();
+                const invoiceId = docSnap.id;
+                const itemElement = document.createElement('div');
+                itemElement.classList.add('invoice-list-item');
+                itemElement.setAttribute('data-invoice-id', invoiceId);
+                let statusClassName = invoice.paymentStatus || 'pending';
+                let statusText = paymentStatusDetails[statusClassName]?.text || statusClassName.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+
+                itemElement.innerHTML = `
+                    <div class="invoice-list-header">
+                        <span class="invoice-list-number">${invoice.invoiceNumberFormatted || 'N/A'}</span>
+                        <span class="status-badge status-${statusClassName.toLowerCase()}">${statusText}</span>
+                    </div>
+                    <div class="invoice-list-client">${invoice.client?.name || 'N/A'}</div>
+                    <div class="invoice-list-details">
+                        <span class="invoice-list-date">Fecha: ${invoice.invoiceDate || 'N/A'}</span>
+                        <span class="invoice-list-total">${(invoice.totals?.grandTotal || 0).toLocaleString('es-CO', { style: 'currency', currency: 'COP' })}</span>
+                    </div>
+                    <div class="invoice-list-actions">
+                        <button type="button" class="btn btn-sm btn-info view-details-btn">Ver Detalles</button>
+                    </div>
+                `;
+                itemElement.querySelector('.view-details-btn').addEventListener('click', () => {
+                    alert(`"Ver Detalles" para factura ${invoice.invoiceNumberFormatted} (ID: ${invoiceId}) pendiente.`);
+                });
+                currentInvoiceListContainer.appendChild(itemElement);
+            });
+        }
+    } catch (error) {
+        console.error("Error al cargar facturas: ", error);
+        if (currentInvoiceListContainer) currentInvoiceListContainer.innerHTML = '<p>Error al cargar facturas.</p>';
+    }
+}
 
 // --- Lógica de Autenticación y Estado ---
-if (loginButton) { /* ... */ }
-if (logoutButton) { /* ... */ }
-onAuthStateChanged(auth, (user) => { /* ... */ });
+if (loginButton) { 
+    loginButton.addEventListener('click', () => {
+        showLoading(true);
+        signInWithPopup(auth, googleProvider)
+            .then((result) => console.log("Usuario autenticado:", result.user.displayName))
+            .catch((error) => {
+                console.error("Error en login:", error);
+                let msg = "Error al iniciar sesión.";
+                if (error.code === 'auth/popup-closed-by-user') msg = "Ventana de login cerrada.";
+                alert(msg);
+            })
+            .finally(() => { if (!auth.currentUser) showLoading(false); });
+    });
+}
+if (logoutButton) { 
+    logoutButton.addEventListener('click', () => {
+        showLoading(true);
+        signOut(auth).catch((error) => console.error("Error al cerrar sesión:", error));
+    });
+}
+onAuthStateChanged(auth, (user) => { 
+    showLoading(false);
+    if (user) {
+        if (loginContainer) loginContainer.style.display = 'none';
+        if (mainContent) mainContent.style.display = 'flex'; 
+        handleNavigation('createInvoiceSection');
+    } else {
+        if (loginContainer) loginContainer.style.display = 'flex';
+        if (mainContent) mainContent.style.display = 'none';
+    }
+});
 
 // --- Event Listeners para la Interfaz de Facturación ---
-/* ... (Tus listeners existentes para navCreateInvoice, etc.) ... */
+if (navCreateInvoice) navCreateInvoice.addEventListener('click', (e) => { e.preventDefault(); handleNavigation('createInvoiceSection'); });
+if (navViewInvoices) navViewInvoices.addEventListener('click', (e) => { e.preventDefault(); handleNavigation('viewInvoicesSection'); });
+if (navClients) navClients.addEventListener('click', (e) => { e.preventDefault(); handleNavigation('clientsSection'); });
+
 if (itemIsStreamingCheckbox) itemIsStreamingCheckbox.addEventListener('change', updateQuantityBasedOnStreaming);
 if (paymentStatusSelect) paymentStatusSelect.addEventListener('change', updatePaymentStatusDisplay);
 
@@ -322,7 +570,7 @@ if (customClientSelect) {
         if (customClientOptions) {
             const isOpen = customClientOptions.style.display === 'block';
             customClientOptions.style.display = isOpen ? 'none' : 'block';
-            if (customClientSelect) customClientSelect.classList.toggle('open', !isOpen);
+            customClientSelect.classList.toggle('open', !isOpen);
         }
     });
 }
@@ -333,10 +581,193 @@ document.addEventListener('click', (event) => {
     }
 });
 
-if (editClientBtn) { /* ... (Tu listener existente) ... */ }
-if (deleteClientBtn) { /* ... (Tu listener existente) ... */ }
+if (editClientBtn) {
+    editClientBtn.addEventListener('click', () => {
+        if (!hiddenSelectedClientIdInput || hiddenSelectedClientIdInput.value === "") return;
+        if (clientNameInput) clientNameInput.disabled = false; 
+        if (clientPhoneInput) clientPhoneInput.disabled = false; 
+        if (clientEmailInput) clientEmailInput.disabled = false;
+        if (clientNameInput) clientNameInput.focus();
+        isEditingClient = true; 
+        alert("Ahora puedes editar los datos del cliente. Los cambios se guardarán al guardar la factura.");
+    });
+}
+
+if (deleteClientBtn) {
+    deleteClientBtn.addEventListener('click', async () => {
+        if (!hiddenSelectedClientIdInput || hiddenSelectedClientIdInput.value === "") { alert("Selecciona un cliente para eliminar."); return; }
+        const selectedClientId = hiddenSelectedClientIdInput.value;
+        const clientToDelete = loadedClients.find(c => c.id === selectedClientId);
+        if (confirm(`¿Seguro que deseas marcar como inactivo a "${clientToDelete?.name || 'este cliente'}"?`)) {
+            showLoading(true);
+            const success = await softDeleteClient(selectedClientId);
+            showLoading(false);
+            if (success) {
+                handleClientSelection("", "-- Nuevo Cliente --"); 
+                await loadClientsIntoDropdown(); 
+            }
+        }
+    });
+}
+
 if (discountTypeSelect) discountTypeSelect.addEventListener('change', handleDiscountChange);
 if (discountValueInput) discountValueInput.addEventListener('input', () => { if (typeof recalculateTotals === 'function') recalculateTotals(); });
-if (addItemBtn) { /* ... (Tu listener existente con lógica de perfil) ... */ }
-if (invoiceForm) { /* ... (Tu listener existente con lógica de editar cliente y guardar cliente nuevo) ... */ }
-if (generateInvoiceFileBtn) { /* ... */ }
+
+if (addItemBtn) {
+    addItemBtn.addEventListener('click', () => {
+        const description = itemDescription.value.trim();
+        const isStreaming = itemIsStreamingCheckbox.checked;
+        let quantity = parseInt(itemQuantityInput.value);
+        const price = parseFloat(itemPrice.value);
+        const applyIVA = itemApplyIVA.checked;
+        let profileName = '';
+        let profilePin = '';
+
+        if (isStreaming) {
+            quantity = 1;
+            profileName = itemProfileNameInput ? itemProfileNameInput.value.trim() : '';
+            profilePin = itemProfilePinInput ? itemProfilePinInput.value.trim() : '';
+            if (!profileName && itemProfileNameInput && itemProfileNameInput.offsetParent !== null) { 
+                 alert("Ingresa el Nombre del Perfil."); itemProfileNameInput.focus(); return; 
+            }
+        }
+
+        if (!description) { alert("Ingresa una descripción."); itemDescription.focus(); return; }
+        if (isNaN(quantity) || quantity <= 0) { alert("Ingresa una cantidad válida."); itemQuantityInput.focus(); return; }
+        if (isNaN(price) || price < 0) { alert("Ingresa un precio válido."); itemPrice.focus(); return; }
+
+        currentInvoiceItems.push({ id: nextItemId++, description, isStreaming, quantity, price, applyIVA, profileName: isStreaming ? profileName : null, profilePin: isStreaming ? profilePin : null });
+        renderItems();
+
+        itemDescription.value = '';
+        itemIsStreamingCheckbox.checked = false; 
+        itemPrice.value = '';
+        itemApplyIVA.checked = false;
+        if(itemProfileNameInput) itemProfileNameInput.value = ''; 
+        if(itemProfilePinInput) itemProfilePinInput.value = '';  
+        updateQuantityBasedOnStreaming(); 
+        itemDescription.focus();
+    });
+}
+
+if (invoiceForm) {
+    invoiceForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const user = auth.currentUser;
+        if (!user) { alert("Debes iniciar sesión."); return; }
+        if (currentInvoiceItems.length === 0) { alert("Agrega al menos un ítem."); return; }
+
+        let clientName = clientNameInput?.value.trim();
+        let clientPhone = clientPhoneInput?.value.trim();
+        let clientEmail = clientEmailInput?.value.trim();
+        if (!clientName || !clientPhone || !clientEmail) { alert("Completa los datos del cliente."); return; }
+        
+        const selectedClientId = hiddenSelectedClientIdInput.value;
+        if (selectedClientId && isEditingClient) {
+            const clientRef = doc(db, "clientes", selectedClientId);
+            const clientUpdates = { name: clientName, phone: clientPhone, email: clientEmail, updatedAt: serverTimestamp() };
+            try {
+                await updateDoc(clientRef, clientUpdates);
+                const clientIndex = loadedClients.findIndex(c => c.id === selectedClientId);
+                if (clientIndex > -1) {
+                    loadedClients[clientIndex] = { ...loadedClients[clientIndex], name, phone, email, updatedAt: new Date() };
+                }
+            } catch (error) {
+                console.error("Error al actualizar cliente:", error);
+                alert("Error al actualizar datos del cliente. Se guardará la factura con los datos anteriores.");
+                const originalClient = loadedClients.find(client => client.id === selectedClientId);
+                if (originalClient) {
+                    clientName = originalClient.name; clientPhone = originalClient.phone; clientEmail = originalClient.email;
+                }
+            }
+            isEditingClient = false; 
+            if (clientNameInput) clientNameInput.disabled = true; 
+            if (clientPhoneInput) clientPhoneInput.disabled = true;
+            if (clientEmailInput) clientEmailInput.disabled = true;
+        }
+        
+        if (typeof recalculateTotals === 'function') recalculateTotals();
+
+        let actualNumericInvoiceNumber;
+        let formattedInvoiceNumberStr;
+        if (saveInvoiceBtn) saveInvoiceBtn.disabled = true;
+        if (generateInvoiceFileBtn) generateInvoiceFileBtn.disabled = true;
+        showLoading(true);
+        try {
+            actualNumericInvoiceNumber = await getNextInvoiceNumber(user.uid);
+            formattedInvoiceNumberStr = formatInvoiceNumber(actualNumericInvoiceNumber);
+        } catch (error) { 
+            alert("Error al generar número de factura.");
+            showLoading(false);
+            if (saveInvoiceBtn) saveInvoiceBtn.disabled = false;
+            if (generateInvoiceFileBtn) generateInvoiceFileBtn.disabled = false;
+            return; 
+        }
+
+        const invoiceToSave = {
+            userId: user.uid,
+            invoiceNumberFormatted: `FCT-${formattedInvoiceNumberStr}`,
+            invoiceNumberNumeric: actualNumericInvoiceNumber,
+            invoiceDate: invoiceDateInput.value,
+            serviceStartDate: document.getElementById('serviceStartDate')?.value || null,
+            emitter: {
+                name: document.getElementById('emitterName')?.value.trim() || '',
+                id: document.getElementById('emitterId')?.value.trim() || '',
+                address: document.getElementById('emitterAddress')?.value.trim() || '',
+                phone: document.getElementById('emitterPhone')?.value.trim() || '',
+                email: document.getElementById('emitterEmail')?.value.trim() || ''
+            },
+            client: { name: clientName, phone: clientPhone, email: clientEmail },
+            items: currentInvoiceItems,
+            discount: { type: discountTypeSelect.value, value: (parseFloat(discountValueInput.value) || 0) },
+            totals: {
+                subtotal: parseFloat(subtotalAmountSpan.textContent.replace(/[^\d,.-]/g, '').replace(',', '.')) || 0,
+                discountApplied: parseFloat(discountAmountAppliedSpan.textContent.replace(/[^\d,.-]/g, '').replace(',', '.')) || 0,
+                taxableBase: parseFloat(taxableBaseAmountSpan.textContent.replace(/[^\d,.-]/g, '').replace(',', '.')) || 0,
+                iva: parseFloat(ivaAmountSpan.textContent.replace(/[^\d,.-]/g, '').replace(',', '.')) || 0,
+                grandTotal: parseFloat(totalAmountSpan.textContent.replace(/[^\d,.-]/g, '').replace(',', '.')) || 0
+            },
+            paymentStatus: paymentStatusSelect.value,
+            createdAt: serverTimestamp()
+        };
+
+        try {
+            const docRef = await addDoc(collection(db, "facturas"), invoiceToSave);
+            alert(`¡Factura FCT-${formattedInvoiceNumberStr} guardada! ID: ${docRef.id}`);
+
+            if (hiddenSelectedClientIdInput && hiddenSelectedClientIdInput.value === "") {
+                const newClientData = { 
+                    userId: user.uid, name: clientName, phone: clientPhone, email: clientEmail, 
+                    createdAt: serverTimestamp(), isDeleted: false, 
+                    estadoGeneralCliente: "Nuevo", // Estado general por defecto
+                    estadoUltimaFacturaCliente: "N/A" // Estado de factura por defecto
+                };
+                try {
+                    await addDoc(collection(db, "clientes"), newClientData);
+                } catch (clientError) { console.error("Error al guardar nuevo cliente:", clientError); }
+            }
+            
+            invoiceForm.reset();
+            currentInvoiceItems = []; nextItemId = 0;
+            handleClientSelection("", "-- Nuevo Cliente --"); // Resetea campos y estado del desplegable
+            
+            renderItems(); setDefaultInvoiceDate(); updateQuantityBasedOnStreaming(); handleDiscountChange();
+            await loadClientsIntoDropdown(); 
+            await displayNextPotentialInvoiceNumber();
+            
+        } catch (error) { 
+            console.error("Error al guardar factura en Firestore:", error);
+            alert(`Error al guardar: ${error.message}`);
+        } finally { 
+            if (saveInvoiceBtn) saveInvoiceBtn.disabled = false;
+            if (generateInvoiceFileBtn) generateInvoiceFileBtn.disabled = false;
+            showLoading(false);
+        }
+    });
+}
+
+if (generateInvoiceFileBtn) { 
+    generateInvoiceFileBtn.addEventListener('click', () => {
+        alert("Funcionalidad 'Generar Factura (Archivo)' pendiente.");
+    });
+}
