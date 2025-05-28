@@ -321,37 +321,85 @@ function handleDiscountChange() {
     }
 }
 
+// Esta función COMPLETA reemplaza la que puedas tener actualmente con el mismo nombre
 function handleClientSelection(clientId, clientNameText, clientData = null) {
     if (selectedClientNameDisplay) {
-        selectedClientNameDisplay.innerHTML = ''; 
+        selectedClientNameDisplay.innerHTML = ''; // Limpiar contenido anterior del display
+
+        // Añadir el nombre del cliente al display
         const nameSpan = document.createElement('span');
-        nameSpan.classList.add('option-client-name');
+        nameSpan.classList.add('option-client-name'); // Reusamos clase para consistencia de estilo si aplica
         nameSpan.textContent = clientNameText;
         selectedClientNameDisplay.appendChild(nameSpan);
 
+        // Solo añadir píldoras al display si se ha seleccionado un cliente existente con datos
         if (clientId && clientData) { 
             const pillsContainer = document.createElement('span');
-            pillsContainer.classList.add('pills-container');
-            
-            // Píldora de Estado de Última Factura (usa los mismos estados/textos que en "Mis Facturas")
-            let estadoFactura = clientData.estadoUltimaFacturaCliente || "N/A"; // Viene del documento del cliente
-            let claseCssEstadoFactura = `invoice-status-${estadoFactura.toLowerCase().replace(/ /g, '_')}`;
-            if (estadoFactura === "N/A") claseCssEstadoFactura = "invoice-status-na"; // Clase CSS específica para N/A
-            
-            // Obtener el texto corto del estado de la factura desde paymentStatusDetails
-            let textoPildoraFactura = paymentStatusDetails[estadoFactura.toLowerCase().replace(/ /g, '_')]?.text || estadoFactura;
-            if (estadoFactura === "N/A" && !paymentStatusDetails[estadoFactura.toLowerCase().replace(/ /g, '_')]) {
-                textoPildoraFactura = "N/A";
-            }
+            pillsContainer.classList.add('pills-container'); // Usamos la clase del CSS
 
-            const pillFactura = document.createElement('span');
-            pillFactura.classList.add('option-status-pill', claseCssEstadoFactura);
-            pillFactura.textContent = textoPildoraFactura;
-            pillsContainer.appendChild(pillFactura);
+            // Píldora 1: Estado General del Cliente (ej. "Nuevo", "Activo")
+            let estadoGeneral = clientData.estadoGeneralCliente || "Activo"; // Valor por defecto
+            let claseCssEstadoGeneral = "status-client-default"; // Clase CSS por defecto
+            // Lógica para asignar la clase CSS correcta basada en estadoGeneral
+            if (estadoGeneral === "Nuevo") claseCssEstadoGeneral = "status-client-nuevo";
+            else if (estadoGeneral === "Activo" || estadoGeneral === "Al día") claseCssEstadoGeneral = "status-client-al-dia";
+            else if (estadoGeneral === "Con Pendientes") claseCssEstadoGeneral = "status-client-con-pendientes";
+            else if (estadoGeneral === "Moroso") claseCssEstadoGeneral = "status-client-moroso";
+            else if (estadoGeneral === "Inactivo") claseCssEstadoGeneral = "status-client-inactivo";
             
-            selectedClientNameDisplay.appendChild(pillsContainer);
+            const pillGeneral = document.createElement('span');
+            pillGeneral.classList.add('option-status-pill', claseCssEstadoGeneral);
+            pillGeneral.textContent = estadoGeneral;
+            pillsContainer.appendChild(pillGeneral);
+
+            // Píldora 2: Estado de Última Factura del Cliente
+            let estadoFacturaCliente = clientData.estadoUltimaFacturaCliente || "N/A";
+            let textoPildoraFactura = "N/A";
+            let claseCssPildoraFactura = "invoice-status-na"; // Clase CSS por defecto para N/A
+
+            if (estadoFacturaCliente !== "N/A") {
+                const statusKey = estadoFacturaCliente.toLowerCase().replace(/ /g, '_');
+                textoPildoraFactura = paymentStatusDetails[statusKey]?.text || estadoFacturaCliente; // Usa el 'text' corto
+                claseCssPildoraFactura = `invoice-status-${statusKey}`;
+            }
+            
+            const pillFactura = document.createElement('span');
+            pillFactura.classList.add('option-status-pill', claseCssPildoraFactura);
+            pillFactura.textContent = textoPildoraFactura;
+            pillsContainer.appendChild(pillFactura); // Añadimos la segunda píldora
+            
+            selectedClientNameDisplay.appendChild(pillsContainer); // Añadimos el contenedor de píldoras al display
         }
     }
+
+    if (hiddenSelectedClientIdInput) hiddenSelectedClientIdInput.value = clientId;
+    if (customClientOptions) customClientOptions.style.display = 'none'; // Cerrar el desplegable
+    if (customClientSelect) customClientSelect.classList.remove('open'); // Quitar clase 'open'
+    isEditingClient = false; 
+
+    if (editClientBtn) editClientBtn.disabled = (clientId === ""); // Habilitar/deshabilitar botones
+    if (deleteClientBtn) deleteClientBtn.disabled = (clientId === "");
+
+    // Llenar o limpiar campos del formulario del cliente
+    if (clientNameInput && clientPhoneInput && clientEmailInput) {
+        if (clientId === "") { // Opción "-- Nuevo Cliente --" seleccionada
+            clientNameInput.value = '';
+            clientPhoneInput.value = '';
+            clientEmailInput.value = '';
+            clientNameInput.disabled = false;
+            clientPhoneInput.disabled = false;
+            clientEmailInput.disabled = false;
+            if (clientNameInput) clientNameInput.focus();
+        } else if (clientData) { // Un cliente existente fue seleccionado
+            clientNameInput.value = clientData.name || '';
+            clientPhoneInput.value = clientData.phone || '';
+            clientEmailInput.value = clientData.email || '';
+            clientNameInput.disabled = true; // Deshabilitar campos por defecto
+            clientPhoneInput.disabled = true;
+            clientEmailInput.disabled = true;
+        }
+    }
+}
 
     if (hiddenSelectedClientIdInput) hiddenSelectedClientIdInput.value = clientId;
     if (customClientOptions) customClientOptions.style.display = 'none';
@@ -407,25 +455,38 @@ async function loadClientsIntoDropdown() {
                 clientOption.setAttribute('data-value', docSnap.id);
 
                 let clientDisplayName = client.name;
-                // No se añade email/teléfono al display de la opción para no hacerlo muy largo con la píldora.
 
-                // Píldora de Estado de Última Factura (o estado relevante del cliente)
-                let estadoFacturaCliente = client.estadoUltimaFacturaCliente || "N/A"; // Este campo debe existir en tus documentos de cliente
-                let claseCssEstadoFactura = `invoice-status-${estadoFacturaCliente.toLowerCase().replace(/ /g, '_')}`;
-                if (estadoFacturaCliente === "N/A") claseCssEstadoFactura = "invoice-status-na";
+                // --- Lógica para la Píldora 1: Estado General del Cliente ---
+                let estadoGeneral = client.estadoGeneralCliente || "Activo"; // Valor por defecto si no existe
+                let claseCssEstadoGeneral = "status-client-default"; 
+                if (estadoGeneral === "Nuevo") claseCssEstadoGeneral = "status-client-nuevo";
+                else if (estadoGeneral === "Activo" || estadoGeneral === "Al día") claseCssEstadoGeneral = "status-client-al-dia";
+                else if (estadoGeneral === "Con Pendientes") claseCssEstadoGeneral = "status-client-con-pendientes";
+                else if (estadoGeneral === "Moroso") claseCssEstadoGeneral = "status-client-moroso";
+                else if (estadoGeneral === "Inactivo") claseCssEstadoGeneral = "status-client-inactivo";
 
-                // Usar el texto corto definido en paymentStatusDetails para la píldora
-                let textoPildora = paymentStatusDetails[estadoFacturaCliente.toLowerCase().replace(/ /g, '_')]?.text || estadoFacturaCliente;
-                if (estadoFacturaCliente === "N/A" && !paymentStatusDetails[estadoFacturaCliente.toLowerCase().replace(/ /g, '_')]) {
-                    textoPildora = "N/A";
+
+                // --- Lógica para la Píldora 2: Estado de Última Factura del Cliente ---
+                let estadoFacturaCliente = client.estadoUltimaFacturaCliente || "N/A";
+                let textoPildoraFactura = "N/A";
+                let claseCssPildoraFactura = "invoice-status-na"; 
+
+                if (estadoFacturaCliente !== "N/A") {
+                    const statusKey = estadoFacturaCliente.toLowerCase().replace(/ /g, '_');
+                    textoPildoraFactura = paymentStatusDetails[statusKey]?.text || estadoFacturaCliente;
+                    claseCssPildoraFactura = `invoice-status-${statusKey}`;
                 }
                 
+                // --- Construir el HTML para la opción con AMBAS píldoras ---
                 clientOption.innerHTML = `
                     <span class="option-client-name">${clientDisplayName}</span>
                     <span class="pills-container">
-                        <span class="option-status-pill ${claseCssEstadoFactura}">${textoPildora}</span>
+                        <span class="option-status-pill ${claseCssEstadoGeneral}">${estadoGeneral}</span>
+                        <span class="option-status-pill ${claseCssPildoraFactura}">${textoPildoraFactura}</span>
                     </span>
                 `;
+                // --- Fin de la construcción del HTML ---
+
                 clientOption.addEventListener('click', () => handleClientSelection(docSnap.id, client.name, client));
                 customClientOptions.appendChild(clientOption);
                 loadedClients.push({ id: docSnap.id, ...client });
