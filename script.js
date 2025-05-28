@@ -175,7 +175,7 @@ function formatInvoiceNumber(number) {
 async function getCurrentLastInvoiceNumericValue(userId) {
     if (!userId) {
         console.warn("ID de usuario no proporcionado para obtener el último número de factura.");
-        return 0;
+        return 0; 
     }
     const counterRef = doc(db, "user_counters", userId);
     try {
@@ -183,11 +183,11 @@ async function getCurrentLastInvoiceNumericValue(userId) {
         if (counterDoc.exists() && counterDoc.data().lastInvoiceNumber !== undefined) {
             return counterDoc.data().lastInvoiceNumber;
         } else {
-            return 0;
+            return 0; 
         }
     } catch (error) {
         console.error("Error al leer el último número de factura:", error);
-        return 0;
+        return 0; 
     }
 }
 
@@ -298,7 +298,7 @@ function recalculateTotals() {
     if (discountAmount > subtotal) {
         discountAmount = subtotal;
     }
-    if (discountAmount < 0) { // No permitir descuentos negativos
+    if (discountAmount < 0) { 
         discountAmount = 0;
     }
 
@@ -325,7 +325,6 @@ function handleDiscountChange() {
     }
 }
 
-// --- Funciones para el Desplegable de Clientes Personalizado ---
 function handleClientSelection(clientId, clientNameText, clientData = null) {
     if (selectedClientNameDisplay) {
         selectedClientNameDisplay.innerHTML = ''; 
@@ -360,7 +359,6 @@ function handleClientSelection(clientId, clientNameText, clientData = null) {
                 textoEstadoFactura = "N/A"; 
             }
 
-
             const pill2 = document.createElement('span');
             pill2.classList.add('option-status-pill', claseCssEstadoFactura);
             pill2.textContent = textoEstadoFactura;
@@ -393,19 +391,32 @@ function handleClientSelection(clientId, clientNameText, clientData = null) {
 }
 
 async function loadClientsIntoDropdown() {
-    if (!customClientOptions || !customClientSelectDisplay) { console.error("Elementos del desplegable personalizado no encontrados."); return; }
+    if (!customClientOptions || !customClientSelectDisplay) { 
+        console.error("Elementos del desplegable personalizado no encontrados en loadClientsIntoDropdown."); 
+        return; 
+    }
     const user = auth.currentUser;
     
     customClientOptions.innerHTML = ''; 
-    handleClientSelection("", "-- Nuevo Cliente --"); 
+    handleClientSelection("", "-- Nuevo Cliente --"); // Resetea el display y campos del formulario
 
-    if (!user) return;
+    if (!user) {
+        console.log("loadClientsIntoDropdown: No hay usuario.");
+        return;
+    }
 
     try {
-        const q = query(collection(db, "clientes"), where("userId", "==", user.uid), where("isDeleted", "!=", true), orderBy("name", "asc"));
+        const q = query(
+            collection(db, "clientes"), 
+            where("userId", "==", user.uid), 
+            where("isDeleted", "!=", true), 
+            orderBy("name", "asc")
+        );
         const querySnapshot = await getDocs(q);
 
-        if (!querySnapshot.empty) {
+        if (querySnapshot.empty) {
+            console.log("loadClientsIntoDropdown: No se encontraron clientes activos para este usuario.");
+        } else {
             querySnapshot.forEach((docSnap) => {
                 const client = docSnap.data();
                 const clientOption = document.createElement('div');
@@ -413,11 +424,8 @@ async function loadClientsIntoDropdown() {
                 clientOption.setAttribute('data-value', docSnap.id);
 
                 let clientDisplayName = client.name;
-                if (client.email) {
-                    clientDisplayName += ` (${client.email})`;
-                } else if (client.phone) {
-                    clientDisplayName += ` (Tel: ${client.phone})`;
-                }
+                // No se añade email/teléfono al display principal de la opción, solo el nombre
+                // El email/teléfono podrían ser tooltips o mostrarse al seleccionar si se desea
 
                 let estadoGeneral = client.estadoGeneralCliente || "Activo";
                 let claseCssEstadoGeneral = "status-client-default";
@@ -443,26 +451,33 @@ async function loadClientsIntoDropdown() {
                         <span class="option-status-pill ${claseCssEstadoFactura}">${textoEstadoFactura}</span>
                     </span>
                 `;
-                clientOption.addEventListener('click', () => handleClientSelection(docSnap.id, client.name, client)); // Solo el nombre para el display principal
+                clientOption.addEventListener('click', () => handleClientSelection(docSnap.id, client.name, client));
                 customClientOptions.appendChild(clientOption);
                 loadedClients.push({ id: docSnap.id, ...client });
             });
         }
     } catch (error) {
-        console.error("Error al cargar clientes:", error);
+        console.error("Error al cargar clientes para el desplegable:", error);
         customClientOptions.insertAdjacentHTML('beforeend', '<div class="custom-option-error">Error al cargar clientes</div>');
     }
 }
 
 async function softDeleteClient(clientId) {
     const user = auth.currentUser;
-    if (!user || !clientId) { alert("Acción no permitida."); return false; }
+    if (!user || !clientId) { 
+        alert("Acción no permitida o cliente no seleccionado."); 
+        return false; 
+    }
     const clientRef = doc(db, "clientes", clientId);
     try {
         await updateDoc(clientRef, { isDeleted: true, deletedAt: serverTimestamp() });
         alert("Cliente marcado como inactivo.");
         return true;
-    } catch (error) { console.error("Error al eliminar cliente:", error); alert("Error al eliminar."); return false; }
+    } catch (error) { 
+        console.error("Error al marcar cliente como eliminado:", error); 
+        alert("Error al eliminar el cliente."); 
+        return false; 
+    }
 }
 
 async function handleNavigation(sectionToShowId) {
@@ -489,10 +504,10 @@ async function handleNavigation(sectionToShowId) {
         if (typeof loadClientsIntoDropdown === 'function') await loadClientsIntoDropdown();
     } else if (sectionToShowId === 'viewInvoicesSection') {
         targetTitle = "Mis Facturas";
-        const currentInvoiceListContainer = document.getElementById('invoiceListContainer'); // Re-obtener por si se creó dinámicamente
+        const currentInvoiceListContainer = document.getElementById('invoiceListContainer');
         if (viewInvoicesSection && !currentInvoiceListContainer) {
             viewInvoicesSection.innerHTML = `<h2>Mis Facturas</h2><div id="invoiceListContainer"><p>Cargando facturas...</p></div>`;
-        } else if (currentInvoiceListContainer) { // Si ya existe, solo poner mensaje de carga.
+        } else if (currentInvoiceListContainer) {
             currentInvoiceListContainer.innerHTML = `<p>Cargando facturas...</p>`;
         }
         if (typeof loadAndDisplayInvoices === 'function') await loadAndDisplayInvoices();
@@ -521,7 +536,7 @@ async function loadAndDisplayInvoices() {
         if (querySnapshot.empty) {
             currentInvoiceListContainer.innerHTML = '<p>No tienes facturas guardadas.</p>';
         } else {
-            querySnapshot.forEach((docSnap) => { // Cambiado 'doc' a 'docSnap'
+            querySnapshot.forEach((docSnap) => {
                 const invoice = docSnap.data();
                 const invoiceId = docSnap.id;
                 const itemElement = document.createElement('div');
@@ -561,24 +576,34 @@ if (loginButton) {
     loginButton.addEventListener('click', () => {
         showLoading(true);
         signInWithPopup(auth, googleProvider)
-            .then((result) => { /* console.log("Usuario autenticado:", result.user.displayName) */ })
+            .then((result) => { /* No es necesario hacer nada aquí, onAuthStateChanged lo maneja */ })
             .catch((error) => {
                 console.error("Error en login:", error);
                 let msg = "Error al iniciar sesión.";
                 if (error.code === 'auth/popup-closed-by-user') msg = "Ventana de login cerrada.";
+                else if (error.code === 'auth/cancelled-popup-request') msg = "Solicitud de inicio de sesión cancelada.";
                 alert(msg);
             })
-            .finally(() => { if (!auth.currentUser) showLoading(false); });
+            .finally(() => { 
+                // showLoading(false) es llamado por onAuthStateChanged
+                if (!auth.currentUser && loadingOverlay.style.display !== 'none') { // Solo si el login falló realmente y no hubo cambio de estado
+                    showLoading(false);
+                }
+            });
     });
 }
 if (logoutButton) { 
     logoutButton.addEventListener('click', () => {
-        showLoading(true);
-        signOut(auth).catch((error) => console.error("Error al cerrar sesión:", error));
+        showLoading(true); // Mostrar carga mientras se cierra sesión
+        signOut(auth).catch((error) => {
+            console.error("Error al cerrar sesión:", error)
+            showLoading(false); // Asegurarse de ocultar en caso de error aquí también
+        });
+        // onAuthStateChanged ocultará la carga después del signOut exitoso
     });
 }
 onAuthStateChanged(auth, (user) => { 
-    showLoading(false);
+    showLoading(false); // Ocultar carga en cualquier cambio de estado de autenticación
     if (user) {
         if (loginContainer) loginContainer.style.display = 'none';
         if (mainContent) mainContent.style.display = 'flex'; 
@@ -609,8 +634,10 @@ if (customClientSelect) {
 }
 document.addEventListener('click', (event) => {
     if (customClientSelect && !customClientSelect.contains(event.target) && customClientOptions) {
-        customClientOptions.style.display = 'none';
-        if (customClientSelect) customClientSelect.classList.remove('open');
+        if (customClientOptions.style.display === 'block') { // Solo si está abierto
+            customClientOptions.style.display = 'none';
+            customClientSelect.classList.remove('open');
+        }
     }
 });
 
@@ -706,8 +733,9 @@ if (invoiceForm) {
                     loadedClients[clientIndex] = { ...loadedClients[clientIndex], name, phone, email, updatedAt: new Date() }; 
                 }
                 if (selectedClientNameDisplay && hiddenSelectedClientIdInput.value === selectedClientId) {
-                     handleClientSelection(selectedClientId, clientName, loadedClients[clientIndex]); // Actualizar display con nuevos datos
+                     handleClientSelection(selectedClientId, clientName, loadedClients[clientIndex]);
                 }
+
             } catch (error) {
                 console.error("Error al actualizar cliente:", error);
                 alert("Error al actualizar datos del cliente. Se guardará la factura con los datos anteriores.");
@@ -773,7 +801,7 @@ if (invoiceForm) {
             const docRef = await addDoc(collection(db, "facturas"), invoiceToSave);
             alert(`¡Factura FCT-${formattedInvoiceNumberStr} guardada! ID: ${docRef.id}`);
 
-            if (hiddenSelectedClientIdInput && hiddenSelectedClientIdInput.value === "") { // Si era un "Nuevo Cliente"
+            if (hiddenSelectedClientIdInput && hiddenSelectedClientIdInput.value === "") {
                 const newClientData = { 
                     userId: user.uid, name: clientName, phone: clientPhone, email: clientEmail, 
                     createdAt: serverTimestamp(), 
@@ -784,7 +812,7 @@ if (invoiceForm) {
                 try {
                     await addDoc(collection(db, "clientes"), newClientData);
                 } catch (clientError) { console.error("Error al guardar nuevo cliente:", clientError); }
-            } else if (selectedClientId) { // Si era un cliente existente, actualizar su estado de última factura
+            } else if (selectedClientId) { 
                 const clientRef = doc(db, "clientes", selectedClientId);
                 try {
                     await updateDoc(clientRef, {
