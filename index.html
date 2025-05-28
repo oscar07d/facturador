@@ -100,6 +100,7 @@
             <main class="invoice-app-container">
                 <section id="createInvoiceSection" class="invoice-section active-section">
                     <form id="invoiceForm" class="invoice-form">
+                        
                         <fieldset class="form-section">
                             <legend>Datos del Emisor (Tu Comercio) <span class="optional-tag">(Opcional)</span></legend>
                             <div class="form-grid two-columns">
@@ -118,7 +119,7 @@
                                 <div id="customClientSelect" class="custom-select-container" tabindex="0">
                                     <div class="custom-select-display" id="customClientSelectDisplay">
                                         <span id="selectedClientNameDisplay">-- Nuevo Cliente --</span>
-                                    </div>
+                                        </div>
                                     <div class="custom-select-arrow">&#9662;</div>
                                     <div class="custom-select-options" id="customClientOptions" style="display: none;">
                                         {/* Las opciones se cargarán aquí con JavaScript */}
@@ -126,7 +127,10 @@
                                 </div>
                                 <input type="hidden" id="selectedClientId" name="selectedClientId">
                             </div>
-                            <div class="client-actions"><button type="button" id="editClientBtn" class="btn btn-secondary" disabled>Editar Cliente</button><button type="button" id="deleteClientBtn" class="btn btn-danger" disabled>Eliminar Cliente</button></div>
+                            <div class="client-actions">
+                                <button type="button" id="editClientBtn" class="btn btn-secondary" disabled>Editar Cliente</button>
+                                <button type="button" id="deleteClientBtn" class="btn btn-danger" disabled>Eliminar Cliente</button>
+                            </div>
                             <div class="form-grid two-columns">
                                 <div class="form-group"><label for="clientName">Nombres y Apellidos:</label><input type="text" id="clientName" name="clientName" required></div>
                                 <div class="form-group"><label for="clientPhone">Celular:</label><input type="tel" id="clientPhone" name="clientPhone" required></div>
@@ -235,12 +239,16 @@
     
                 <section id="viewInvoicesSection" class="invoice-section" style="display: none;">
                     <h2>Mis Facturas</h2>
-                    <p>Próximamente: Aquí podrás buscar y ver tus facturas creadas.</p>
+                    <div id="invoiceListContainer">
+                        {/* Las facturas se cargarán aquí con JS */}
+                    </div>
                 </section>
     
                 <section id="clientsSection" class="invoice-section" style="display: none;">
                     <h2>Clientes</h2>
-                    <p>Próximamente: Aquí podrás buscar y gestionar tus clientes.</p>
+                    <div id="clientListContainer">
+                        {/* Los clientes se cargarán aquí con JS */}
+                    </div>
                 </section>
             </main>
             
@@ -278,7 +286,7 @@
             <div class="export-items-section" style="margin-bottom: 25px;">
                 <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
                     <thead>
-                        <tr id="export-items-header-row" style="color: white;"> {/* El color de fondo y texto se aplicarán con CSS externo */}
+                        <tr id="export-items-header-row" style="color: white;">
                             <th style="text-align: left; padding: 10px; border-bottom: 1px solid #ddd; width: 35%;">DESCRIPCIÓN</th>
                             <th id="export-header-profile" style="text-align: left; padding: 10px; border-bottom: 1px solid #ddd; display: none;">PERFIL</th>
                             <th id="export-header-pin" style="text-align: left; padding: 10px; border-bottom: 1px solid #ddd; display: none;">PIN</th>
@@ -288,7 +296,8 @@
                         </tr>
                     </thead>
                     <tbody id="export-invoice-items-body">
-                        </tbody>
+                        {/* Las filas de ítems se generarán con JS */}
+                    </tbody>
                 </table>
             </div>
             <div class="export-totals-section" style="display: flex; justify-content: flex-end; margin-bottom: 25px; font-size: 14px;">
