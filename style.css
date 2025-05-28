@@ -532,34 +532,70 @@ body {
 
 .option-status-pill {
     padding: 3px 10px;
-    border-radius: var(--border-radius-pill);
-    font-size: 0.75rem;
-    font-weight: 600;
-    white-space: nowrap;
-    color: white; 
+    border-radius: var(--border-radius-pill); 
+    font-size: 0.75rem;  
+    font-weight: 600;   
+    margin-left: 5px;   
+    white-space: nowrap; 
+    color: white;       
     text-align: center;
-    min-width: 80px; 
-    line-height: 1.4; /* Ajustar para centrar mejor el texto verticalmente */
+    min-width: 80px;    
+    line-height: 1.4;   
+    flex-shrink: 0;     
 }
 
 /* Colores Píldora Estado General Cliente */
-.option-status-pill.client-status-default { background-color: var(--secondary-color); }
-.option-status-pill.client-status-nuevo { background-color: var(--info-color); }
-.option-status-pill.client-status-activo { background-color: var(--success-color); }
-.option-status-pill.client-status-con-pendientes { background-color: var(--warning-color); color: #333; }
-.option-status-pill.client-status-moroso { background-color: var(--danger-color); }
-.option-status-pill.client-status-inactivo { background-color: var(--secondary-color); }
+.option-status-pill.status-client-default { /* Para "Activo" por defecto si no hay otro estado */
+    background-color: var(--secondary-color); 
+}
+.option-status-pill.status-client-nuevo {
+    background-color: var(--info-color); /* Azul claro */
+}
+.option-status-pill.status-client-activo, /* Combinamos "Activo" y "Al día" */
+.option-status-pill.status-client-al-dia { 
+    background-color: var(--success-color); /* Verde */
+}
+.option-status-pill.status-client-con-pendientes {
+    background-color: var(--warning-color); /* Amarillo */
+    color: #333; /* Texto oscuro para mejor contraste con amarillo */
+}
+.option-status-pill.status-client-moroso {
+    background-color: var(--danger-color); /* Rojo */
+}
+.option-status-pill.status-client-inactivo {
+    background-color: var(--secondary-color); /* Gris */
+}
 
 /* Colores Píldora Estado Última Factura (consistente con .status-badge) */
-.option-status-pill.invoice-status-pending { background-color: var(--warning-color); color: #333; }
-.option-status-pill.invoice-status-paid { background-color: var(--success-color); }
-.option-status-pill.invoice-status-overdue { background-color: var(--danger-color); }
-.option-status-pill.invoice-status-in_process { background-color: var(--info-color); }
-.option-status-pill.invoice-status-partial_payment { background-color: #fd7e14; }
-.option-status-pill.invoice-status-disputed { background-color: #6f42c1; }
-.option-status-pill.invoice-status-cancelled { background-color: var(--secondary-color); }
-.option-status-pill.invoice-status-uncollectible { background-color: var(--dark-color); }
-.option-status-pill.invoice-status-na { background-color: #d3d3d3; color: #555; }
+.option-status-pill.invoice-status-pending { 
+    background-color: var(--warning-color); 
+    color: #333; 
+}
+.option-status-pill.invoice-status-paid { 
+    background-color: var(--success-color); 
+}
+.option-status-pill.invoice-status-overdue { 
+    background-color: var(--danger-color); 
+}
+.option-status-pill.invoice-status-in_process { /* Nota: "in_process" por el replace(/ /g, '_') */
+    background-color: var(--info-color); 
+}
+.option-status-pill.invoice-status-partial_payment { /* Nota: "partial_payment" */
+    background-color: #fd7e14; /* Naranja */
+}
+.option-status-pill.invoice-status-disputed { 
+    background-color: #6f42c1; /* Púrpura */
+}
+.option-status-pill.invoice-status-cancelled { 
+    background-color: var(--secondary-color); 
+}
+.option-status-pill.invoice-status-uncollectible { 
+    background-color: var(--dark-color); 
+}
+.option-status-pill.invoice-status-na { /* Para "N/A" */
+    background-color: #e0e0e0; /* Un gris muy claro */
+    color: #757575; /* Texto gris oscuro */
+}
 
 
 /* === Estilos para Checkboxes Personalizados === */
