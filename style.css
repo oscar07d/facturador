@@ -54,7 +54,7 @@ body {
     color: var(--text-color);
     display: flex;
     flex-direction: column;
-    justify-content: flex-start;
+    justify-content: flex-start; 
     align-items: center;
     min-height: 100vh;
     padding: 20px;
@@ -231,7 +231,9 @@ body {
     color: rgba(255, 255, 255, 0.85);
     font-weight: 500;
     border-bottom: 3px solid transparent;
-    transition: color var(--transition-speed) ease, border-bottom-color var(--transition-speed) ease, background-color var(--transition-speed) ease;
+    transition: color var(--transition-speed) ease, 
+                border-bottom-color var(--transition-speed) ease, 
+                background-color var(--transition-speed) ease;
 }
 
 .app-nav ul li a:hover {
@@ -259,6 +261,7 @@ body {
 .invoice-section {
     /* display: none; es manejado por JS */
 }
+
 .invoice-section.active-section {
     display: block;
 }
@@ -282,7 +285,7 @@ body {
     font-weight: 600;
     color: var(--primary-color);
     padding: 0 10px;
-    margin-left: 10px;
+    margin-left: 10px; /* Para alinear con el padding del fieldset */
 }
 
 .optional-tag {
@@ -334,16 +337,16 @@ body {
     font-size: 1rem;
     font-family: 'Poppins', sans-serif;
     transition: border-color var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
-    background-color: var(--container-background); /* Para selects */
-    color: var(--text-color); /* Para selects */
-    min-height: 46px; /* Para que tengan altura similar */
+    background-color: var(--container-background);
+    color: var(--text-color);
+    min-height: 46px; /* Para que tengan altura similar a los inputs personalizados */
 }
 
 .form-group input:focus,
 .form-group select:focus,
 .form-group textarea:focus,
 .custom-select-container:focus, /* Para el desplegable personalizado */
-.custom-select-container.open {
+.custom-select-container.open { /* Cuando el desplegable personalizado está abierto */
     outline: none;
     border-color: var(--primary-color);
     box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
@@ -356,7 +359,6 @@ body {
     padding: 10px 0;
     text-align: left;
 }
-
 .invoice-number-display span {
     color: var(--primary-color);
 }
@@ -396,7 +398,7 @@ body {
     color: var(--text-color);
     border-color: var(--border-color);
 }
-.user-actions .btn-outline { /* Específico para el botón de logout en el header */
+.user-actions .btn-outline {
     color: var(--danger-color);
     border-color: var(--danger-color);
 }
@@ -413,7 +415,7 @@ body {
     flex-wrap: wrap;
 }
 
-/* === ESTILOS PARA DESPLEGABLE DE CLIENTES PERSONALIZADO === */
+/* === Estilos para Desplegable de Clientes Personalizado === */
 .custom-select-container {
     position: relative;
     width: 100%;
@@ -427,7 +429,7 @@ body {
     align-items: center;
     justify-content: space-between;
     font-size: 1rem;
-    min-height: 46px; 
+    min-height: 46px; /* Misma altura que otros inputs */
 }
 
 .custom-select-display {
@@ -436,18 +438,19 @@ body {
     text-overflow: ellipsis;
     white-space: nowrap;
     display: flex; 
-    justify-content: space-between;
+    justify-content: space-between; /* Para el nombre y las píldoras (si se muestran aquí) */
     align-items: center;
     padding-right: 10px; /* Espacio para la flecha */
 }
 
 #selectedClientNameDisplay {
-    /* Estilos si son necesarios */
+    /* Estilos para el nombre del cliente en el display si es necesario */
 }
 
 .custom-select-arrow {
     font-size: 0.8rem;
     color: var(--text-muted-color);
+    /* margin-left: 10px; No es necesario si el display usa space-between */
     transition: transform var(--transition-speed) ease;
 }
 
@@ -477,10 +480,14 @@ body {
     justify-content: space-between;
     align-items: center;
     transition: background-color var(--transition-speed) ease;
+    border-bottom: 1px solid var(--border-color); /* Separador entre opciones */
+}
+.custom-option:last-child {
+    border-bottom: none;
 }
 
 .custom-option:hover,
-.custom-option.focused-option { /* Para navegación con teclado futuro */
+.custom-option.focused-option { 
     background-color: #f0f8ff; 
 }
 
@@ -489,15 +496,19 @@ body {
     color: white;
 }
 .custom-option.selected-option .option-status-pill {
-    /* Si necesitas que la píldora cambie cuando la opción está seleccionada */
-    /* Por ejemplo, invertir colores si el fondo de la opción cambia mucho */
+    /* Puedes ajustar el color de la píldora si está dentro de una opción seleccionada */
+    /* Por ejemplo, si el texto de la píldora es blanco, y el fondo de la opción seleccionada también, necesitarías un borde o cambiar el color del texto de la píldora */
 }
-.custom-option.new-client-option {
+.custom-option.selected-option .option-client-name {
+    color: white; /* Asegurar que el nombre del cliente sea legible */
+}
+
+.custom-option.new-client-option { /* Para la opción "-- Nuevo Cliente --" */
     font-style: italic;
     color: var(--text-muted-color);
 }
 .custom-option.new-client-option:hover {
-    color: var(--primary-color);
+    color: var(--primary-color); /* O un color diferente para el hover de esta opción especial */
 }
 .custom-option-error {
     padding: 10px 15px;
@@ -505,35 +516,50 @@ body {
     font-style: italic;
 }
 
-
 .option-client-name {
-    flex-grow: 1;
-    margin-right: 10px;
+    flex-grow: 1; /* Para que ocupe el espacio disponible */
+    margin-right: 10px; /* Espacio antes de las píldoras */
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+.pills-container { /* Nuevo contenedor para las píldoras */
+    display: flex;
+    gap: 5px; /* Espacio entre las píldoras */
+    flex-shrink: 0; /* Para que no se encojan las píldoras */
 }
 
 .option-status-pill {
     padding: 3px 10px;
     border-radius: var(--border-radius-pill);
     font-size: 0.75rem;
-    font-weight: 600; /* Hacemos el texto de la píldora un poco más fuerte */
-    margin-left: 10px;
+    font-weight: 600;
     white-space: nowrap;
     color: white; 
     text-align: center;
     min-width: 80px; 
-    flex-shrink: 0; /* Para que no se encoja */
+    line-height: 1.4; /* Ajustar para centrar mejor el texto verticalmente */
 }
 
-/* Colores de Píldora para el estado del cliente (ejemplos) */
-/* Necesitarás lógica JS para asignar la clase correcta basada en client.estadoGeneralCliente */
-.option-status-pill.status-client-default { background-color: var(--secondary-color); }
-.option-status-pill.status-client-nuevo { background-color: var(--info-color); }
-.option-status-pill.status-client-al-dia { background-color: var(--success-color); }
-.option-status-pill.status-client-con-pendientes { background-color: var(--warning-color); color: #333; } /* Texto oscuro para fondo amarillo */
-.option-status-pill.status-client-moroso { background-color: var(--danger-color); }
+/* Colores Píldora Estado General Cliente */
+.option-status-pill.client-status-default { background-color: var(--secondary-color); }
+.option-status-pill.client-status-nuevo { background-color: var(--info-color); }
+.option-status-pill.client-status-activo { background-color: var(--success-color); }
+.option-status-pill.client-status-con-pendientes { background-color: var(--warning-color); color: #333; }
+.option-status-pill.client-status-moroso { background-color: var(--danger-color); }
+.option-status-pill.client-status-inactivo { background-color: var(--secondary-color); }
+
+/* Colores Píldora Estado Última Factura (consistente con .status-badge) */
+.option-status-pill.invoice-status-pending { background-color: var(--warning-color); color: #333; }
+.option-status-pill.invoice-status-paid { background-color: var(--success-color); }
+.option-status-pill.invoice-status-overdue { background-color: var(--danger-color); }
+.option-status-pill.invoice-status-in_process { background-color: var(--info-color); }
+.option-status-pill.invoice-status-partial_payment { background-color: #fd7e14; }
+.option-status-pill.invoice-status-disputed { background-color: #6f42c1; }
+.option-status-pill.invoice-status-cancelled { background-color: var(--secondary-color); }
+.option-status-pill.invoice-status-uncollectible { background-color: var(--dark-color); }
+.option-status-pill.invoice-status-na { background-color: #d3d3d3; color: #555; }
 
 
 /* === Estilos para Checkboxes Personalizados === */
@@ -546,9 +572,7 @@ body {
     cursor: pointer; 
     position: relative; 
     user-select: none; 
-    /* padding-left: 5px; Ya no es necesario con el margen del input */
 }
-
 input[type="checkbox"].inline-checkbox { 
     appearance: none; 
     -webkit-appearance: none; 
@@ -565,7 +589,7 @@ input[type="checkbox"].inline-checkbox {
     transition: background-color var(--transition-speed) ease, border-color var(--transition-speed) ease; 
     vertical-align: middle; 
     position: relative;
-    flex-shrink: 0; /* Para que no se encoja */
+    flex-shrink: 0;
 }
 input[type="checkbox"].inline-checkbox:focus-visible { border-color: var(--primary-color); box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25); }
 input[type="checkbox"].inline-checkbox:checked { background-color: var(--primary-color); border-color: var(--primary-color); }
@@ -586,10 +610,10 @@ label:has(input[type="checkbox"].inline-checkbox:disabled) { color: var(--text-m
 .invoice-item .item-subtotal-display { font-weight: 500; color: var(--text-color); font-size: 0.95rem; min-width: 100px; text-align: right; }
 .invoice-item .delete-item-btn { padding: 5px 10px; font-size: 0.8rem; }
 
+/* === AJUSTES PARA ORGANIZAR LA SECCIÓN "AÑADIR NUEVO ÍTEM" === */
 .add-item-form { margin-top: 25px; padding-top: 25px; border-top: 2px solid var(--primary-color); display: flex; flex-direction: column; gap: 20px; }
 .add-item-form h4 { font-size: 1.2rem; margin-bottom: 0; font-weight: 600; color: var(--secondary-color); }
-/* El div que contiene solo el checkbox de Streaming */
-.add-item-form > .form-grid.item-details-grid:has(#itemIsStreaming),
+.add-item-form > .form-grid.item-details-grid:has(#itemIsStreaming), 
 .add-item-form > div > .form-group.full-width:has(#itemIsStreaming) { 
     display: block; 
     margin-bottom: 0; 
@@ -597,7 +621,7 @@ label:has(input[type="checkbox"].inline-checkbox:disabled) { color: var(--text-m
 .add-item-form .form-group.full-width label[for="itemIsStreaming"] { padding: 5px 0; }
 #streamingProfileFields { padding: 15px; background-color: #f9f9f9; border-radius: var(--border-radius-s); margin-top: 0; }
 #streamingProfileFields .form-grid.two-columns { gap: 15px; }
-.add-item-form > .form-grid.three-columns.item-details-grid { gap: 15px; } /* Para Qty, Price, IVA */
+.add-item-form > .form-grid.three-columns.item-details-grid { gap: 15px; }
 .add-item-form #addItemBtn { margin-top: 0; align-self: flex-start; min-width: 150px; }
 
 /* === Totales y Estado de Pago === */
@@ -644,35 +668,16 @@ input.input-error, select.input-error, textarea.input-error { border-color: var(
 @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
 /* === ESTILOS PARA LA LISTA DE FACTURAS ("MIS FACTURAS") === */
-#invoiceListContainer {
-    margin-top: 20px;
-    display: grid;
-    grid-template-columns: 1fr; 
-    gap: 20px;
-}
-.invoice-list-item {
-    background-color: #fff;
-    border: 1px solid var(--border-color);
-    border-radius: var(--border-radius-m);
-    padding: 20px;
-    box-shadow: var(--box-shadow-light);
-    transition: box-shadow var(--transition-speed) ease;
-    display: flex;
-    flex-direction: column;
-    gap: 12px; /* Espacio entre elementos internos de la tarjeta */
-}
+#invoiceListContainer { margin-top: 20px; display: grid; grid-template-columns: 1fr; gap: 20px; }
+.invoice-list-item { background-color: #fff; border: 1px solid var(--border-color); border-radius: var(--border-radius-m); padding: 20px; box-shadow: var(--box-shadow-light); transition: box-shadow var(--transition-speed) ease; display: flex; flex-direction: column; gap: 12px; }
 .invoice-list-item:hover { box-shadow: var(--box-shadow-medium); }
-.invoice-list-header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 10px; border-bottom: 1px dashed var(--border-color); }
+.invoice-list-header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 10px; border-bottom: 1px dashed var(--border-color); } /* Quitamos margin-bottom, el gap del padre lo maneja */
 .invoice-list-number { font-weight: 600; font-size: 1.1rem; color: var(--primary-color); }
 .invoice-list-client { font-size: 1.05rem; color: var(--text-color); font-weight: 500; }
-.invoice-list-details { display: flex; justify-content: space-between; font-size: 0.9rem; color: var(--text-muted-color); flex-wrap: wrap; gap: 10px; /* Gap para cuando se envuelvan */ }
-.invoice-list-date, .invoice-list-total { /* Para que tengan un poco de espacio si están en la misma línea */
-    flex-basis: calc(50% - 5px); /* Aproximadamente mitad y mitad con un gap */
-    min-width: 120px; /* Para que no se aprieten demasiado */
-}
+.invoice-list-details { display: flex; justify-content: space-between; font-size: 0.9rem; color: var(--text-muted-color); flex-wrap: wrap; gap: 10px; }
+.invoice-list-date, .invoice-list-total { flex-basis: calc(50% - 5px); min-width: 120px; }
 .invoice-list-total { font-weight: 600; color: var(--text-color); text-align: right; }
 .invoice-list-date { text-align: left; }
-
 .status-badge { padding: 5px 12px; border-radius: var(--border-radius-pill); font-size: 0.8rem; font-weight: 600; color: white; text-transform: capitalize; line-height: 1; }
 .status-pending { background-color: var(--warning-color); color: #333; }
 .status-paid { background-color: var(--success-color); }
@@ -682,12 +687,12 @@ input.input-error, select.input-error, textarea.input-error { border-color: var(
 .status-disputed { background-color: #6f42c1; }
 .status-cancelled { background-color: var(--secondary-color); }
 .status-uncollectible { background-color: var(--dark-color); }
-
-.invoice-list-actions { text-align: right; margin-top: 10px; }
+.invoice-list-actions { text-align: right; margin-top: auto; /* Empuja las acciones al final si la tarjeta crece */ padding-top:10px; /* Espacio si hay otros elementos arriba */ }
 .invoice-list-actions .btn-sm { padding: 6px 12px; font-size: 0.85rem; }
 
+
 /* === MEDIA QUERIES PARA ADAPTABILIDAD === */
-@media (min-width: 769px) { /* Tablets en horizontal y PCs */
+@media (min-width: 769px) { 
     .form-grid.two-columns { grid-template-columns: repeat(2, 1fr); }
     .form-grid.three-columns { grid-template-columns: repeat(3, 1fr); }
     .add-item-form > .form-grid.three-columns.item-details-grid { grid-template-columns: 1fr 1fr auto; }
@@ -696,8 +701,10 @@ input.input-error, select.input-error, textarea.input-error { border-color: var(
     #invoiceListContainer { grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); }
 }
 
-@media (max-width: 992px) { /* Tablets medianas */
+@media (max-width: 992px) { 
     .app-header { padding: 15px 20px; flex-direction: column; gap: 15px; }
+    .logo-app-container { max-width: 220px; }
+    .app-title-container h1 { font-size: 1.5rem; }
     .app-nav ul { justify-content: center; }
     .invoice-app-container { padding: 25px; }
     .form-section { padding: 20px; }
@@ -705,10 +712,12 @@ input.input-error, select.input-error, textarea.input-error { border-color: var(
     #invoiceListContainer { grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); }
 }
 
-@media (max-width: 768px) { /* Tablets pequeñas y móviles grandes */
+@media (max-width: 768px) {
     body { padding: 15px; }
     .login-container { max-width: 90%; padding: 25px;}
     .app-header { gap: 10px; }
+    .logo-app-container { max-width: 200px; }
+    .app-title-container h1 { font-size: 1.4rem; }
     .app-nav ul li a { padding: 12px 15px; font-size: 0.9rem; }
     .invoice-app-container { padding: 20px; }
     .form-grid.two-columns, .form-grid.three-columns, .add-item-form > .form-grid.three-columns.item-details-grid, #streamingProfileFields .form-grid.two-columns, .totals-grid, #invoiceListContainer {
@@ -726,10 +735,12 @@ input.input-error, select.input-error, textarea.input-error { border-color: var(
     .invoice-list-actions { text-align: left; }
 }
 
-@media (max-width: 480px) { /* Móviles pequeños */
+@media (max-width: 480px) {
     body { padding: 10px; }
     .login-container { padding: 20px 18px; max-width: 95%; }
     .app-header { padding: 10px 15px; }
+    .app-title-container h1 { font-size: 1.2rem; }
+    .user-actions #logoutButton { padding: 8px 15px; font-size: 0.85rem; }
     .app-nav ul { gap: 5px; flex-wrap: wrap; justify-content: space-around; }
     .app-nav ul li a { padding: 10px 8px; font-size: 0.8rem; }
     .invoice-app-container { padding: 15px; }
