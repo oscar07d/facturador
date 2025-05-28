@@ -1,12 +1,25 @@
 // Importaciones de Firebase
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
 import {
-    getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut
+    getAuth,
+    GoogleAuthProvider,
+    signInWithPopup,
+    onAuthStateChanged,
+    signOut
 } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
 import { 
-    getFirestore, collection, addDoc, serverTimestamp,
-    doc, getDoc, setDoc, runTransaction,
-    query, where, getDocs, orderBy,
+    getFirestore,
+    collection,
+    addDoc,
+    serverTimestamp,
+    doc,
+    getDoc,
+    setDoc,
+    runTransaction,
+    query,
+    where,
+    getDocs,
+    orderBy,
     updateDoc 
 } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
 
@@ -27,37 +40,45 @@ const auth = getAuth(app);
 const googleProvider = new GoogleAuthProvider();
 const db = getFirestore(app);
 
-// --- Selección de Elementos del DOM ---
+// --- Selección de Elementos del DOM (Login y UI Principal) ---
 const loginButton = document.getElementById('loginButton');
 const logoutButton = document.getElementById('logoutButton');
 const loadingOverlay = document.getElementById('loadingOverlay');
 const loginContainer = document.querySelector('.login-container');
 const mainContent = document.getElementById('mainContent');
 
+// --- Selección de Elementos del DOM (Interfaz de Facturación) ---
+// Navegación
 const navCreateInvoice = document.getElementById('navCreateInvoice');
 const navViewInvoices = document.getElementById('navViewInvoices');
 const navClients = document.getElementById('navClients');
+
+// Secciones
 const createInvoiceSection = document.getElementById('createInvoiceSection');
 const viewInvoicesSection = document.getElementById('viewInvoicesSection');
 const clientsSection = document.getElementById('clientsSection');
 const appPageTitle = document.getElementById('appPageTitle');
 
+// Formulario de Factura y sus partes
 const invoiceForm = document.getElementById('invoiceForm');
 
+// Cliente (Desplegable Personalizado y Campos)
 const customClientSelect = document.getElementById('customClientSelect');
 const customClientSelectDisplay = document.getElementById('customClientSelectDisplay');
 const selectedClientNameDisplay = document.getElementById('selectedClientNameDisplay');
 const customClientOptions = document.getElementById('customClientOptions');
 const hiddenSelectedClientIdInput = document.getElementById('selectedClientId');
-
 const clientNameInput = document.getElementById('clientName');
 const clientPhoneInput = document.getElementById('clientPhone');
 const clientEmailInput = document.getElementById('clientEmail');
 const editClientBtn = document.getElementById('editClientBtn');
 const deleteClientBtn = document.getElementById('deleteClientBtn');
 
+// Detalles de Factura
 const invoiceDateInput = document.getElementById('invoiceDate');
 const invoiceNumberText = document.getElementById('invoiceNumberText');
+
+// Ítems
 const itemDescription = document.getElementById('itemDescription');
 const itemIsStreamingCheckbox = document.getElementById('itemIsStreaming');
 const streamingProfileFieldsDiv = document.getElementById('streamingProfileFields');
@@ -69,11 +90,13 @@ const itemApplyIVA = document.getElementById('itemApplyIVA');
 const addItemBtn = document.getElementById('addItemBtn');
 const invoiceItemsContainer = document.getElementById('invoiceItemsContainer');
 
+// Estado de Pago
 const paymentStatusSelect = document.getElementById('paymentStatus');
 const paymentStatusInfoDiv = document.getElementById('paymentStatusInfo');
 const paymentStatusDescriptionP = document.getElementById('paymentStatusDescription');
 const paymentStatusActionP = document.getElementById('paymentStatusAction');
 
+// Descuento y Totales
 const discountTypeSelect = document.getElementById('discountType');
 const discountValueInput = document.getElementById('discountValue');
 const subtotalAmountSpan = document.getElementById('subtotalAmount');
@@ -82,19 +105,20 @@ const taxableBaseAmountSpan = document.getElementById('taxableBaseAmount');
 const ivaAmountSpan = document.getElementById('ivaAmount');
 const totalAmountSpan = document.getElementById('totalAmount');
 
+// Botones de Acción del Formulario
 const saveInvoiceBtn = document.getElementById('saveInvoiceBtn');
 const generateInvoiceFileBtn = document.getElementById('generateInvoiceFileBtn');
 
 // --- Variables Globales ---
 const paymentStatusDetails = {
-    pending: { text: "Pendiente", description: "La factura ha sido emitida y enviada al cliente, pero aún no se ha recibido el pago...", action: "Monitoreo regular..." },
-    paid: { text: "Pagado", description: "El cliente ha realizado el pago completo...", action: "Agradecimiento al cliente..." },
-    overdue: { text: "Vencido", description: "La fecha de vencimiento ha pasado...", action: "Inicio del proceso de cobranza..." },
-    in_process: { text: "En Proceso", description: "El cliente ha informado que el pago está en trámite...", action: "Seguimiento..." },
-    partial_payment: { text: "Pago Parcial", description: "El cliente ha realizado un abono parcial.", action: "Contactar para acordar pago restante." },
-    disputed: { text: "Disputado", description: "El cliente ha manifestado una inconformidad.", action: "Investigación interna..." },
-    cancelled: { text: "Cancelado", description: "La factura ha sido anulada.", action: "Informar al cliente..." },
-    uncollectible: { text: "Incobrable", description: "Se considera que la deuda no será recuperada.", action: "Proceder según políticas..." }
+    pending: { text: "Pendiente", description: "La factura ha sido emitida y enviada al cliente, pero aún no se ha recibido el pago. El plazo de vencimiento todavía no ha llegado.", action: "Monitoreo regular, envío de recordatorios amigables antes de la fecha de vencimiento." },
+    paid: { text: "Pagado", description: "El cliente ha realizado el pago completo de la factura y este ha sido confirmado.", action: "Agradecimiento al cliente, actualización de registros." },
+    overdue: { text: "Vencido", description: "La fecha de vencimiento de la factura ha pasado y el pago no se ha recibido.", action: "Inicio del proceso de cobranza." },
+    in_process: { text: "En Proceso", description: "El cliente ha informado que ha realizado el pago, o el pago está siendo procesado por el banco o la pasarela de pagos.", action: "Seguimiento para confirmar la recepción efectiva del pago." },
+    partial_payment: { text: "Pago Parcial", description: "El cliente ha realizado un abono, pero no ha cubierto el total de la factura.", action: "Contactar al cliente para aclarar la situación y acordar el pago del saldo restante." },
+    disputed: { text: "Disputado", description: "El cliente ha manifestado una inconformidad con la factura o el servicio.", action: "Investigación interna de la disputa, comunicación con el cliente." },
+    cancelled: { text: "Cancelado", description: "La factura ha sido anulada, ya sea por un error, por la cancelación del servicio/producto, o por un acuerdo con el cliente.", action: "Asegurarse de que el cliente esté informado y que los registros contables reflejen la anulación." },
+    uncollectible: { text: "Incobrable", description: "Después de múltiples intentos de cobro, se considera que la deuda no será recuperada.", action: "Se procede según las políticas de la empresa para dar de baja la cuenta por cobrar." }
 };
 let currentInvoiceItems = [];
 let nextItemId = 0;
@@ -102,8 +126,18 @@ let loadedClients = [];
 let isEditingClient = false;
 
 // --- Funciones Auxiliares y de UI ---
-const showLoading = (show) => { if (loadingOverlay) loadingOverlay.style.display = show ? 'flex' : 'none'; };
-function setDefaultInvoiceDate() { if (invoiceDateInput) { const today = new Date(); invoiceDateInput.value = today.toISOString().split('T')[0]; } }
+const showLoading = (show) => {
+    if (loadingOverlay) {
+        loadingOverlay.style.display = show ? 'flex' : 'none';
+    }
+};
+
+function setDefaultInvoiceDate() {
+    if (invoiceDateInput) {
+        const today = new Date();
+        invoiceDateInput.value = today.toISOString().split('T')[0];
+    }
+}
 
 function updateQuantityBasedOnStreaming() {
     if (itemIsStreamingCheckbox && itemQuantityInput && streamingProfileFieldsDiv) {
@@ -133,22 +167,37 @@ function updatePaymentStatusDisplay() {
         }
     }
 }
-function formatInvoiceNumber(number) { return String(number).padStart(3, '0'); }
+
+function formatInvoiceNumber(number) {
+    return String(number).padStart(3, '0');
+}
 
 async function getCurrentLastInvoiceNumericValue(userId) {
-    if (!userId) { console.warn("ID de usuario no proporcionado."); return 0; }
+    if (!userId) {
+        console.warn("ID de usuario no proporcionado para obtener el último número de factura.");
+        return 0;
+    }
     const counterRef = doc(db, "user_counters", userId);
     try {
         const counterDoc = await getDoc(counterRef);
-        return (counterDoc.exists() && counterDoc.data().lastInvoiceNumber !== undefined) ? counterDoc.data().lastInvoiceNumber : 0;
-    } catch (error) { console.error("Error al leer último número de factura:", error); return 0; }
+        if (counterDoc.exists() && counterDoc.data().lastInvoiceNumber !== undefined) {
+            return counterDoc.data().lastInvoiceNumber;
+        } else {
+            return 0;
+        }
+    } catch (error) {
+        console.error("Error al leer el último número de factura:", error);
+        return 0;
+    }
 }
 
 async function getNextInvoiceNumber(userId) {
-    if (!userId) throw new Error("ID de usuario no proporcionado.");
+    if (!userId) {
+        throw new Error("ID de usuario no proporcionado para obtener el siguiente número de factura.");
+    }
     const counterRef = doc(db, "user_counters", userId);
     try {
-        return await runTransaction(db, async (transaction) => {
+        const newInvoiceNumber = await runTransaction(db, async (transaction) => {
             const counterDoc = await transaction.get(counterRef);
             let lastNumber = 0;
             if (counterDoc.exists() && counterDoc.data().lastInvoiceNumber !== undefined) {
@@ -158,7 +207,11 @@ async function getNextInvoiceNumber(userId) {
             transaction.set(counterRef, { lastInvoiceNumber: nextNumber }, { merge: true });
             return nextNumber;
         });
-    } catch (error) { console.error("Error en transacción de número de factura:", error); throw error; }
+        return newInvoiceNumber;
+    } catch (error) {
+        console.error("Error en transacción para obtener el siguiente número de factura:", error);
+        throw error;
+    }
 }
 
 async function displayNextPotentialInvoiceNumber() {
@@ -167,10 +220,14 @@ async function displayNextPotentialInvoiceNumber() {
         try {
             invoiceNumberText.textContent = "..."; 
             const lastNum = await getCurrentLastInvoiceNumericValue(user.uid);
-            invoiceNumberText.textContent = formatInvoiceNumber(lastNum + 1);
-        } catch (error) { invoiceNumberText.textContent = "Error"; }
+            const potentialNextNum = lastNum + 1;
+            invoiceNumberText.textContent = formatInvoiceNumber(potentialNextNum);
+        } catch (error) {
+            console.error("No se pudo cargar el número de factura potencial:", error);
+            invoiceNumberText.textContent = "Error";
+        }
     } else if (invoiceNumberText) {
-        invoiceNumberText.textContent = "000";
+        invoiceNumberText.textContent = "000"; 
     }
 }
 
@@ -204,10 +261,15 @@ function renderItems() {
             invoiceItemsContainer.appendChild(itemElement);
         });
     }
-    if (typeof recalculateTotals === 'function') recalculateTotals();
+    if (typeof recalculateTotals === 'function') {
+        recalculateTotals();
+    }
 }
 
-function deleteItem(itemId) { currentInvoiceItems = currentInvoiceItems.filter(item => item.id !== itemId); renderItems(); }
+function deleteItem(itemId) {
+    currentInvoiceItems = currentInvoiceItems.filter(item => item.id !== itemId);
+    renderItems(); 
+}
 
 function recalculateTotals() {
     let subtotal = 0;
@@ -215,18 +277,34 @@ function recalculateTotals() {
     currentInvoiceItems.forEach(item => {
         const itemTotal = item.quantity * item.price;
         subtotal += itemTotal;
-        if (item.applyIVA) totalIVA += itemTotal * 0.19;
+        if (item.applyIVA) {
+            totalIVA += itemTotal * 0.19;
+        }
     });
+
     let discountAmount = 0;
     const selectedDiscountType = discountTypeSelect ? discountTypeSelect.value : 'none';
     let discountValue = discountValueInput ? parseFloat(discountValueInput.value) : 0;
-    if (isNaN(discountValue)) discountValue = 0;
-    if (selectedDiscountType === 'percentage' && discountValue > 0) discountAmount = subtotal * (discountValue / 100);
-    else if (selectedDiscountType === 'fixed' && discountValue > 0) discountAmount = discountValue;
-    if (discountAmount > subtotal) discountAmount = subtotal;
-    if (discountAmount < 0) discountAmount = 0;
+    if (isNaN(discountValue)) {
+        discountValue = 0;
+    }
+
+    if (selectedDiscountType === 'percentage' && discountValue > 0) {
+        discountAmount = subtotal * (discountValue / 100);
+    } else if (selectedDiscountType === 'fixed' && discountValue > 0) {
+        discountAmount = discountValue;
+    }
+    
+    if (discountAmount > subtotal) {
+        discountAmount = subtotal;
+    }
+    if (discountAmount < 0) { // No permitir descuentos negativos
+        discountAmount = 0;
+    }
+
     const taxableBaseAmount = subtotal - discountAmount;
     const grandTotal = taxableBaseAmount + totalIVA;
+
     const formatCOP = (value) => value.toLocaleString('es-CO', { style: 'currency', currency: 'COP' });
     if (subtotalAmountSpan) subtotalAmountSpan.textContent = formatCOP(subtotal);
     if (discountAmountAppliedSpan) discountAmountAppliedSpan.textContent = formatCOP(discountAmount);
@@ -238,29 +316,32 @@ function recalculateTotals() {
 function handleDiscountChange() {
     if (discountTypeSelect && discountValueInput) {
         discountValueInput.disabled = (discountTypeSelect.value === 'none');
-        if (discountTypeSelect.value === 'none') discountValueInput.value = '';
+        if (discountTypeSelect.value === 'none') {
+            discountValueInput.value = '';
+        }
     }
-    if (typeof recalculateTotals === 'function') recalculateTotals();
+    if (typeof recalculateTotals === 'function') {
+        recalculateTotals();
+    }
 }
 
 // --- Funciones para el Desplegable de Clientes Personalizado ---
 function handleClientSelection(clientId, clientNameText, clientData = null) {
     if (selectedClientNameDisplay) {
-        selectedClientNameDisplay.innerHTML = ''; // Limpiar contenido anterior
+        selectedClientNameDisplay.innerHTML = ''; 
         const nameSpan = document.createElement('span');
-        nameSpan.classList.add('option-client-name'); // Reusar clase para consistencia
+        nameSpan.classList.add('option-client-name');
         nameSpan.textContent = clientNameText;
         selectedClientNameDisplay.appendChild(nameSpan);
 
-        if (clientId && clientData) { // Si es un cliente existente, mostrar sus píldoras
+        if (clientId && clientData) { 
             const pillsContainer = document.createElement('span');
             pillsContainer.classList.add('pills-container');
 
-            // Píldora 1: Estado General del Cliente
             let estadoGeneral = clientData.estadoGeneralCliente || "Activo";
             let claseCssEstadoGeneral = "status-client-default";
             if (estadoGeneral === "Nuevo") claseCssEstadoGeneral = "status-client-nuevo";
-            else if (estadoGeneral === "Activo") claseCssEstadoGeneral = "status-client-al-dia"; // "Al día" -> "Activo"
+            else if (estadoGeneral === "Activo" || estadoGeneral === "Al día") claseCssEstadoGeneral = "status-client-al-dia";
             else if (estadoGeneral === "Con Pendientes") claseCssEstadoGeneral = "status-client-con-pendientes";
             else if (estadoGeneral === "Moroso") claseCssEstadoGeneral = "status-client-moroso";
             else if (estadoGeneral === "Inactivo") claseCssEstadoGeneral = "status-client-inactivo";
@@ -270,22 +351,22 @@ function handleClientSelection(clientId, clientNameText, clientData = null) {
             pill1.textContent = estadoGeneral;
             pillsContainer.appendChild(pill1);
 
-            // Píldora 2: Estado de Última Factura
             let estadoFactura = clientData.estadoUltimaFacturaCliente || "N/A";
             let claseCssEstadoFactura = `invoice-status-${estadoFactura.toLowerCase().replace(/ /g, '_')}`;
             if (estadoFactura === "N/A") claseCssEstadoFactura = "invoice-status-na";
             
             let textoEstadoFactura = paymentStatusDetails[estadoFactura.toLowerCase().replace(/ /g, '_')]?.text || estadoFactura;
-            if (estadoFactura === "N/A" && !paymentStatusDetails[estadoFactura.toLowerCase().replace(/ /g, '_')]) {
-                textoEstadoFactura = "N/A";
+             if(estadoFactura === "N/A" && !paymentStatusDetails[estadoFactura.toLowerCase().replace(/ /g, '_')]) {
+                textoEstadoFactura = "N/A"; 
             }
+
 
             const pill2 = document.createElement('span');
             pill2.classList.add('option-status-pill', claseCssEstadoFactura);
             pill2.textContent = textoEstadoFactura;
             pillsContainer.appendChild(pill2);
             
-            selectedClientNameDisplay.appendChild(pillsContainer); // Añadir píldoras al display
+            selectedClientNameDisplay.appendChild(pillsContainer);
         }
     }
 
@@ -298,7 +379,7 @@ function handleClientSelection(clientId, clientNameText, clientData = null) {
     if (deleteClientBtn) deleteClientBtn.disabled = (clientId === "");
 
     if (clientNameInput && clientPhoneInput && clientEmailInput) {
-        if (clientId === "") { // "-- Nuevo Cliente --"
+        if (clientId === "") { 
             clientNameInput.value = ''; clientPhoneInput.value = ''; clientEmailInput.value = '';
             clientNameInput.disabled = false; clientPhoneInput.disabled = false; clientEmailInput.disabled = false;
             if (clientNameInput) clientNameInput.focus();
@@ -316,7 +397,7 @@ async function loadClientsIntoDropdown() {
     const user = auth.currentUser;
     
     customClientOptions.innerHTML = ''; 
-    handleClientSelection("", "-- Nuevo Cliente --"); // Resetea el display y campos del formulario
+    handleClientSelection("", "-- Nuevo Cliente --"); 
 
     if (!user) return;
 
@@ -330,6 +411,13 @@ async function loadClientsIntoDropdown() {
                 const clientOption = document.createElement('div');
                 clientOption.classList.add('custom-option');
                 clientOption.setAttribute('data-value', docSnap.id);
+
+                let clientDisplayName = client.name;
+                if (client.email) {
+                    clientDisplayName += ` (${client.email})`;
+                } else if (client.phone) {
+                    clientDisplayName += ` (Tel: ${client.phone})`;
+                }
 
                 let estadoGeneral = client.estadoGeneralCliente || "Activo";
                 let claseCssEstadoGeneral = "status-client-default";
@@ -349,13 +437,13 @@ async function loadClientsIntoDropdown() {
                 }
 
                 clientOption.innerHTML = `
-                    <span class="option-client-name">${client.name} ${(client.email ? `(${client.email})` : (client.phone ? `(Tel: ${client.phone})` : ''))}</span>
+                    <span class="option-client-name">${clientDisplayName}</span>
                     <span class="pills-container">
                         <span class="option-status-pill ${claseCssEstadoGeneral}">${estadoGeneral}</span>
                         <span class="option-status-pill ${claseCssEstadoFactura}">${textoEstadoFactura}</span>
                     </span>
                 `;
-                clientOption.addEventListener('click', () => handleClientSelection(docSnap.id, client.name, client));
+                clientOption.addEventListener('click', () => handleClientSelection(docSnap.id, client.name, client)); // Solo el nombre para el display principal
                 customClientOptions.appendChild(clientOption);
                 loadedClients.push({ id: docSnap.id, ...client });
             });
@@ -401,10 +489,10 @@ async function handleNavigation(sectionToShowId) {
         if (typeof loadClientsIntoDropdown === 'function') await loadClientsIntoDropdown();
     } else if (sectionToShowId === 'viewInvoicesSection') {
         targetTitle = "Mis Facturas";
-        const currentInvoiceListContainer = document.getElementById('invoiceListContainer');
+        const currentInvoiceListContainer = document.getElementById('invoiceListContainer'); // Re-obtener por si se creó dinámicamente
         if (viewInvoicesSection && !currentInvoiceListContainer) {
             viewInvoicesSection.innerHTML = `<h2>Mis Facturas</h2><div id="invoiceListContainer"><p>Cargando facturas...</p></div>`;
-        } else if (currentInvoiceListContainer) {
+        } else if (currentInvoiceListContainer) { // Si ya existe, solo poner mensaje de carga.
             currentInvoiceListContainer.innerHTML = `<p>Cargando facturas...</p>`;
         }
         if (typeof loadAndDisplayInvoices === 'function') await loadAndDisplayInvoices();
@@ -433,7 +521,7 @@ async function loadAndDisplayInvoices() {
         if (querySnapshot.empty) {
             currentInvoiceListContainer.innerHTML = '<p>No tienes facturas guardadas.</p>';
         } else {
-            querySnapshot.forEach((docSnap) => {
+            querySnapshot.forEach((docSnap) => { // Cambiado 'doc' a 'docSnap'
                 const invoice = docSnap.data();
                 const invoiceId = docSnap.id;
                 const itemElement = document.createElement('div');
@@ -473,7 +561,7 @@ if (loginButton) {
     loginButton.addEventListener('click', () => {
         showLoading(true);
         signInWithPopup(auth, googleProvider)
-            .then((result) => console.log("Usuario autenticado:", result.user.displayName))
+            .then((result) => { /* console.log("Usuario autenticado:", result.user.displayName) */ })
             .catch((error) => {
                 console.error("Error en login:", error);
                 let msg = "Error al iniciar sesión.";
@@ -615,13 +703,11 @@ if (invoiceForm) {
                 await updateDoc(clientRef, clientUpdates);
                 const clientIndex = loadedClients.findIndex(c => c.id === selectedClientId);
                 if (clientIndex > -1) {
-                    loadedClients[clientIndex] = { ...loadedClients[clientIndex], name, phone, email, updatedAt: new Date() }; // Actualizar localmente también
+                    loadedClients[clientIndex] = { ...loadedClients[clientIndex], name, phone, email, updatedAt: new Date() }; 
                 }
-                 // Actualizar el display del cliente seleccionado si es el que se editó
                 if (selectedClientNameDisplay && hiddenSelectedClientIdInput.value === selectedClientId) {
-                    handleClientSelection(selectedClientId, clientName, loadedClients[clientIndex]);
+                     handleClientSelection(selectedClientId, clientName, loadedClients[clientIndex]); // Actualizar display con nuevos datos
                 }
-
             } catch (error) {
                 console.error("Error al actualizar cliente:", error);
                 alert("Error al actualizar datos del cliente. Se guardará la factura con los datos anteriores.");
@@ -640,16 +726,17 @@ if (invoiceForm) {
 
         let actualNumericInvoiceNumber;
         let formattedInvoiceNumberStr;
+        
         if (saveInvoiceBtn) saveInvoiceBtn.disabled = true;
         if (generateInvoiceFileBtn) generateInvoiceFileBtn.disabled = true;
-        showLoading(true); // Mover showLoading(true) aquí, después de validaciones y posible actualización de cliente
+        showLoading(true);
         
         try {
             actualNumericInvoiceNumber = await getNextInvoiceNumber(user.uid);
             formattedInvoiceNumberStr = formatInvoiceNumber(actualNumericInvoiceNumber);
         } catch (error) { 
             alert("Error crítico al generar número de factura. No se guardó la factura.");
-            showLoading(false); // Asegurarse de ocultar carga si falla aquí
+            showLoading(false); 
             if (saveInvoiceBtn) saveInvoiceBtn.disabled = false;
             if (generateInvoiceFileBtn) generateInvoiceFileBtn.disabled = false;
             return; 
@@ -680,33 +767,28 @@ if (invoiceForm) {
             },
             paymentStatus: paymentStatusSelect.value,
             createdAt: serverTimestamp()
-            // Aquí también guardaremos 'estadoGeneralCliente' y 'estadoUltimaFacturaCliente' si decidimos denormalizar
         };
 
         try {
             const docRef = await addDoc(collection(db, "facturas"), invoiceToSave);
             alert(`¡Factura FCT-${formattedInvoiceNumberStr} guardada! ID: ${docRef.id}`);
 
-            // Si es un cliente nuevo, guardarlo y asignarle estados por defecto
-            if (hiddenSelectedClientIdInput && hiddenSelectedClientIdInput.value === "") {
+            if (hiddenSelectedClientIdInput && hiddenSelectedClientIdInput.value === "") { // Si era un "Nuevo Cliente"
                 const newClientData = { 
                     userId: user.uid, name: clientName, phone: clientPhone, email: clientEmail, 
                     createdAt: serverTimestamp(), 
                     isDeleted: false, 
-                    estadoGeneralCliente: "Nuevo", // Estado general por defecto
-                    estadoUltimaFacturaCliente: invoiceToSave.paymentStatus // Usar el estado de esta primera factura
+                    estadoGeneralCliente: "Nuevo", 
+                    estadoUltimaFacturaCliente: invoiceToSave.paymentStatus 
                 };
                 try {
                     await addDoc(collection(db, "clientes"), newClientData);
                 } catch (clientError) { console.error("Error al guardar nuevo cliente:", clientError); }
-            } else if (selectedClientId) {
-                // Si es un cliente existente, ACTUALIZAR su estadoUltimaFacturaCliente
+            } else if (selectedClientId) { // Si era un cliente existente, actualizar su estado de última factura
                 const clientRef = doc(db, "clientes", selectedClientId);
                 try {
                     await updateDoc(clientRef, {
                         estadoUltimaFacturaCliente: invoiceToSave.paymentStatus,
-                        // Aquí también podríamos actualizar 'estadoGeneralCliente' basado en una lógica más compleja
-                        // Por ahora, solo actualizamos el de la última factura.
                         updatedAt: serverTimestamp() 
                     });
                 } catch (clientUpdateError) {
@@ -714,16 +796,15 @@ if (invoiceForm) {
                 }
             }
             
-            // Resetear formulario completo
             invoiceForm.reset();
             currentInvoiceItems = []; nextItemId = 0;
-            handleClientSelection("", "-- Nuevo Cliente --"); // Esto limpia y resetea los campos y el display del select
+            handleClientSelection("", "-- Nuevo Cliente --"); 
             
             renderItems(); 
             setDefaultInvoiceDate(); 
             updateQuantityBasedOnStreaming(); 
             handleDiscountChange();
-            await loadClientsIntoDropdown(); // Recargar clientes para que el nuevo o editado se refleje con sus estados
+            await loadClientsIntoDropdown(); 
             await displayNextPotentialInvoiceNumber();
             
         } catch (error) { 
@@ -733,6 +814,7 @@ if (invoiceForm) {
             if (saveInvoiceBtn) saveInvoiceBtn.disabled = false;
             if (generateInvoiceFileBtn) generateInvoiceFileBtn.disabled = false;
             showLoading(false);
+            console.log("Proceso de guardado finalizado, pantalla de carga oculta.");
         }
     });
 }
