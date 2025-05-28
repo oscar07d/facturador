@@ -335,12 +335,11 @@ function handleClientSelection(clientId, clientNameText, clientData = null) {
         // Solo añadir píldoras al display si se ha seleccionado un cliente existente con datos
         if (clientId && clientData) { 
             const pillsContainer = document.createElement('span');
-            pillsContainer.classList.add('pills-container'); // Usamos la clase del CSS
+            pillsContainer.classList.add('pills-container');
 
-            // Píldora 1: Estado General del Cliente (ej. "Nuevo", "Activo")
-            let estadoGeneral = clientData.estadoGeneralCliente || "Activo"; // Valor por defecto
-            let claseCssEstadoGeneral = "status-client-default"; // Clase CSS por defecto
-            // Lógica para asignar la clase CSS correcta basada en estadoGeneral
+            // Píldora 1: Estado General del Cliente
+            let estadoGeneral = clientData.estadoGeneralCliente || "Activo"; // Valor por defecto si no existe
+            let claseCssEstadoGeneral = "status-client-default"; 
             if (estadoGeneral === "Nuevo") claseCssEstadoGeneral = "status-client-nuevo";
             else if (estadoGeneral === "Activo" || estadoGeneral === "Al día") claseCssEstadoGeneral = "status-client-al-dia";
             else if (estadoGeneral === "Con Pendientes") claseCssEstadoGeneral = "status-client-con-pendientes";
@@ -355,23 +354,24 @@ function handleClientSelection(clientId, clientNameText, clientData = null) {
             // Píldora 2: Estado de Última Factura del Cliente
             let estadoFacturaCliente = clientData.estadoUltimaFacturaCliente || "N/A";
             let textoPildoraFactura = "N/A";
-            let claseCssPildoraFactura = "invoice-status-na"; // Clase CSS por defecto para N/A
+            let claseCssPildoraFactura = "invoice-status-na"; 
 
             if (estadoFacturaCliente !== "N/A") {
-                const statusKey = estadoFacturaCliente.toLowerCase().replace(/ /g, '_');
-                textoPildoraFactura = paymentStatusDetails[statusKey]?.text || estadoFacturaCliente; // Usa el 'text' corto
+                const statusKey = estadoFacturaCliente.toLowerCase().replace(/ /g, '_'); // Asegurar que la clave sea correcta para el objeto
+                textoPildoraFactura = paymentStatusDetails[statusKey]?.text || estadoFacturaCliente;
                 claseCssPildoraFactura = `invoice-status-${statusKey}`;
             }
             
             const pillFactura = document.createElement('span');
             pillFactura.classList.add('option-status-pill', claseCssPildoraFactura);
             pillFactura.textContent = textoPildoraFactura;
-            pillsContainer.appendChild(pillFactura); // Añadimos la segunda píldora
+            pillsContainer.appendChild(pillFactura);
             
-            selectedClientNameDisplay.appendChild(pillsContainer); // Añadimos el contenedor de píldoras al display
+            selectedClientNameDisplay.appendChild(pillsContainer);
         }
     }
 
+    // Esta es la sección que estaba duplicada. Se deja una sola vez al final.
     if (hiddenSelectedClientIdInput) hiddenSelectedClientIdInput.value = clientId;
     if (customClientOptions) customClientOptions.style.display = 'none'; // Cerrar el desplegable
     if (customClientSelect) customClientSelect.classList.remove('open'); // Quitar clase 'open'
@@ -399,29 +399,7 @@ function handleClientSelection(clientId, clientNameText, clientData = null) {
             clientEmailInput.disabled = true;
         }
     }
-}
-
-    if (hiddenSelectedClientIdInput) hiddenSelectedClientIdInput.value = clientId;
-    if (customClientOptions) customClientOptions.style.display = 'none';
-    if (customClientSelect) customClientSelect.classList.remove('open');
-    isEditingClient = false; 
-
-    if (editClientBtn) editClientBtn.disabled = (clientId === "");
-    if (deleteClientBtn) deleteClientBtn.disabled = (clientId === "");
-
-    if (clientNameInput && clientPhoneInput && clientEmailInput) {
-        if (clientId === "") { 
-            clientNameInput.value = ''; clientPhoneInput.value = ''; clientEmailInput.value = '';
-            clientNameInput.disabled = false; clientPhoneInput.disabled = false; clientEmailInput.disabled = false;
-            if (clientNameInput) clientNameInput.focus();
-        } else if (clientData) {
-            clientNameInput.value = clientData.name || '';
-            clientPhoneInput.value = clientData.phone || '';
-            clientEmailInput.value = clientData.email || '';
-            clientNameInput.disabled = true; clientPhoneInput.disabled = true; clientEmailInput.disabled = true;
-        }
-    }
-}
+} // Esta es la llave de cierre correcta para la función handleClientSelection
 
 async function loadClientsIntoDropdown() {
     if (!customClientOptions || !customClientSelectDisplay) { 
