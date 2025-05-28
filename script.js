@@ -328,7 +328,7 @@ function handleClientSelection(clientId, clientNameText, clientData = null) {
 
         // Añadir el nombre del cliente al display
         const nameSpan = document.createElement('span');
-        nameSpan.classList.add('option-client-name'); // Reusamos clase para consistencia de estilo si aplica
+        nameSpan.classList.add('selected-client-name-text'); // Nueva clase para el texto del nombre
         nameSpan.textContent = clientNameText;
         selectedClientNameDisplay.appendChild(nameSpan);
 
