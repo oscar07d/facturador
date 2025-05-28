@@ -11,13 +11,12 @@
     --container-background: #ffffff;
     --text-color: #212529;
     --text-muted-color: #6c757d;
-    --success-color: #28a745; /* Verde para Pagado */
-    --warning-color: #ffc107; /* Amarillo para Pendiente/En Proceso */
-    --danger-color: #dc3545;   /* Rojo para Vencido/Cancelado */
-    --info-color: #17a2b8;     /* Azul claro para Disputado */
+    --success-color: #28a745; /* Verde para Pagado / Cliente al día */
+    --warning-color: #ffc107; /* Amarillo para Pendiente / Cliente con Pendientes */
+    --danger-color: #dc3545;   /* Rojo para Vencido / Cliente Moroso */
+    --info-color: #17a2b8;     /* Azul claro para En Proceso / Cliente Nuevo */
     --dark-color: #343a40;     /* Gris oscuro para Incobrable */
-    --light-gray-color: #e9ecef; /* Para fondos de píldoras si el texto es oscuro */
-
+    --light-gray-color: #e9ecef; 
 
     --border-color: #dee2e6;
     --logo-svg-fill-color: #1d1d1b;
@@ -27,7 +26,7 @@
     --border-radius-l: 30px;
     --border-radius-m: 15px;
     --border-radius-s: 8px;
-    --border-radius-pill: 20px; /* Para píldoras */
+    --border-radius-pill: 20px;
 
     /* Sombras */
     --box-shadow-light: 0 4px 12px rgba(0, 0, 0, 0.08);
@@ -55,7 +54,7 @@ body {
     color: var(--text-color);
     display: flex;
     flex-direction: column;
-    justify-content: flex-start; /* Cambiado para permitir scroll si el contenido es largo */
+    justify-content: flex-start;
     align-items: center;
     min-height: 100vh;
     padding: 20px;
@@ -80,35 +79,78 @@ body {
     text-align: center;
     width: 100%;
     max-width: 480px;
-    display: flex; /* Se gestiona por JS */
+    display: flex; 
     flex-direction: column;
     align-items: center;
     gap: 25px;
     transition: all var(--transition-speed) ease;
-    margin-top: 5vh; /* Para centrar un poco más en la vista inicial */
+    margin-top: 5vh;
 }
+
 .login-container .logo-container {
     margin-bottom: 15px;
     width: 100%;
     max-width: 300px; 
 }
+
 .login-logo-completo .cls-1-login {
     fill: var(--logo-svg-fill-color);
 }
-.login-container h1 { font-size: 1.75rem; font-weight: 600; color: var(--text-color); margin-bottom: 5px; }
-.login-container p { font-size: 1rem; color: var(--text-muted-color); margin-bottom: 20px; }
-.google-btn { width: 100%; max-width: 320px; padding: 14px 20px; border-radius: var(--border-radius-m); font-size: 1rem; font-weight: 500; cursor: pointer; transition: background-color var(--transition-speed) ease, box-shadow var(--transition-speed) ease, transform var(--transition-speed) ease; display: flex; align-items: center; justify-content: center; gap: 12px; border: 1px solid var(--border-color); text-decoration: none; background-color: #fff; color: #444; box-shadow: var(--box-shadow-light); }
-.google-btn:hover { background-color: #fdfdfd; border-color: #c6c6c6; box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1); transform: translateY(-2px); }
-.google-icon { width: 22px; height: 22px; }
+
+.login-container h1 {
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: var(--text-color);
+    margin-bottom: 5px;
+}
+
+.login-container p {
+    font-size: 1rem;
+    color: var(--text-muted-color);
+    margin-bottom: 20px;
+}
+
+.google-btn {
+    width: 100%;
+    max-width: 320px;
+    padding: 14px 20px;
+    border-radius: var(--border-radius-m);
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color var(--transition-speed) ease, box-shadow var(--transition-speed) ease, transform var(--transition-speed) ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    border: 1px solid var(--border-color);
+    text-decoration: none;
+    background-color: #fff;
+    color: #444;
+    box-shadow: var(--box-shadow-light);
+}
+
+.google-btn:hover {
+    background-color: #fdfdfd;
+    border-color: #c6c6c6;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+.google-icon {
+    width: 22px;
+    height: 22px;
+}
 
 /* === ESTILOS PARA EL CONTENIDO PRINCIPAL DE LA APP (POST-LOGIN) === */
 .main-content {
     width: 100%;
-    display: flex; /* Se gestiona por JS */
+    display: flex; 
     flex-direction: column;
     align-items: center; 
 }
 
+/* --- Cabecera de la Aplicación --- */
 .app-header {
     background-color: var(--container-background);
     padding: 15px 30px;
@@ -121,13 +163,42 @@ body {
     flex-wrap: wrap;
     margin-top: 20px;
 }
-.logo-app-container { max-width: 250px; height: auto; }
-.app-logo-completo { width: 100%; height: auto; display: block; }
-.app-logo-completo .cls-1-app { fill: var(--logo-svg-fill-color); }
-.app-title-container h1 { font-size: 1.6rem; color: var(--primary-color); margin: 0; font-weight: 600; text-align: center; }
-.user-actions #logoutButton { margin: 0; background-color: var(--danger-color); color: white; border: none; }
-.user-actions #logoutButton:hover { background-color: #c82333; }
 
+.logo-app-container {
+    max-width: 250px;
+    height: auto;
+}
+
+.app-logo-completo { 
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.app-logo-completo .cls-1-app { 
+    fill: var(--logo-svg-fill-color);
+}
+
+.app-title-container h1 {
+    font-size: 1.6rem;
+    color: var(--primary-color);
+    margin: 0;
+    font-weight: 600;
+    text-align: center;
+}
+
+.user-actions #logoutButton {
+    margin: 0;
+    background-color: var(--danger-color);
+    color: white;
+    border: none;
+}
+
+.user-actions #logoutButton:hover {
+    background-color: #c82333;
+}
+
+/* --- Navegación de la Aplicación --- */
 .app-nav {
     padding: 0px 30px;
     width: 100%;
@@ -135,33 +206,180 @@ body {
     box-shadow: 0 2px 8px rgba(0,0,0,0.08);
     border-radius: 0 0 var(--border-radius-l) var(--border-radius-l);
     overflow: hidden; 
-    background: linear-gradient(90deg, var(--primary-hover-color), var(--primary-color), var(--primary-hover-color), var(--primary-color));
+    background: linear-gradient(90deg, 
+                                var(--primary-hover-color), 
+                                var(--primary-color), 
+                                var(--primary-hover-color), 
+                                var(--primary-color));
     background-size: 300% 100%;
     animation: moveGradient 10s ease-in-out infinite;
 }
-.app-nav ul { list-style: none; padding: 0; margin: 0; display: flex; justify-content: flex-start; gap: 10px; }
-.app-nav ul li a { display: block; padding: 14px 20px; text-decoration: none; color: rgba(255, 255, 255, 0.85); font-weight: 500; border-bottom: 3px solid transparent; transition: color var(--transition-speed) ease, border-bottom-color var(--transition-speed) ease, background-color var(--transition-speed) ease; }
-.app-nav ul li a:hover { color: #ffffff; background-color: rgba(255,255,255,0.1); }
-.app-nav ul li a.active-nav { color: #ffffff; font-weight: 600; border-bottom-color: #ffffff; background-color: rgba(0,0,0,0.1); }
 
-.invoice-app-container { background-color: var(--container-background); padding: 30px; border-radius: var(--border-radius-l); box-shadow: var(--box-shadow-medium); width: 100%; margin-top: 10px; }
-.invoice-section.active-section { display: block; }
-.invoice-form { display: flex; flex-direction: column; gap: 30px; }
-.form-section { border: 1px solid var(--border-color); padding: 25px; border-radius: var(--border-radius-m); background-color: #fdfdfd; }
-.form-section legend { font-size: 1.25rem; font-weight: 600; color: var(--primary-color); padding: 0 10px; margin-left: 10px; }
-.optional-tag { font-size: 0.8rem; font-weight: 400; color: var(--text-muted-color); }
-.form-grid { display: grid; gap: 20px; }
-.form-grid.two-columns, .form-grid.three-columns { grid-template-columns: 1fr; }
-.form-group.full-width { grid-column: 1 / -1; }
-.form-group { display: flex; flex-direction: column; gap: 8px; }
-.form-group label { font-weight: 500; color: var(--text-color); font-size: 0.95rem; text-align: left; }
-.form-group input[type="text"], .form-group input[type="email"], .form-group input[type="tel"], .form-group input[type="date"], .form-group input[type="number"], .form-group select, .form-group textarea { width: 100%; padding: 12px 15px; border: 1px solid var(--border-color); border-radius: var(--border-radius-s); font-size: 1rem; font-family: 'Poppins', sans-serif; transition: border-color var(--transition-speed) ease, box-shadow var(--transition-speed) ease; }
-.form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25); }
-.invoice-number-display { font-size: 1.1rem; font-weight: 600; color: var(--text-color); padding: 10px 0; text-align: left; }
-.invoice-number-display span { color: var(--primary-color); }
+.app-nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    justify-content: flex-start;
+    gap: 10px;
+}
 
-.btn { padding: 10px 20px; font-size: 0.95rem; font-weight: 500; border-radius: var(--border-radius-m); cursor: pointer; text-decoration: none; border: 1px solid transparent; transition: all var(--transition-speed) ease; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
-.btn:disabled { opacity: 0.6; cursor: not-allowed; }
+.app-nav ul li a {
+    display: block;
+    padding: 14px 20px;
+    text-decoration: none;
+    color: rgba(255, 255, 255, 0.85);
+    font-weight: 500;
+    border-bottom: 3px solid transparent;
+    transition: color var(--transition-speed) ease, border-bottom-color var(--transition-speed) ease, background-color var(--transition-speed) ease;
+}
+
+.app-nav ul li a:hover {
+    color: #ffffff;
+    background-color: rgba(255,255,255,0.1);
+}
+
+.app-nav ul li a.active-nav {
+    color: #ffffff;
+    font-weight: 600;
+    border-bottom-color: #ffffff;
+    background-color: rgba(0,0,0,0.1);
+}
+
+/* --- Contenedor Principal de la App de Facturación --- */
+.invoice-app-container {
+    background-color: var(--container-background);
+    padding: 30px;
+    border-radius: var(--border-radius-l);
+    box-shadow: var(--box-shadow-medium);
+    width: 100%;
+    margin-top: 10px;
+}
+
+.invoice-section {
+    /* display: none; es manejado por JS */
+}
+.invoice-section.active-section {
+    display: block;
+}
+
+/* --- Estilos Generales del Formulario de Factura --- */
+.invoice-form {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.form-section {
+    border: 1px solid var(--border-color);
+    padding: 25px;
+    border-radius: var(--border-radius-m);
+    background-color: #fdfdfd;
+}
+
+.form-section legend {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    padding: 0 10px;
+    margin-left: 10px;
+}
+
+.optional-tag {
+    font-size: 0.8rem;
+    font-weight: 400;
+    color: var(--text-muted-color);
+}
+
+/* --- Cuadrículas del Formulario --- */
+.form-grid {
+    display: grid;
+    gap: 20px;
+}
+
+.form-grid.two-columns,
+.form-grid.three-columns {
+    grid-template-columns: 1fr; /* Base para móvil, se sobrescribe en media queries */
+}
+
+.form-group.full-width {
+    grid-column: 1 / -1;
+}
+
+/* --- Grupos de Formulario y Elementos --- */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-group label {
+    font-weight: 500;
+    color: var(--text-color);
+    font-size: 0.95rem;
+    text-align: left;
+}
+
+.form-group input[type="text"],
+.form-group input[type="email"],
+.form-group input[type="tel"],
+.form-group input[type="date"],
+.form-group input[type="number"],
+.form-group select, /* Estilo base para select nativo */
+.form-group textarea {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-s);
+    font-size: 1rem;
+    font-family: 'Poppins', sans-serif;
+    transition: border-color var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
+    background-color: var(--container-background); /* Para selects */
+    color: var(--text-color); /* Para selects */
+    min-height: 46px; /* Para que tengan altura similar */
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus,
+.custom-select-container:focus, /* Para el desplegable personalizado */
+.custom-select-container.open {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.invoice-number-display {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-color);
+    padding: 10px 0;
+    text-align: left;
+}
+
+.invoice-number-display span {
+    color: var(--primary-color);
+}
+
+/* --- Botones --- */
+.btn {
+    padding: 10px 20px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    border-radius: var(--border-radius-m);
+    cursor: pointer;
+    text-decoration: none;
+    border: 1px solid transparent;
+    transition: all var(--transition-speed) ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
 .btn-primary { background-color: var(--primary-color); color: white; }
 .btn-primary:hover:not(:disabled) { background-color: var(--primary-hover-color); }
 .btn-secondary { background-color: var(--secondary-color); color: white; }
@@ -172,34 +390,183 @@ body {
 .btn-success:hover:not(:disabled) { background-color: #1e7e34; }
 .btn-info { background-color: var(--info-color); color: white; }
 .btn-info:hover:not(:disabled) { background-color: #117a8b; }
-.btn-outline { background-color: transparent; color: var(--text-color); border-color: var(--border-color); }
-.user-actions .btn-outline { color: var(--danger-color); border-color: var(--danger-color); }
-.user-actions .btn-outline:hover:not(:disabled) { background-color: var(--danger-color); color: white; }
-.client-actions { display: flex; gap: 10px; margin-top: 5px; margin-bottom: 15px; flex-wrap: wrap; }
 
-/* === Estilos para Desplegable de Clientes Personalizado === */
-.custom-select-container { position: relative; width: 100%; background-color: var(--container-background); border: 1px solid var(--border-color); border-radius: var(--border-radius-s); cursor: pointer; user-select: none; padding: 10px 15px; display: flex; align-items: center; justify-content: space-between; font-size: 1rem; min-height: 46px; }
-.custom-select-container:focus, .custom-select-container.open { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25); }
-.custom-select-display { flex-grow: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: flex; justify-content: space-between; align-items: center; }
-.custom-select-arrow { font-size: 0.8rem; color: var(--text-muted-color); margin-left: 10px; transition: transform var(--transition-speed) ease; }
-.custom-select-container.open .custom-select-arrow { transform: rotate(180deg); }
-.custom-select-options { position: absolute; top: calc(100% + 2px); left: 0; right: 0; background-color: var(--container-background); border: 1px solid var(--border-color); border-top: none; border-radius: 0 0 var(--border-radius-s) var(--border-radius-s); max-height: 200px; overflow-y: auto; z-index: 100; box-shadow: var(--box-shadow-light); }
-.custom-option { padding: 10px 15px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: background-color var(--transition-speed) ease; }
-.custom-option:hover { background-color: #f0f8ff; }
-.custom-option.selected-option { background-color: var(--primary-color); color: white; }
-.custom-option.selected-option .option-status-pill { /* Ajusta si el texto de la píldora debe cambiar con la selección */ }
-.option-client-name { flex-grow: 1; margin-right: 10px; }
-.option-status-pill { padding: 3px 10px; border-radius: var(--border-radius-pill); font-size: 0.75rem; font-weight: 500; white-space: nowrap; color: white; text-align: center; min-width: 80px; /* Ancho mínimo para la píldora */ }
-/* Colores de Píldora (ejemplos, ajústalos a los estados de cliente que definas) */
-.option-status-pill.status-client-default { background-color: var(--secondary-color); } /* Para "-- Nuevo Cliente --" o estado no definido */
-.option-status-pill.status-client-al-dia { background-color: var(--success-color); }
-.option-status-pill.status-client-con-pendientes { background-color: var(--warning-color); color: #333; }
-.option-status-pill.status-client-moroso { background-color: var(--danger-color); }
+.btn-outline {
+    background-color: transparent;
+    color: var(--text-color);
+    border-color: var(--border-color);
+}
+.user-actions .btn-outline { /* Específico para el botón de logout en el header */
+    color: var(--danger-color);
+    border-color: var(--danger-color);
+}
+.user-actions .btn-outline:hover:not(:disabled) {
+    background-color: var(--danger-color);
+    color: white;
+}
+
+.client-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 5px;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+}
+
+/* === ESTILOS PARA DESPLEGABLE DE CLIENTES PERSONALIZADO === */
+.custom-select-container {
+    position: relative;
+    width: 100%;
+    background-color: var(--container-background);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-s);
+    cursor: pointer;
+    user-select: none;
+    padding: 10px 15px; 
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 1rem;
+    min-height: 46px; 
+}
+
+.custom-select-display {
+    flex-grow: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: flex; 
+    justify-content: space-between;
+    align-items: center;
+    padding-right: 10px; /* Espacio para la flecha */
+}
+
+#selectedClientNameDisplay {
+    /* Estilos si son necesarios */
+}
+
+.custom-select-arrow {
+    font-size: 0.8rem;
+    color: var(--text-muted-color);
+    transition: transform var(--transition-speed) ease;
+}
+
+.custom-select-container.open .custom-select-arrow {
+    transform: rotate(180deg);
+}
+
+.custom-select-options {
+    position: absolute;
+    top: calc(100% + 2px); 
+    left: 0;
+    right: 0;
+    background-color: var(--container-background);
+    border: 1px solid var(--border-color);
+    border-top: none; 
+    border-radius: 0 0 var(--border-radius-s) var(--border-radius-s);
+    max-height: 200px; 
+    overflow-y: auto;
+    z-index: 100; 
+    box-shadow: var(--box-shadow-light);
+}
+
+.custom-option {
+    padding: 10px 15px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background-color var(--transition-speed) ease;
+}
+
+.custom-option:hover,
+.custom-option.focused-option { /* Para navegación con teclado futuro */
+    background-color: #f0f8ff; 
+}
+
+.custom-option.selected-option { 
+    background-color: var(--primary-color);
+    color: white;
+}
+.custom-option.selected-option .option-status-pill {
+    /* Si necesitas que la píldora cambie cuando la opción está seleccionada */
+    /* Por ejemplo, invertir colores si el fondo de la opción cambia mucho */
+}
+.custom-option.new-client-option {
+    font-style: italic;
+    color: var(--text-muted-color);
+}
+.custom-option.new-client-option:hover {
+    color: var(--primary-color);
+}
+.custom-option-error {
+    padding: 10px 15px;
+    color: var(--danger-color);
+    font-style: italic;
+}
+
+
+.option-client-name {
+    flex-grow: 1;
+    margin-right: 10px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.option-status-pill {
+    padding: 3px 10px;
+    border-radius: var(--border-radius-pill);
+    font-size: 0.75rem;
+    font-weight: 600; /* Hacemos el texto de la píldora un poco más fuerte */
+    margin-left: 10px;
+    white-space: nowrap;
+    color: white; 
+    text-align: center;
+    min-width: 80px; 
+    flex-shrink: 0; /* Para que no se encoja */
+}
+
+/* Colores de Píldora para el estado del cliente (ejemplos) */
+/* Necesitarás lógica JS para asignar la clase correcta basada en client.estadoGeneralCliente */
+.option-status-pill.status-client-default { background-color: var(--secondary-color); }
 .option-status-pill.status-client-nuevo { background-color: var(--info-color); }
+.option-status-pill.status-client-al-dia { background-color: var(--success-color); }
+.option-status-pill.status-client-con-pendientes { background-color: var(--warning-color); color: #333; } /* Texto oscuro para fondo amarillo */
+.option-status-pill.status-client-moroso { background-color: var(--danger-color); }
 
-/* === Checkboxes Personalizados === */
-.add-item-form .form-group label[for*="itemIsStreaming"], .add-item-form .form-group label[for*="itemApplyIVA"] { display: inline-flex; align-items: center; font-weight: normal; font-size: 0.95rem; cursor: pointer; position: relative; user-select: none; padding-left: 5px; }
-input[type="checkbox"].inline-checkbox { appearance: none; -webkit-appearance: none; -moz-appearance: none; width: 20px; height: 20px; min-width: 20px; border: 2px solid var(--border-color); border-radius: var(--border-radius-s); background-color: var(--container-background); margin-right: 10px; cursor: pointer; outline: none; transition: background-color var(--transition-speed) ease, border-color var(--transition-speed) ease; vertical-align: middle; position: relative; }
+
+/* === Estilos para Checkboxes Personalizados === */
+.add-item-form .form-group label[for*="itemIsStreaming"], 
+.add-item-form .form-group label[for*="itemApplyIVA"] { 
+    display: inline-flex; 
+    align-items: center; 
+    font-weight: normal; 
+    font-size: 0.95rem; 
+    cursor: pointer; 
+    position: relative; 
+    user-select: none; 
+    /* padding-left: 5px; Ya no es necesario con el margen del input */
+}
+
+input[type="checkbox"].inline-checkbox { 
+    appearance: none; 
+    -webkit-appearance: none; 
+    -moz-appearance: none; 
+    width: 20px; 
+    height: 20px; 
+    min-width: 20px; 
+    border: 2px solid var(--border-color); 
+    border-radius: var(--border-radius-s); 
+    background-color: var(--container-background); 
+    margin-right: 10px; 
+    cursor: pointer; 
+    outline: none; 
+    transition: background-color var(--transition-speed) ease, border-color var(--transition-speed) ease; 
+    vertical-align: middle; 
+    position: relative;
+    flex-shrink: 0; /* Para que no se encoja */
+}
 input[type="checkbox"].inline-checkbox:focus-visible { border-color: var(--primary-color); box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25); }
 input[type="checkbox"].inline-checkbox:checked { background-color: var(--primary-color); border-color: var(--primary-color); }
 input[type="checkbox"].inline-checkbox:checked::after { content: ''; display: block; position: absolute; left: 6px; top: 2px; width: 5px; height: 10px; border: solid white; border-width: 0 2.5px 2.5px 0; transform: rotate(45deg); }
@@ -221,11 +588,16 @@ label:has(input[type="checkbox"].inline-checkbox:disabled) { color: var(--text-m
 
 .add-item-form { margin-top: 25px; padding-top: 25px; border-top: 2px solid var(--primary-color); display: flex; flex-direction: column; gap: 20px; }
 .add-item-form h4 { font-size: 1.2rem; margin-bottom: 0; font-weight: 600; color: var(--secondary-color); }
-.add-item-form > .form-grid.item-details-grid:has(#itemIsStreaming), .add-item-form > div > .form-group.full-width:has(#itemIsStreaming) { display: block; margin-bottom: 0; }
+/* El div que contiene solo el checkbox de Streaming */
+.add-item-form > .form-grid.item-details-grid:has(#itemIsStreaming),
+.add-item-form > div > .form-group.full-width:has(#itemIsStreaming) { 
+    display: block; 
+    margin-bottom: 0; 
+}
 .add-item-form .form-group.full-width label[for="itemIsStreaming"] { padding: 5px 0; }
-#streamingProfileFields { padding: 15px; background-color: #f9f9f9; border-radius: var(--border-radius-s); margin-top: 0; } /* El gap del .add-item-form ya espacia */
+#streamingProfileFields { padding: 15px; background-color: #f9f9f9; border-radius: var(--border-radius-s); margin-top: 0; }
 #streamingProfileFields .form-grid.two-columns { gap: 15px; }
-.add-item-form > .form-grid.three-columns.item-details-grid { gap: 15px; }
+.add-item-form > .form-grid.three-columns.item-details-grid { gap: 15px; } /* Para Qty, Price, IVA */
 .add-item-form #addItemBtn { margin-top: 0; align-self: flex-start; min-width: 150px; }
 
 /* === Totales y Estado de Pago === */
@@ -272,15 +644,36 @@ input.input-error, select.input-error, textarea.input-error { border-color: var(
 @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
 /* === ESTILOS PARA LA LISTA DE FACTURAS ("MIS FACTURAS") === */
-#invoiceListContainer { margin-top: 20px; display: grid; grid-template-columns: 1fr; gap: 20px; }
-.invoice-list-item { background-color: #fff; border: 1px solid var(--border-color); border-radius: var(--border-radius-m); padding: 20px; box-shadow: var(--box-shadow-light); transition: box-shadow var(--transition-speed) ease; display: flex; flex-direction: column; gap: 10px; } /* Changed to flex column */
+#invoiceListContainer {
+    margin-top: 20px;
+    display: grid;
+    grid-template-columns: 1fr; 
+    gap: 20px;
+}
+.invoice-list-item {
+    background-color: #fff;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-m);
+    padding: 20px;
+    box-shadow: var(--box-shadow-light);
+    transition: box-shadow var(--transition-speed) ease;
+    display: flex;
+    flex-direction: column;
+    gap: 12px; /* Espacio entre elementos internos de la tarjeta */
+}
 .invoice-list-item:hover { box-shadow: var(--box-shadow-medium); }
-.invoice-list-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px dashed var(--border-color); }
+.invoice-list-header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 10px; border-bottom: 1px dashed var(--border-color); }
 .invoice-list-number { font-weight: 600; font-size: 1.1rem; color: var(--primary-color); }
-.invoice-list-client { font-size: 1.05rem; color: var(--text-color); font-weight: 500; margin-bottom: 4px; } /* Increased font size */
-.invoice-list-details { display: flex; justify-content: space-between; font-size: 0.9rem; color: var(--text-muted-color); margin-bottom: 12px; flex-wrap: wrap; }
-.invoice-list-total { font-weight: 600; color: var(--text-color); }
-.status-badge { padding: 5px 12px; border-radius: var(--border-radius-pill); font-size: 0.8rem; font-weight: 600; /* Increased font-weight */ color: white; text-transform: capitalize; line-height: 1; }
+.invoice-list-client { font-size: 1.05rem; color: var(--text-color); font-weight: 500; }
+.invoice-list-details { display: flex; justify-content: space-between; font-size: 0.9rem; color: var(--text-muted-color); flex-wrap: wrap; gap: 10px; /* Gap para cuando se envuelvan */ }
+.invoice-list-date, .invoice-list-total { /* Para que tengan un poco de espacio si están en la misma línea */
+    flex-basis: calc(50% - 5px); /* Aproximadamente mitad y mitad con un gap */
+    min-width: 120px; /* Para que no se aprieten demasiado */
+}
+.invoice-list-total { font-weight: 600; color: var(--text-color); text-align: right; }
+.invoice-list-date { text-align: left; }
+
+.status-badge { padding: 5px 12px; border-radius: var(--border-radius-pill); font-size: 0.8rem; font-weight: 600; color: white; text-transform: capitalize; line-height: 1; }
 .status-pending { background-color: var(--warning-color); color: #333; }
 .status-paid { background-color: var(--success-color); }
 .status-overdue { background-color: var(--danger-color); }
@@ -289,9 +682,9 @@ input.input-error, select.input-error, textarea.input-error { border-color: var(
 .status-disputed { background-color: #6f42c1; }
 .status-cancelled { background-color: var(--secondary-color); }
 .status-uncollectible { background-color: var(--dark-color); }
+
 .invoice-list-actions { text-align: right; margin-top: 10px; }
 .invoice-list-actions .btn-sm { padding: 6px 12px; font-size: 0.85rem; }
-
 
 /* === MEDIA QUERIES PARA ADAPTABILIDAD === */
 @media (min-width: 769px) { /* Tablets en horizontal y PCs */
@@ -300,13 +693,11 @@ input.input-error, select.input-error, textarea.input-error { border-color: var(
     .add-item-form > .form-grid.three-columns.item-details-grid { grid-template-columns: 1fr 1fr auto; }
     .totals-grid { grid-template-columns: 0.8fr 1.2fr; align-items: flex-start; }
     .share-actions .button-group { flex-direction: row; }
-    #invoiceListContainer { grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); } /* Ajuste para tarjetas más anchas */
+    #invoiceListContainer { grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); }
 }
 
 @media (max-width: 992px) { /* Tablets medianas */
     .app-header { padding: 15px 20px; flex-direction: column; gap: 15px; }
-    .logo-app-container { max-width: 220px; }
-    .app-title-container h1 { font-size: 1.5rem; }
     .app-nav ul { justify-content: center; }
     .invoice-app-container { padding: 25px; }
     .form-section { padding: 20px; }
@@ -318,8 +709,6 @@ input.input-error, select.input-error, textarea.input-error { border-color: var(
     body { padding: 15px; }
     .login-container { max-width: 90%; padding: 25px;}
     .app-header { gap: 10px; }
-    .logo-app-container { max-width: 200px; }
-    .app-title-container h1 { font-size: 1.4rem; }
     .app-nav ul li a { padding: 12px 15px; font-size: 0.9rem; }
     .invoice-app-container { padding: 20px; }
     .form-grid.two-columns, .form-grid.three-columns, .add-item-form > .form-grid.three-columns.item-details-grid, #streamingProfileFields .form-grid.two-columns, .totals-grid, #invoiceListContainer {
@@ -331,10 +720,9 @@ input.input-error, select.input-error, textarea.input-error { border-color: var(
     .client-actions .btn { width: 100%; }
     .share-actions .button-group { flex-direction: column; }
     .share-actions .btn-share { width: 100%; margin-right: 0; }
-    .invoice-list-item { padding: 15px; } /* Menos padding en tarjetas en móvil */
-    .invoice-list-header { margin-bottom: 8px; padding-bottom: 8px; }
-    .invoice-list-client { font-size: 1rem; }
+    .invoice-list-item { padding: 15px; }
     .invoice-list-details { flex-direction: column; align-items: flex-start; gap: 5px; margin-bottom: 10px; }
+    .invoice-list-date, .invoice-list-total { text-align: left; flex-basis: auto;}
     .invoice-list-actions { text-align: left; }
 }
 
@@ -342,8 +730,6 @@ input.input-error, select.input-error, textarea.input-error { border-color: var(
     body { padding: 10px; }
     .login-container { padding: 20px 18px; max-width: 95%; }
     .app-header { padding: 10px 15px; }
-    .app-title-container h1 { font-size: 1.2rem; }
-    .user-actions #logoutButton { padding: 8px 15px; font-size: 0.85rem; }
     .app-nav ul { gap: 5px; flex-wrap: wrap; justify-content: space-around; }
     .app-nav ul li a { padding: 10px 8px; font-size: 0.8rem; }
     .invoice-app-container { padding: 15px; }
