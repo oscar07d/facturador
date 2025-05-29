@@ -20,7 +20,8 @@ import {
     where,
     getDocs,
     orderBy,
-    updateDoc 
+    updateDoc,
+    deleteDoc
 } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
 
 // Configuración de Firebase
@@ -749,7 +750,7 @@ async function displayDeletedClients() {
                     </div>
                     <div class="client-actions-list">
                         <button type="button" class="btn btn-sm btn-success recover-client-list-btn">Recuperar</button>
-                        {/* Podríamos añadir un botón de eliminar permanentemente aquí con mucho cuidado */}
+                        <button type="button" class="btn btn-sm btn-outline-danger permanent-delete-client-btn">Eliminar Perm.</button>
                     </div>
                 `;
                 clientElement.querySelector('.recover-client-list-btn').addEventListener('click', async () => {
@@ -762,6 +763,20 @@ async function displayDeletedClients() {
                         showLoading(false);
                     }
                 });
+                const permanentDeleteBtn = clientElement.querySelector('.permanent-delete-client-btn');
+                if (permanentDeleteBtn) {
+                    permanentDeleteBtn.addEventListener('click', async () => {
+                        // La función permanentlyDeleteClient ya tiene doble confirmación
+                        showLoading(true);
+                        const success = await permanentlyDeleteClient(clientId); // Asumiendo que ya tienes esta función
+                        showLoading(false);
+                        if (success) {
+                            // Solo necesitamos recargar la lista de clientes eliminados, ya que el activo no debería cambiar
+                            // y el desplegable tampoco, pues ya no estaba.
+                            await displayDeletedClients(); 
+                        }
+                    });
+                }
                 deletedClientsContainer.appendChild(clientElement);
             });
         }
@@ -798,6 +813,32 @@ async function recoverClient(clientId) {
     }
 }
 // === FIN: NUEVO CÓDIGO ===
+
+async function permanentlyDeleteClient(clientId) {
+    const user = auth.currentUser;
+    if (!user || !clientId) {
+        alert("Acción no permitida.");
+        return false;
+    }
+    // ¡¡DOBLE CONFIRMACIÓN!! Esto es muy importante.
+    if (!confirm("¿Estás ABSOLUTAMENTE SEGURO de que deseas eliminar permanentemente a este cliente? Esta acción NO SE PUEDE DESHACER.")) {
+        return false;
+    }
+    if (!confirm("ÚLTIMA ADVERTENCIA: Eliminar permanentemente al cliente borrará su registro de la base de datos. ¿Continuar?")) {
+        return false;
+    }
+
+    const clientRef = doc(db, "clientes", clientId);
+    try {
+        await deleteDoc(clientRef); // ¡OJO! ESTO ES deleteDoc, no updateDoc
+        alert("Cliente eliminado permanentemente de la base de datos.");
+        return true;
+    } catch (error) {
+        console.error("Error al eliminar permanentemente al cliente:", error);
+        alert("Error al eliminar permanentemente el cliente.");
+        return false;
+    }
+}
 
 // --- Lógica de Autenticación y Estado ---
 if (loginButton) { 
