@@ -434,37 +434,39 @@ body {
 
 .custom-select-display {
     flex-grow: 1;
-    overflow: hidden;
+    /* overflow: hidden; */
     text-overflow: ellipsis;
-    white-space: nowrap;
+    /* white-space: nowrap; */
     display: flex; 
-    justify-content: space-between; /* Para el nombre y las píldoras (si se muestran aquí) */
+    /* justify-content: space-between; */ /* Para el nombre y las píldoras (si se muestran aquí) */
     align-items: center;
-    padding-right: 10px; /* Espacio para la flecha */
+    /* padding-right: 10px; */ /* Espacio para la flecha */
 }
 
 #selectedClientNameDisplay {
     display: flex; /* Hace que sus hijos (nombre y píldoras) se alineen en fila */
-    justify-content: space-between; /* Empuja el nombre a la izquierda y las píldoras a la derecha */
     align-items: center;
+    flex-wrap: wrap;
+    justify-content: flex-start; /* Empuja el nombre a la izquierda y las píldoras a la derecha */
     width: 100%; /* Para que ocupe el espacio disponible */
-    overflow: hidden; /* Evitar que el contenido se desborde */
+    gap: 8px;
+    overflow: hidden; /* Evitar que el contenido se desborde
 }
 
 /* El span que contiene el texto del nombre del cliente seleccionado */
 .selected-client-name-text {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis; /* Corta el nombre si es muy largo y añade "..." */
-    margin-right: 8px; /* Espacio entre el nombre y el contenedor de píldoras */
-    flex-grow: 1; /* Permite que el nombre tome el espacio necesario */
+    white-space: normal;
+    /* overflow: hidden; */
+    text-overflow: ellipsis; /* Corta el nombre si es muy largo y añade "..."
+    flex-shrink: 1;
+    margin-right: 5px; /* Espacio entre el nombre y el contenedor de píldoras */
+    /* flex-grow: 1; */ /* Permite que el nombre tome el espacio necesario */
 }
 
 #selectedClientNameDisplay .pills-container {
-    flex-shrink: 0; /* Evita que el contenedor de píldoras se encoja */
-    /* Los estilos generales de .pills-container (gap) y .option-status-pill (colores, padding) ya deberían aplicar */
-    /* Podrías añadir un margin-left aquí si el margin-right de .selected-client-name-text no es suficiente */
-    /* margin-left: 8px; */ 
+    display: flex; /* Asegurar que las píldoras internas estén en línea */
+    gap: 5px;      /* Espacio entre las dos píldoras */
+    flex-shrink: 0; /* Que las píldoras no se encojan */
 }
 
 .custom-select-arrow {
@@ -566,7 +568,10 @@ body {
     text-align: center;
     min-width: 80px;    
     line-height: 1.4;   
-    flex-shrink: 0;     
+    flex-shrink: 0;
+    max-width: 70px; 
+    overflow: hidden; 
+    text-overflow: ellipsis; 
 }
 
 /* Colores Píldora Estado General Cliente */
@@ -820,6 +825,26 @@ input.input-error, select.input-error, textarea.input-error { border-color: var(
     .status-badge { padding: 3px 8px; font-size: 0.75rem; }
 }
 
+#selectedClientNameDisplay {
+        flex-wrap: wrap; /* Permite que las píldoras bajen si no caben */
+        gap: 5px; /* Espacio entre nombre y píldoras, o entre ellas si se envuelven */
+    }
+
+    .selected-client-name-text {
+        /* Permitir que el nombre del cliente se divida en varias líneas si es necesario */
+        white-space: normal; 
+        overflow: visible; /* Quitar hidden para permitir wrap */
+        text-overflow: clip; /* Quitar ellipsis si se envuelve */
+        margin-right: 5px; /* Mantener un pequeño espacio si las píldoras quedan al lado */
+        min-width: 50px; /* Permitir que se encoja bastante pero no desaparezca */
+    }
+
+    #selectedClientNameDisplay .pills-container {
+        margin-left: 0; /* Si las píldoras bajan, no necesitan margen izquierdo extra */
+        /* Puedes añadir flex-basis: 100%; si quieres que siempre ocupen una nueva línea debajo del nombre en móvil */
+        /* flex-basis: 100%; */ 
+    }
+    
 /* === ANIMACIÓN PARA EL GRADIENTE DEL APP-NAV === */
 @keyframes moveGradient {
     0% { background-position: 0% 50%; }
