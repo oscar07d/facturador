@@ -536,7 +536,6 @@ async function handleNavigation(sectionToShowId) {
         if (clientsSection) {
             clientsSection.style.display = 'block'; // Mostrar la sección principal de clientes
             clientsSection.classList.add('active-section');
-        if (clientsSection && clientsSection.innerHTML.trim() === '') {
             clientsSection.innerHTML = `
                 <h2>Clientes</h2>
                 <div class="client-list-subsection">
@@ -558,7 +557,7 @@ async function handleNavigation(sectionToShowId) {
         // Llamar a las funciones para poblar ambas listas
         if (typeof displayActiveClients === 'function') await displayActiveClients();
         if (typeof displayDeletedClients === 'function') await displayDeletedClients();
-    }}
+    }
     if (appPageTitle) appPageTitle.textContent = targetTitle;
 }
 
