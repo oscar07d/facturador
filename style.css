@@ -914,3 +914,12 @@ input.input-error, select.input-error, textarea.input-error { border-color: var(
     grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
     }
 }
+
+.btn-outline-danger {
+    color: var(--danger-color);
+    border-color: var(--danger-color);
+}
+.btn-outline-danger:hover {
+    background-color: var(--danger-color);
+    color: white;
+}
