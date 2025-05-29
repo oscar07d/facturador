@@ -823,3 +823,94 @@ input.input-error, select.input-error, textarea.input-error { border-color: var(
     50% { background-position: 100% 50%; }
     100% { background-position: 0% 50%; }
 }
+
+/* === ESTILOS PARA LA SECCIÓN CLIENTES === */
+.client-list-subsection {
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border-color);
+}
+.client-list-subsection:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+.client-list-subsection h3 {
+    font-size: 1.3rem;
+    color: var(--secondary-color);
+    margin-bottom: 15px;
+}
+
+.client-list {
+    display: grid;
+    grid-template-columns: 1fr; /* 1 columna por defecto */
+    gap: 15px;
+}
+
+.client-list-item {
+    background-color: #fff;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-m);
+    padding: 15px;
+    box-shadow: var(--box-shadow-light);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap; /* Para adaptarse a pantallas pequeñas */
+    gap: 10px; /* Espacio entre info, pills y actions */
+}
+
+.client-list-item.client-inactive { /* Estilo para clientes inactivos */
+    background-color: #f8f9fa; /* Un fondo ligeramente diferente */
+    opacity: 0.7;
+}
+
+.client-list-item .client-info {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1; /* Para que ocupe el espacio necesario */
+    margin-right: 10px; /* Espacio antes de las píldoras/acciones */
+}
+
+.client-list-item .client-name {
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: var(--text-color);
+}
+
+.client-list-item .client-contact {
+    font-size: 0.9rem;
+    color: var(--text-muted-color);
+}
+.client-list-item .client-deleted-date {
+    font-size: 0.8rem;
+    color: var(--danger-color);
+    font-style: italic;
+    margin-top: 4px;
+}
+
+.client-list-item .client-pills { /* Contenedor para las píldoras si las muestras aquí */
+    display: flex;
+    gap: 5px;
+    flex-shrink: 0; /* Evitar que se encojan */
+}
+/* Las clases .option-status-pill y sus variantes de color ya deberían aplicar */
+
+.client-list-item .client-actions-list {
+    display: flex;
+    gap: 10px;
+    flex-shrink: 0;
+}
+.client-list-item .client-actions-list .btn-sm {
+    padding: 5px 10px;
+    font-size: 0.8rem;
+}
+
+
+/* Media query para la lista de clientes */
+@media (min-width: 992px) {
+    .client-list {
+        /* Podrías poner 2 columnas si quieres para la lista de clientes en PC */
+    grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+    }
+}
