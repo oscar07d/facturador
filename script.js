@@ -803,16 +803,20 @@ async function recoverClient(clientId) {
 // --- Lógica de Autenticación y Estado ---
 if (loginButton) { 
     loginButton.addEventListener('click', () => {
+        console.log("Paso 1: Clic en loginButton detectado.");
         showLoading(true);
         signInWithPopup(auth, googleProvider)
-            .then((result) => { /* onAuthStateChanged lo maneja */ })
+            .then((result) => { /* onAuthStateChanged lo maneja */ 
+                console.log("Paso 2: signInWithPopup completado exitosamente (then). Usuario:", result.user.displayName);
+            })
             .catch((error) => {
-                console.error("Error en login:", error);
+                console.error("Paso 2E: Error en signInWithPopup (catch):", error);
                 let msg = "Error al iniciar sesión.";
                 if (error.code === 'auth/popup-closed-by-user') msg = "Ventana de login cerrada.";
                 alert(msg);
             })
             .finally(() => { 
+                console.log("Paso 3: Bloque finally de signInWithPopup.");
                 if (!auth.currentUser && loadingOverlay.style.display !== 'none') {
                     showLoading(false);
                 }
@@ -829,12 +833,15 @@ if (logoutButton) {
     });
 }
 onAuthStateChanged(auth, (user) => { 
+    console.log("Paso 5: onAuthStateChanged se disparó. Usuario:", user ? user.uid : "ninguno");
     showLoading(false); 
     if (user) {
+        console.log("Paso 6: Usuario autenticado en onAuthStateChanged.");
         if (loginContainer) loginContainer.style.display = 'none';
         if (mainContent) mainContent.style.display = 'flex'; 
         handleNavigation('createInvoiceSection');
     } else {
+        console.log("Paso 6B: Usuario NO autenticado en onAuthStateChanged.");
         if (loginContainer) loginContainer.style.display = 'flex';
         if (mainContent) mainContent.style.display = 'none';
     }
