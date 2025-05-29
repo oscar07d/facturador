@@ -496,12 +496,11 @@ body {
 .custom-option {
     padding: 10px 15px;
     cursor: pointer;
-    display: flex; /* Ya lo tienes */
-    justify-content: space-between; /* Ya lo tienes */
-    align-items: center; /* Ya lo tienes */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     transition: background-color var(--transition-speed) ease;
-    border-bottom: 1px solid var(--border-color);
-    overflow: hidden; /* AÑADIR: Para que los hijos no se desborden de la opción */
+    border-bottom: 1px solid var(--border-color); /* Separador entre opciones */
 }
 .custom-option:last-child {
     border-bottom: none;
@@ -538,20 +537,19 @@ body {
 }
 
 .option-client-name {
-    flex-grow: 1; 
-    margin-right: 10px; 
-    white-space: nowrap;     /* Evita que el nombre del cliente se parta en múltiples líneas */
-    overflow: hidden;        /* Oculta el texto que se desborda */
-    text-overflow: ellipsis; /* Muestra "..." al final del texto cortado */
-    min-width: 0; /* AÑADIR: Permite que el elemento se encoja por debajo de su contenido intrínseco en un contenedor flex */
+    flex-grow: 1; /* Para que ocupe el espacio disponible */
+    margin-right: 10px; /* Espacio antes de las píldoras */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 
 
-.pills-container {
+.pills-container { /* Nuevo contenedor para las píldoras */
     display: flex;
-    gap: 5px;
-    flex-shrink: 0; /* Las píldoras no se encogen */
+    gap: 5px; /* Espacio entre las píldoras */
+    flex-shrink: 0; /* Para que no se encojan las píldoras */
 }
 
 .option-status-pill {
@@ -565,8 +563,7 @@ body {
     text-align: center;
     min-width: 80px;    
     line-height: 1.4;   
-    flex-shrink: 0;
-    white-space: nowrap;
+    flex-shrink: 0;     
 }
 
 /* Colores Píldora Estado General Cliente */
