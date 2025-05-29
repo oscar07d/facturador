@@ -491,6 +491,7 @@ body {
     overflow-y: auto;
     z-index: 100; 
     box-shadow: var(--box-shadow-light);
+    overflow-x: hidden;
 }
 
 .custom-option {
@@ -501,6 +502,7 @@ body {
     align-items: center;
     transition: background-color var(--transition-speed) ease;
     border-bottom: 1px solid var(--border-color); /* Separador entre opciones */
+    overflow: hidden;
 }
 .custom-option:last-child {
     border-bottom: none;
@@ -542,6 +544,7 @@ body {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    min-width: 0;
 }
 
 
