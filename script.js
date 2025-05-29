@@ -488,7 +488,7 @@ async function softDeleteClient(clientId) {
             isDeleted: true, 
             deletedAt: serverTimestamp(),
             // Opcional: Cambiar estado general al eliminar
-            // estadoGeneralCliente: "Inactivo" 
+            estadoGeneralCliente: "Inactivo" 
         });
         alert("Cliente marcado como inactivo.");
         return true;
@@ -533,9 +533,31 @@ async function handleNavigation(sectionToShowId) {
         if (typeof loadAndDisplayInvoices === 'function') await loadAndDisplayInvoices();
     } else if (sectionToShowId === 'clientsSection') {
         targetTitle = "Clientes";
+        if (clientsSection) {
+            clientsSection.style.display = 'block'; // Mostrar la sección principal de clientes
+            clientsSection.classList.add('active-section');
         if (clientsSection && clientsSection.innerHTML.trim() === '') {
-            clientsSection.innerHTML = `<h2>Clientes</h2><p>Funcionalidad en desarrollo.</p><div id="clientListContainer"></div>`;
+            clientsSection.innerHTML = `
+                <h2>Clientes</h2>
+                <div class="client-list-subsection">
+                    <h3>Clientes Activos</h3>
+                    <div id="activeClientsListContainer" class="client-list">
+                        <p>Cargando clientes activos...</p>
+                    </div>
+                </div>
+                <div class="client-list-subsection">
+                    <h3>Clientes Inactivos</h3>
+                    <div id="deletedClientsListContainer" class="client-list">
+                        <p>Cargando clientes inactivos...</p>
+                    </div>
+                </div>
+            `;
         }
+        if (navClients) navClients.classList.add('active-nav');
+
+        // Llamar a las funciones para poblar ambas listas
+        if (typeof displayActiveClients === 'function') await displayActiveClients();
+        if (typeof displayDeletedClients === 'function') await displayDeletedClients();
     }
     if (appPageTitle) appPageTitle.textContent = targetTitle;
 }
@@ -591,6 +613,192 @@ async function loadAndDisplayInvoices() {
         if (currentInvoiceListContainer) currentInvoiceListContainer.innerHTML = '<p>Error al cargar facturas.</p>';
     }
 }
+
+// === INICIO: NUEVO CÓDIGO - Funciones para la Sección Clientes ===
+
+/**
+ * Carga y muestra los clientes activos (isDeleted != true).
+ */
+async function displayActiveClients() {
+    const activeClientsContainer = document.getElementById('activeClientsListContainer');
+    if (!activeClientsContainer) {
+        console.error("Contenedor #activeClientsListContainer no encontrado.");
+        return;
+    }
+    const user = auth.currentUser;
+    if (!user) {
+        activeClientsContainer.innerHTML = '<p>Debes iniciar sesión para ver clientes.</p>';
+        return;
+    }
+
+    activeClientsContainer.innerHTML = '<p>Cargando clientes activos...</p>';
+    try {
+        const q = query(
+            collection(db, "clientes"),
+            where("userId", "==", user.uid),
+            where("isDeleted", "!=", true),
+            orderBy("name", "asc")
+        );
+        const querySnapshot = await getDocs(q);
+        activeClientsContainer.innerHTML = ''; // Limpiar
+
+        if (querySnapshot.empty) {
+            activeClientsContainer.innerHTML = '<p>No tienes clientes activos.</p>';
+        } else {
+            querySnapshot.forEach((docSnap) => {
+                const client = docSnap.data();
+                const clientId = docSnap.id;
+                const clientElement = document.createElement('div');
+                clientElement.classList.add('client-list-item'); // Reusaremos un estilo similar a invoice-list-item
+                clientElement.setAttribute('data-client-id', clientId);
+
+                // Píldoras de estado (similar a como lo hicimos para el desplegable)
+                let estadoGeneral = client.estadoGeneralCliente || "Activo";
+                let claseCssEstadoGeneral = "status-client-default";
+                if (estadoGeneral === "Nuevo") claseCssEstadoGeneral = "status-client-nuevo";
+                else if (estadoGeneral === "Activo" || estadoGeneral === "Al día") claseCssEstadoGeneral = "status-client-al-dia";
+                else if (estadoGeneral === "Con Pendientes") claseCssEstadoGeneral = "status-client-con-pendientes";
+                else if (estadoGeneral === "Moroso") claseCssEstadoGeneral = "status-client-moroso";
+
+                let estadoFactura = client.estadoUltimaFacturaCliente || "N/A";
+                let claseCssEstadoFactura = `invoice-status-${estadoFactura.toLowerCase().replace(/ /g, '_')}`;
+                if (estadoFactura === "N/A") claseCssEstadoFactura = "invoice-status-na";
+                let textoPildoraFactura = paymentStatusDetails[estadoFactura.toLowerCase().replace(/ /g, '_')]?.text || estadoFactura;
+                 if(estadoFactura === "N/A" && !paymentStatusDetails[estadoFactura.toLowerCase().replace(/ /g, '_')]) {
+                    textoPildoraFactura = "N/A";
+                }
+
+                clientElement.innerHTML = `
+                    <div class="client-info">
+                        <strong class="client-name">${client.name}</strong>
+                        <span class="client-contact">${client.email || ''} ${client.email && client.phone ? '|' : ''} ${client.phone || ''}</span>
+                    </div>
+                    <div class="client-pills">
+                        <span class="option-status-pill ${claseCssEstadoGeneral}">${estadoGeneral}</span>
+                        <span class="option-status-pill ${claseCssEstadoFactura}">${textoPildoraFactura}</span>
+                    </div>
+                    <div class="client-actions-list">
+                        <button type="button" class="btn btn-sm btn-warning edit-client-list-btn">Editar</button>
+                        <button type="button" class="btn btn-sm btn-danger delete-client-list-btn">Eliminar</button>
+                    </div>
+                `;
+                // Placeholder para botones de editar/eliminar en esta lista
+                clientElement.querySelector('.edit-client-list-btn').addEventListener('click', () => {
+                    alert(`Funcionalidad "Editar" para cliente ${client.name} (ID: ${clientId}) pendiente desde esta lista.`);
+                    // Aquí podríamos navegar a la sección de crear factura y cargar este cliente para edición.
+                });
+                clientElement.querySelector('.delete-client-list-btn').addEventListener('click', async () => {
+                    if (confirm(`¿Seguro que deseas marcar como inactivo a "${client.name}"?`)) {
+                        showLoading(true);
+                        await softDeleteClient(clientId); // Reutilizamos la función de borrado suave
+                        await displayActiveClients();    // Recargar lista de activos
+                        await displayDeletedClients();   // Recargar lista de inactivos
+                        await loadClientsIntoDropdown(); // Actualizar el desplegable del formulario
+                        showLoading(false);
+                    }
+                });
+                activeClientsContainer.appendChild(clientElement);
+            });
+        }
+    } catch (error) {
+        console.error("Error al cargar clientes activos:", error);
+        activeClientsContainer.innerHTML = '<p>Error al cargar clientes activos.</p>';
+    }
+}
+
+/**
+ * Carga y muestra los clientes inactivos/eliminados (isDeleted == true).
+ */
+async function displayDeletedClients() {
+    const deletedClientsContainer = document.getElementById('deletedClientsListContainer');
+    if (!deletedClientsContainer) {
+        console.error("Contenedor #deletedClientsListContainer no encontrado.");
+        return;
+    }
+    const user = auth.currentUser;
+    if (!user) {
+        deletedClientsContainer.innerHTML = '<p>Debes iniciar sesión para ver clientes.</p>';
+        return;
+    }
+
+    deletedClientsContainer.innerHTML = '<p>Cargando clientes inactivos...</p>';
+    try {
+        const q = query(
+            collection(db, "clientes"),
+            where("userId", "==", user.uid),
+            where("isDeleted", "==", true), // Solo clientes marcados como eliminados
+            orderBy("deletedAt", "desc") // Mostrar los más recientemente eliminados primero
+        );
+        const querySnapshot = await getDocs(q);
+        deletedClientsContainer.innerHTML = ''; // Limpiar
+
+        if (querySnapshot.empty) {
+            deletedClientsContainer.innerHTML = '<p>No tienes clientes inactivos.</p>';
+        } else {
+            querySnapshot.forEach((docSnap) => {
+                const client = docSnap.data();
+                const clientId = docSnap.id;
+                const clientElement = document.createElement('div');
+                clientElement.classList.add('client-list-item', 'client-inactive'); // Clase adicional
+                clientElement.setAttribute('data-client-id', clientId);
+                
+                clientElement.innerHTML = `
+                    <div class="client-info">
+                        <strong class="client-name">${client.name}</strong>
+                        <span class="client-contact">${client.email || ''} ${client.email && client.phone ? '|' : ''} ${client.phone || ''}</span>
+                        <span class="client-deleted-date">Eliminado: ${client.deletedAt ? new Date(client.deletedAt.seconds * 1000).toLocaleDateString() : 'N/A'}</span>
+                    </div>
+                    <div class="client-actions-list">
+                        <button type="button" class="btn btn-sm btn-success recover-client-list-btn">Recuperar</button>
+                        {/* Podríamos añadir un botón de eliminar permanentemente aquí con mucho cuidado */}
+                    </div>
+                `;
+                clientElement.querySelector('.recover-client-list-btn').addEventListener('click', async () => {
+                    if (confirm(`¿Seguro que deseas recuperar a "${client.name}"?`)) {
+                        showLoading(true);
+                        await recoverClient(clientId); // Nueva función para recuperar
+                        await displayActiveClients();   // Recargar lista de activos
+                        await displayDeletedClients();  // Recargar lista de inactivos
+                        await loadClientsIntoDropdown(); // Actualizar el desplegable del formulario
+                        showLoading(false);
+                    }
+                });
+                deletedClientsContainer.appendChild(clientElement);
+            });
+        }
+    } catch (error) {
+        console.error("Error al cargar clientes inactivos:", error);
+        deletedClientsContainer.innerHTML = '<p>Error al cargar clientes inactivos.</p>';
+    }
+}
+
+/**
+ * Recupera un cliente marcado como eliminado (isDeleted: true -> false).
+ * @param {string} clientId - El ID del cliente a recuperar.
+ */
+async function recoverClient(clientId) {
+    const user = auth.currentUser;
+    if (!user || !clientId) {
+        alert("Acción no permitida.");
+        return false;
+    }
+    const clientRef = doc(db, "clientes", clientId);
+    try {
+        await updateDoc(clientRef, {
+            isDeleted: false,
+            // Opcional: limpiar el campo deletedAt o poner un campo recoveredAt
+            // deletedAt: null, // Esto eliminaría el campo
+            estadoGeneralCliente: "Activo" // Cambiar su estado general a Activo
+        });
+        alert("Cliente recuperado exitosamente.");
+        return true;
+    } catch (error) {
+        console.error("Error al recuperar cliente:", error);
+        alert("Error al recuperar el cliente.");
+        return false;
+    }
+}
+// === FIN: NUEVO CÓDIGO ===
 
 // --- Lógica de Autenticación y Estado ---
 if (loginButton) { 
