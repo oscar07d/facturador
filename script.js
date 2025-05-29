@@ -409,12 +409,26 @@ async function loadClientsIntoDropdown() {
     }
     const user = auth.currentUser;
     
+    // Limpiar opciones anteriores y el array de clientes cargados
     customClientOptions.innerHTML = ''; 
-    handleClientSelection("", "-- Nuevo Cliente --"); 
+    loadedClients = []; 
 
-    if (!user) {
+    // 1. Añadir siempre la opción "-- Nuevo Cliente --" PRIMERO a la lista de opciones
+    const newClientDefaultOption = document.createElement('div');
+    newClientDefaultOption.classList.add('custom-option', 'new-client-option');
+    newClientDefaultOption.setAttribute('data-value', ""); // Valor vacío para indicar nuevo cliente
+    newClientDefaultOption.innerHTML = `<span class="option-client-name">-- Nuevo Cliente --</span>`;
+    newClientDefaultOption.addEventListener('click', () => handleClientSelection("", "-- Nuevo Cliente --"));
+    customClientOptions.appendChild(newClientDefaultOption);
+
+    // 2. Resetear el display principal si no hay un cliente ya seleccionado.
+    if (!hiddenSelectedClientIdInput.value || hiddenSelectedClientIdInput.value === "") { 
+        handleClientSelection("", "-- Nuevo Cliente --");
+    }
+
+    if (!user) { 
         console.log("loadClientsIntoDropdown: No hay usuario.");
-        return;
+        return; 
     }
 
     try {
@@ -435,45 +449,34 @@ async function loadClientsIntoDropdown() {
 
                 let clientDisplayName = client.name;
 
-                // --- Lógica para la Píldora 1: Estado General del Cliente ---
-                let estadoGeneral = client.estadoGeneralCliente || "Activo"; // Valor por defecto si no existe
-                let claseCssEstadoGeneral = "status-client-default"; 
-                if (estadoGeneral === "Nuevo") claseCssEstadoGeneral = "status-client-nuevo";
-                else if (estadoGeneral === "Activo" || estadoGeneral === "Al día") claseCssEstadoGeneral = "status-client-al-dia";
-                else if (estadoGeneral === "Con Pendientes") claseCssEstadoGeneral = "status-client-con-pendientes";
-                else if (estadoGeneral === "Moroso") claseCssEstadoGeneral = "status-client-moroso";
-                else if (estadoGeneral === "Inactivo") claseCssEstadoGeneral = "status-client-inactivo";
-
-
-                // --- Lógica para la Píldora 2: Estado de Última Factura del Cliente ---
-                let estadoFacturaCliente = client.estadoUltimaFacturaCliente || "N/A";
-                let textoPildoraFactura = "N/A";
-                let claseCssPildoraFactura = "invoice-status-na"; 
-
-                if (estadoFacturaCliente !== "N/A") {
-                    const statusKey = estadoFacturaCliente.toLowerCase().replace(/ /g, '_');
-                    textoPildoraFactura = paymentStatusDetails[statusKey]?.text || estadoFacturaCliente;
-                    claseCssPildoraFactura = `invoice-status-${statusKey}`;
-                }
+                // --- Lógica para la Píldora de Estado de Última Factura del Cliente ---
+                let estadoFacturaKey = (client.estadoUltimaFacturaCliente || "n/a").toLowerCase().replace(/ /g, '_');
+                let estadoFacturaInfo = paymentStatusDetails[estadoFacturaKey] || paymentStatusDetails['n/a']; // Fallback
                 
-                // --- Construir el HTML para la opción con AMBAS píldoras ---
+                // Construir el HTML para la opción con UNA SOLA píldora (estado de última factura)
                 clientOption.innerHTML = `
                     <span class="option-client-name">${clientDisplayName}</span>
                     <span class="pills-container">
-                        <span class="option-status-pill ${claseCssEstadoGeneral}">${estadoGeneral}</span>
-                        <span class="option-status-pill ${claseCssPildoraFactura}">${textoPildoraFactura}</span>
+                        <span class="option-status-pill ${estadoFacturaInfo.cssClass || `invoice-status-${estadoFacturaKey}`}">${estadoFacturaInfo.text}</span>
                     </span>
                 `;
-                // --- Fin de la construcción del HTML ---
 
                 clientOption.addEventListener('click', () => handleClientSelection(docSnap.id, client.name, client));
                 customClientOptions.appendChild(clientOption);
                 loadedClients.push({ id: docSnap.id, ...client });
             });
+        } else {
+            console.log("loadClientsIntoDropdown: No se encontraron clientes activos para este usuario.");
         }
     } catch (error) {
         console.error("Error al cargar clientes para el desplegable:", error);
-        customClientOptions.insertAdjacentHTML('beforeend', '<div class="custom-option-error">Error al cargar clientes</div>');
+        // Evitar añadir múltiples mensajes de error si ya existe uno
+        if (!customClientOptions.querySelector('.custom-option-error')) {
+            const errorOption = document.createElement('div');
+            errorOption.classList.add('custom-option-error');
+            errorOption.textContent = 'Error al cargar clientes';
+            customClientOptions.appendChild(errorOption);
+        }
     }
 }
 
