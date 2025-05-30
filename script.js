@@ -48,6 +48,7 @@ const invoiceDetailModal = document.getElementById('invoiceDetailModal');
 const modalInvoiceTitle = document.getElementById('modalInvoiceTitle');
 const modalInvoiceDetailsContent = document.getElementById('modalInvoiceDetailsContent');
 const closeInvoiceDetailModalBtn = document.getElementById('closeInvoiceDetailModalBtn');
+const originalInvoiceExportTemplate = document.getElementById('invoice-export-template');
 
 console.log("Elemento del Modal Principal:", invoiceDetailModal);
 console.log("Botón de Cierre del Modal:", closeInvoiceDetailModalBtn);
