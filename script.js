@@ -49,6 +49,11 @@ const modalInvoiceDetailsContent = document.getElementById('modalInvoiceDetailsC
 const closeInvoiceDetailModalBtn = document.getElementById('closeInvoiceDetailModalBtn');
 const printInvoiceFromModalBtn = document.getElementById('printInvoiceFromModalBtn');
 
+console.log("DOM Modal - invoiceDetailModal:", invoiceDetailModal);
+console.log("DOM Modal - modalInvoiceTitle:", modalInvoiceTitle);
+console.log("DOM Modal - modalInvoiceDetailsContent:", modalInvoiceDetailsContent);
+console.log("DOM Modal - closeInvoiceDetailModalBtn:", closeInvoiceDetailModalBtn);
+
 const loginButton = document.getElementById('loginButton');
 const logoutButton = document.getElementById('logoutButton');
 const loadingOverlay = document.getElementById('loadingOverlay');
@@ -253,7 +258,16 @@ function openInvoiceDetailModal(invoiceData, invoiceId) {
     detailsHTML += `</div>`;
 
     if(modalInvoiceDetailsContent) modalInvoiceDetailsContent.innerHTML = detailsHTML;
-    if (invoiceDetailModal) invoiceDetailModal.classList.add('active');
+    
+    if (invoiceDetailModal) {
+    console.log("Forzando display: flex !important al modal");
+    invoiceDetailModal.style.setProperty('display', 'flex', 'important');
+    invoiceDetailModal.style.setProperty('opacity', '1', 'important');
+    invoiceDetailModal.style.setProperty('visibility', 'visible', 'important');
+    } else {
+        console.error("invoiceDetailModal es null, no se puede forzar visibilidad.");
+    }
+    // if (invoiceDetailModal) invoiceDetailModal.classList.add('active'); //
 }
 
 function closeInvoiceDetailModal() {
