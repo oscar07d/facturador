@@ -813,43 +813,38 @@ input.input-error, select.input-error, textarea.input-error { border-color: var(
 
 /* === ESTILOS PARA MODAL DETALLE DE FACTURA === */
 .modal-overlay {
-    position: fixed; /* Cubre toda la pantalla */
+    position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.6); /* Fondo semitransparente oscuro */
-    display: flex; /* Usado para centrar el contenido del modal */
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex; /* Siempre flex para centrar */
     justify-content: center;
     align-items: center;
-    z-index: 1000; /* Asegura que esté por encima de otros contenidos */
-    opacity: 0; /* Inicialmente invisible para la animación */
-    visibility: hidden; /* Inicialmente oculto para la animación y accesibilidad */
-    transition: opacity 0.3s ease, visibility 0.3s ease;
+    z-index: 1000;
+    
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none; /* Evita interacción cuando está oculto */
+    transition: opacity 0.3s ease, visibility 0s linear 0.3s; /* Transición para opacidad, visibilidad cambia al final */
 }
 
-.modal-overlay.active { /* Clase que se añadirá con JS para mostrar el modal */
+.modal-overlay.active {
     opacity: 1;
     visibility: visible;
+    pointer-events: auto; /* Permite interacción cuando está activo */
+    transition: opacity 0.3s ease, visibility 0s linear 0s; /* Visibilidad cambia inmediatamente */
 }
 
 .modal-content {
-    background-color: var(--container-background);
-    padding: 25px 30px;
-    border-radius: var(--border-radius-m);
-    box-shadow: var(--box-shadow-medium);
-    width: 90%;
-    max-width: 700px; /* Ancho máximo del modal */
-    max-height: 85vh; /* Altura máxima, el resto será scroll */
-    display: flex;
-    flex-direction: column;
-    position: relative; /* Para el botón de cierre absoluto si se desea */
-    transform: scale(0.95); /* Efecto de entrada */
+    /* ... tus estilos existentes para .modal-content ... */
+    transform: scale(0.9); /* Para efecto de entrada/salida */
     transition: transform 0.3s ease;
 }
 
 .modal-overlay.active .modal-content {
-    transform: scale(1); /* Efecto de entrada al mostrar */
+    transform: scale(1);
 }
 
 .modal-header {
