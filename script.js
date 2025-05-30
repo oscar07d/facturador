@@ -184,6 +184,62 @@ function updatePaymentStatusDisplay() {
     }
 }
 
+function collectInvoiceDataFromForm() {
+    // Validaciones básicas (puedes expandirlas)
+    if (!clientNameInput.value || !clientPhoneInput.value || !clientEmailInput.value) {
+        alert("Por favor, completa todos los datos del cliente.");
+        return null;
+    }
+    if (currentInvoiceItems.length === 0) {
+        alert("Por favor, agrega al menos un ítem a la factura.");
+        return null;
+    }
+    if (!invoiceDateInput.value) {
+        alert("Por favor, selecciona una fecha para la factura.");
+        return null;
+    }
+
+    // Simular recálculo para asegurar que los totales estén actualizados en el DOM
+    if (typeof recalculateTotals === 'function') {
+        recalculateTotals();
+    }
+
+    const invoiceData = {
+        invoiceNumberFormatted: `FCT-${invoiceNumberText.textContent || 'PENDIENTE'}`,
+        invoiceNumberNumeric: parseInt(invoiceNumberText.textContent) || 0,
+        invoiceDate: invoiceDateInput.value,
+        serviceStartDate: document.getElementById('serviceStartDate')?.value || null,
+        emitter: {
+            name: document.getElementById('emitterName')?.value.trim() || '',
+            id: document.getElementById('emitterId')?.value.trim() || '',
+            address: document.getElementById('emitterAddress')?.value.trim() || '',
+            phone: document.getElementById('emitterPhone')?.value.trim() || '',
+            email: document.getElementById('emitterEmail')?.value.trim() || ''
+        },
+        client: {
+            name: clientNameInput.value.trim(),
+            phone: clientPhoneInput.value.trim(),
+            email: clientEmailInput.value.trim(),
+            id: hiddenSelectedClientIdInput.value || null
+        },
+        items: currentInvoiceItems.map(item => ({ ...item })),
+        discount: {
+            type: discountTypeSelect.value,
+            value: parseFloat(discountValueInput.value) || 0
+        },
+        totals: {
+            subtotal: parseFloat(subtotalAmountSpan.textContent.replace(/[^\d,.-]/g, '').replace(',', '.')) || 0,
+            discountApplied: parseFloat(discountAmountAppliedSpan.textContent.replace(/[^\d,.-]/g, '').replace(',', '.')) || 0,
+            taxableBase: parseFloat(taxableBaseAmountSpan.textContent.replace(/[^\d,.-]/g, '').replace(',', '.')) || 0,
+            iva: parseFloat(ivaAmountSpan.textContent.replace(/[^\d,.-]/g, '').replace(',', '.')) || 0,
+            grandTotal: parseFloat(totalAmountSpan.textContent.replace(/[^\d,.-]/g, '').replace(',', '.')) || 0
+        },
+        paymentStatus: paymentStatusSelect.value,
+        generatedAt: new Date().toISOString()
+    };
+    return invoiceData;
+}
+
 // --- Funciones para Modal de Detalle de Factura ---
 function openInvoiceDetailModal(invoiceData, invoiceId) {
     console.log("openInvoiceDetailModal llamada con ID:", invoiceId, "y datos:", invoiceData);
