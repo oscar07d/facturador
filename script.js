@@ -847,21 +847,17 @@ async function recoverClient(clientId) {
  */
 function openInvoiceDetailModal(invoiceData, invoiceId) {
     if (!invoiceDetailModal || !modalInvoiceTitle || !modalInvoiceDetailsContent) {
-        console.error("Elementos del modal no encontrados.");
+        console.error("Elementos del modal no encontrados al intentar abrir.");
         return;
     }
+    console.log("Abriendo modal para factura ID:", invoiceId);
 
-    // 1. Actualizar el título del modal
     modalInvoiceTitle.textContent = `Detalle de Factura: ${invoiceData.invoiceNumberFormatted || 'N/A'}`;
-
-    // 2. Construir el HTML para los detalles de la factura
-    // Usaremos una estructura similar a la plantilla de exportación para consistencia
+    
     let detailsHTML = '';
-
-    // Datos del Emisor (si existen)
+    // Datos del Emisor
     if (invoiceData.emitter && (invoiceData.emitter.name || invoiceData.emitter.id)) {
-        detailsHTML += `<h3>Datos del Emisor</h3>`;
-        detailsHTML += `<div class="modal-section-grid">`;
+        detailsHTML += `<h3>Datos del Emisor</h3><div class="modal-section-grid">`;
         if (invoiceData.emitter.name) detailsHTML += `<p><strong>Comercio:</strong> ${invoiceData.emitter.name}</p>`;
         if (invoiceData.emitter.id) detailsHTML += `<p><strong>NIT/ID:</strong> ${invoiceData.emitter.id}</p>`;
         if (invoiceData.emitter.address) detailsHTML += `<p><strong>Dirección:</strong> ${invoiceData.emitter.address}</p>`;
@@ -869,95 +865,73 @@ function openInvoiceDetailModal(invoiceData, invoiceId) {
         if (invoiceData.emitter.email) detailsHTML += `<p><strong>Email:</strong> ${invoiceData.emitter.email}</p>`;
         detailsHTML += `</div>`;
     }
-
     // Datos del Cliente
-    detailsHTML += `<h3>Facturar A:</h3>`;
-    detailsHTML += `<div class="modal-section-grid">`;
+    detailsHTML += `<h3>Facturar A:</h3><div class="modal-section-grid">`;
     detailsHTML += `<p><strong>Nombre:</strong> ${invoiceData.client?.name || 'N/A'}</p>`;
     detailsHTML += `<p><strong>Celular:</strong> ${invoiceData.client?.phone || 'N/A'}</p>`;
     if (invoiceData.client?.email) detailsHTML += `<p><strong>Correo:</strong> ${invoiceData.client.email}</p>`;
     detailsHTML += `</div>`;
-    
-    // Detalles de la Factura (Número, Fechas, Estado)
+    // Detalles de la Factura
     detailsHTML += `<h3>Detalles de la Factura</h3>`;
-    detailsHTML += `<p><strong>Número de Factura:</strong> ${invoiceData.invoiceNumberFormatted || 'N/A'}</p>`;
-    detailsHTML += `<p><strong>Fecha de Factura:</strong> ${invoiceData.invoiceDate || 'N/A'}</p>`;
+    detailsHTML += `<p><strong>Número:</strong> ${invoiceData.invoiceNumberFormatted || 'N/A'}</p>`;
+    detailsHTML += `<p><strong>Fecha:</strong> ${invoiceData.invoiceDate || 'N/A'}</p>`;
     if (invoiceData.serviceStartDate) {
-        detailsHTML += `<p><strong>Fecha Inicio de Servicio:</strong> ${invoiceData.serviceStartDate}</p>`;
+        detailsHTML += `<p><strong>Inicio Servicio:</strong> ${invoiceData.serviceStartDate}</p>`;
     }
     const statusKey = invoiceData.paymentStatus || 'pending';
     const statusInfo = paymentStatusDetails[statusKey] || { text: statusKey, cssClass: `invoice-status-${statusKey.toLowerCase()}` };
-    detailsHTML += `<p><strong>Estado:</strong> <span class="status-badge ${statusInfo.cssClass}">${statusInfo.text}</span></p>`;
-
-
-    // Ítems de la Factura
+    detailsHTML += `<p><strong>Estado:</strong> <span class="status-badge <span class="math-inline">\{statusInfo\.cssClass\}"\></span>{statusInfo.text}</span></p>`;
+    // Ítems
     detailsHTML += `<h3>Ítems:</h3>`;
     if (invoiceData.items && invoiceData.items.length > 0) {
-        detailsHTML += `<table class="modal-items-table">
-                            <thead>
-                                <tr>
-                                    <th>Descripción</th>
-                                    <th>Cant.</th>
-                                    <th>P.U.</th>
-                                    <th>Total</th>
-                                </tr>
-                            </thead>
-                            <tbody>`;
+        detailsHTML += `<table class="modal-items-table"><thead><tr><th>Descripción</th><th>Cant.</th><th>P.U.</th><th>Total</th></tr></thead><tbody>`;
         invoiceData.items.forEach(item => {
             let profileInfo = '';
             if (item.isStreaming && item.profileName) {
                 profileInfo = `<br><small class="item-profile-details">Perfil: ${item.profileName} ${item.profilePin ? `(PIN: ${item.profilePin})` : ''}</small>`;
             }
             detailsHTML += `<tr>
-                                <td>${item.description}${profileInfo}</td>
-                                <td class="text-right">${item.quantity}</td>
-                                <td class="text-right">${(item.price || 0).toLocaleString('es-CO', { style: 'currency', currency: 'COP' })}</td>
+                                <td><span class="math-inline">\{item\.description\}</span>{profileInfo}</td>
+                                <td class="text-right"><span class="math-inline">\{item\.quantity\}</td\>
+<td class\="text\-right"\></span>{(item.price || 0).toLocaleString('es-CO', { style: 'currency', currency: 'COP' })}</td>
                                 <td class="text-right">${((item.quantity * item.price) || 0).toLocaleString('es-CO', { style: 'currency', currency: 'COP' })}</td>
                             </tr>`;
         });
-        detailsHTML += `    </tbody>
-                        </table>`;
+        detailsHTML += `</tbody></table>`;
     } else {
         detailsHTML += `<p>No hay ítems en esta factura.</p>`;
     }
-
     // Totales
     detailsHTML += `<div class="modal-totals-summary">`;
     if (invoiceData.totals) {
         detailsHTML += `<p><span>Subtotal:</span> <span>${(invoiceData.totals.subtotal || 0).toLocaleString('es-CO', { style: 'currency', currency: 'COP' })}</span></p>`;
         if (invoiceData.totals.discountApplied > 0) {
-             detailsHTML += `<p><span>Descuento Aplicado:</span> <span>-${(invoiceData.totals.discountApplied || 0).toLocaleString('es-CO', { style: 'currency', currency: 'COP' })}</span></p>`;
+             detailsHTML += `<p><span>Descuento:</span> <span>-${(invoiceData.totals.discountApplied || 0).toLocaleString('es-CO', { style: 'currency', currency: 'COP' })}</span></p>`;
         }
-        if (invoiceData.totals.taxableBase !== invoiceData.totals.subtotal - invoiceData.totals.discountApplied && invoiceData.totals.taxableBase !== undefined) { // Mostrar solo si es diferente al cálculo simple
-            detailsHTML += `<p><span>Base Imponible:</span> <span>${(invoiceData.totals.taxableBase || 0).toLocaleString('es-CO', { style: 'currency', currency: 'COP' })}</span></p>`;
-        }
+        const calculatedTaxableBase = (invoiceData.totals.subtotal || 0) - (invoiceData.totals.discountApplied || 0);
+         if (invoiceData.totals.taxableBase !== undefined && invoiceData.totals.taxableBase !== calculatedTaxableBase) { 
+             detailsHTML += `<p><span>Base Imponible:</span> <span>${(invoiceData.totals.taxableBase || 0).toLocaleString('es-CO', { style: 'currency', currency: 'COP' })}</span></p>`;
+         } else if (invoiceData.totals.taxableBase === undefined && invoiceData.totals.discountApplied > 0) {
+              detailsHTML += `<p><span>Base Imponible:</span> <span>${(calculatedTaxableBase).toLocaleString('es-CO', { style: 'currency', currency: 'COP' })}</span></p>`;
+         }
         if (invoiceData.totals.iva > 0) {
             detailsHTML += `<p><span>IVA (19%):</span> <span>${(invoiceData.totals.iva || 0).toLocaleString('es-CO', { style: 'currency', currency: 'COP' })}</span></p>`;
         }
-        detailsHTML += `<p class="modal-grand-total"><span>TOTAL FACTURA:</span> <span>${(invoiceData.totals.grandTotal || 0).toLocaleString('es-CO', { style: 'currency', currency: 'COP' })}</span></p>`;
+        detailsHTML += `<p class="modal-grand-total"><span>TOTAL:</span> <span>${(invoiceData.totals.grandTotal || 0).toLocaleString('es-CO', { style: 'currency', currency: 'COP' })}</span></p>`;
     }
     detailsHTML += `</div>`;
 
     modalInvoiceDetailsContent.innerHTML = detailsHTML;
-
-    // 3. Mostrar el modal
-    invoiceDetailModal.classList.add('active'); // Usar la clase para la transición
-    // invoiceDetailModal.style.display = 'flex'; // Alternativa si no usas clase para transición
+    if (invoiceDetailModal) invoiceDetailModal.classList.add('active');
 }
 
-/**
- * Cierra el modal de detalles de la factura.
- */
 function closeInvoiceDetailModal() {
-    if (!invoiceDetailModal || !modalInvoiceDetailsContent) return;
+    if (!invoiceDetailModal) return;
     invoiceDetailModal.classList.remove('active');
-    // invoiceDetailModal.style.display = 'none';
-    
-    // Opcional: Limpiar el contenido después de la transición de cierre
-    // setTimeout(() => {
-    //    modalInvoiceDetailsContent.innerHTML = '<p>Cargando detalles de la factura...</p>';
-    //    modalInvoiceTitle.textContent = 'Detalle de Factura';
-    // }, 300); // 300ms es la duración de la transición de opacidad
+    if (modalInvoiceDetailsContent) {
+        setTimeout(() => { modalInvoiceDetailsContent.innerHTML = ''; }, 300); 
+    }
+    if (modalInvoiceTitle) modalInvoiceTitle.textContent = 'Detalle de Factura';
 }
 // === FIN: NUEVO CÓDIGO ===
 
@@ -1296,6 +1270,27 @@ if (printInvoiceFromModalBtn) {
     printInvoiceFromModalBtn.addEventListener('click', () => {
         alert("Funcionalidad de Imprimir/Descargar PDF desde el modal está pendiente.");
         // Aquí llamaremos a la lógica de html2pdf o jspdf en el futuro
+    });
+}
+
+if (closeInvoiceDetailModalBtn) {
+    closeInvoiceDetailModalBtn.addEventListener('click', closeInvoiceDetailModal);
+}
+if (invoiceDetailModal) {
+    invoiceDetailModal.addEventListener('click', (event) => {
+        if (event.target === invoiceDetailModal) {
+            closeInvoiceDetailModal();
+        }
+    });
+}
+document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && invoiceDetailModal && invoiceDetailModal.classList.contains('active')) {
+        closeInvoiceDetailModal();
+    }
+});
+if (printInvoiceFromModalBtn) {
+    printInvoiceFromModalBtn.addEventListener('click', () => {
+         alert("Funcionalidad de Imprimir/Descargar PDF desde el modal está pendiente.");
     });
 }
 
