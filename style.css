@@ -811,38 +811,37 @@ input.input-error, select.input-error, textarea.input-error { border-color: var(
     #selectedClientNameDisplay .pills-container { margin-left: 0; flex-basis: 100%; justify-content: flex-start; } /* Píldoras abajo en el display */
 }
 
-/* === ESTILOS PARA MODAL DETALLE DE FACTURA === */Add commentMore actions
+/* === ESTILOS PARA MODAL DETALLE DE FACTURA === */
+
+body.modal-active {
+    overflow: hidden; /* Evita el scroll del body cuando el modal está activo */
+}
+
 .modal-overlay {
-    position: fixed; /* Cubre toda la pantalla */
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.6); /* Fondo semitransparente oscuro */
-    display: flex; /* Usado para centrar el contenido del modal */
-    background-color: rgba(0, 0, 0, 0.6);
-    display: flex; /* Siempre flex para centrar */
+    background-color: rgba(0, 0, 0, 0.6); /* Fondo semitransparente */
+    display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 1000; /* Asegura que esté por encima de otros contenidos */
-    opacity: 0; /* Inicialmente invisible para la animación */
-    visibility: hidden; /* Inicialmente oculto para la animación y accesibilidad */
-    transition: opacity 0.3s ease, visibility 0.3s ease;
-    z-index: 1000;
-    
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none; /* Evita interacción cuando está oculto */
-    transition: opacity 0.3s ease, visibility 0s linear 0.3s; /* Transición para opacidad, visibilidad cambia al final */
+    z-index: 1050; /* Un z-index alto para estar por encima de otros elementos */
+
+    opacity: 0;                /* Inicia transparente */
+    visibility: hidden;        /* Inicia oculto (importante para accesibilidad y transiciones) */
+    pointer-events: none;      /* No interactuable cuando está oculto */
+    /* Transición para ocultar: la visibilidad cambia DESPUÉS de que la opacidad llega a 0 */
+    transition: opacity 0.3s ease, visibility 0s linear 0.3s;
 }
 
-.modal-overlay.active { /* Clase que se añadirá con JS para mostrar el modal */
 .modal-overlay.active {
-    opacity: 1;
-    visibility: visible;
-    pointer-events: auto; /* Permite interacción cuando está activo */
-    transition: opacity 0.3s ease, visibility 0s linear 0s; /* Visibilidad cambia inmediatamente */
+    opacity: 1;                /* Totalmente visible */
+    visibility: visible;       /* Visible */
+    pointer-events: auto;      /* Interactuable */
+    /* Transición para mostrar: la visibilidad cambia INMEDIATAMENTE cuando la opacidad empieza a cambiar */
+    transition: opacity 0.3s ease, visibility 0s linear 0s;
 }
 
 .modal-content {
@@ -851,20 +850,17 @@ input.input-error, select.input-error, textarea.input-error { border-color: var(
     border-radius: var(--border-radius-m);
     box-shadow: var(--box-shadow-medium);
     width: 90%;
-    max-width: 700px; /* Ancho máximo del modal */
-    max-height: 85vh; /* Altura máxima, el resto será scroll */
+    max-width: 750px; /* Puedes ajustar este valor */
+    max-height: 85vh; /* Altura máxima, el resto será scroll dentro del modal-body */
     display: flex;
     flex-direction: column;
-    position: relative; /* Para el botón de cierre absoluto si se desea */
-    transform: scale(0.95); /* Efecto de entrada */
-    /* ... tus estilos existentes para .modal-content ... */
-    transform: scale(0.9); /* Para efecto de entrada/salida */
-    transition: transform 0.3s ease;
+    position: relative;
+    transform: scale(0.95); /* Estado inicial para la animación de escala */
+    transition: transform 0.3s ease; /* Transición para la animación de escala */
 }
 
 .modal-overlay.active .modal-content {
-    transform: scale(1); /* Efecto de entrada al mostrar */
-    transform: scale(1);
+    transform: scale(1); /* Escala final cuando el modal está activo */
 }
 
 .modal-header {
@@ -873,7 +869,8 @@ input.input-error, select.input-error, textarea.input-error { border-color: var(
     align-items: center;
     padding-bottom: 15px;
     border-bottom: 1px solid var(--border-color);
-    margin-bottom: 20px;
+    margin-bottom: 15px; /* Ligeramente reducido */
+    flex-shrink: 0; /* Para que no se encoja si el contenido es grande */
 }
 
 .modal-header h2 { /* Para #modalInvoiceTitle */
@@ -886,7 +883,7 @@ input.input-error, select.input-error, textarea.input-error { border-color: var(
 .modal-close-btn {
     background: none;
     border: none;
-    font-size: 2rem; /* Tamaño de la 'X' */
+    font-size: 2.2rem; /* Un poco más grande para que sea fácil de clickear */
     font-weight: 300;
     color: var(--text-muted-color);
     cursor: pointer;
@@ -900,23 +897,18 @@ input.input-error, select.input-error, textarea.input-error { border-color: var(
 }
 
 .modal-body {
-    overflow-y: auto; /* Scroll si el contenido es muy largo */
-    padding-right: 10px; /* Espacio para la barra de scroll si aparece */
-    margin-right: -10px; /* Compensar el padding para que el contenido use todo el ancho */
-    flex-grow: 1; /* Permite que el cuerpo del modal ocupe el espacio disponible */
-}
-
-body.modal-active {
-    overflow: hidden;
+    overflow-y: auto;   /* Habilita el scroll vertical SI el contenido excede la altura */
+    flex-grow: 1;       /* Permite que el body ocupe el espacio disponible entre header y footer */
+    min-height: 150px;  /* Una altura mínima para que el área de scroll sea usable incluso con poco contenido */
+    padding-right: 5px; /* Pequeño espacio por si aparece la barra de scroll, para que no pegue al borde */
+    margin-bottom: 15px;
 }
 
 #modalInvoiceDetailsContent {
-    /* Aquí irán estilos para el contenido específico de la factura dentro del modal */
-    /* Por ejemplo, podríamos reusar algunos estilos de .export-template pero adaptados */
-    font-size: 0.95rem;
+    font-size: 0.95rem; /* Ajusta el tamaño de fuente base para el contenido del modal */
 }
 
-#modalInvoiceDetailsContent h3 { /* Títulos de sección dentro del modal */
+#modalInvoiceDetailsContent h3 {
     font-size: 1.1rem;
     color: var(--secondary-color);
     margin-top: 15px;
@@ -937,8 +929,8 @@ body.modal-active {
 }
 #modalInvoiceDetailsContent .modal-section-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr; /* Dos columnas para info de cliente/emisor */
-    gap: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Columnas adaptables */
+    gap: 15px 20px; /* Espacio vertical y horizontal */
     margin-bottom: 15px;
 }
 #modalInvoiceDetailsContent .modal-items-table {
@@ -950,57 +942,68 @@ body.modal-active {
 #modalInvoiceDetailsContent .modal-items-table th,
 #modalInvoiceDetailsContent .modal-items-table td {
     text-align: left;
-    padding: 8px;
+    padding: 8px 10px; /* Ajuste de padding */
     border-bottom: 1px solid var(--border-color);
 }
 #modalInvoiceDetailsContent .modal-items-table th {
     background-color: #f8f9fa;
     font-weight: 500;
+    white-space: nowrap; /* Evita que los títulos de las columnas se partan */
 }
 #modalInvoiceDetailsContent .modal-items-table .text-right {
     text-align: right;
 }
+#modalInvoiceDetailsContent .item-profile-details { /* Para los detalles de perfil en la tabla del modal */
+    font-size: 0.8em;
+    color: var(--text-muted-color);
+    display: block; /* Para que ocupe su propia línea debajo de la descripción */
+    margin-top: 2px;
+}
+
 #modalInvoiceDetailsContent .modal-totals-summary {
     margin-top: 20px;
     padding-top: 15px;
     border-top: 1px solid var(--border-color);
-    text-align: right; /* Alinea los totales a la derecha */
 }
 #modalInvoiceDetailsContent .modal-totals-summary p {
     font-size: 1rem;
-    margin-bottom: 5px;
+    margin-bottom: 6px; /* Ligeramente reducido */
     display: flex;
-    justify-content: flex-end; /* Items (label y valor) se alinean a la derecha */
-    gap: 15px; /* Espacio entre label y valor del total */
+    justify-content: space-between; /* Etiqueta a la izquierda, valor a la derecha */
+    gap: 15px;
 }
-#modalInvoiceDetailsContent .modal-totals-summary p span:first-child { /* La etiqueta del total */
+#modalInvoiceDetailsContent .modal-totals-summary p span:first-child {
     color: var(--text-muted-color);
     font-weight: normal;
+    text-align: left; /* Asegurar que la etiqueta esté a la izquierda */
 }
-#modalInvoiceDetailsContent .modal-totals-summary .modal-grand-total {
+#modalInvoiceDetailsContent .modal-totals-summary p span:last-child {
+    font-weight: 600; /* El valor del total en negrita */
+    text-align: right; /* Asegurar que el valor esté a la derecha */
+}
+#modalInvoiceDetailsContent .modal-totals-summary .modal-grand-total span { /* Ambos spans del gran total */
     font-size: 1.2rem;
     font-weight: bold;
     color: var(--primary-color);
-    margin-top: 10px;
 }
 
-
 .modal-footer {
-    padding-top: 20px;
-    margin-top: 20px;
+    padding-top: 15px; /* Reducido */
+    margin-top: 15px;  /* Reducido */
     border-top: 1px solid var(--border-color);
-    text-align: right; /* Alinea los botones a la derecha */
+    text-align: right;
+    flex-shrink: 0; /* Para que no se encoja */
 }
 
 .modal-footer .btn {
-    margin-left: 10px; /* Espacio entre botones si hay varios */
+    margin-left: 10px;
 }
 
 /* Media Query para el modal en pantallas pequeñas */
 @media (max-width: 768px) {
     .modal-content {
         width: 95%;
-        padding: 20px;
+        padding: 20px 15px; /* Ajuste de padding */
         max-height: 90vh;
     }
     .modal-header h2 {
@@ -1009,8 +1012,12 @@ body.modal-active {
     #modalInvoiceDetailsContent .modal-section-grid {
         grid-template-columns: 1fr; /* Apilar columnas de info en móvil */
     }
+    #modalInvoiceDetailsContent .modal-items-table th,
+    #modalInvoiceDetailsContent .modal-items-table td {
+        padding: 6px 8px;
+    }
 }
-
+/* ELIMINA LA LÍNEA "Add commentMore actions" SI ESTABA JUSTO AQUÍ EN TU ARCHIVO ORIGINAL */
 /* === ANIMACIÓN PARA EL GRADIENTE DEL APP-NAV === */
 @keyframes moveGradient {
     0% { background-position: 0% 50%; }
