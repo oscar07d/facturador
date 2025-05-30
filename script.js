@@ -130,6 +130,119 @@ const showLoading = (show) => {
     }
 };
 
+// --- Funciones para Modal de Detalle de Factura ---
+function openInvoiceDetailModal(invoiceData, invoiceId) {
+    if (!invoiceDetailModal || !modalInvoiceTitle || !modalInvoiceDetailsContent) {
+        console.error("Elementos del modal no encontrados al intentar abrir.");
+        return;
+    }
+    console.log("Abriendo modal para factura ID:", invoiceId);
+
+    modalInvoiceTitle.textContent = `Detalle de Factura: ${invoiceData.invoiceNumberFormatted || 'N/A'}`;
+    
+    let detailsHTML = '';
+    // Datos del Emisor
+    if (invoiceData.emitter && (invoiceData.emitter.name || invoiceData.emitter.id)) {
+        detailsHTML += `<h3>Datos del Emisor</h3><div class="modal-section-grid">`;
+        if (invoiceData.emitter.name) detailsHTML += `<p><strong>Comercio:</strong> ${invoiceData.emitter.name}</p>`;
+        if (invoiceData.emitter.id) detailsHTML += `<p><strong>NIT/ID:</strong> ${invoiceData.emitter.id}</p>`;
+        if (invoiceData.emitter.address) detailsHTML += `<p><strong>Dirección:</strong> ${invoiceData.emitter.address}</p>`;
+        if (invoiceData.emitter.phone) detailsHTML += `<p><strong>Teléfono:</strong> ${invoiceData.emitter.phone}</p>`;
+        if (invoiceData.emitter.email) detailsHTML += `<p><strong>Email:</strong> ${invoiceData.emitter.email}</p>`;
+        detailsHTML += `</div>`;
+    }
+    // Datos del Cliente
+    detailsHTML += `<h3>Facturar A:</h3><div class="modal-section-grid">`;
+    detailsHTML += `<p><strong>Nombre:</strong> ${invoiceData.client?.name || 'N/A'}</p>`;
+    detailsHTML += `<p><strong>Celular:</strong> ${invoiceData.client?.phone || 'N/A'}</p>`;
+    if (invoiceData.client?.email) detailsHTML += `<p><strong>Correo:</strong> ${invoiceData.client.email}</p>`;
+    detailsHTML += `</div>`;
+    // Detalles de la Factura
+    detailsHTML += `<h3>Detalles de la Factura</h3>`;
+    detailsHTML += `<p><strong>Número:</strong> ${invoiceData.invoiceNumberFormatted || 'N/A'}</p>`;
+    detailsHTML += `<p><strong>Fecha:</strong> ${invoiceData.invoiceDate || 'N/A'}</p>`;
+    if (invoiceData.serviceStartDate) {
+        detailsHTML += `<p><strong>Inicio Servicio:</strong> ${invoiceData.serviceStartDate}</p>`;
+    }
+    const statusKeyModal = invoiceData.paymentStatus || 'pending';
+    const statusInfoModal = paymentStatusDetails[statusKeyModal] || { text: statusKeyModal, cssClass: `status-${statusKeyModal.toLowerCase()}` };
+    detailsHTML += `<p><strong>Estado:</strong> <span class="status-badge ${statusInfoModal.cssClass}">${statusInfoModal.text}</span></p>`;
+    
+    // Ítems
+    detailsHTML += `<h3>Ítems:</h3>`;
+    if (invoiceData.items && invoiceData.items.length > 0) {
+        detailsHTML += `<table class="modal-items-table"><thead><tr><th>Descripción</th><th>Cant.</th><th>P.U.</th><th>Total</th></tr></thead><tbody>`;
+        invoiceData.items.forEach(item => {
+            let profileInfo = '';
+            if (item.isStreaming && item.profileName) {
+                profileInfo = `<br><small class="item-profile-details">Perfil: ${item.profileName} ${item.profilePin ? `(PIN: ${item.profilePin})` : ''}</small>`;
+            }
+            detailsHTML += `<tr>
+                               <td>${item.description}${profileInfo}</td>
+                               <td class="text-right">${item.quantity}</td>
+                               <td class="text-right">${(item.price || 0).toLocaleString('es-CO', { style: 'currency', currency: 'COP' })}</td>
+                               <td class="text-right">${((item.quantity * item.price) || 0).toLocaleString('es-CO', { style: 'currency', currency: 'COP' })}</td>
+                           </tr>`;
+        });
+        detailsHTML += `</tbody></table>`;
+    } else {
+        detailsHTML += `<p>No hay ítems en esta factura.</p>`;
+    }
+    // Totales
+    detailsHTML += `<div class="modal-totals-summary">`;
+    if (invoiceData.totals) {
+        detailsHTML += `<p><span>Subtotal:</span> <span>${(invoiceData.totals.subtotal || 0).toLocaleString('es-CO', { style: 'currency', currency: 'COP' })}</span></p>`;
+        if (invoiceData.totals.discountApplied > 0) {
+             detailsHTML += `<p><span>Descuento:</span> <span>-${(invoiceData.totals.discountApplied || 0).toLocaleString('es-CO', { style: 'currency', currency: 'COP' })}</span></p>`;
+        }
+        const calculatedTaxableBaseModal = (invoiceData.totals.subtotal || 0) - (invoiceData.totals.discountApplied || 0);
+         if (invoiceData.totals.taxableBase !== undefined && (invoiceData.totals.discountApplied > 0 || invoiceData.totals.taxableBase !== invoiceData.totals.subtotal)) {
+            detailsHTML += `<p><span>Base Imponible:</span> <span>${(invoiceData.totals.taxableBase || 0).toLocaleString('es-CO', { style: 'currency', currency: 'COP' })}</span></p>`;
+        } else if (invoiceData.totals.taxableBase === undefined && invoiceData.totals.discountApplied > 0) {
+             detailsHTML += `<p><span>Base Imponible:</span> <span>${(calculatedTaxableBaseModal).toLocaleString('es-CO', { style: 'currency', currency: 'COP' })}</span></p>`;
+        }
+        if (invoiceData.totals.iva > 0) {
+            detailsHTML += `<p><span>IVA (19%):</span> <span>${(invoiceData.totals.iva || 0).toLocaleString('es-CO', { style: 'currency', currency: 'COP' })}</span></p>`;
+        }
+        detailsHTML += `<p class="modal-grand-total"><span>TOTAL:</span> <span>${(invoiceData.totals.grandTotal || 0).toLocaleString('es-CO', { style: 'currency', currency: 'COP' })}</span></p>`;
+    }
+    detailsHTML += `</div>`;
+
+    if (modalInvoiceDetailsContent) modalInvoiceDetailsContent.innerHTML = detailsHTML;
+    if (invoiceDetailModal) invoiceDetailModal.classList.add('active');
+}
+
+function closeInvoiceDetailModal() {
+    if (!invoiceDetailModal) return;
+    invoiceDetailModal.classList.remove('active');
+    if (modalInvoiceDetailsContent) {
+       setTimeout(() => { if(modalInvoiceDetailsContent) modalInvoiceDetailsContent.innerHTML = ''; }, 300); 
+    }
+    if (modalInvoiceTitle) modalInvoiceTitle.textContent = 'Detalle de Factura';
+}
+
+// --- Listeners para cerrar el modal de detalle de factura (colócalos al final de tus listeners de UI) ---
+if (closeInvoiceDetailModalBtn) {
+    closeInvoiceDetailModalBtn.addEventListener('click', closeInvoiceDetailModal);
+}
+if (invoiceDetailModal) {
+    invoiceDetailModal.addEventListener('click', (event) => {
+        if (event.target === invoiceDetailModal) { 
+            closeInvoiceDetailModal();
+        }
+    });
+}
+document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && invoiceDetailModal && invoiceDetailModal.classList.contains('active')) {
+        closeInvoiceDetailModal();
+    }
+});
+if (printInvoiceFromModalBtn) { // Asegúrate de que este botón esté en tu HTML del modal
+    printInvoiceFromModalBtn.addEventListener('click', () => {
+        alert("Funcionalidad de Imprimir/Descargar PDF desde el modal está pendiente.");
+    });
+}
+
 function setDefaultInvoiceDate() {
     if (invoiceDateInput) {
         const today = new Date();
@@ -322,6 +435,8 @@ function handleDiscountChange() {
         recalculateTotals();
     }
 }
+
+
 
 // Esta función COMPLETA reemplaza la que puedas tener actualmente con el mismo nombre
 function handleClientSelection(clientId, clientNameText, clientData = null) {
@@ -603,11 +718,16 @@ async function loadAndDisplayInvoices() {
                         <button type="button" class="btn btn-sm btn-info view-details-btn">Ver Detalles</button>
                     </div>
                 `;
-                itemElement.querySelector('.view-details-btn').addEventListener('click', () => {
-                    alert(`"Ver Detalles" para factura ${invoice.invoiceNumberFormatted} (ID: ${invoiceId}) pendiente.`);
-                });
+                const viewDetailsBtn = itemElement.querySelector('.view-details-btn');
+                if (viewDetailsBtn) {
+                    viewDetailsBtn.addEventListener('click', () => {
+                        // 'invoice' es el objeto con los datos de la factura (doc.data() o docSnap.data())
+                        // 'invoiceId' es el ID del documento de la factura (doc.id o docSnap.id)
+                        openInvoiceDetailModal(invoice, invoiceId); // LLAMAMOS A LA FUNCIÓN DEL MODAL
+                    });
+                }
                 currentInvoiceListContainer.appendChild(itemElement);
-            });
+            }); // Cierre del forEach
         }
     } catch (error) {
         console.error("Error al cargar facturas: ", error);
