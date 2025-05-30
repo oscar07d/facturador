@@ -334,6 +334,24 @@
                 <p>Iniciando sesión...</p>
             </div>
         </div>
+        <div id="invoiceDetailModal" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalInvoiceTitle">Detalle de Factura</h2>
+                <button id="closeInvoiceDetailModalBtn" class="modal-close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="modalInvoiceDetailsContent">
+                    {/* El contenido detallado de la factura se insertará aquí con JavaScript */}
+                    <p>Cargando detalles de la factura...</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                {/* Aquí podríamos poner botones de acción para el modal, como "Imprimir" o "Descargar PDF" en el futuro */}
+                <button type="button" id="printInvoiceFromModalBtn" class="btn btn-primary">Imprimir/Descargar PDF (Próximamente)</button>
+            </div>
+        </div>
+    </div>
 
     </div> <script type="module" src="script.js"></script>
 </body>
