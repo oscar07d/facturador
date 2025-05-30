@@ -724,7 +724,7 @@ async function loadAndDisplayInvoices() {
                 itemElement.setAttribute('data-invoice-id', invoiceId);
                 let statusClassName = invoice.paymentStatus || 'pending';
                 let statusText = paymentStatusDetails[statusClassName]?.text || statusClassName.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-
+            
                 itemElement.innerHTML = `
                     <div class="invoice-list-header">
                         <span class="invoice-list-number">${invoice.invoiceNumberFormatted || 'N/A'}</span>
@@ -739,14 +739,19 @@ async function loadAndDisplayInvoices() {
                         <button type="button" class="btn btn-sm btn-info view-details-btn">Ver Detalles</button>
                     </div>
                 `;
+            
                 const viewDetailsBtn = itemElement.querySelector('.view-details-btn');
                 if (viewDetailsBtn) {
+                    // **NUEVO CONSOLE LOG**
+                    console.log(`Botón 'Ver Detalles' ENCONTRADO para factura ID: ${invoiceId}. Botón:`, viewDetailsBtn);
                     viewDetailsBtn.addEventListener('click', () => {
-                        console.log("Clic en 'Ver Detalles'. Datos de factura:", invoice, "ID:", invoiceId);
-                        // 'invoice' es el objeto de datos de la factura de Firestore
-                        // 'invoiceId' es el ID del documento de la factura
+                        // **NUEVO CONSOLE LOG**
+                        console.log(`Clic detectado en 'Ver Detalles' para factura ID: ${invoiceId}. Datos de factura:`, invoice);
                         openInvoiceDetailModal(invoice, invoiceId); 
                     });
+                } else {
+                    // **NUEVO CONSOLE LOG**
+                    console.error(`Botón 'Ver Detalles' NO FUE ENCONTRADO para factura ID: ${invoiceId}`);
                 }
                 currentInvoiceListContainer.appendChild(itemElement);
             });
