@@ -609,11 +609,41 @@ async function loadAndDisplayInvoices() {
                         <button type="button" class="btn btn-sm btn-info view-details-btn">Ver Detalles</button>
                     </div>
                 `;
-                itemElement.querySelector('.view-details-btn').addEventListener('click', () => {
-                    alert(`"Ver Detalles" para factura ${invoice.invoiceNumberFormatted} (ID: ${invoiceId}) pendiente.`);
+                // Event listener para el botón "Ver Detalles"
+            const viewDetailsBtn = itemElement.querySelector('.view-details-btn');
+            if (viewDetailsBtn) {
+                viewDetailsBtn.addEventListener('click', () => {
+                    // invoiceData es el objeto 'invoice' que ya tenemos de docSnap.data()
+                    // El ID del documento es invoiceId
+                    console.log("Datos de la factura a detallar:", invoice); // Para depuración
+
+                    let invoiceDetailsMessage = `Detalles de la Factura:\n`;
+                    invoiceDetailsMessage += `--------------------------\n`;
+                    invoiceDetailsMessage += `ID en Firebase: ${invoiceId}\n`;
+                    invoiceDetailsMessage += `Número: ${invoice.invoiceNumberFormatted || 'N/A'}\n`;
+                    invoiceDetailsMessage += `Fecha: ${invoice.invoiceDate || 'N/A'}\n`;
+                    invoiceDetailsMessage += `Cliente: ${invoice.client?.name || 'N/A'}\n`;
+                    invoiceDetailsMessage += `Total: ${(invoice.totals?.grandTotal || 0).toLocaleString('es-CO', { style: 'currency', currency: 'COP' })}\n`;
+                    invoiceDetailsMessage += `Estado: ${paymentStatusDetails[invoice.paymentStatus]?.text || invoice.paymentStatus}\n`;
+
+                    invoiceDetailsMessage += `\nÍtems:\n`;
+                    if (invoice.items && invoice.items.length > 0) {
+                        invoice.items.forEach((item, index) => {
+                            invoiceDetailsMessage += `  ${index + 1}. ${item.description} (Cant: ${item.quantity}, P.U: ${item.price.toLocaleString('es-CO', { style: 'currency', currency: 'COP' })})\n`;
+                            if (item.isStreaming && item.profileName) {
+                                invoiceDetailsMessage += `     Perfil: ${item.profileName} ${item.profilePin ? `(PIN: ${item.profilePin})` : ''}\n`;
+                            }
+                        });
+                    } else {
+                        invoiceDetailsMessage += `  (No hay ítems detallados)\n`;
+                    }
+
+                    alert(invoiceDetailsMessage);
+                    // En el futuro, aquí podríamos abrir un modal o navegar a una vista de detalle.
                 });
-                currentInvoiceListContainer.appendChild(itemElement);
-            });
+            }
+            currentInvoiceListContainer.appendChild(itemElement);
+        }); // Cierre del forEach
         }
     } catch (error) {
         console.error("Error al cargar facturas: ", error);
