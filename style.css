@@ -285,7 +285,7 @@ body {
     font-weight: 600;
     color: var(--primary-color);
     padding: 0 10px;
-    margin-left: 10px; /* Para alinear con el padding del fieldset */
+    margin-left: 10px;
 }
 
 .optional-tag {
@@ -328,7 +328,7 @@ body {
 .form-group input[type="tel"],
 .form-group input[type="date"],
 .form-group input[type="number"],
-.form-group select, /* Estilo base para select nativo */
+.form-group select, /* Estilo base para select nativo (si aún lo usaras) */
 .form-group textarea {
     width: 100%;
     padding: 12px 15px;
@@ -339,14 +339,14 @@ body {
     transition: border-color var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
     background-color: var(--container-background);
     color: var(--text-color);
-    min-height: 46px; /* Para que tengan altura similar a los inputs personalizados */
+    min-height: 46px; 
 }
 
 .form-group input:focus,
 .form-group select:focus,
 .form-group textarea:focus,
-.custom-select-container:focus, /* Para el desplegable personalizado */
-.custom-select-container.open { /* Cuando el desplegable personalizado está abierto */
+.custom-select-container:focus, 
+.custom-select-container.open {
     outline: none;
     border-color: var(--primary-color);
     box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
@@ -398,7 +398,16 @@ body {
     color: var(--text-color);
     border-color: var(--border-color);
 }
-.user-actions .btn-outline {
+.btn-outline-danger { /* Estilo específico para botón de eliminar permanente */
+    color: var(--danger-color);
+    border-color: var(--danger-color);
+}
+.btn-outline-danger:hover {
+    background-color: var(--danger-color);
+    color: white;
+}
+
+.user-actions .btn-outline { 
     color: var(--danger-color);
     border-color: var(--danger-color);
 }
@@ -429,48 +438,44 @@ body {
     align-items: center;
     justify-content: space-between;
     font-size: 1rem;
-    min-height: 46px; /* Misma altura que otros inputs */
+    min-height: 46px; 
 }
 
-.custom-select-display {
+.custom-select-display { /* Contenedor del texto/píldoras visibles y la flecha */
     flex-grow: 1;
+    display: flex; 
+    justify-content: space-between;
+    align-items: center;
+    overflow: hidden; /* Para manejar el contenido interno */
+}
+
+#selectedClientNameDisplay { /* El span que contendrá el nombre y las píldoras */
+    display: flex; 
+    align-items: center;
+    flex-grow: 1; /* Para que ocupe el espacio disponible antes de la flecha */
+    overflow: hidden; /* Para que los hijos no lo desborden */
+    white-space: nowrap; /* Evitar que el contenido interno se parta a menos que los hijos lo permitan */
+}
+
+.selected-client-name-text { /* Span específico para el texto del nombre */
+    white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    white-space: nowrap;
-    display: flex; 
-    justify-content: space-between; /* Para el nombre y las píldoras (si se muestran aquí) */
-    align-items: center;
-    padding-right: 10px; /* Espacio para la flecha */
-}
-
-#selectedClientNameDisplay {
-    display: flex; /* Hace que sus hijos (nombre y píldoras) se alineen en fila */
-    justify-content: space-between; /* Empuja el nombre a la izquierda y las píldoras a la derecha */
-    align-items: center;
-    width: 100%; /* Para que ocupe el espacio disponible */
-    overflow: hidden; /* Evitar que el contenido se desborde */
-}
-
-/* El span que contiene el texto del nombre del cliente seleccionado */
-.selected-client-name-text {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis; /* Corta el nombre si es muy largo y añade "..." */
-    margin-right: 8px; /* Espacio entre el nombre y el contenedor de píldoras */
-    flex-grow: 1; /* Permite que el nombre tome el espacio necesario */
+    margin-right: 8px; 
+    /* No necesita flex-grow: 1 aquí si #selectedClientNameDisplay es flex y este es su primer hijo */
 }
 
 #selectedClientNameDisplay .pills-container {
-    flex-shrink: 0; /* Evita que el contenedor de píldoras se encoja */
-    /* Los estilos generales de .pills-container (gap) y .option-status-pill (colores, padding) ya deberían aplicar */
-    /* Podrías añadir un margin-left aquí si el margin-right de .selected-client-name-text no es suficiente */
-    /* margin-left: 8px; */ 
+    display: flex; /* Asegura que las píldoras dentro del contenedor estén en línea */
+    flex-shrink: 0; 
+    gap: 5px; /* Espacio entre las píldoras en el display */
+    margin-left: auto; /* Empuja las píldoras a la derecha del nombre */
 }
 
 .custom-select-arrow {
     font-size: 0.8rem;
     color: var(--text-muted-color);
-    /* margin-left: 10px; No es necesario si el display usa space-between */
+    margin-left: 10px; /* Espacio entre el contenido y la flecha */
     transition: transform var(--transition-speed) ease;
 }
 
@@ -489,6 +494,7 @@ body {
     border-radius: 0 0 var(--border-radius-s) var(--border-radius-s);
     max-height: 200px; 
     overflow-y: auto;
+    overflow-x: hidden; /* Evitar desbordamiento horizontal de las opciones */
     z-index: 100; 
     box-shadow: var(--box-shadow-light);
 }
@@ -500,7 +506,8 @@ body {
     justify-content: space-between;
     align-items: center;
     transition: background-color var(--transition-speed) ease;
-    border-bottom: 1px solid var(--border-color); /* Separador entre opciones */
+    border-bottom: 1px solid var(--border-color);
+    overflow: hidden; /* Para que el contenido no desborde la opción */
 }
 .custom-option:last-child {
     border-bottom: none;
@@ -515,20 +522,19 @@ body {
     background-color: var(--primary-color);
     color: white;
 }
-.custom-option.selected-option .option-status-pill {
-    /* Puedes ajustar el color de la píldora si está dentro de una opción seleccionada */
-    /* Por ejemplo, si el texto de la píldora es blanco, y el fondo de la opción seleccionada también, necesitarías un borde o cambiar el color del texto de la píldora */
-}
 .custom-option.selected-option .option-client-name {
-    color: white; /* Asegurar que el nombre del cliente sea legible */
+    color: white;
+}
+.custom-option.selected-option .option-status-pill {
+    /* Considera si el color de texto de la píldora necesita cambiar */
 }
 
-.custom-option.new-client-option { /* Para la opción "-- Nuevo Cliente --" */
+.custom-option.new-client-option {
     font-style: italic;
     color: var(--text-muted-color);
 }
 .custom-option.new-client-option:hover {
-    color: var(--primary-color); /* O un color diferente para el hover de esta opción especial */
+    color: var(--primary-color);
 }
 .custom-option-error {
     padding: 10px 15px;
@@ -537,19 +543,18 @@ body {
 }
 
 .option-client-name {
-    flex-grow: 1; /* Para que ocupe el espacio disponible */
-    margin-right: 10px; /* Espacio antes de las píldoras */
+    flex-grow: 1; 
+    margin-right: 10px; 
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    min-width: 0; /* Permite encogerse */
 }
 
-
-
-.pills-container { /* Nuevo contenedor para las píldoras */
+.custom-option .pills-container { /* Contenedor de píldoras en las opciones */
     display: flex;
-    gap: 5px; /* Espacio entre las píldoras */
-    flex-shrink: 0; /* Para que no se encojan las píldoras */
+    gap: 5px;
+    flex-shrink: 0;
 }
 
 .option-status-pill {
@@ -557,7 +562,7 @@ body {
     border-radius: var(--border-radius-pill); 
     font-size: 0.75rem;  
     font-weight: 600;   
-    margin-left: 5px;   
+    /* margin-left: 5px; Ya controlado por el gap del pills-container */
     white-space: nowrap; 
     color: white;       
     text-align: center;
@@ -567,57 +572,24 @@ body {
 }
 
 /* Colores Píldora Estado General Cliente */
-.option-status-pill.status-client-default { /* Para "Activo" por defecto si no hay otro estado */
-    background-color: var(--secondary-color); 
-}
-.option-status-pill.status-client-nuevo {
-    background-color: var(--info-color); /* Azul claro */
-}
-.option-status-pill.status-client-activo, /* Combinamos "Activo" y "Al día" */
-.option-status-pill.status-client-al-dia { 
-    background-color: var(--success-color); /* Verde */
-}
-.option-status-pill.status-client-con-pendientes {
-    background-color: var(--warning-color); /* Amarillo */
-    color: #333; /* Texto oscuro para mejor contraste con amarillo */
-}
-.option-status-pill.status-client-moroso {
-    background-color: var(--danger-color); /* Rojo */
-}
-.option-status-pill.status-client-inactivo {
-    background-color: var(--secondary-color); /* Gris */
-}
+.option-status-pill.status-client-default { background-color: var(--secondary-color); }
+.option-status-pill.status-client-nuevo { background-color: var(--info-color); }
+.option-status-pill.status-client-activo,
+.option-status-pill.status-client-al-dia { background-color: var(--success-color); }
+.option-status-pill.status-client-con-pendientes { background-color: var(--warning-color); color: #333; }
+.option-status-pill.status-client-moroso { background-color: var(--danger-color); }
+.option-status-pill.status-client-inactivo { background-color: var(--secondary-color); }
 
-/* Colores Píldora Estado Última Factura (consistente con .status-badge) */
-.option-status-pill.invoice-status-pending { 
-    background-color: var(--warning-color); 
-    color: #333; 
-}
-.option-status-pill.invoice-status-paid { 
-    background-color: var(--success-color); 
-}
-.option-status-pill.invoice-status-overdue { 
-    background-color: var(--danger-color); 
-}
-.option-status-pill.invoice-status-in_process { /* Nota: "in_process" por el replace(/ /g, '_') */
-    background-color: var(--info-color); 
-}
-.option-status-pill.invoice-status-partial_payment { /* Nota: "partial_payment" */
-    background-color: #fd7e14; /* Naranja */
-}
-.option-status-pill.invoice-status-disputed { 
-    background-color: #6f42c1; /* Púrpura */
-}
-.option-status-pill.invoice-status-cancelled { 
-    background-color: var(--secondary-color); 
-}
-.option-status-pill.invoice-status-uncollectible { 
-    background-color: var(--dark-color); 
-}
-.option-status-pill.invoice-status-na { /* Para "N/A" */
-    background-color: #e0e0e0; /* Un gris muy claro */
-    color: #757575; /* Texto gris oscuro */
-}
+/* Colores Píldora Estado Última Factura */
+.option-status-pill.invoice-status-pending { background-color: var(--warning-color); color: #333; }
+.option-status-pill.invoice-status-paid { background-color: var(--success-color); }
+.option-status-pill.invoice-status-overdue { background-color: var(--danger-color); }
+.option-status-pill.invoice-status-in_process { background-color: var(--info-color); }
+.option-status-pill.invoice-status-partial_payment { background-color: #fd7e14; }
+.option-status-pill.invoice-status-disputed { background-color: #6f42c1; }
+.option-status-pill.invoice-status-cancelled { background-color: var(--secondary-color); }
+.option-status-pill.invoice-status-uncollectible { background-color: var(--dark-color); }
+.option-status-pill.invoice-status-na { background-color: #e0e0e0; color: #757575; }
 
 
 /* === Estilos para Checkboxes Personalizados === */
@@ -660,7 +632,7 @@ label:has(input[type="checkbox"].inline-checkbox:disabled) { color: var(--text-m
 .invoice-item-placeholder { color: var(--text-muted-color); text-align: center; font-style: italic; padding: 20px; width: 100%; }
 .invoice-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; border-bottom: 1px solid var(--border-color); flex-wrap: wrap; }
 .invoice-item:last-child { border-bottom: none; }
-.invoice-item .item-details { flex-grow: 1; margin-right: 15px; }
+.invoice-item .item-details { flex-grow: 1; margin-right: 15px; min-width: 150px; /* Para evitar que se comprima demasiado */ }
 .invoice-item .item-description-display { font-weight: 500; color: var(--text-color); margin-bottom: 4px; font-size: 0.95rem; }
 .invoice-item .item-profile-details { font-size: 0.8rem; color: var(--secondary-color); margin-top: 2px; margin-bottom: 2px; font-style: italic; }
 .invoice-item .item-meta { font-size: 0.85rem; color: var(--text-muted-color); }
@@ -668,7 +640,6 @@ label:has(input[type="checkbox"].inline-checkbox:disabled) { color: var(--text-m
 .invoice-item .item-subtotal-display { font-weight: 500; color: var(--text-color); font-size: 0.95rem; min-width: 100px; text-align: right; }
 .invoice-item .delete-item-btn { padding: 5px 10px; font-size: 0.8rem; }
 
-/* === AJUSTES PARA ORGANIZAR LA SECCIÓN "AÑADIR NUEVO ÍTEM" === */
 .add-item-form { margin-top: 25px; padding-top: 25px; border-top: 2px solid var(--primary-color); display: flex; flex-direction: column; gap: 20px; }
 .add-item-form h4 { font-size: 1.2rem; margin-bottom: 0; font-weight: 600; color: var(--secondary-color); }
 .add-item-form > .form-grid.item-details-grid:has(#itemIsStreaming), 
@@ -729,7 +700,7 @@ input.input-error, select.input-error, textarea.input-error { border-color: var(
 #invoiceListContainer { margin-top: 20px; display: grid; grid-template-columns: 1fr; gap: 20px; }
 .invoice-list-item { background-color: #fff; border: 1px solid var(--border-color); border-radius: var(--border-radius-m); padding: 20px; box-shadow: var(--box-shadow-light); transition: box-shadow var(--transition-speed) ease; display: flex; flex-direction: column; gap: 12px; }
 .invoice-list-item:hover { box-shadow: var(--box-shadow-medium); }
-.invoice-list-header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 10px; border-bottom: 1px dashed var(--border-color); } /* Quitamos margin-bottom, el gap del padre lo maneja */
+.invoice-list-header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 10px; border-bottom: 1px dashed var(--border-color); } 
 .invoice-list-number { font-weight: 600; font-size: 1.1rem; color: var(--primary-color); }
 .invoice-list-client { font-size: 1.05rem; color: var(--text-color); font-weight: 500; }
 .invoice-list-details { display: flex; justify-content: space-between; font-size: 0.9rem; color: var(--text-muted-color); flex-wrap: wrap; gap: 10px; }
@@ -745,9 +716,24 @@ input.input-error, select.input-error, textarea.input-error { border-color: var(
 .status-disputed { background-color: #6f42c1; }
 .status-cancelled { background-color: var(--secondary-color); }
 .status-uncollectible { background-color: var(--dark-color); }
-.invoice-list-actions { text-align: right; margin-top: auto; /* Empuja las acciones al final si la tarjeta crece */ padding-top:10px; /* Espacio si hay otros elementos arriba */ }
+.invoice-list-actions { text-align: right; margin-top: auto; padding-top:10px; }
 .invoice-list-actions .btn-sm { padding: 6px 12px; font-size: 0.85rem; }
 
+
+/* === ESTILOS PARA LA SECCIÓN CLIENTES === */
+.client-list-subsection { margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid var(--border-color); }
+.client-list-subsection:last-child { border-bottom: none; margin-bottom: 0; }
+.client-list-subsection h3 { font-size: 1.3rem; color: var(--secondary-color); margin-bottom: 15px; }
+.client-list { display: grid; grid-template-columns: 1fr; gap: 15px; }
+.client-list-item { background-color: #fff; border: 1px solid var(--border-color); border-radius: var(--border-radius-m); padding: 15px; box-shadow: var(--box-shadow-light); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+.client-list-item.client-inactive { background-color: #f8f9fa; opacity: 0.7; }
+.client-list-item .client-info { display: flex; flex-direction: column; flex-grow: 1; margin-right: 10px; }
+.client-list-item .client-name { font-weight: 600; font-size: 1.1rem; color: var(--text-color); }
+.client-list-item .client-contact { font-size: 0.9rem; color: var(--text-muted-color); }
+.client-list-item .client-deleted-date { font-size: 0.8rem; color: var(--danger-color); font-style: italic; margin-top: 4px; }
+.client-list-item .client-pills { display: flex; gap: 5px; flex-shrink: 0; }
+.client-list-item .client-actions-list { display: flex; gap: 10px; flex-shrink: 0; }
+.client-list-item .client-actions-list .btn-sm { padding: 5px 10px; font-size: 0.8rem; }
 
 /* === MEDIA QUERIES PARA ADAPTABILIDAD === */
 @media (min-width: 769px) { 
@@ -757,6 +743,7 @@ input.input-error, select.input-error, textarea.input-error { border-color: var(
     .totals-grid { grid-template-columns: 0.8fr 1.2fr; align-items: flex-start; }
     .share-actions .button-group { flex-direction: row; }
     #invoiceListContainer { grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); }
+    .client-list { grid-template-columns: repeat(auto-fit, minmax(450px, 1fr)); } /* Clientes en más columnas en PC */
 }
 
 @media (max-width: 992px) { 
@@ -768,6 +755,7 @@ input.input-error, select.input-error, textarea.input-error { border-color: var(
     .form-section { padding: 20px; }
     .form-section legend { font-size: 1.15rem; }
     #invoiceListContainer { grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); }
+    .client-list { grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); }
 }
 
 @media (max-width: 768px) {
@@ -778,7 +766,7 @@ input.input-error, select.input-error, textarea.input-error { border-color: var(
     .app-title-container h1 { font-size: 1.4rem; }
     .app-nav ul li a { padding: 12px 15px; font-size: 0.9rem; }
     .invoice-app-container { padding: 20px; }
-    .form-grid.two-columns, .form-grid.three-columns, .add-item-form > .form-grid.three-columns.item-details-grid, #streamingProfileFields .form-grid.two-columns, .totals-grid, #invoiceListContainer {
+    .form-grid.two-columns, .form-grid.three-columns, .add-item-form > .form-grid.three-columns.item-details-grid, #streamingProfileFields .form-grid.two-columns, .totals-grid, #invoiceListContainer, .client-list {
         grid-template-columns: 1fr;
     }
     .form-actions { flex-direction: column; }
@@ -791,6 +779,9 @@ input.input-error, select.input-error, textarea.input-error { border-color: var(
     .invoice-list-details { flex-direction: column; align-items: flex-start; gap: 5px; margin-bottom: 10px; }
     .invoice-list-date, .invoice-list-total { text-align: left; flex-basis: auto;}
     .invoice-list-actions { text-align: left; }
+    .client-list-item { flex-direction: column; align-items: flex-start; } /* Apilar info, pills, actions en móvil */
+    .client-list-item .client-pills { margin-top: 5px; margin-bottom: 5px; }
+    .client-list-item .client-actions-list { width: 100%; justify-content: flex-start; margin-top: 5px; }
 }
 
 @media (max-width: 480px) {
@@ -815,131 +806,14 @@ input.input-error, select.input-error, textarea.input-error { border-color: var(
     .invoice-list-header, .invoice-list-client, .invoice-list-details { font-size: 0.9rem; }
     .invoice-list-number { font-size: 1rem; }
     .status-badge { padding: 3px 8px; font-size: 0.75rem; }
+    #selectedClientNameDisplay { flex-wrap: wrap; gap: 5px; /* Asegurar que el display del cliente también se envuelva */ }
+    .selected-client-name-text { white-space: normal; } /* Permitir que el nombre se parta */
+    #selectedClientNameDisplay .pills-container { margin-left: 0; flex-basis: 100%; justify-content: flex-start; } /* Píldoras abajo en el display */
 }
-
-#selectedClientNameDisplay {
-        flex-wrap: wrap; /* Permite que las píldoras bajen si no caben */
-        gap: 5px; /* Espacio entre nombre y píldoras, o entre ellas si se envuelven */
-    }
-
-    .selected-client-name-text {
-        /* Permitir que el nombre del cliente se divida en varias líneas si es necesario */
-        white-space: normal; 
-        overflow: visible; /* Quitar hidden para permitir wrap */
-        text-overflow: clip; /* Quitar ellipsis si se envuelve */
-        margin-right: 5px; /* Mantener un pequeño espacio si las píldoras quedan al lado */
-        min-width: 50px; /* Permitir que se encoja bastante pero no desaparezca */
-    }
-
-    #selectedClientNameDisplay .pills-container {
-        margin-left: 0; /* Si las píldoras bajan, no necesitan margen izquierdo extra */
-        /* Puedes añadir flex-basis: 100%; si quieres que siempre ocupen una nueva línea debajo del nombre en móvil */
-        /* flex-basis: 100%; */ 
-    }
 
 /* === ANIMACIÓN PARA EL GRADIENTE DEL APP-NAV === */
 @keyframes moveGradient {
     0% { background-position: 0% 50%; }
     50% { background-position: 100% 50%; }
     100% { background-position: 0% 50%; }
-}
-
-/* === ESTILOS PARA LA SECCIÓN CLIENTES === */
-.client-list-subsection {
-    margin-bottom: 30px;
-    padding-bottom: 20px;
-    border-bottom: 1px solid var(--border-color);
-}
-.client-list-subsection:last-child {
-    border-bottom: none;
-    margin-bottom: 0;
-}
-
-.client-list-subsection h3 {
-    font-size: 1.3rem;
-    color: var(--secondary-color);
-    margin-bottom: 15px;
-}
-
-.client-list {
-    display: grid;
-    grid-template-columns: 1fr; /* 1 columna por defecto */
-    gap: 15px;
-}
-
-.client-list-item {
-    background-color: #fff;
-    border: 1px solid var(--border-color);
-    border-radius: var(--border-radius-m);
-    padding: 15px;
-    box-shadow: var(--box-shadow-light);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap; /* Para adaptarse a pantallas pequeñas */
-    gap: 10px; /* Espacio entre info, pills y actions */
-}
-
-.client-list-item.client-inactive { /* Estilo para clientes inactivos */
-    background-color: #f8f9fa; /* Un fondo ligeramente diferente */
-    opacity: 0.7;
-}
-
-.client-list-item .client-info {
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1; /* Para que ocupe el espacio necesario */
-    margin-right: 10px; /* Espacio antes de las píldoras/acciones */
-}
-
-.client-list-item .client-name {
-    font-weight: 600;
-    font-size: 1.1rem;
-    color: var(--text-color);
-}
-
-.client-list-item .client-contact {
-    font-size: 0.9rem;
-    color: var(--text-muted-color);
-}
-.client-list-item .client-deleted-date {
-    font-size: 0.8rem;
-    color: var(--danger-color);
-    font-style: italic;
-    margin-top: 4px;
-}
-
-.client-list-item .client-pills { /* Contenedor para las píldoras si las muestras aquí */
-    display: flex;
-    gap: 5px;
-    flex-shrink: 0; /* Evitar que se encojan */
-}
-/* Las clases .option-status-pill y sus variantes de color ya deberían aplicar */
-
-.client-list-item .client-actions-list {
-    display: flex;
-    gap: 10px;
-    flex-shrink: 0;
-}
-.client-list-item .client-actions-list .btn-sm {
-    padding: 5px 10px;
-    font-size: 0.8rem;
-}
-
-
-/* Media query para la lista de clientes */
-@media (min-width: 992px) {
-    .client-list {
-        /* Podrías poner 2 columnas si quieres para la lista de clientes en PC */
-    grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
-    }
-}
-
-.btn-outline-danger {
-    color: var(--danger-color);
-    border-color: var(--danger-color);
-}
-.btn-outline-danger:hover {
-    background-color: var(--danger-color);
-    color: white;
 }
