@@ -273,15 +273,28 @@ function openInvoiceDetailModal(invoiceData, invoiceId) {
 }
 
 function closeInvoiceDetailModal() {
-    if (!invoiceDetailModal) return;
-    console.log("Intentando cerrar modal, quitando clase 'active'. Modal actual:", invoiceDetailModal);
-    invoiceDetailModal.classList.remove('active');
+    // Verificar que el elemento modal exista en el DOM
+    if (!invoiceDetailModal) {
+        console.error("Elemento invoiceDetailModal no encontrado al intentar cerrar.");
+        return; 
+    }
+
+    // Quitar la clase 'active' para ocultar el modal (el CSS se encarga de la transición)
+    invoiceDetailModal.classList.remove('active'); 
+    // La línea que mencionaste está arriba ^^^
+
+    // Opcional: Limpiar el contenido del modal después de que la transición de cierre haya terminado
+    // Esto es para que la próxima vez que se abra, no muestre brevemente el contenido anterior.
     if (modalInvoiceDetailsContent) {
        setTimeout(() => { 
-           if(modalInvoiceDetailsContent) modalInvoiceDetailsContent.innerHTML = '<p>Cargando detalles de la factura...</p>'; // O simplemente ''
-       }, 300); // 300ms es la duración de la transición de opacidad del CSS
+           if(modalInvoiceDetailsContent) { // Doble verificación por si acaso
+               modalInvoiceDetailsContent.innerHTML = '<p>Cargando detalles de la factura...</p>'; // O simplemente ''
+           }
+       }, 300); // 300ms debe coincidir con la duración de tu transición de opacidad/visibilidad en CSS
     }
-    if (modalInvoiceTitle) modalInvoiceTitle.textContent = 'Detalle de Factura'; // Resetear título
+    if (modalInvoiceTitle) { // Resetear el título del modal
+        modalInvoiceTitle.textContent = 'Detalle de Factura';
+    }
 }
 
 function formatInvoiceNumber(number) {
