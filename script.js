@@ -265,14 +265,14 @@ function openInvoiceDetailModal(invoiceData, invoiceId) {
 
     if(modalInvoiceDetailsContent) modalInvoiceDetailsContent.innerHTML = detailsHTML;
     
-    // if (invoiceDetailModal) {
-    // console.log("Forzando display: flex !important al modal");
-    // invoiceDetailModal.style.setProperty('display', 'flex', 'important');
-    // invoiceDetailModal.style.setProperty('opacity', '1', 'important');
-    // invoiceDetailModal.style.setProperty('visibility', 'visible', 'important');
-    // } else {
-    //     console.error("invoiceDetailModal es null, no se puede forzar visibilidad.");
-    // }
+    if (invoiceDetailModal) {
+    console.log("Forzando display: flex !important al modal");
+    invoiceDetailModal.style.setProperty('display', 'flex', 'important');
+    invoiceDetailModal.style.setProperty('opacity', '1', 'important');
+    invoiceDetailModal.style.setProperty('visibility', 'visible', 'important');
+    } else {
+         console.error("invoiceDetailModal es null, no se puede forzar visibilidad.");
+    }
     if (invoiceDetailModal) invoiceDetailModal.classList.add('active'); //
 }
 
