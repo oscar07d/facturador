@@ -43,6 +43,7 @@ const googleProvider = new GoogleAuthProvider();
 const db = getFirestore(app);
 
 // --- Selección de Elementos del DOM ---
+const bodyElement = document.body;
 const invoiceDetailModal = document.getElementById('invoiceDetailModal');
 const modalInvoiceTitle = document.getElementById('modalInvoiceTitle');
 const modalInvoiceDetailsContent = document.getElementById('modalInvoiceDetailsContent');
