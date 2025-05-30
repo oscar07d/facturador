@@ -240,6 +240,215 @@ function collectInvoiceDataFromForm() {
     return invoiceData;
 }
 
+function populateExportTemplate(invoiceData) {
+    if (!originalInvoiceExportTemplate || !invoiceData) { // Verifica que originalInvoiceExportTemplate exista
+        console.error("Plantilla de exportación (#invoice-export-template) o datos de factura no disponibles.");
+        return false;
+    }
+
+    const template = originalInvoiceExportTemplate; // Usamos la plantilla original del DOM
+
+    // --- Poblar Logo ---
+    const logoPlaceholderEl = template.querySelector("#export-logo-placeholder");
+    if (logoPlaceholderEl) {
+        if (invoiceData.emitter?.name) {
+            logoPlaceholderEl.textContent = `Logo de ${invoiceData.emitter.name.substring(0,15)}`;
+        } else {
+            logoPlaceholderEl.textContent = "Logo Aquí";
+        }
+    }
+
+    // --- Poblar Estado de Pago ---
+    const paymentStatusEl = template.querySelector("#export-payment-status");
+    if (paymentStatusEl) {
+        const statusKey = invoiceData.paymentStatus || 'pending';
+        // Asegúrate que paymentStatusDetails esté definido globalmente y accesible aquí
+        const statusDetail = paymentStatusDetails[statusKey]; 
+        paymentStatusEl.textContent = statusDetail ? statusDetail.text.toUpperCase() : statusKey.replace(/_/g, ' ').toUpperCase();
+        paymentStatusEl.className = `payment-status-badge export-status-${statusKey.toLowerCase()}`;
+    }
+    
+    // --- Poblar Datos del Emisor (Tu Comercio) ---
+    const emitterNameEl = template.querySelector("#export-emitter-name");
+    if (emitterNameEl) emitterNameEl.textContent = invoiceData.emitter?.name || "Nombre de tu Comercio";
+    
+    const emitterAddressLineEl = template.querySelector("#export-emitter-address-line");
+    const emitterAddressEl = template.querySelector("#export-emitter-address");
+    if (invoiceData.emitter?.address) {
+        if (emitterAddressEl) emitterAddressEl.textContent = invoiceData.emitter.address;
+        if (emitterAddressLineEl) emitterAddressLineEl.style.display = 'block';
+    } else if (emitterAddressLineEl) {
+        emitterAddressLineEl.style.display = 'none';
+    }
+
+    const emitterIdLineEl = template.querySelector("#export-emitter-id-line");
+    const emitterIdEl = template.querySelector("#export-emitter-id");
+    if (invoiceData.emitter?.id) {
+        if (emitterIdEl) emitterIdEl.textContent = invoiceData.emitter.id;
+        if (emitterIdLineEl) emitterIdLineEl.style.display = 'block';
+    } else if (emitterIdLineEl) {
+        emitterIdLineEl.style.display = 'none';
+    }
+
+    const emitterPhoneLineEl = template.querySelector("#export-emitter-phone-line");
+    const emitterPhoneEl = template.querySelector("#export-emitter-phone");
+    if (invoiceData.emitter?.phone) {
+        if (emitterPhoneEl) emitterPhoneEl.textContent = invoiceData.emitter.phone;
+        if (emitterPhoneLineEl) emitterPhoneLineEl.style.display = 'block';
+    } else if (emitterPhoneLineEl) {
+        emitterPhoneLineEl.style.display = 'none';
+    }
+
+    const emitterEmailLineEl = template.querySelector("#export-emitter-email-line");
+    const emitterEmailEl = template.querySelector("#export-emitter-email");
+    if (invoiceData.emitter?.email) {
+        if (emitterEmailEl) emitterEmailEl.textContent = invoiceData.emitter.email;
+        if (emitterEmailLineEl) emitterEmailLineEl.style.display = 'block';
+    } else if (emitterEmailLineEl) {
+        emitterEmailLineEl.style.display = 'none';
+    }
+
+    // --- Fecha de Generación del Archivo ---
+    const imageGenDateLineEl = template.querySelector("#export-image-generation-date-line");
+    const imageGenDateEl = template.querySelector("#export-image-generation-date");
+    if (imageGenDateEl && invoiceData.generatedAt) { // Verifica que generatedAt exista en invoiceData
+         imageGenDateEl.textContent = new Date(invoiceData.generatedAt).toLocaleString('es-CO', { day:'2-digit', month: 'short', year:'numeric', hour:'2-digit', minute:'2-digit' });
+    } else if (imageGenDateEl) {
+        imageGenDateEl.textContent = new Date().toLocaleString('es-CO', { day:'2-digit', month: 'short', year:'numeric', hour:'2-digit', minute:'2-digit' }); // Fallback a fecha actual
+    }
+
+    if (imageGenDateLineEl && imageGenDateLineEl.firstChild) {
+         imageGenDateLineEl.firstChild.textContent = "Archivo Generado: ";
+    }
+
+    // --- Poblar Datos del Cliente ---
+    const clientNameEl = template.querySelector("#export-client-name");
+    if (clientNameEl) clientNameEl.innerHTML = `<strong>${invoiceData.client?.name || 'N/A'}</strong>`;
+    
+    const clientEmailLineEl = template.querySelector("#export-client-email-line");
+    const clientEmailEl = template.querySelector("#export-client-email");
+    if (invoiceData.client?.email) {
+        if (clientEmailEl) clientEmailEl.textContent = invoiceData.client.email;
+        if (clientEmailLineEl) clientEmailLineEl.style.display = 'block';
+    } else if (clientEmailLineEl) {
+        clientEmailLineEl.style.display = 'none';
+    }
+    const clientPhoneEl = template.querySelector("#export-client-phone");
+    if (clientPhoneEl) clientPhoneEl.textContent = invoiceData.client?.phone || 'N/A';
+
+    // --- Poblar Detalles de la Factura (Número, Fecha de Emisión de Factura) ---
+    const invNumEl = template.querySelector("#export-invoice-sequential-number");
+    if (invNumEl) invNumEl.textContent = invoiceData.invoiceNumberFormatted || 'N/A';
+    
+    const invDateEl = template.querySelector("#export-invoice-date");
+    if (invDateEl) invDateEl.textContent = invoiceData.invoiceDate ? new Date(invoiceData.invoiceDate + 'T00:00:00').toLocaleDateString('es-CO', { year: 'numeric', month: 'long', day: 'numeric'}) : 'N/A';
+    
+    // Fecha de Pago (recurrente)
+    const dueDateLineEl = template.querySelector("#export-due-date-line");
+    const dueDateEl = template.querySelector("#export-due-date");
+    if (invoiceData.serviceStartDate) {
+        if(dueDateEl) dueDateEl.textContent = new Date(invoiceData.serviceStartDate + 'T00:00:00').toLocaleDateString('es-CO', { year: 'numeric', month: 'long', day: 'numeric'});
+        if(dueDateLineEl) dueDateLineEl.style.display = 'block';
+    } else if (dueDateLineEl) {
+        dueDateLineEl.style.display = 'none';
+    }
+
+    // Código Alfanumérico de Consulta
+    const uniqueCodeEl = template.querySelector("#export-unique-alphanumeric-code");
+    if (invoiceData.uniqueCode && uniqueCodeEl) {
+        uniqueCodeEl.textContent = invoiceData.uniqueCode;
+    } else if (uniqueCodeEl) {
+        uniqueCodeEl.textContent = "N/A";
+    }
+
+    // --- Poblar Ítems de la Factura ---
+    const itemsTableBody = template.querySelector("#export-invoice-items-body");
+    const headerProfileEl = template.querySelector("#export-header-profile");
+    const headerPinEl = template.querySelector("#export-header-pin");
+
+    if (itemsTableBody) itemsTableBody.innerHTML = ''; 
+    
+    let hasStreamingItemsWithDetails = false;
+    if (invoiceData.items && Array.isArray(invoiceData.items)) {
+        invoiceData.items.forEach(item => {
+            if (item.isStreaming && (item.profileName || item.profilePin)) {
+                hasStreamingItemsWithDetails = true;
+            }
+            const row = itemsTableBody.insertRow();
+
+            const cellDesc = row.insertCell();
+            let descContent = item.description || 'N/A';
+            if (item.isStreaming && item.profileName) {
+                descContent += `<small class="item-profile-details-export">Perfil: ${item.profileName}${item.profilePin ? ` (PIN: ${item.profilePin})` : ''}</small>`;
+            }
+            cellDesc.innerHTML = descContent;
+            cellDesc.style.padding = '10px'; cellDesc.style.borderBottom = '1px solid #eee'; cellDesc.style.verticalAlign = 'top';
+
+            const cellProfile = row.insertCell();
+            cellProfile.textContent = item.isStreaming ? (item.profileName || '-') : '-';
+            cellProfile.style.padding = '10px'; cellProfile.style.borderBottom = '1px solid #eee'; cellProfile.style.verticalAlign = 'top';
+
+            const cellPin = row.insertCell();
+            cellPin.textContent = item.isStreaming ? (item.profilePin || '-') : '-';
+            cellPin.style.padding = '10px'; cellPin.style.borderBottom = '1px solid #eee'; cellPin.style.verticalAlign = 'top';
+
+            const cellQty = row.insertCell();
+            cellQty.textContent = item.quantity || 0;
+            cellQty.classList.add('text-right');
+            cellQty.style.padding = '10px'; cellQty.style.borderBottom = '1px solid #eee'; cellQty.style.verticalAlign = 'top';
+
+            const cellPrice = row.insertCell();
+            cellPrice.textContent = (item.price || 0).toLocaleString('es-CO', { style: 'currency', currency: 'COP' });
+            cellPrice.classList.add('text-right');
+            cellPrice.style.padding = '10px'; cellPrice.style.borderBottom = '1px solid #eee'; cellPrice.style.verticalAlign = 'top';
+            
+            const cellTotal = row.insertCell();
+            cellTotal.textContent = ((item.quantity || 0) * (item.price || 0)).toLocaleString('es-CO', { style: 'currency', currency: 'COP' });
+            cellTotal.classList.add('text-right');
+            cellTotal.style.padding = '10px'; cellTotal.style.borderBottom = '1px solid #eee'; cellTotal.style.verticalAlign = 'top';
+        });
+    }
+
+    if (headerProfileEl) headerProfileEl.style.display = hasStreamingItemsWithDetails ? 'table-cell' : 'none';
+    if (headerPinEl) headerPinEl.style.display = hasStreamingItemsWithDetails ? 'table-cell' : 'none';
+    
+    if (itemsTableBody) {
+        Array.from(itemsTableBody.rows).forEach(row => {
+            if(row.cells[1]) row.cells[1].style.display = hasStreamingItemsWithDetails ? 'table-cell' : 'none'; // Celda Perfil
+            if(row.cells[2]) row.cells[2].style.display = hasStreamingItemsWithDetails ? 'table-cell' : 'none'; // Celda PIN
+        });
+    }
+
+    // --- Poblar Totales ---
+    const formatCOPExport = (value) => (typeof value === 'number' ? value.toLocaleString('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 2, maximumFractionDigits: 2 }) : 'COP 0.00');
+    
+    const subtotalEl = template.querySelector("#export-subtotal");
+    if (subtotalEl) subtotalEl.textContent = formatCOPExport(invoiceData.totals?.subtotal);
+    
+    const ivaLineEl = template.querySelector("#export-iva-line");
+    const ivaEl = template.querySelector("#export-iva");
+    if (invoiceData.totals?.iva > 0) {
+        if(ivaEl) ivaEl.textContent = formatCOPExport(invoiceData.totals.iva);
+        if(ivaLineEl) ivaLineEl.style.display = 'flex';
+    } else if (ivaLineEl) {
+        ivaLineEl.style.display = 'none';
+    }
+
+    const discountLineEl = template.querySelector("#export-discount-line");
+    const discountEl = template.querySelector("#export-discount");
+    if (invoiceData.totals?.discountApplied > 0) {
+        if(discountEl) discountEl.textContent = `- ${formatCOPExport(invoiceData.totals.discountApplied)}`;
+        if(discountLineEl) discountLineEl.style.display = 'flex';
+    } else if (discountLineEl) {
+        discountLineEl.style.display = 'none';
+    }
+    
+    const grandTotalEl = template.querySelector("#export-grand-total");
+    if (grandTotalEl) grandTotalEl.textContent = formatCOPExport(invoiceData.totals?.grandTotal);
+
+    return true;
+}
+
 // --- Funciones para Modal de Detalle de Factura ---
 function openInvoiceDetailModal(invoiceData, invoiceId) {
     console.log("openInvoiceDetailModal llamada con ID:", invoiceId, "y datos:", invoiceData);
