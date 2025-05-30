@@ -191,13 +191,14 @@ function openInvoiceDetailModal(invoiceData, invoiceId) {
         console.error("Elementos del modal no encontrados al intentar abrir.");
         return;
     }
-    console.log("Abriendo modal para factura ID:", invoiceId); // Log para verificar
+    console.log("Abriendo modal para factura ID:", invoiceId);
 
     modalInvoiceTitle.textContent = `Detalle de Factura: ${invoiceData.invoiceNumberFormatted || 'N/A'}`;
     
     let detailsHTML = '';
+
     // Datos del Emisor
-    if (invoiceData.emitter && (invoiceData.emitter.name || invoiceData.emitter.id)) {
+    if (invoiceData.emitter && (invoiceData.emitter.name || invoiceData.emitter.id || invoiceData.emitter.address || invoiceData.emitter.phone || invoiceData.emitter.email)) {
         detailsHTML += `<h3>Datos del Emisor</h3><div class="modal-section-grid">`;
         if (invoiceData.emitter.name) detailsHTML += `<p><strong>Comercio:</strong> ${invoiceData.emitter.name}</p>`;
         if (invoiceData.emitter.id) detailsHTML += `<p><strong>NIT/ID:</strong> ${invoiceData.emitter.id}</p>`;
@@ -206,57 +207,78 @@ function openInvoiceDetailModal(invoiceData, invoiceId) {
         if (invoiceData.emitter.email) detailsHTML += `<p><strong>Email:</strong> ${invoiceData.emitter.email}</p>`;
         detailsHTML += `</div>`;
     }
+
     // Datos del Cliente
     detailsHTML += `<h3>Facturar A:</h3><div class="modal-section-grid">`;
     detailsHTML += `<p><strong>Nombre:</strong> ${invoiceData.client?.name || 'N/A'}</p>`;
     detailsHTML += `<p><strong>Celular:</strong> ${invoiceData.client?.phone || 'N/A'}</p>`;
-    if (invoiceData.client?.email) detailsHTML += `<p><strong>Correo:</strong> ${invoiceData.client.email}</p>`;
+    if (invoiceData.client?.email) { // El correo del cliente parece estar funcionando bien en tu captura.
+        detailsHTML += `<p><strong>Correo:</strong> ${invoiceData.client.email}</p>`;
+    }
     detailsHTML += `</div>`;
+
     // Detalles de la Factura
     detailsHTML += `<h3>Detalles de la Factura</h3>`;
     detailsHTML += `<p><strong>Número:</strong> ${invoiceData.invoiceNumberFormatted || 'N/A'}</p>`;
-    detailsHTML += `<p><strong>Fecha:</strong> ${invoiceData.invoiceDate || 'N/A'}</p>`;
+    detailsHTML += `<p><strong>Fecha:</strong> ${invoiceData.invoiceDate ? new Date(invoiceData.invoiceDate + 'T00:00:00').toLocaleDateString('es-CO', {day: '2-digit', month: '2-digit', year: 'numeric'}) : 'N/A'}</p>`;
     if (invoiceData.serviceStartDate) {
-        detailsHTML += `<p><strong>Inicio Servicio:</strong> ${invoiceData.serviceStartDate}</p>`;
+        detailsHTML += `<p><strong>Inicio Servicio:</strong> ${new Date(invoiceData.serviceStartDate + 'T00:00:00').toLocaleDateString('es-CO', {day: '2-digit', month: '2-digit', year: 'numeric'})}</p>`;
     }
+
     const statusKeyModal = invoiceData.paymentStatus || 'pending';
-    // Asegúrate que paymentStatusDetails tenga 'text' y 'cssClass'
-    const statusInfoModal = paymentStatusDetails[statusKeyModal] || { text: statusKeyModal.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()), cssClass: `status-${statusKeyModal.toLowerCase()}` }; 
-    detailsHTML += `<p><strong>Estado:</strong> <span class="status-badge <span class="math-inline">\{statusInfoModal\.cssClass\}"\></span>{statusInfoModal.text}</span></p>`;
+    const statusInfoModal = paymentStatusDetails[statusKeyModal] || { text: statusKeyModal.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) };
+    // CORRECCIÓN AQUÍ: Usar la clase CSS correcta y el texto de statusInfoModal
+    const statusBadgeClass = `status-${statusKeyModal.toLowerCase()}`;
+    detailsHTML += `<p><strong>Estado:</strong> <span class="status-badge ${statusBadgeClass}">${statusInfoModal.text}</span></p>`;
     
     // Ítems
     detailsHTML += `<h3>Ítems:</h3>`;
     if (invoiceData.items && invoiceData.items.length > 0) {
-        detailsHTML += `<table class="modal-items-table"><thead><tr><th>Descripción</th><th>Cant.</th><th>P.U.</th><th>Total</th></tr></thead><tbody>`;
+        detailsHTML += `<table class="modal-items-table">
+                            <thead>
+                                <tr>
+                                    <th>Descripción</th>
+                                    <th class="text-right">Cant.</th>
+                                    <th class="text-right">P.U.</th>
+                                    <th class="text-right">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>`;
         invoiceData.items.forEach(item => {
             let profileInfo = '';
             if (item.isStreaming && item.profileName) {
-                profileInfo = `<br><small class="item-profile-details">Perfil: ${item.profileName} ${item.profilePin ? `(PIN: ${item.profilePin})` : ''}</small>`;
+                profileInfo = `<small class="item-profile-details">Perfil: ${item.profileName}${item.profilePin ? ` (PIN: ${item.profilePin})` : ''}</small>`;
             }
+            // CORRECCIONES AQUÍ:
             detailsHTML += `<tr>
-                                <td><span class="math-inline">\{item\.description\}</span>{profileInfo}</td>
-                                <td class="text-right"><span class="math-inline">\{item\.quantity\}</td\>
-<td class\="text\-right"\></span>{(item.price || 0).toLocaleString('es-CO', { style: 'currency', currency: 'COP' })}</td>
-                                <td class="text-right">${((item.quantity * item.price) || 0).toLocaleString('es-CO', { style: 'currency', currency: 'COP' })}</td>
+                                <td>${item.description || 'N/A'}${profileInfo ? '<br>' + profileInfo : ''}</td>
+                                <td class="text-right">${item.quantity || 0}</td>
+                                <td class="text-right">${(item.price || 0).toLocaleString('es-CO', { style: 'currency', currency: 'COP' })}</td>
+                                <td class="text-right">${((item.quantity || 0) * (item.price || 0)).toLocaleString('es-CO', { style: 'currency', currency: 'COP' })}</td>
                             </tr>`;
         });
         detailsHTML += `</tbody></table>`;
     } else {
         detailsHTML += `<p>No hay ítems en esta factura.</p>`;
     }
-    // Totales
+
+    // Totales (Parecen estar funcionando en tu captura, pero revisemos la estructura)
     detailsHTML += `<div class="modal-totals-summary">`;
     if (invoiceData.totals) {
         detailsHTML += `<p><span>Subtotal:</span> <span>${(invoiceData.totals.subtotal || 0).toLocaleString('es-CO', { style: 'currency', currency: 'COP' })}</span></p>`;
         if (invoiceData.totals.discountApplied > 0) {
-             detailsHTML += `<p><span>Descuento:</span> <span>-${(invoiceData.totals.discountApplied || 0).toLocaleString('es-CO', { style: 'currency', currency: 'COP' })}</span></p>`;
+            detailsHTML += `<p><span>Descuento:</span> <span>-${(invoiceData.totals.discountApplied || 0).toLocaleString('es-CO', { style: 'currency', currency: 'COP' })}</span></p>`;
         }
-        const calculatedTaxableBaseModal = (invoiceData.totals.subtotal || 0) - (invoiceData.totals.discountApplied || 0);
-         if (invoiceData.totals.taxableBase !== undefined && (invoiceData.totals.discountApplied > 0 || invoiceData.totals.taxableBase !== invoiceData.totals.subtotal)) {
-            detailsHTML += `<p><span>Base Imponible:</span> <span>${(invoiceData.totals.taxableBase || 0).toLocaleString('es-CO', { style: 'currency', currency: 'COP' })}</span></p>`;
-        } else if (invoiceData.totals.taxableBase === undefined && invoiceData.totals.discountApplied > 0) { // Mostrar si hay descuento pero no taxableBase explícito
-             detailsHTML += `<p><span>Base Imponible:</span> <span>${(calculatedTaxableBaseModal).toLocaleString('es-CO', { style: 'currency', currency: 'COP' })}</span></p>`;
+        
+        // Calcular Base Imponible solo si hay descuento o si taxableBase es explícitamente diferente del subtotal.
+        const subtotalVal = invoiceData.totals.subtotal || 0;
+        const discountVal = invoiceData.totals.discountApplied || 0;
+        const taxableBaseVal = invoiceData.totals.taxableBase; // Puede ser undefined
+
+        if (discountVal > 0 || (taxableBaseVal !== undefined && taxableBaseVal !== subtotalVal) ) {
+             detailsHTML += `<p><span>Base Imponible:</span> <span>${(taxableBaseVal !== undefined ? taxableBaseVal : (subtotalVal - discountVal)).toLocaleString('es-CO', { style: 'currency', currency: 'COP' })}</span></p>`;
         }
+
         if (invoiceData.totals.iva > 0) {
             detailsHTML += `<p><span>IVA (19%):</span> <span>${(invoiceData.totals.iva || 0).toLocaleString('es-CO', { style: 'currency', currency: 'COP' })}</span></p>`;
         }
@@ -268,16 +290,11 @@ function openInvoiceDetailModal(invoiceData, invoiceId) {
     
     if (invoiceDetailModal) {
         console.log("Activando modal y clase modal-active en body.");
-        invoiceDetailModal.classList.add('active');      // << USA ESTO para activar el modal
-        bodyElement.classList.add('modal-active');       // << AÑADE ESTA LÍNEA para bloquear scroll del body
-        
-    // invoiceDetailModal.style.setProperty('display', 'flex', 'important');
-    // invoiceDetailModal.style.setProperty('opacity', '1', 'important');
-    // invoiceDetailModal.style.setProperty('visibility', 'visible', 'important');
+        invoiceDetailModal.classList.add('active');
+        bodyElement.classList.add('modal-active');
     } else {
-        console.error("invoiceDetailModal es null, no se puede forzar visibilidad.");
+        console.error("invoiceDetailModal es null, no se puede activar.");
     }
-    // if (invoiceDetailModal) invoiceDetailModal.classList.add('active'); //
 }
 
 function closeInvoiceDetailModal() {
