@@ -47,6 +47,10 @@ const invoiceDetailModal = document.getElementById('invoiceDetailModal');
 const modalInvoiceTitle = document.getElementById('modalInvoiceTitle');
 const modalInvoiceDetailsContent = document.getElementById('modalInvoiceDetailsContent');
 const closeInvoiceDetailModalBtn = document.getElementById('closeInvoiceDetailModalBtn');
+
+console.log("Elemento del Modal Principal:", invoiceDetailModal);
+console.log("Botón de Cierre del Modal:", closeInvoiceDetailModalBtn);
+
 const printInvoiceFromModalBtn = document.getElementById('printInvoiceFromModalBtn');
 
 console.log("DOM Modal - invoiceDetailModal:", invoiceDetailModal);
