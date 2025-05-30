@@ -43,6 +43,12 @@ const googleProvider = new GoogleAuthProvider();
 const db = getFirestore(app);
 
 // --- Selección de Elementos del DOM ---
+const invoiceDetailModal = document.getElementById('invoiceDetailModal');
+const modalInvoiceTitle = document.getElementById('modalInvoiceTitle');
+const modalInvoiceDetailsContent = document.getElementById('modalInvoiceDetailsContent');
+const closeInvoiceDetailModalBtn = document.getElementById('closeInvoiceDetailModalBtn');
+const printInvoiceFromModalBtn = document.getElementById('printInvoiceFromModalBtn');
+
 const loginButton = document.getElementById('loginButton');
 const logoutButton = document.getElementById('logoutButton');
 const loadingOverlay = document.getElementById('loadingOverlay');
@@ -168,6 +174,7 @@ function updatePaymentStatusDisplay() {
 
 // --- Funciones para Modal de Detalle de Factura ---
 function openInvoiceDetailModal(invoiceData, invoiceId) {
+    console.log("openInvoiceDetailModal llamada con ID:", invoiceId, "y datos:", invoiceData);
     if (!invoiceDetailModal || !modalInvoiceTitle || !modalInvoiceDetailsContent) {
         console.error("Elementos del modal no encontrados al intentar abrir.");
         return;
@@ -698,6 +705,7 @@ async function loadAndDisplayInvoices() {
                 const viewDetailsBtn = itemElement.querySelector('.view-details-btn');
                 if (viewDetailsBtn) {
                     viewDetailsBtn.addEventListener('click', () => {
+                        console.log("Clic en 'Ver Detalles'. Datos de factura:", invoice, "ID:", invoiceId);
                         // 'invoice' es el objeto de datos de la factura de Firestore
                         // 'invoiceId' es el ID del documento de la factura
                         openInvoiceDetailModal(invoice, invoiceId); 
