@@ -1,4 +1,3 @@
-
 // Importaciones de Firebase
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
 import {
@@ -100,23 +99,30 @@ const totalAmountSpan = document.getElementById('totalAmount');
 const saveInvoiceBtn = document.getElementById('saveInvoiceBtn');
 const generateInvoiceFileBtn = document.getElementById('generateInvoiceFileBtn');
 
+// Selectores para el Modal de Detalles de Factura
+const invoiceDetailModal = document.getElementById('invoiceDetailModal');
+const modalInvoiceTitle = document.getElementById('modalInvoiceTitle');
+const modalInvoiceDetailsContent = document.getElementById('modalInvoiceDetailsContent');
+const closeInvoiceDetailModalBtn = document.getElementById('closeInvoiceDetailModalBtn');
+const printInvoiceFromModalBtn = document.getElementById('printInvoiceFromModalBtn');
+
 // --- Variables Globales ---
 const paymentStatusDetails = {
-    pending: { text: "Pendiente", description: "La factura ha sido emitida y enviada al cliente, pero aún no se ha recibido el pago. El plazo de vencimiento todavía no ha llegado.", action: "Monitoreo regular, envío de recordatorios amigables antes de la fecha de vencimiento." },
-    paid: { text: "Pagado", description: "El cliente ha realizado el pago completo de la factura y este ha sido confirmado.", action: "Agradecimiento al cliente, actualización de registros." },
-    overdue: { text: "Vencido", description: "La fecha de vencimiento de la factura ha pasado y el pago no se ha recibido.", action: "Inicio del proceso de cobranza." },
-    in_process: { text: "En Proceso", description: "El cliente ha informado que ha realizado el pago, o el pago está siendo procesado por el banco o la pasarela de pagos.", action: "Seguimiento para confirmar la recepción efectiva del pago." },
-    partial_payment: { text: "Pago Parcial", description: "El cliente ha realizado un abono, pero no ha cubierto el total de la factura.", action: "Contactar al cliente para aclarar la situación y acordar el pago del saldo restante." },
-    disputed: { text: "Disputado", description: "El cliente ha manifestado una inconformidad con la factura o el servicio.", action: "Investigación interna de la disputa, comunicación con el cliente." },
-    cancelled: { text: "Cancelado", description: "La factura ha sido anulada, ya sea por un error, por la cancelación del servicio/producto, o por un acuerdo con el cliente.", action: "Asegurarse de que el cliente esté informado y que los registros contables reflejen la anulación." },
-    uncollectible: { text: "Incobrable", description: "Después de múltiples intentos de cobro, se considera que la deuda no será recuperada.", action: "Se procede según las políticas de la empresa para dar de baja la cuenta por cobrar." },
-    nuevo: { text: "Nuevo", description: "Cliente recién registrado, sin historial de facturación.", action: "Crear primera factura." }, // Para estadoGeneralCliente
-    activo: { text: "Activo", description: "Cliente con actividad reciente y al día.", action: "Continuar seguimiento normal." }, // Para estadoGeneralCliente
-    'al día': { text: "Al Día", description: "Cliente con pagos al día.", action: "Excelente." }, // Para estadoGeneralCliente
-    'con pendientes': { text: "Con Pendientes", description: "Cliente tiene facturas pendientes de pago.", action: "Revisar y enviar recordatorios." }, // Para estadoGeneralCliente
-    moroso: { text: "Moroso", description: "Cliente tiene facturas vencidas.", action: "Iniciar proceso de cobranza." }, // Para estadoGeneralCliente
-    inactivo: { text: "Inactivo", description: "Cliente marcado como inactivo o eliminado.", action: "Archivar o revisar." }, // Para estadoGeneralCliente
-    'n/a': { text: "N/A", description: "No aplica o sin información.", action: "Verificar datos."} // Para estadoUltimaFacturaCliente
+    pending: { text: "Pendiente", cssClass:"invoice-status-pending", description: "La factura ha sido emitida y enviada al cliente, pero aún no se ha recibido el pago. El plazo de vencimiento todavía no ha llegado.", action: "Monitoreo regular, envío de recordatorios amigables antes de la fecha de vencimiento." },
+    paid: { text: "Pagado", cssClass:"invoice-status-paid", description: "El cliente ha realizado el pago completo de la factura y este ha sido confirmado.", action: "Agradecimiento al cliente, actualización de registros." },
+    overdue: { text: "Vencido", cssClass:"invoice-status-overdue", description: "La fecha de vencimiento de la factura ha pasado y el pago no se ha recibido.", action: "Inicio del proceso de cobranza." },
+    in_process: { text: "En Proceso", cssClass:"invoice-status-in_process", description: "El cliente ha informado que ha realizado el pago, o el pago está siendo procesado por el banco o la pasarela de pagos.", action: "Seguimiento para confirmar la recepción efectiva del pago." },
+    partial_payment: { text: "Pago Parcial", cssClass:"invoice-status-partial_payment", description: "El cliente ha realizado un abono, pero no ha cubierto el total de la factura.", action: "Contactar al cliente para aclarar la situación y acordar el pago del saldo restante." },
+    disputed: { text: "Disputado", cssClass:"invoice-status-disputed", description: "El cliente ha manifestado una inconformidad con la factura o el servicio.", action: "Investigación interna de la disputa, comunicación con el cliente." },
+    cancelled: { text: "Cancelado", cssClass:"invoice-status-cancelled", description: "La factura ha sido anulada, ya sea por un error, por la cancelación del servicio/producto, o por un acuerdo con el cliente.", action: "Asegurarse de que el cliente esté informado y que los registros contables reflejen la anulación." },
+    uncollectible: { text: "Incobrable", cssClass:"invoice-status-uncollectible", description: "Después de múltiples intentos de cobro, se considera que la deuda no será recuperada.", action: "Se procede según las políticas de la empresa para dar de baja la cuenta por cobrar." },
+    nuevo: { text: "Nuevo", cssClass: "status-client-nuevo", description: "Cliente recién registrado, sin historial de facturación.", action: "Crear primera factura." },
+    activo: { text: "Activo", cssClass: "status-client-activo", description: "Cliente con actividad reciente y al día.", action: "Continuar seguimiento normal." },
+    'al día': { text: "Al Día", cssClass: "status-client-al-dia", description: "Cliente con pagos al día.", action: "Excelente." },
+    'con pendientes': { text: "Con Pend.", cssClass: "status-client-con-pendientes", description: "Cliente tiene facturas pendientes de pago.", action: "Revisar y enviar recordatorios." },
+    moroso: { text: "Moroso", cssClass: "status-client-moroso", description: "Cliente tiene facturas vencidas.", action: "Iniciar proceso de cobranza." },
+    inactivo: { text: "Inactivo", cssClass: "status-client-inactivo", description: "Cliente marcado como inactivo o eliminado.", action: "Archivar o revisar." },
+    'n/a': { text: "N/A", cssClass: "invoice-status-na", description: "No aplica o sin información.", action: "Verificar datos."}
 };
 let currentInvoiceItems = [];
 let nextItemId = 0;
@@ -171,31 +177,19 @@ function formatInvoiceNumber(number) {
 }
 
 async function getCurrentLastInvoiceNumericValue(userId) {
-    if (!userId) {
-        console.warn("ID de usuario no proporcionado para obtener el último número de factura.");
-        return 0; 
-    }
+    if (!userId) { console.warn("ID de usuario no proporcionado."); return 0; }
     const counterRef = doc(db, "user_counters", userId);
     try {
         const counterDoc = await getDoc(counterRef);
-        if (counterDoc.exists() && counterDoc.data().lastInvoiceNumber !== undefined) {
-            return counterDoc.data().lastInvoiceNumber;
-        } else {
-            return 0; 
-        }
-    } catch (error) {
-        console.error("Error al leer el último número de factura:", error);
-        return 0; 
-    }
+        return (counterDoc.exists() && counterDoc.data().lastInvoiceNumber !== undefined) ? counterDoc.data().lastInvoiceNumber : 0;
+    } catch (error) { console.error("Error al leer último número de factura:", error); return 0; }
 }
 
 async function getNextInvoiceNumber(userId) {
-    if (!userId) {
-        throw new Error("ID de usuario no proporcionado para obtener el siguiente número de factura.");
-    }
+    if (!userId) throw new Error("ID de usuario no proporcionado.");
     const counterRef = doc(db, "user_counters", userId);
     try {
-        const newInvoiceNumber = await runTransaction(db, async (transaction) => {
+        return await runTransaction(db, async (transaction) => {
             const counterDoc = await transaction.get(counterRef);
             let lastNumber = 0;
             if (counterDoc.exists() && counterDoc.data().lastInvoiceNumber !== undefined) {
@@ -205,11 +199,7 @@ async function getNextInvoiceNumber(userId) {
             transaction.set(counterRef, { lastInvoiceNumber: nextNumber }, { merge: true });
             return nextNumber;
         });
-        return newInvoiceNumber;
-    } catch (error) {
-        console.error("Error en transacción para obtener el siguiente número de factura:", error);
-        throw error;
-    }
+    } catch (error) { console.error("Error en transacción de número de factura:", error); throw error; }
 }
 
 async function displayNextPotentialInvoiceNumber() {
@@ -218,14 +208,10 @@ async function displayNextPotentialInvoiceNumber() {
         try {
             invoiceNumberText.textContent = "..."; 
             const lastNum = await getCurrentLastInvoiceNumericValue(user.uid);
-            const potentialNextNum = lastNum + 1;
-            invoiceNumberText.textContent = formatInvoiceNumber(potentialNextNum);
-        } catch (error) {
-            console.error("No se pudo cargar el número de factura potencial:", error);
-            invoiceNumberText.textContent = "Error";
-        }
+            invoiceNumberText.textContent = formatInvoiceNumber(lastNum + 1);
+        } catch (error) { invoiceNumberText.textContent = "Error"; }
     } else if (invoiceNumberText) {
-        invoiceNumberText.textContent = "000"; 
+        invoiceNumberText.textContent = "000";
     }
 }
 
@@ -279,30 +265,19 @@ function recalculateTotals() {
             totalIVA += itemTotal * 0.19;
         }
     });
-
     let discountAmount = 0;
     const selectedDiscountType = discountTypeSelect ? discountTypeSelect.value : 'none';
     let discountValue = discountValueInput ? parseFloat(discountValueInput.value) : 0;
-    if (isNaN(discountValue)) {
-        discountValue = 0;
-    }
-
+    if (isNaN(discountValue)) { discountValue = 0; }
     if (selectedDiscountType === 'percentage' && discountValue > 0) {
         discountAmount = subtotal * (discountValue / 100);
     } else if (selectedDiscountType === 'fixed' && discountValue > 0) {
         discountAmount = discountValue;
     }
-    
-    if (discountAmount > subtotal) {
-        discountAmount = subtotal;
-    }
-    if (discountAmount < 0) { 
-        discountAmount = 0;
-    }
-
+    if (discountAmount > subtotal) { discountAmount = subtotal; }
+    if (discountAmount < 0) { discountAmount = 0; }
     const taxableBaseAmount = subtotal - discountAmount;
     const grandTotal = taxableBaseAmount + totalIVA;
-
     const formatCOP = (value) => value.toLocaleString('es-CO', { style: 'currency', currency: 'COP' });
     if (subtotalAmountSpan) subtotalAmountSpan.textContent = formatCOP(subtotal);
     if (discountAmountAppliedSpan) discountAmountAppliedSpan.textContent = formatCOP(discountAmount);
@@ -323,108 +298,69 @@ function handleDiscountChange() {
     }
 }
 
-// Esta función COMPLETA reemplaza la que puedas tener actualmente con el mismo nombre
 function handleClientSelection(clientId, clientNameText, clientData = null) {
     if (selectedClientNameDisplay) {
-        selectedClientNameDisplay.innerHTML = ''; // Limpiar contenido anterior del display
-
-        // Añadir el nombre del cliente al display
+        selectedClientNameDisplay.innerHTML = ''; 
         const nameSpan = document.createElement('span');
-        nameSpan.classList.add('selected-client-name-text'); // Nueva clase para el texto del nombre
+        nameSpan.classList.add('selected-client-name-text');
         nameSpan.textContent = clientNameText;
         selectedClientNameDisplay.appendChild(nameSpan);
 
-        // Solo añadir píldoras al display si se ha seleccionado un cliente existente con datos
         if (clientId && clientData) { 
             const pillsContainer = document.createElement('span');
             pillsContainer.classList.add('pills-container');
 
-            // Píldora 1: Estado General del Cliente
-            let estadoGeneral = clientData.estadoGeneralCliente || "Activo"; // Valor por defecto si no existe
-            let claseCssEstadoGeneral = "status-client-default"; 
-            if (estadoGeneral === "Nuevo") claseCssEstadoGeneral = "status-client-nuevo";
-            else if (estadoGeneral === "Activo" || estadoGeneral === "Al día") claseCssEstadoGeneral = "status-client-al-dia";
-            else if (estadoGeneral === "Con Pendientes") claseCssEstadoGeneral = "status-client-con-pendientes";
-            else if (estadoGeneral === "Moroso") claseCssEstadoGeneral = "status-client-moroso";
-            else if (estadoGeneral === "Inactivo") claseCssEstadoGeneral = "status-client-inactivo";
+            let estadoGeneralKey = (clientData.estadoGeneralCliente || "activo").toLowerCase().replace(/ /g, '_');
+            let estadoGeneralInfo = paymentStatusDetails[estadoGeneralKey] || paymentStatusDetails['activo'];
             
             const pillGeneral = document.createElement('span');
-            pillGeneral.classList.add('option-status-pill', claseCssEstadoGeneral);
-            pillGeneral.textContent = estadoGeneral;
+            pillGeneral.classList.add('option-status-pill', estadoGeneralInfo.cssClass || 'status-client-default');
+            pillGeneral.textContent = estadoGeneralInfo.text;
             pillsContainer.appendChild(pillGeneral);
 
-            // Píldora 2: Estado de Última Factura del Cliente
-            let estadoFacturaCliente = clientData.estadoUltimaFacturaCliente || "N/A";
-            let textoPildoraFactura = "N/A";
-            let claseCssPildoraFactura = "invoice-status-na"; 
-
-            if (estadoFacturaCliente !== "N/A") {
-                const statusKey = estadoFacturaCliente.toLowerCase().replace(/ /g, '_'); // Asegurar que la clave sea correcta para el objeto
-                textoPildoraFactura = paymentStatusDetails[statusKey]?.text || estadoFacturaCliente;
-                claseCssPildoraFactura = `invoice-status-${statusKey}`;
-            }
+            let estadoFacturaKey = (clientData.estadoUltimaFacturaCliente || "n/a").toLowerCase().replace(/ /g, '_');
+            let estadoFacturaInfo = paymentStatusDetails[estadoFacturaKey] || paymentStatusDetails['n/a'];
             
             const pillFactura = document.createElement('span');
-            pillFactura.classList.add('option-status-pill', claseCssPildoraFactura);
-            pillFactura.textContent = textoPildoraFactura;
+            pillFactura.classList.add('option-status-pill', estadoFacturaInfo.cssClass || `invoice-status-${estadoFacturaKey}`);
+            pillFactura.textContent = estadoFacturaInfo.text;
             pillsContainer.appendChild(pillFactura);
             
             selectedClientNameDisplay.appendChild(pillsContainer);
         }
     }
 
-    // Esta es la sección que estaba duplicada. Se deja una sola vez al final.
     if (hiddenSelectedClientIdInput) hiddenSelectedClientIdInput.value = clientId;
-    if (customClientOptions) customClientOptions.style.display = 'none'; // Cerrar el desplegable
-    if (customClientSelect) customClientSelect.classList.remove('open'); // Quitar clase 'open'
+    if (customClientOptions) customClientOptions.style.display = 'none';
+    if (customClientSelect) customClientSelect.classList.remove('open');
     isEditingClient = false; 
 
-    if (editClientBtn) editClientBtn.disabled = (clientId === ""); // Habilitar/deshabilitar botones
+    if (editClientBtn) editClientBtn.disabled = (clientId === "");
     if (deleteClientBtn) deleteClientBtn.disabled = (clientId === "");
 
-    // Llenar o limpiar campos del formulario del cliente
     if (clientNameInput && clientPhoneInput && clientEmailInput) {
-        if (clientId === "") { // Opción "-- Nuevo Cliente --" seleccionada
-            clientNameInput.value = '';
-            clientPhoneInput.value = '';
-            clientEmailInput.value = '';
-            clientNameInput.disabled = false;
-            clientPhoneInput.disabled = false;
-            clientEmailInput.disabled = false;
+        if (clientId === "") { 
+            clientNameInput.value = ''; clientPhoneInput.value = ''; clientEmailInput.value = '';
+            clientNameInput.disabled = false; clientPhoneInput.disabled = false; clientEmailInput.disabled = false;
             if (clientNameInput) clientNameInput.focus();
-        } else if (clientData) { // Un cliente existente fue seleccionado
+        } else if (clientData) {
             clientNameInput.value = clientData.name || '';
             clientPhoneInput.value = clientData.phone || '';
             clientEmailInput.value = clientData.email || '';
-            clientNameInput.disabled = true; // Deshabilitar campos por defecto
-            clientPhoneInput.disabled = true;
-            clientEmailInput.disabled = true;
+            clientNameInput.disabled = true; clientPhoneInput.disabled = true; clientEmailInput.disabled = true;
         }
     }
-} // Esta es la llave de cierre correcta para la función handleClientSelection
+}
 
 async function loadClientsIntoDropdown() {
-    if (!customClientOptions || !customClientSelectDisplay) { 
-        console.error("Elementos del desplegable personalizado no encontrados en loadClientsIntoDropdown."); 
-        return; 
-    }
+    if (!customClientOptions || !customClientSelectDisplay) { console.error("Elementos del desplegable personalizado no encontrados."); return; }
     const user = auth.currentUser;
-    
     customClientOptions.innerHTML = ''; 
     handleClientSelection("", "-- Nuevo Cliente --"); 
-
-    if (!user) {
-        console.log("loadClientsIntoDropdown: No hay usuario.");
-        return;
-    }
+    if (!user) { console.log("loadClientsIntoDropdown: No hay usuario."); return; }
 
     try {
-        const q = query(
-            collection(db, "clientes"), 
-            where("userId", "==", user.uid), 
-            where("isDeleted", "!=", true), 
-            orderBy("name", "asc")
-        );
+        const q = query(collection(db, "clientes"), where("userId", "==", user.uid), where("isDeleted", "!=", true), orderBy("name", "asc"));
         const querySnapshot = await getDocs(q);
 
         if (!querySnapshot.empty) {
@@ -433,40 +369,21 @@ async function loadClientsIntoDropdown() {
                 const clientOption = document.createElement('div');
                 clientOption.classList.add('custom-option');
                 clientOption.setAttribute('data-value', docSnap.id);
-
                 let clientDisplayName = client.name;
 
-                // --- Lógica para la Píldora 1: Estado General del Cliente ---
-                let estadoGeneral = client.estadoGeneralCliente || "Activo"; // Valor por defecto si no existe
-                let claseCssEstadoGeneral = "status-client-default"; 
-                if (estadoGeneral === "Nuevo") claseCssEstadoGeneral = "status-client-nuevo";
-                else if (estadoGeneral === "Activo" || estadoGeneral === "Al día") claseCssEstadoGeneral = "status-client-al-dia";
-                else if (estadoGeneral === "Con Pendientes") claseCssEstadoGeneral = "status-client-con-pendientes";
-                else if (estadoGeneral === "Moroso") claseCssEstadoGeneral = "status-client-moroso";
-                else if (estadoGeneral === "Inactivo") claseCssEstadoGeneral = "status-client-inactivo";
+                let estadoGeneralKey = (client.estadoGeneralCliente || "activo").toLowerCase().replace(/ /g, '_');
+                let estadoGeneralInfo = paymentStatusDetails[estadoGeneralKey] || paymentStatusDetails['activo'];
 
-
-                // --- Lógica para la Píldora 2: Estado de Última Factura del Cliente ---
-                let estadoFacturaCliente = client.estadoUltimaFacturaCliente || "N/A";
-                let textoPildoraFactura = "N/A";
-                let claseCssPildoraFactura = "invoice-status-na"; 
-
-                if (estadoFacturaCliente !== "N/A") {
-                    const statusKey = estadoFacturaCliente.toLowerCase().replace(/ /g, '_');
-                    textoPildoraFactura = paymentStatusDetails[statusKey]?.text || estadoFacturaCliente;
-                    claseCssPildoraFactura = `invoice-status-${statusKey}`;
-                }
+                let estadoFacturaKey = (client.estadoUltimaFacturaCliente || "n/a").toLowerCase().replace(/ /g, '_');
+                let estadoFacturaInfo = paymentStatusDetails[estadoFacturaKey] || paymentStatusDetails['n/a'];
                 
-                // --- Construir el HTML para la opción con AMBAS píldoras ---
                 clientOption.innerHTML = `
                     <span class="option-client-name">${clientDisplayName}</span>
                     <span class="pills-container">
-                        <span class="option-status-pill ${claseCssEstadoGeneral}">${estadoGeneral}</span>
-                        <span class="option-status-pill ${claseCssPildoraFactura}">${textoPildoraFactura}</span>
+                        <span class="option-status-pill ${estadoGeneralInfo.cssClass || 'status-client-default'}">${estadoGeneralInfo.text}</span>
+                        <span class="option-status-pill ${estadoFacturaInfo.cssClass || `invoice-status-${estadoFacturaKey}`}">${estadoFacturaInfo.text}</span>
                     </span>
                 `;
-                // --- Fin de la construcción del HTML ---
-
                 clientOption.addEventListener('click', () => handleClientSelection(docSnap.id, client.name, client));
                 customClientOptions.appendChild(clientOption);
                 loadedClients.push({ id: docSnap.id, ...client });
@@ -474,35 +391,143 @@ async function loadClientsIntoDropdown() {
         }
     } catch (error) {
         console.error("Error al cargar clientes para el desplegable:", error);
-        customClientOptions.insertAdjacentHTML('beforeend', '<div class="custom-option-error">Error al cargar clientes</div>');
+        if (!customClientOptions.querySelector('.custom-option-error')) {
+            const errorOption = document.createElement('div');
+            errorOption.classList.add('custom-option-error');
+            errorOption.textContent = 'Error al cargar clientes';
+            customClientOptions.appendChild(errorOption);
+        }
     }
 }
 
 async function softDeleteClient(clientId) {
     const user = auth.currentUser;
-    if (!user || !clientId) { 
-        alert("Acción no permitida."); 
-        return false; 
-    }
+    if (!user || !clientId) { alert("Acción no permitida."); return false; }
     const clientRef = doc(db, "clientes", clientId);
     try {
-        await updateDoc(clientRef, { 
-            isDeleted: true, 
-            deletedAt: serverTimestamp(),
-            // Opcional: Cambiar estado general al eliminar
-            estadoGeneralCliente: "Inactivo" 
-        });
+        await updateDoc(clientRef, { isDeleted: true, deletedAt: serverTimestamp(), estadoGeneralCliente: "Inactivo" });
         alert("Cliente marcado como inactivo.");
         return true;
-    } catch (error) { 
-        console.error("Error al eliminar cliente:", error); 
-        alert("Error al eliminar."); 
-        return false; 
-    }
+    } catch (error) { console.error("Error al eliminar cliente:", error); alert("Error al eliminar."); return false; }
 }
 
+async function recoverClient(clientId) {
+    const user = auth.currentUser;
+    if (!user || !clientId) { alert("Acción no permitida."); return false; }
+    const clientRef = doc(db, "clientes", clientId);
+    try {
+        await updateDoc(clientRef, { isDeleted: false, deletedAt: null, estadoGeneralCliente: "Activo" });
+        alert("Cliente recuperado exitosamente.");
+        return true;
+    } catch (error) { console.error("Error al recuperar cliente:", error); alert("Error al recuperar el cliente."); return false; }
+}
+
+async function displayActiveClients() {
+    const activeClientsContainer = document.getElementById('activeClientsListContainer');
+    if (!activeClientsContainer) { console.error("Contenedor #activeClientsListContainer no encontrado."); return; }
+    const user = auth.currentUser;
+    if (!user) { activeClientsContainer.innerHTML = '<p>Debes iniciar sesión.</p>'; return; }
+    activeClientsContainer.innerHTML = '<p>Cargando clientes activos...</p>';
+    try {
+        const q = query(collection(db, "clientes"), where("userId", "==", user.uid), where("isDeleted", "!=", true), orderBy("name", "asc"));
+        const querySnapshot = await getDocs(q);
+        activeClientsContainer.innerHTML = '';
+        if (querySnapshot.empty) {
+            activeClientsContainer.innerHTML = '<p>No tienes clientes activos.</p>';
+        } else {
+            querySnapshot.forEach((docSnap) => {
+                const client = docSnap.data();
+                const clientId = docSnap.id;
+                const clientElement = document.createElement('div');
+                clientElement.classList.add('client-list-item');
+                clientElement.setAttribute('data-client-id', clientId);
+                let estadoGeneralKey = (client.estadoGeneralCliente || "activo").toLowerCase().replace(/ /g, '_');
+                let estadoGeneralInfo = paymentStatusDetails[estadoGeneralKey] || paymentStatusDetails['activo'];
+                let estadoFacturaKey = (client.estadoUltimaFacturaCliente || "n/a").toLowerCase().replace(/ /g, '_');
+                let estadoFacturaInfo = paymentStatusDetails[estadoFacturaKey] || paymentStatusDetails['n/a'];
+                clientElement.innerHTML = `
+                    <div class="client-info">
+                        <strong class="client-name">${client.name}</strong>
+                        <span class="client-contact">${client.email || ''} ${client.email && client.phone ? '|' : ''} ${client.phone || ''}</span>
+                    </div>
+                    <div class="client-pills">
+                        <span class="option-status-pill ${estadoGeneralInfo.cssClass || 'status-client-default'}">${estadoGeneralInfo.text}</span>
+                        <span class="option-status-pill ${estadoFacturaInfo.cssClass || `invoice-status-${estadoFacturaKey}`}">${estadoFacturaInfo.text}</span>
+                    </div>
+                    <div class="client-actions-list">
+                        <button type="button" class="btn btn-sm btn-warning edit-client-list-btn">Editar</button>
+                        <button type="button" class="btn btn-sm btn-danger delete-client-list-btn">Eliminar</button>
+                    </div>`;
+                clientElement.querySelector('.edit-client-list-btn').addEventListener('click', () => alert(`Editar cliente ${client.name} (ID: ${clientId}) - Pendiente.`));
+                clientElement.querySelector('.delete-client-list-btn').addEventListener('click', async () => {
+                    if (confirm(`¿Marcar como inactivo a "${client.name}"?`)) {
+                        showLoading(true);
+                        await softDeleteClient(clientId);
+                        await displayActiveClients(); await displayDeletedClients(); await loadClientsIntoDropdown();
+                        showLoading(false);
+                    }
+                });
+                activeClientsContainer.appendChild(clientElement);
+            });
+        }
+    } catch (error) { console.error("Error al cargar clientes activos:", error); if (activeClientsContainer) activeClientsContainer.innerHTML = '<p>Error al cargar.</p>'; }
+}
+
+async function displayDeletedClients() {
+    const deletedClientsContainer = document.getElementById('deletedClientsListContainer');
+    if (!deletedClientsContainer) { console.error("Contenedor #deletedClientsListContainer no encontrado."); return; }
+    const user = auth.currentUser;
+    if (!user) { deletedClientsContainer.innerHTML = '<p>Debes iniciar sesión.</p>'; return; }
+    deletedClientsContainer.innerHTML = '<p>Cargando clientes inactivos...</p>';
+    try {
+        const q = query(collection(db, "clientes"), where("userId", "==", user.uid), where("isDeleted", "==", true), orderBy("deletedAt", "desc"));
+        const querySnapshot = await getDocs(q);
+        deletedClientsContainer.innerHTML = '';
+        if (querySnapshot.empty) {
+            deletedClientsContainer.innerHTML = '<p>No tienes clientes inactivos.</p>';
+        } else {
+            querySnapshot.forEach((docSnap) => {
+                const client = docSnap.data();
+                const clientId = docSnap.id;
+                const clientElement = document.createElement('div');
+                clientElement.classList.add('client-list-item', 'client-inactive');
+                clientElement.setAttribute('data-client-id', clientId);
+                clientElement.innerHTML = `
+                    <div class="client-info">
+                        <strong class="client-name">${client.name}</strong>
+                        <span class="client-contact">${client.email || ''} ${client.email && client.phone ? '|' : ''} ${client.phone || ''}</span>
+                        <span class="client-deleted-date">Eliminado: ${client.deletedAt ? new Date(client.deletedAt.seconds * 1000).toLocaleDateString() : 'N/A'}</span>
+                    </div>
+                    <div class="client-actions-list">
+                        <button type="button" class="btn btn-sm btn-success recover-client-list-btn">Recuperar</button>
+                        <button type="button" class="btn btn-sm btn-outline-danger permanent-delete-client-btn">Eliminar Perm.</button>
+                    </div>`;
+                clientElement.querySelector('.recover-client-list-btn').addEventListener('click', async () => {
+                    if (confirm(`¿Recuperar a "${client.name}"?`)) {
+                        showLoading(true);
+                        await recoverClient(clientId);
+                        await displayActiveClients(); await displayDeletedClients(); await loadClientsIntoDropdown();
+                        showLoading(false);
+                    }
+                });
+                const permanentDeleteBtn = clientElement.querySelector('.permanent-delete-client-btn');
+                if (permanentDeleteBtn) {
+                    permanentDeleteBtn.addEventListener('click', async () => {
+                        showLoading(true);
+                        const success = await permanentlyDeleteClient(clientId);
+                        showLoading(false);
+                        if (success) await displayDeletedClients();
+                    });
+                }
+                deletedClientsContainer.appendChild(clientElement);
+            });
+        }
+    } catch (error) { console.error("Error al cargar clientes inactivos:", error); if (deletedClientsContainer) deletedClientsContainer.innerHTML = '<p>Error al cargar.</p>'; }
+}
+
+async function permanentlyDeleteClient(clientId) { /* ... (código existente) ... */ }
+
 async function handleNavigation(sectionToShowId) {
-    // ... (Código de handleNavigation existente, asegurándose de que llame a loadClientsIntoDropdown) ...
     const sections = [createInvoiceSection, viewInvoicesSection, clientsSection];
     const navLinks = [navCreateInvoice, navViewInvoices, navClients];
     let targetTitle = "Sistema de Facturación";
@@ -536,27 +561,21 @@ async function handleNavigation(sectionToShowId) {
     } else if (sectionToShowId === 'clientsSection') {
         targetTitle = "Clientes";
         if (clientsSection) {
-            clientsSection.style.display = 'block'; // Mostrar la sección principal de clientes
-            clientsSection.classList.add('active-section');
-            clientsSection.innerHTML = `
-                <h2>Clientes</h2>
-                <div class="client-list-subsection">
-                    <h3>Clientes Activos</h3>
-                    <div id="activeClientsListContainer" class="client-list">
-                        <p>Cargando clientes activos...</p>
+            const isPlaceholder = clientsSection.innerHTML.includes("Funcionalidad en desarrollo");
+            if (clientsSection.innerHTML.trim() === '' || isPlaceholder || !document.getElementById('activeClientsListContainer')) {
+                 clientsSection.innerHTML = `
+                    <h2>Clientes</h2>
+                    <div class="client-list-subsection">
+                        <h3>Clientes Activos</h3>
+                        <div id="activeClientsListContainer" class="client-list"><p>Cargando...</p></div>
                     </div>
-                </div>
-                <div class="client-list-subsection">
-                    <h3>Clientes Inactivos</h3>
-                    <div id="deletedClientsListContainer" class="client-list">
-                        <p>Cargando clientes inactivos...</p>
-                    </div>
-                </div>
-            `;
+                    <div class="client-list-subsection">
+                        <h3>Clientes Inactivos</h3>
+                        <div id="deletedClientsListContainer" class="client-list"><p>Cargando...</p></div>
+                    </div>`;
+            }
         }
-        if (navClients) navClients.classList.add('active-nav');
-
-        // Llamar a las funciones para poblar ambas listas
+        if (navClients) navClients.classList.add('active-nav'); // Mover activación del link aquí
         if (typeof displayActiveClients === 'function') await displayActiveClients();
         if (typeof displayDeletedClients === 'function') await displayDeletedClients();
     }
@@ -564,10 +583,14 @@ async function handleNavigation(sectionToShowId) {
 }
 
 async function loadAndDisplayInvoices() {
-    // ... (Código de loadAndDisplayInvoices existente) ...
-    const currentInvoiceListContainer = document.getElementById('invoiceListContainer');
+    const currentInvoiceListContainer = document.getElementById('invoiceListContainer'); // Re-declarar aquí para asegurar que se obtiene el elemento correcto
     if (!currentInvoiceListContainer) {
-        if(viewInvoicesSection) viewInvoicesSection.innerHTML = `<h2>Mis Facturas</h2><p>Error: Contenedor no encontrado.</p>`;
+        const viewInvoicesSect = document.getElementById('viewInvoicesSection'); // Obtener la sección padre
+        if (viewInvoicesSect) {
+             viewInvoicesSect.innerHTML = `<h2>Mis Facturas</h2><p>Error: Contenedor de lista no encontrado.</p>`;
+        } else {
+            console.error("Contenedor #invoiceListContainer Y sección #viewInvoicesSection no encontrados.");
+        }
         return; 
     }
     const user = auth.currentUser;
@@ -586,13 +609,13 @@ async function loadAndDisplayInvoices() {
                 const itemElement = document.createElement('div');
                 itemElement.classList.add('invoice-list-item');
                 itemElement.setAttribute('data-invoice-id', invoiceId);
-                let statusClassName = invoice.paymentStatus || 'pending';
-                let statusText = paymentStatusDetails[statusClassName]?.text || statusClassName.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                let statusKey = invoice.paymentStatus || 'pending'; 
+                let statusInfo = paymentStatusDetails[statusKey] || { text: statusKey.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()), cssClass: `invoice-status-${statusKey.toLowerCase()}` };
 
                 itemElement.innerHTML = `
                     <div class="invoice-list-header">
                         <span class="invoice-list-number">${invoice.invoiceNumberFormatted || 'N/A'}</span>
-                        <span class="status-badge status-${statusClassName.toLowerCase()}">${statusText}</span>
+                        <span class="status-badge ${statusInfo.cssClass}">${statusInfo.text}</span>
                     </div>
                     <div class="invoice-list-client">${invoice.client?.name || 'N/A'}</div>
                     <div class="invoice-list-details">
@@ -603,9 +626,12 @@ async function loadAndDisplayInvoices() {
                         <button type="button" class="btn btn-sm btn-info view-details-btn">Ver Detalles</button>
                     </div>
                 `;
-                itemElement.querySelector('.view-details-btn').addEventListener('click', () => {
-                    alert(`"Ver Detalles" para factura ${invoice.invoiceNumberFormatted} (ID: ${invoiceId}) pendiente.`);
-                });
+                const viewDetailsBtn = itemElement.querySelector('.view-details-btn');
+                if (viewDetailsBtn) {
+                    viewDetailsBtn.addEventListener('click', () => {
+                        openInvoiceDetailModal(invoice, invoiceId);
+                    });
+                }
                 currentInvoiceListContainer.appendChild(itemElement);
             });
         }
@@ -615,255 +641,32 @@ async function loadAndDisplayInvoices() {
     }
 }
 
-// === INICIO: NUEVO CÓDIGO - Funciones para la Sección Clientes ===
-
-/**
- * Carga y muestra los clientes activos (isDeleted != true).
- */
-async function displayActiveClients() {
-    const activeClientsContainer = document.getElementById('activeClientsListContainer');
-    if (!activeClientsContainer) {
-        console.error("Contenedor #activeClientsListContainer no encontrado.");
-        return;
-    }
-    const user = auth.currentUser;
-    if (!user) {
-        activeClientsContainer.innerHTML = '<p>Debes iniciar sesión para ver clientes.</p>';
-        return;
-    }
-
-    activeClientsContainer.innerHTML = '<p>Cargando clientes activos...</p>';
-    try {
-        const q = query(
-            collection(db, "clientes"),
-            where("userId", "==", user.uid),
-            where("isDeleted", "!=", true),
-            orderBy("name", "asc")
-        );
-        const querySnapshot = await getDocs(q);
-        activeClientsContainer.innerHTML = ''; // Limpiar
-
-        if (querySnapshot.empty) {
-            activeClientsContainer.innerHTML = '<p>No tienes clientes activos.</p>';
-        } else {
-            querySnapshot.forEach((docSnap) => {
-                const client = docSnap.data();
-                const clientId = docSnap.id;
-                const clientElement = document.createElement('div');
-                clientElement.classList.add('client-list-item'); // Reusaremos un estilo similar a invoice-list-item
-                clientElement.setAttribute('data-client-id', clientId);
-
-                // Píldoras de estado (similar a como lo hicimos para el desplegable)
-                let estadoGeneral = client.estadoGeneralCliente || "Activo";
-                let claseCssEstadoGeneral = "status-client-default";
-                if (estadoGeneral === "Nuevo") claseCssEstadoGeneral = "status-client-nuevo";
-                else if (estadoGeneral === "Activo" || estadoGeneral === "Al día") claseCssEstadoGeneral = "status-client-al-dia";
-                else if (estadoGeneral === "Con Pendientes") claseCssEstadoGeneral = "status-client-con-pendientes";
-                else if (estadoGeneral === "Moroso") claseCssEstadoGeneral = "status-client-moroso";
-
-                let estadoFactura = client.estadoUltimaFacturaCliente || "N/A";
-                let claseCssEstadoFactura = `invoice-status-${estadoFactura.toLowerCase().replace(/ /g, '_')}`;
-                if (estadoFactura === "N/A") claseCssEstadoFactura = "invoice-status-na";
-                let textoPildoraFactura = paymentStatusDetails[estadoFactura.toLowerCase().replace(/ /g, '_')]?.text || estadoFactura;
-                 if(estadoFactura === "N/A" && !paymentStatusDetails[estadoFactura.toLowerCase().replace(/ /g, '_')]) {
-                    textoPildoraFactura = "N/A";
-                }
-
-                clientElement.innerHTML = `
-                    <div class="client-info">
-                        <strong class="client-name">${client.name}</strong>
-                        <span class="client-contact">${client.email || ''} ${client.email && client.phone ? '|' : ''} ${client.phone || ''}</span>
-                    </div>
-                    <div class="client-pills">
-                        <span class="option-status-pill ${claseCssEstadoGeneral}">${estadoGeneral}</span>
-                        <span class="option-status-pill ${claseCssEstadoFactura}">${textoPildoraFactura}</span>
-                    </div>
-                    <div class="client-actions-list">
-                        <button type="button" class="btn btn-sm btn-warning edit-client-list-btn">Editar</button>
-                        <button type="button" class="btn btn-sm btn-danger delete-client-list-btn">Eliminar</button>
-                    </div>
-                `;
-                // Placeholder para botones de editar/eliminar en esta lista
-                clientElement.querySelector('.edit-client-list-btn').addEventListener('click', () => {
-                    alert(`Funcionalidad "Editar" para cliente ${client.name} (ID: ${clientId}) pendiente desde esta lista.`);
-                    // Aquí podríamos navegar a la sección de crear factura y cargar este cliente para edición.
-                });
-                clientElement.querySelector('.delete-client-list-btn').addEventListener('click', async () => {
-                    if (confirm(`¿Seguro que deseas marcar como inactivo a "${client.name}"?`)) {
-                        showLoading(true);
-                        await softDeleteClient(clientId); // Reutilizamos la función de borrado suave
-                        await displayActiveClients();    // Recargar lista de activos
-                        await displayDeletedClients();   // Recargar lista de inactivos
-                        await loadClientsIntoDropdown(); // Actualizar el desplegable del formulario
-                        showLoading(false);
-                    }
-                });
-                activeClientsContainer.appendChild(clientElement);
-            });
-        }
-    } catch (error) {
-        console.error("Error al cargar clientes activos:", error);
-        activeClientsContainer.innerHTML = '<p>Error al cargar clientes activos.</p>';
-    }
-}
-
-/**
- * Carga y muestra los clientes inactivos/eliminados (isDeleted == true).
- */
-async function displayDeletedClients() {
-    const deletedClientsContainer = document.getElementById('deletedClientsListContainer');
-    if (!deletedClientsContainer) {
-        console.error("Contenedor #deletedClientsListContainer no encontrado.");
-        return;
-    }
-    const user = auth.currentUser;
-    if (!user) {
-        deletedClientsContainer.innerHTML = '<p>Debes iniciar sesión para ver clientes.</p>';
-        return;
-    }
-
-    deletedClientsContainer.innerHTML = '<p>Cargando clientes inactivos...</p>';
-    try {
-        const q = query(
-            collection(db, "clientes"),
-            where("userId", "==", user.uid),
-            where("isDeleted", "==", true), // Solo clientes marcados como eliminados
-            orderBy("deletedAt", "desc") // Mostrar los más recientemente eliminados primero
-        );
-        const querySnapshot = await getDocs(q);
-        deletedClientsContainer.innerHTML = ''; // Limpiar
-
-        if (querySnapshot.empty) {
-            deletedClientsContainer.innerHTML = '<p>No tienes clientes inactivos.</p>';
-        } else {
-            querySnapshot.forEach((docSnap) => {
-                const client = docSnap.data();
-                const clientId = docSnap.id;
-                const clientElement = document.createElement('div');
-                clientElement.classList.add('client-list-item', 'client-inactive'); // Clase adicional
-                clientElement.setAttribute('data-client-id', clientId);
-                
-                clientElement.innerHTML = `
-                    <div class="client-info">
-                        <strong class="client-name">${client.name}</strong>
-                        <span class="client-contact">${client.email || ''} ${client.email && client.phone ? '|' : ''} ${client.phone || ''}</span>
-                        <span class="client-deleted-date">Eliminado: ${client.deletedAt ? new Date(client.deletedAt.seconds * 1000).toLocaleDateString() : 'N/A'}</span>
-                    </div>
-                    <div class="client-actions-list">
-                        <button type="button" class="btn btn-sm btn-success recover-client-list-btn">Recuperar</button>
-                        <button type="button" class="btn btn-sm btn-outline-danger permanent-delete-client-btn">Eliminar Perm.</button>
-                    </div>
-                `;
-                clientElement.querySelector('.recover-client-list-btn').addEventListener('click', async () => {
-                    if (confirm(`¿Seguro que deseas recuperar a "${client.name}"?`)) {
-                        showLoading(true);
-                        await recoverClient(clientId); // Nueva función para recuperar
-                        await displayActiveClients();   // Recargar lista de activos
-                        await displayDeletedClients();  // Recargar lista de inactivos
-                        await loadClientsIntoDropdown(); // Actualizar el desplegable del formulario
-                        showLoading(false);
-                    }
-                });
-                const permanentDeleteBtn = clientElement.querySelector('.permanent-delete-client-btn');
-                if (permanentDeleteBtn) {
-                    permanentDeleteBtn.addEventListener('click', async () => {
-                        // La función permanentlyDeleteClient ya tiene doble confirmación
-                        showLoading(true);
-                        const success = await permanentlyDeleteClient(clientId); // Asumiendo que ya tienes esta función
-                        showLoading(false);
-                        if (success) {
-                            // Solo necesitamos recargar la lista de clientes eliminados, ya que el activo no debería cambiar
-                            // y el desplegable tampoco, pues ya no estaba.
-                            await displayDeletedClients(); 
-                        }
-                    });
-                }
-                deletedClientsContainer.appendChild(clientElement);
-            });
-        }
-    } catch (error) {
-        console.error("Error al cargar clientes inactivos:", error);
-        deletedClientsContainer.innerHTML = '<p>Error al cargar clientes inactivos.</p>';
-    }
-}
-
-/**
- * Recupera un cliente marcado como eliminado (isDeleted: true -> false).
- * @param {string} clientId - El ID del cliente a recuperar.
- */
-async function recoverClient(clientId) {
-    const user = auth.currentUser;
-    if (!user || !clientId) {
-        alert("Acción no permitida.");
-        return false;
-    }
-    const clientRef = doc(db, "clientes", clientId);
-    try {
-        await updateDoc(clientRef, {
-            isDeleted: false,
-            // Opcional: limpiar el campo deletedAt o poner un campo recoveredAt
-            // deletedAt: null, // Esto eliminaría el campo
-            estadoGeneralCliente: "Activo" // Cambiar su estado general a Activo
-        });
-        alert("Cliente recuperado exitosamente.");
-        return true;
-    } catch (error) {
-        console.error("Error al recuperar cliente:", error);
-        alert("Error al recuperar el cliente.");
-        return false;
-    }
-}
-// === FIN: NUEVO CÓDIGO ===
-
-async function permanentlyDeleteClient(clientId) {
-    const user = auth.currentUser;
-    if (!user || !clientId) {
-        alert("Acción no permitida.");
-        return false;
-    }
-    // ¡¡DOBLE CONFIRMACIÓN!! Esto es muy importante.
-    if (!confirm("¿Estás ABSOLUTAMENTE SEGURO de que deseas eliminar permanentemente a este cliente? Esta acción NO SE PUEDE DESHACER.")) {
-        return false;
-    }
-    if (!confirm("ÚLTIMA ADVERTENCIA: Eliminar permanentemente al cliente borrará su registro de la base de datos. ¿Continuar?")) {
-        return false;
-    }
-
-    const clientRef = doc(db, "clientes", clientId);
-    try {
-        await deleteDoc(clientRef); // ¡OJO! ESTO ES deleteDoc, no updateDoc
-        alert("Cliente eliminado permanentemente de la base de datos.");
-        return true;
-    } catch (error) {
-        console.error("Error al eliminar permanentemente al cliente:", error);
-        alert("Error al eliminar permanentemente el cliente.");
-        return false;
-    }
-}
-
 // --- Lógica de Autenticación y Estado ---
 if (loginButton) { 
     loginButton.addEventListener('click', () => {
         console.log("Paso 1: Clic en loginButton detectado.");
         showLoading(true);
         signInWithPopup(auth, googleProvider)
-            .then((result) => { /* onAuthStateChanged lo maneja */ 
+            .then((result) => { 
                 console.log("Paso 2: signInWithPopup completado exitosamente (then). Usuario:", result.user.displayName);
             })
             .catch((error) => {
                 console.error("Paso 2E: Error en signInWithPopup (catch):", error);
                 let msg = "Error al iniciar sesión.";
                 if (error.code === 'auth/popup-closed-by-user') msg = "Ventana de login cerrada.";
+                else if (error.code === 'auth/cancelled-popup-request') msg = "Solicitud de inicio de sesión cancelada.";
                 alert(msg);
             })
             .finally(() => { 
                 console.log("Paso 3: Bloque finally de signInWithPopup.");
                 if (!auth.currentUser && loadingOverlay.style.display !== 'none') {
+                    console.log("Paso 4: Usuario no autenticado en finally, ocultando carga."); 
                     showLoading(false);
                 }
             });
     });
 }
+
 if (logoutButton) { 
     logoutButton.addEventListener('click', () => {
         showLoading(true); 
@@ -873,6 +676,7 @@ if (logoutButton) {
         });
     });
 }
+
 onAuthStateChanged(auth, (user) => { 
     console.log("Paso 5: onAuthStateChanged se disparó. Usuario:", user ? user.uid : "ninguno");
     showLoading(false); 
@@ -1082,7 +886,7 @@ if (invoiceForm) {
                     createdAt: serverTimestamp(), 
                     isDeleted: false, 
                     estadoGeneralCliente: "Nuevo", 
-                    estadoUltimaFacturaCliente: invoiceToSave.paymentStatus // Usar el estado de esta primera factura
+                    estadoUltimaFacturaCliente: invoiceToSave.paymentStatus 
                 };
                 try {
                     await addDoc(collection(db, "clientes"), newClientData);
@@ -1093,8 +897,6 @@ if (invoiceForm) {
                 try {
                     await updateDoc(clientRef, {
                         estadoUltimaFacturaCliente: invoiceToSave.paymentStatus,
-                        // Aquí también podríamos actualizar 'estadoGeneralCliente' basado en una lógica más compleja
-                        // Por ahora, solo actualizamos el de la última factura.
                         updatedAt: serverTimestamp() 
                     });
                 } catch (clientUpdateError) {
@@ -1125,8 +927,31 @@ if (invoiceForm) {
     });
 }
 
+// Listeners para cerrar el modal de detalle de factura
+if (closeInvoiceDetailModalBtn) {
+    closeInvoiceDetailModalBtn.addEventListener('click', closeInvoiceDetailModal);
+}
+if (invoiceDetailModal) {
+    invoiceDetailModal.addEventListener('click', (event) => {
+        if (event.target === invoiceDetailModal) { // Si el clic fue directamente en el overlay
+            closeInvoiceDetailModal();
+        }
+    });
+}
+document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && invoiceDetailModal && invoiceDetailModal.classList.contains('active')) {
+        closeInvoiceDetailModal();
+    }
+});
+if (printInvoiceFromModalBtn) {
+    printInvoiceFromModalBtn.addEventListener('click', () => {
+        alert("Funcionalidad de Imprimir/Descargar PDF desde el modal está pendiente.");
+    });
+}
+
 if (generateInvoiceFileBtn) { 
     generateInvoiceFileBtn.addEventListener('click', () => {
         alert("Funcionalidad 'Generar Factura (Archivo)' pendiente.");
     });
 }
+// --- FIN DEL ARCHIVO SCRIPT.JS ---
