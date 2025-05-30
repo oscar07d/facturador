@@ -265,41 +265,31 @@ function openInvoiceDetailModal(invoiceData, invoiceId) {
 
     if(modalInvoiceDetailsContent) modalInvoiceDetailsContent.innerHTML = detailsHTML;
     
-    if (invoiceDetailModal) {
-    console.log("Forzando display: flex !important al modal");
-    invoiceDetailModal.style.setProperty('display', 'flex', 'important');
-    invoiceDetailModal.style.setProperty('opacity', '1', 'important');
-    invoiceDetailModal.style.setProperty('visibility', 'visible', 'important');
-    } else {
-        console.error("invoiceDetailModal es null, no se puede forzar visibilidad.");
-    }
-    // if (invoiceDetailModal) invoiceDetailModal.classList.add('active'); //
+    // if (invoiceDetailModal) {
+    // console.log("Forzando display: flex !important al modal");
+    // invoiceDetailModal.style.setProperty('display', 'flex', 'important');
+    // invoiceDetailModal.style.setProperty('opacity', '1', 'important');
+    // invoiceDetailModal.style.setProperty('visibility', 'visible', 'important');
+    // } else {
+    //     console.error("invoiceDetailModal es null, no se puede forzar visibilidad.");
+    // }
+    if (invoiceDetailModal) invoiceDetailModal.classList.add('active'); //
 }
 
 function closeInvoiceDetailModal() {
     console.log("Intentando cerrar modal...");
-    // Verificar que el elemento modal exista en el DOM
     if (!invoiceDetailModal) {
-        console.error("Elemento invoiceDetailModal no encontrado al intentar cerrar.");
-        return; 
+        console.error("invoiceDetailModal es null, no se puede cerrar.");
+        return;
     }
-
-    // Quitar la clase 'active' para ocultar el modal (el CSS se encarga de la transición)
     invoiceDetailModal.classList.remove('active'); 
-    // La línea que mencionaste está arriba ^^^
 
-    // Opcional: Limpiar el contenido del modal después de que la transición de cierre haya terminado
-    // Esto es para que la próxima vez que se abra, no muestre brevemente el contenido anterior.
     if (modalInvoiceDetailsContent) {
        setTimeout(() => { 
-           if(modalInvoiceDetailsContent) { // Doble verificación por si acaso
-               modalInvoiceDetailsContent.innerHTML = '<p>Cargando detalles de la factura...</p>'; // O simplemente ''
-           }
-       }, 300); // 300ms debe coincidir con la duración de tu transición de opacidad/visibilidad en CSS
+           if(modalInvoiceDetailsContent) modalInvoiceDetailsContent.innerHTML = ''; 
+       }, 300); // 300ms es la duración de la transición
     }
-    if (modalInvoiceTitle) { // Resetear el título del modal
-        modalInvoiceTitle.textContent = 'Detalle de Factura';
-    }
+    if (modalInvoiceTitle) modalInvoiceTitle.textContent = 'Detalle de Factura';
 }
 
 function formatInvoiceNumber(number) {
