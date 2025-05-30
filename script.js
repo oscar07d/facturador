@@ -105,6 +105,11 @@ const modalInvoiceDetailsContent = document.getElementById('modalInvoiceDetailsC
 const closeInvoiceDetailModalBtn = document.getElementById('closeInvoiceDetailModalBtn');
 const printInvoiceFromModalBtn = document.getElementById('printInvoiceFromModalBtn'); // Aunque aún no tendrá funcionalidad completa
 
+console.log("Modal Element:", invoiceDetailModal);
+console.log("Modal Title Element:", modalInvoiceTitle);
+console.log("Modal Content Element:", modalInvoiceDetailsContent);
+console.log("Modal Close Button:", closeInvoiceDetailModalBtn);
+
 // --- Variables Globales ---
 const paymentStatusDetails = {
     pending: { text: "Pendiente", description: "La factura ha sido emitida y enviada al cliente, pero aún no se ha recibido el pago. El plazo de vencimiento todavía no ha llegado.", action: "Monitoreo regular, envío de recordatorios amigables antes de la fecha de vencimiento." },
