@@ -267,10 +267,13 @@ function openInvoiceDetailModal(invoiceData, invoiceId) {
     if(modalInvoiceDetailsContent) modalInvoiceDetailsContent.innerHTML = detailsHTML;
     
     if (invoiceDetailModal) {
-    console.log("Forzando display: flex !important al modal");
-    invoiceDetailModal.style.setProperty('display', 'flex', 'important');
-    invoiceDetailModal.style.setProperty('opacity', '1', 'important');
-    invoiceDetailModal.style.setProperty('visibility', 'visible', 'important');
+        console.log("Activando modal y clase modal-active en body.");
+        invoiceDetailModal.classList.add('active');      // << USA ESTO para activar el modal
+        bodyElement.classList.add('modal-active');       // << AÑADE ESTA LÍNEA para bloquear scroll del body
+        
+    // invoiceDetailModal.style.setProperty('display', 'flex', 'important');
+    // invoiceDetailModal.style.setProperty('opacity', '1', 'important');
+    // invoiceDetailModal.style.setProperty('visibility', 'visible', 'important');
     } else {
         console.error("invoiceDetailModal es null, no se puede forzar visibilidad.");
     }
@@ -279,26 +282,22 @@ function openInvoiceDetailModal(invoiceData, invoiceId) {
 
 function closeInvoiceDetailModal() {
     console.log("Intentando cerrar modal...");
-    // Verificar que el elemento modal exista en el DOM
     if (!invoiceDetailModal) {
         console.error("Elemento invoiceDetailModal no encontrado al intentar cerrar.");
         return; 
     }
 
-    // Quitar la clase 'active' para ocultar el modal (el CSS se encarga de la transición)
-    invoiceDetailModal.classList.remove('active'); 
-    // La línea que mencionaste está arriba ^^^
+    invoiceDetailModal.classList.remove('active');  // << Esto es correcto para ocultar el modal
+    bodyElement.classList.remove('modal-active'); // << AÑADE ESTA LÍNEA para desbloquear scroll del body
 
-    // Opcional: Limpiar el contenido del modal después de que la transición de cierre haya terminado
-    // Esto es para que la próxima vez que se abra, no muestre brevemente el contenido anterior.
     if (modalInvoiceDetailsContent) {
-       setTimeout(() => { 
-           if(modalInvoiceDetailsContent) { // Doble verificación por si acaso
-               modalInvoiceDetailsContent.innerHTML = '<p>Cargando detalles de la factura...</p>'; // O simplemente ''
-           }
-       }, 300); // 300ms debe coincidir con la duración de tu transición de opacidad/visibilidad en CSS
+        setTimeout(() => { 
+            if(modalInvoiceDetailsContent) {
+                modalInvoiceDetailsContent.innerHTML = '<p>Cargando detalles de la factura...</p>'; 
+            }
+        }, 300); 
     }
-    if (modalInvoiceTitle) { // Resetear el título del modal
+    if (modalInvoiceTitle) {
         modalInvoiceTitle.textContent = 'Detalle de Factura';
     }
 }
