@@ -1,4 +1,5 @@
-// Importaciones de FirebaseMore actions
+
+// Importaciones de Firebase
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
 import {
     getAuth,
@@ -42,23 +43,6 @@ const googleProvider = new GoogleAuthProvider();
 const db = getFirestore(app);
 
 // --- Selección de Elementos del DOM ---
-const invoiceDetailModal = document.getElementById('invoiceDetailModal');
-const modalInvoiceTitle = document.getElementById('modalInvoiceTitle');
-const modalInvoiceDetailsContent = document.getElementById('modalInvoiceDetailsContent');
-const closeInvoiceDetailModalBtn = document.getElementById('closeInvoiceDetailModalBtn');
-
-console.log("Elemento del Modal Principal:", invoiceDetailModal);
-console.log("Botón de Cierre del Modal:", closeInvoiceDetailModalBtn);
-
-const printInvoiceFromModalBtn = document.getElementById('printInvoiceFromModalBtn');
-
-console.log("DOM Modal - invoiceDetailModal:", invoiceDetailModal);
-console.log("DOM Modal - modalInvoiceTitle:", modalInvoiceTitle);
-console.log("DOM Modal - modalInvoiceDetailsContent:", modalInvoiceDetailsContent);
-console.log("DOM Modal - closeInvoiceDetailModalBtn:", closeInvoiceDetailModalBtn);
-console.log("Modal Overlay Element:", invoiceDetailModal);
-console.log("Modal Close Button Element:", closeInvoiceDetailModalBtn);
-
 const loginButton = document.getElementById('loginButton');
 const logoutButton = document.getElementById('logoutButton');
 const loadingOverlay = document.getElementById('loadingOverlay');
@@ -180,139 +164,6 @@ function updatePaymentStatusDisplay() {
             paymentStatusInfoDiv.style.display = 'none';
         }
     }
-}
-
-// --- Funciones para Modal de Detalle de Factura ---
-function openInvoiceDetailModal(invoiceData, invoiceId) {
-    console.log("openInvoiceDetailModal llamada con ID:", invoiceId, "y datos:", invoiceData);
-    if (!invoiceDetailModal || !modalInvoiceTitle || !modalInvoiceDetailsContent) {
-        console.error("Elementos del modal no encontrados al intentar abrir.");
-        return;
-    }
-    console.log("Abriendo modal para factura ID:", invoiceId); // Log para verificar
-
-    modalInvoiceTitle.textContent = `Detalle de Factura: ${invoiceData.invoiceNumberFormatted || 'N/A'}`;
-
-    let detailsHTML = '';
-    // Datos del Emisor
-    if (invoiceData.emitter && (invoiceData.emitter.name || invoiceData.emitter.id)) {
-        detailsHTML += `<h3>Datos del Emisor</h3><div class="modal-section-grid">`;
-        if (invoiceData.emitter.name) detailsHTML += `<p><strong>Comercio:</strong> ${invoiceData.emitter.name}</p>`;
-        if (invoiceData.emitter.id) detailsHTML += `<p><strong>NIT/ID:</strong> ${invoiceData.emitter.id}</p>`;
-        if (invoiceData.emitter.address) detailsHTML += `<p><strong>Dirección:</strong> ${invoiceData.emitter.address}</p>`;
-        if (invoiceData.emitter.phone) detailsHTML += `<p><strong>Teléfono:</strong> ${invoiceData.emitter.phone}</p>`;
-        if (invoiceData.emitter.email) detailsHTML += `<p><strong>Email:</strong> ${invoiceData.emitter.email}</p>`;
-        detailsHTML += `</div>`;
-    }
-    // Datos del Cliente
-    detailsHTML += `<h3>Facturar A:</h3><div class="modal-section-grid">`;
-    detailsHTML += `<p><strong>Nombre:</strong> ${invoiceData.client?.name || 'N/A'}</p>`;
-    detailsHTML += `<p><strong>Celular:</strong> ${invoiceData.client?.phone || 'N/A'}</p>`;
-    if (invoiceData.client?.email) detailsHTML += `<p><strong>Correo:</strong> ${invoiceData.client.email}</p>`;
-    detailsHTML += `</div>`;
-    // Detalles de la Factura
-    detailsHTML += `<h3>Detalles de la Factura</h3>`;
-    detailsHTML += `<p><strong>Número:</strong> ${invoiceData.invoiceNumberFormatted || 'N/A'}</p>`;
-    detailsHTML += `<p><strong>Fecha:</strong> ${invoiceData.invoiceDate || 'N/A'}</p>`;
-    if (invoiceData.serviceStartDate) {
-        detailsHTML += `<p><strong>Inicio Servicio:</strong> ${invoiceData.serviceStartDate}</p>`;
-    }
-    const statusKeyModal = invoiceData.paymentStatus || 'pending';
-    // Asegúrate que paymentStatusDetails tenga 'text' y 'cssClass'
-    const statusInfoModal = paymentStatusDetails[statusKeyModal] || { text: statusKeyModal.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()), cssClass: `status-${statusKeyModal.toLowerCase()}` }; 
-    detailsHTML += `<p><strong>Estado:</strong> <span class="status-badge <span class="math-inline">\{statusInfoModal\.cssClass\}"\></span>{statusInfoModal.text}</span></p>`;
-
-    // Ítems
-    detailsHTML += `<h3>Ítems:</h3>`;
-    if (invoiceData.items && invoiceData.items.length > 0) {
-        detailsHTML += `<table class="modal-items-table"><thead><tr><th>Descripción</th><th>Cant.</th><th>P.U.</th><th>Total</th></tr></thead><tbody>`;
-        invoiceData.items.forEach(item => {
-            let profileInfo = '';
-            if (item.isStreaming && item.profileName) {
-                profileInfo = `<br><small class="item-profile-details">Perfil: ${item.profileName} ${item.profilePin ? `(PIN: ${item.profilePin})` : ''}</small>`;
-            }
-            detailsHTML += `<tr>
-                                <td><span class="math-inline">\{item\.description\}</span>{profileInfo}</td>
-                                <td class="text-right"><span class="math-inline">\{item\.quantity\}</td\>
-<td class\="text\-right"\></span>{(item.price || 0).toLocaleString('es-CO', { style: 'currency', currency: 'COP' })}</td>
-                                <td class="text-right">${((item.quantity * item.price) || 0).toLocaleString('es-CO', { style: 'currency', currency: 'COP' })}</td>
-                            </tr>`;
-        });
-        detailsHTML += `</tbody></table>`;
-    } else {
-        detailsHTML += `<p>No hay ítems en esta factura.</p>`;
-    }
-    // Totales
-    detailsHTML += `<div class="modal-totals-summary">`;
-    if (invoiceData.totals) {
-        detailsHTML += `<p><span>Subtotal:</span> <span>${(invoiceData.totals.subtotal || 0).toLocaleString('es-CO', { style: 'currency', currency: 'COP' })}</span></p>`;
-        if (invoiceData.totals.discountApplied > 0) {
-             detailsHTML += `<p><span>Descuento:</span> <span>-${(invoiceData.totals.discountApplied || 0).toLocaleString('es-CO', { style: 'currency', currency: 'COP' })}</span></p>`;
-        }
-        const calculatedTaxableBaseModal = (invoiceData.totals.subtotal || 0) - (invoiceData.totals.discountApplied || 0);
-         if (invoiceData.totals.taxableBase !== undefined && (invoiceData.totals.discountApplied > 0 || invoiceData.totals.taxableBase !== invoiceData.totals.subtotal)) {
-            detailsHTML += `<p><span>Base Imponible:</span> <span>${(invoiceData.totals.taxableBase || 0).toLocaleString('es-CO', { style: 'currency', currency: 'COP' })}</span></p>`;
-        } else if (invoiceData.totals.taxableBase === undefined && invoiceData.totals.discountApplied > 0) { // Mostrar si hay descuento pero no taxableBase explícito
-             detailsHTML += `<p><span>Base Imponible:</span> <span>${(calculatedTaxableBaseModal).toLocaleString('es-CO', { style: 'currency', currency: 'COP' })}</span></p>`;
-        }
-        if (invoiceData.totals.iva > 0) {
-            detailsHTML += `<p><span>IVA (19%):</span> <span>${(invoiceData.totals.iva || 0).toLocaleString('es-CO', { style: 'currency', currency: 'COP' })}</span></p>`;
-        }
-        detailsHTML += `<p class="modal-grand-total"><span>TOTAL:</span> <span>${(invoiceData.totals.grandTotal || 0).toLocaleString('es-CO', { style: 'currency', currency: 'COP' })}</span></p>`;
-    }
-    detailsHTML += `</div>`;
-
-    if(modalInvoiceDetailsContent) modalInvoiceDetailsContent.innerHTML = detailsHTML;
-
-    if (invoiceDetailModal) {
-    console.log("Forzando display: flex !important al modal");
-    invoiceDetailModal.style.setProperty('display', 'flex', 'important');
-    invoiceDetailModal.style.setProperty('opacity', '1', 'important');
-    invoiceDetailModal.style.setProperty('visibility', 'visible', 'important');
-    } else {
-        console.error("invoiceDetailModal es null, no se puede forzar visibilidad.");
-    }
-    // if (invoiceDetailModal) invoiceDetailModal.classList.add('active'); //
-    // if (invoiceDetailModal) {
-    // console.log("Forzando display: flex !important al modal");
-    // invoiceDetailModal.style.setProperty('display', 'flex', 'important');
-    // invoiceDetailModal.style.setProperty('opacity', '1', 'important');
-    // invoiceDetailModal.style.setProperty('visibility', 'visible', 'important');
-    // } else {
-    //     console.error("invoiceDetailModal es null, no se puede forzar visibilidad.");
-    // }
-    if (invoiceDetailModal) invoiceDetailModal.classList.add('active'); //
-}
-
-function closeInvoiceDetailModal() {
-    console.log("Intentando cerrar modal...");
-    // Verificar que el elemento modal exista en el DOM
-    if (!invoiceDetailModal) {
-        console.error("Elemento invoiceDetailModal no encontrado al intentar cerrar.");
-        return; 
-        console.error("invoiceDetailModal es null, no se puede cerrar.");
-        return;
-    }
-
-    // Quitar la clase 'active' para ocultar el modal (el CSS se encarga de la transición)
-    invoiceDetailModal.classList.remove('active'); 
-    // La línea que mencionaste está arriba ^^^
-
-    // Opcional: Limpiar el contenido del modal después de que la transición de cierre haya terminado
-    // Esto es para que la próxima vez que se abra, no muestre brevemente el contenido anterior.
-    if (modalInvoiceDetailsContent) {
-       setTimeout(() => { 
-           if(modalInvoiceDetailsContent) { // Doble verificación por si acaso
-               modalInvoiceDetailsContent.innerHTML = '<p>Cargando detalles de la factura...</p>'; // O simplemente ''
-           }
-       }, 300); // 300ms debe coincidir con la duración de tu transición de opacidad/visibilidad en CSS
-    }
-    if (modalInvoiceTitle) { // Resetear el título del modal
-        modalInvoiceTitle.textContent = 'Detalle de Factura';
-           if(modalInvoiceDetailsContent) modalInvoiceDetailsContent.innerHTML = ''; 
-       }, 300); // 300ms es la duración de la transición
-    }
-    if (modalInvoiceTitle) modalInvoiceTitle.textContent = 'Detalle de Factura';
 }
 
 function formatInvoiceNumber(number) {
@@ -441,7 +292,7 @@ function recalculateTotals() {
     } else if (selectedDiscountType === 'fixed' && discountValue > 0) {
         discountAmount = discountValue;
     }
-
+    
     if (discountAmount > subtotal) {
         discountAmount = subtotal;
     }
@@ -496,7 +347,7 @@ function handleClientSelection(clientId, clientNameText, clientData = null) {
             else if (estadoGeneral === "Con Pendientes") claseCssEstadoGeneral = "status-client-con-pendientes";
             else if (estadoGeneral === "Moroso") claseCssEstadoGeneral = "status-client-moroso";
             else if (estadoGeneral === "Inactivo") claseCssEstadoGeneral = "status-client-inactivo";
-
+            
             const pillGeneral = document.createElement('span');
             pillGeneral.classList.add('option-status-pill', claseCssEstadoGeneral);
             pillGeneral.textContent = estadoGeneral;
@@ -512,12 +363,12 @@ function handleClientSelection(clientId, clientNameText, clientData = null) {
                 textoPildoraFactura = paymentStatusDetails[statusKey]?.text || estadoFacturaCliente;
                 claseCssPildoraFactura = `invoice-status-${statusKey}`;
             }
-
+            
             const pillFactura = document.createElement('span');
             pillFactura.classList.add('option-status-pill', claseCssPildoraFactura);
             pillFactura.textContent = textoPildoraFactura;
             pillsContainer.appendChild(pillFactura);
-
+            
             selectedClientNameDisplay.appendChild(pillsContainer);
         }
     }
@@ -558,7 +409,7 @@ async function loadClientsIntoDropdown() {
         return; 
     }
     const user = auth.currentUser;
-
+    
     customClientOptions.innerHTML = ''; 
     handleClientSelection("", "-- Nuevo Cliente --"); 
 
@@ -605,7 +456,7 @@ async function loadClientsIntoDropdown() {
                     textoPildoraFactura = paymentStatusDetails[statusKey]?.text || estadoFacturaCliente;
                     claseCssPildoraFactura = `invoice-status-${statusKey}`;
                 }
-
+                
                 // --- Construir el HTML para la opción con AMBAS píldoras ---
                 clientOption.innerHTML = `
                     <span class="option-client-name">${clientDisplayName}</span>
@@ -661,7 +512,7 @@ async function handleNavigation(sectionToShowId) {
 
     const currentSection = sections.find(s => s && s.id === sectionToShowId);
     if (currentSection) currentSection.style.display = 'block';
-
+    
     const currentLink = navLinks.find(l => l && (l.id.replace('nav', '').charAt(0).toLowerCase() + l.id.replace('nav', '').slice(1) + 'Section') === sectionToShowId);
     if (currentLink) currentLink.classList.add('active-nav');
 
@@ -752,15 +603,9 @@ async function loadAndDisplayInvoices() {
                         <button type="button" class="btn btn-sm btn-info view-details-btn">Ver Detalles</button>
                     </div>
                 `;
-                const viewDetailsBtn = itemElement.querySelector('.view-details-btn');
-                if (viewDetailsBtn) {
-                    viewDetailsBtn.addEventListener('click', () => {
-                        console.log("Clic en 'Ver Detalles'. Datos de factura:", invoice, "ID:", invoiceId);
-                        // 'invoice' es el objeto de datos de la factura de Firestore
-                        // 'invoiceId' es el ID del documento de la factura
-                        openInvoiceDetailModal(invoice, invoiceId); 
-                    });
-                }
+                itemElement.querySelector('.view-details-btn').addEventListener('click', () => {
+                    alert(`"Ver Detalles" para factura ${invoice.invoiceNumberFormatted} (ID: ${invoiceId}) pendiente.`);
+                });
                 currentInvoiceListContainer.appendChild(itemElement);
             });
         }
@@ -897,7 +742,7 @@ async function displayDeletedClients() {
                 const clientElement = document.createElement('div');
                 clientElement.classList.add('client-list-item', 'client-inactive'); // Clase adicional
                 clientElement.setAttribute('data-client-id', clientId);
-
+                
                 clientElement.innerHTML = `
                     <div class="client-info">
                         <strong class="client-name">${client.name}</strong>
@@ -994,49 +839,6 @@ async function permanentlyDeleteClient(clientId) {
         alert("Error al eliminar permanentemente el cliente.");
         return false;
     }
-}
-
-if (closeInvoiceDetailModalBtn) {
-    console.log("Añadiendo listener al botón de cierre del modal."); // Log
-    closeInvoiceDetailModalBtn.addEventListener('click', () => {
-        console.log("Clic en botón de cierre del modal detectado."); // Log
-        closeInvoiceDetailModal();
-    });
-} else {
-    console.warn("Botón de cierre del modal (closeInvoiceDetailModalBtn) no encontrado.");
-}
-
-if (invoiceDetailModal) {
-    console.log("Añadiendo listener al overlay del modal."); // Log
-    invoiceDetailModal.addEventListener('click', (event) => {
-        if (event.target === invoiceDetailModal) { 
-            console.log("Clic en overlay del modal detectado."); // Log
-            closeInvoiceDetailModal();
-        }
-    });
-} else {
-    console.warn("Elemento principal del modal (invoiceDetailModal) no encontrado para listener de overlay.");
-}
-
-document.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape' && invoiceDetailModal && invoiceDetailModal.classList.contains('active')) {
-        console.log("Tecla Escape presionada y modal activo, cerrando modal."); // Log
-        closeInvoiceDetailModal();
-    }
-});
-
-// Opcional: Cerrar el modal con la tecla Escape
-document.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape' && invoiceDetailModal && invoiceDetailModal.classList.contains('active')) {
-        closeInvoiceDetailModal();
-    }
-});
-
-// Placeholder para el botón de imprimir/descargar en el modal
-if (printInvoiceFromModalBtn) {
-    printInvoiceFromModalBtn.addEventListener('click', () => {
-        alert("Funcionalidad de Imprimir/Descargar PDF desde el modal está pendiente.");
-    });
 }
 
 // --- Lógica de Autenticación y Estado ---
@@ -1193,7 +995,7 @@ if (invoiceForm) {
         let clientPhone = clientPhoneInput?.value.trim();
         let clientEmail = clientEmailInput?.value.trim();
         if (!clientName || !clientPhone || !clientEmail) { alert("Completa los datos del cliente."); return; }
-
+        
         const selectedClientId = hiddenSelectedClientIdInput.value;
         if (selectedClientId && isEditingClient) {
             const clientRef = doc(db, "clientes", selectedClientId);
@@ -1221,16 +1023,16 @@ if (invoiceForm) {
             if (clientPhoneInput) clientPhoneInput.disabled = true;
             if (clientEmailInput) clientEmailInput.disabled = true;
         }
-
+        
         if (typeof recalculateTotals === 'function') recalculateTotals();
 
         let actualNumericInvoiceNumber;
         let formattedInvoiceNumberStr;
-
+        
         if (saveInvoiceBtn) saveInvoiceBtn.disabled = true;
         if (generateInvoiceFileBtn) generateInvoiceFileBtn.disabled = true;
         showLoading(true);
-
+        
         try {
             actualNumericInvoiceNumber = await getNextInvoiceNumber(user.uid);
             formattedInvoiceNumberStr = formatInvoiceNumber(actualNumericInvoiceNumber);
@@ -1299,18 +1101,18 @@ if (invoiceForm) {
                     console.error("Error al actualizar estado del cliente existente:", clientUpdateError);
                 }
             }
-
+            
             invoiceForm.reset();
             currentInvoiceItems = []; nextItemId = 0;
             handleClientSelection("", "-- Nuevo Cliente --"); 
-
+            
             renderItems(); 
             setDefaultInvoiceDate(); 
             updateQuantityBasedOnStreaming(); 
             handleDiscountChange();
             await loadClientsIntoDropdown(); 
             await displayNextPotentialInvoiceNumber();
-
+            
         } catch (error) { 
             console.error("Error al guardar factura en Firestore o al procesar post-guardado:", error);
             alert(`Error durante el guardado: ${error.message}`);
