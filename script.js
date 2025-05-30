@@ -53,6 +53,8 @@ console.log("DOM Modal - invoiceDetailModal:", invoiceDetailModal);
 console.log("DOM Modal - modalInvoiceTitle:", modalInvoiceTitle);
 console.log("DOM Modal - modalInvoiceDetailsContent:", modalInvoiceDetailsContent);
 console.log("DOM Modal - closeInvoiceDetailModalBtn:", closeInvoiceDetailModalBtn);
+console.log("Modal Overlay Element:", invoiceDetailModal);
+console.log("Modal Close Button Element:", closeInvoiceDetailModalBtn);
 
 const loginButton = document.getElementById('loginButton');
 const logoutButton = document.getElementById('logoutButton');
@@ -272,11 +274,14 @@ function openInvoiceDetailModal(invoiceData, invoiceId) {
 
 function closeInvoiceDetailModal() {
     if (!invoiceDetailModal) return;
+    console.log("Intentando cerrar modal, quitando clase 'active'. Modal actual:", invoiceDetailModal);
     invoiceDetailModal.classList.remove('active');
     if (modalInvoiceDetailsContent) {
-       setTimeout(() => { if(modalInvoiceDetailsContent) modalInvoiceDetailsContent.innerHTML = ''; }, 300); 
+       setTimeout(() => { 
+           if(modalInvoiceDetailsContent) modalInvoiceDetailsContent.innerHTML = '<p>Cargando detalles de la factura...</p>'; // O simplemente ''
+       }, 300); // 300ms es la duración de la transición de opacidad del CSS
     }
-    if (modalInvoiceTitle) modalInvoiceTitle.textContent = 'Detalle de Factura';
+    if (modalInvoiceTitle) modalInvoiceTitle.textContent = 'Detalle de Factura'; // Resetear título
 }
 
 function formatInvoiceNumber(number) {
