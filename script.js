@@ -277,6 +277,7 @@ function openInvoiceDetailModal(invoiceData, invoiceId) {
 }
 
 function closeInvoiceDetailModal() {
+    console.log("Intentando cerrar modal...");
     // Verificar que el elemento modal exista en el DOM
     if (!invoiceDetailModal) {
         console.error("Elemento invoiceDetailModal no encontrado al intentar cerrar.");
