@@ -719,6 +719,227 @@ input.input-error, select.input-error, textarea.input-error { border-color: var(
 .invoice-list-actions { text-align: right; margin-top: auto; padding-top:10px; }
 .invoice-list-actions .btn-sm { padding: 6px 12px; font-size: 0.85rem; }
 
+/* style.css */
+
+/* Asegúrate que la plantilla base esté oculta y lista para ser usada */
+#invoice-export-template {
+    display: none; /* Oculta por defecto */
+    width: 800px; /* Ancho estándar para A4, ajusta si es necesario */
+    margin: 20px auto;
+    font-family: Arial, sans-serif; /* O la fuente que prefieras para la factura */
+    border: 1px solid #eee;
+    padding: 20px;
+    background-color: #fff; /* Fondo blanco para la factura */
+    box-shadow: 0 0 10px rgba(0,0,0,0.1); /* Sombra sutil si se muestra temporalmente */
+}
+
+#invoice-export-template .export-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    border-bottom: 2px solid var(--primary-color); /* Línea azul debajo del encabezado */
+    padding-bottom: 15px;
+    margin-bottom: 25px;
+}
+
+#invoice-export-template .export-logo-container {
+    flex: 1;
+    max-width: 200px; /* Ajusta el tamaño máximo del logo */
+}
+/* Si usas una imagen para el logo, dale estilos: */
+#invoice-export-template #export-logo-placeholder img {
+    max-width: 100%;
+    height: auto;
+}
+/* Si es solo un placeholder de texto: */
+#invoice-export-template #export-logo-placeholder {
+    width: 150px; height: 70px; background-color: #f0f0f0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; color: #888;
+    /* Aquí podrías poner una imagen de tu logo usando background-image o un <img> en el HTML */
+}
+
+
+#invoice-export-template .export-title-status {
+    flex: 2;
+    text-align: center;
+    position: relative; /* Para posicionar el estado de pago si es necesario */
+}
+
+#invoice-export-template .export-title-status h1 { /* Título "FACTURA" */
+    margin: 0 0 10px 0;
+    font-size: 32px; /* Tamaño grande para el título */
+    color: var(--primary-color); /* Color primario */
+    font-weight: bold;
+}
+
+#invoice-export-template .export-header-spacer { /* Para mantener el balance si el logo es pequeño */
+    flex: 1;
+}
+
+
+/* Estilos para el Estado de Pago en la plantilla de exportación */
+#invoice-export-template .payment-status-badge { /* El contenedor del estado de pago */
+    display: inline-block;
+    padding: 8px 18px; /* Más padding para destacar */
+    border-radius: var(--border-radius-pill);
+    font-size: 14px;
+    font-weight: bold;
+    margin-top: 5px;
+    border: 1px solid transparent; /* Borde sutil */
+    line-height: 1.2;
+    text-transform: uppercase;
+}
+
+/* Colores pastel para el fondo del estado y texto más intenso */
+#invoice-export-template .payment-status-badge.export-status-paid {
+    background-color: #e9f5e9; color: #28a745; border-color: #a3d9a5;
+}
+#invoice-export-template .payment-status-badge.export-status-pending {
+    background-color: #fff8e1; color: #ffc107; border-color: #ffeeba;
+}
+#invoice-export-template .payment-status-badge.export-status-overdue {
+    background-color: #fdecea; color: #dc3545; border-color: #f5c6cb;
+}
+#invoice-export-template .payment-status-badge.export-status-in_process {
+    background-color: #e8f7f9; color: #17a2b8; border-color: #bee5eb;
+}
+/* ... (añade más clases para otros estados: partial_payment, disputed, cancelled, uncollectible) ... */
+#invoice-export-template .payment-status-badge.export-status-default { /* Por si acaso */
+    background-color: #e9ecef; color: #495057; border-color: #ced4da;
+}
+
+
+#invoice-export-template .export-info-section {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 30px;
+    font-size: 13px;
+    line-height: 1.6;
+}
+#invoice-export-template .export-client-info,
+#invoice-export-template .export-company-info {
+    width: 48%;
+}
+#invoice-export-template .export-client-info h3,
+#invoice-export-template .export-company-info h3 { /* Títulos "FACTURAR A" y Nombre del Comercio */
+    margin-top: 0;
+    margin-bottom: 12px;
+    font-size: 15px;
+    color: #333; /* Un color oscuro pero no negro puro */
+    border-bottom: 1px solid #eee;
+    padding-bottom: 6px;
+    font-weight: 600;
+}
+#invoice-export-template .export-client-info p strong { /* Nombre del cliente en negrita */
+    font-weight: bold;
+}
+#invoice-export-template .export-company-info {
+    text-align: right;
+}
+#invoice-export-template #export-image-generation-date-line { /* Cambiar nombre a Fecha de Generación de Archivo */
+    font-size: 11px;
+    color: #777;
+    margin-top: 10px;
+}
+
+/* Tabla de Ítems */
+#invoice-export-template .export-items-section table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    margin-bottom: 25px;
+}
+#invoice-export-template #export-items-header-row th {
+    /* Fondo azul degradado con texto blanco */
+    background: linear-gradient(to bottom, var(--primary-color) 0%, var(--primary-hover-color) 100%);
+    color: white;
+    text-align: left;
+    padding: 12px 10px; /* Buen padding */
+    border-bottom: 1px solid var(--primary-hover-color); /* Borde sutil para separar */
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 12px;
+}
+#invoice-export-template #export-items-header-row th.text-right { /* Para Cant, P.U., Total */
+    text-align: right;
+}
+#invoice-export-template #export-invoice-items-body td {
+    padding: 10px;
+    border-bottom: 1px solid #eee; /* Líneas sutiles entre ítems */
+    vertical-align: top; /* Para que el profileInfo se alinee bien */
+}
+#invoice-export-template #export-invoice-items-body tr:nth-child(even) td {
+    background-color: #f9f9f9; /* Fondo alterno para filas */
+}
+#invoice-export-template #export-invoice-items-body .item-profile-details-export {
+    font-size: 0.9em;
+    color: #555;
+    display: block;
+    margin-top: 3px;
+}
+#invoice-export-template #export-invoice-items-body td.text-right {
+    text-align: right;
+}
+
+
+/* Sección de Totales */
+#invoice-export-template .export-totals-section {
+    display: flex;
+    justify-content: flex-end; /* Alinea la caja de totales a la derecha */
+    margin-bottom: 25px;
+    font-size: 14px;
+}
+#invoice-export-template .export-totals-section > div { /* El contenedor de los campos de totales */
+    width: 50%;
+    max-width: 380px; /* Ancho máximo para la caja de totales */
+}
+#invoice-export-template .export-totals-section div[style*="justify-content: space-between"] { /* Cada línea de total */
+    padding: 8px 0;
+    border-bottom: 1px solid #eee;
+    display: flex; /* Asegurar que sea flex para space-between */
+    justify-content: space-between;
+}
+#invoice-export-template .export-totals-section div[style*="justify-content: space-between"] span:first-child {
+    color: var(--text-muted-color); /* Color para etiquetas como "Subtotal:" */
+}
+#invoice-export-template .export-totals-section div[style*="justify-content: space-between"] span:last-child {
+    font-weight: 600; /* Valores en negrita */
+}
+#invoice-export-template .export-totals-section div[style*="font-weight: bold"] { /* La línea del TOTAL A PAGAR */
+    padding: 12px 0;
+    border-top: 2px solid #333; /* Línea superior destacada */
+    margin-top: 5px;
+    font-size: 16px; /* Más grande */
+    font-weight: bold;
+    color: var(--primary-color); /* Color primario para el total final */
+}
+#invoice-export-template .export-totals-section div[style*="font-weight: bold"] span:first-child,
+#invoice-export-template .export-totals-section div[style*="font-weight: bold"] span:last-child {
+    color: var(--primary-color);
+}
+
+
+/* Pie de Página de la Factura */
+#invoice-export-template .export-footer {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px; /* Texto pequeño */
+    color: #555;
+    border-top: 1px solid #eee;
+    padding-top: 15px;
+    margin-top: 20px;
+}
+#invoice-export-template .export-footer-left,
+#invoice-export-template .export-footer-right {
+    width: 48%;
+}
+#invoice-export-template .export-footer-right {
+    text-align: right;
+}
+#invoice-export-template .export-footer p {
+    margin-bottom: 4px;
+}
 
 /* === ESTILOS PARA LA SECCIÓN CLIENTES === */
 .client-list-subsection { margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid var(--border-color); }
