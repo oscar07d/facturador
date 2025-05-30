@@ -450,6 +450,120 @@ function populateExportTemplate(invoiceData) {
     return true;
 }
 
+async function generateInvoicePDF() {
+    const invoiceData = collectInvoiceDataFromForm();
+    if (!invoiceData) {
+        return; // No generar si faltan datos o hay error
+    }
+
+    // Verificar que la plantilla exista antes de poblarla
+    const invoiceElement = document.getElementById('invoice-export-template'); // Moví la obtención aquí para una sola verificación
+    if (!invoiceElement) {
+        alert("Error: No se encontró la plantilla de factura para exportar (#invoice-export-template).");
+        return;
+    }
+    // También verifica que originalInvoiceExportTemplate (usada en populateExportTemplate) esté disponible
+    if (!originalInvoiceExportTemplate) { 
+        console.error("La variable global originalInvoiceExportTemplate no está definida o es null.");
+        alert("Error de configuración: Plantilla original no encontrada.");
+        return;
+    }
+
+
+    if (!populateExportTemplate(invoiceData)) {
+        alert("Error al preparar los datos de la factura para exportar.");
+        return;
+    }
+
+    showLoading(true); // Mostrar pantalla de carga
+
+    // Mostrar temporalmente la plantilla para que html2canvas la capture correctamente
+    const originalDisplayStyle = invoiceElement.style.display;
+    const originalPosition = invoiceElement.style.position;
+    const originalLeft = invoiceElement.style.left;
+    const originalTop = invoiceElement.style.top;
+    const originalZIndex = invoiceElement.style.zIndex;
+
+    // Ajustes para la captura
+    // Es importante que la plantilla sea 'block' y esté en el flujo visible (aunque fuera de pantalla)
+    // para que html2canvas capture todos los estilos correctamente.
+    // Posicionarla fuera de la vista es una técnica común.
+    invoiceElement.style.position = 'fixed'; 
+    invoiceElement.style.left = '-9999px'; // Posicionar muy lejos a la izquierda
+    invoiceElement.style.top = '0px'; 
+    // invoiceElement.style.zIndex = '-1'; // No es necesario si está fuera de la pantalla con left
+    invoiceElement.style.display = 'block';
+
+    // Pequeña demora para asegurar que los estilos se apliquen
+    await new Promise(resolve => setTimeout(resolve, 250)); // Incrementé un poco la demora
+
+    try {
+        const canvas = await html2canvas(invoiceElement, {
+            scale: 2, 
+            useCORS: true, 
+            logging: true,
+            // Puedes añadir más opciones si es necesario, como width y height si la captura no es correcta
+            // windowWidth: invoiceElement.scrollWidth,
+            // windowHeight: invoiceElement.scrollHeight,
+        });
+
+        const imgData = canvas.toDataURL('image/png');
+        
+        // Restaurar estilos de la plantilla original inmediatamente
+        invoiceElement.style.display = originalDisplayStyle || 'none'; // Restaura o asegura 'none'
+        invoiceElement.style.position = originalPosition;
+        invoiceElement.style.left = originalLeft;
+        invoiceElement.style.top = originalTop;
+        invoiceElement.style.zIndex = originalZIndex;
+
+        const { jsPDF } = window.jspdf; 
+        const pdf = new jsPDF({
+            orientation: 'p', 
+            unit: 'mm',       
+            format: 'a4'      
+        });
+
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = pdf.internal.pageSize.getHeight();
+        
+        // Ajuste de márgenes (en mm)
+        const margin = 10; 
+        const contentWidth = pdfWidth - (2 * margin);
+        const contentHeight = pdfHeight - (2 * margin);
+
+        const imgProps = pdf.getImageProperties(imgData);
+        const imgWidth = imgProps.width;
+        const imgHeight = imgProps.height;
+        const ratio = imgWidth / imgHeight;
+
+        let newImgWidth = contentWidth;
+        let newImgHeight = newImgWidth / ratio;
+
+        if (newImgHeight > contentHeight) {
+            newImgHeight = contentHeight;
+            newImgWidth = newImgHeight * ratio;
+        }
+        
+        const x = margin + (contentWidth - newImgWidth) / 2; // Centrar dentro del área de contenido
+        const y = margin;
+
+        pdf.addImage(imgData, 'PNG', x, y, newImgWidth, newImgHeight);
+        pdf.save(`Factura-${invoiceData.invoiceNumberFormatted || 'NroFactura'}.pdf`);
+
+    } catch (error) {
+        console.error("Error al generar el PDF:", error);
+        alert("Hubo un error al generar el PDF. Revisa la consola para más detalles.");
+        // Asegurar que se restauren los estilos en caso de error
+        invoiceElement.style.display = originalDisplayStyle || 'none';
+        invoiceElement.style.position = originalPosition;
+        invoiceElement.style.left = originalLeft;
+        invoiceElement.style.top = originalTop;
+        invoiceElement.style.zIndex = originalZIndex;
+    } finally {
+        showLoading(false);
+    }
+}
+
 // --- Funciones para Modal de Detalle de Factura ---
 function openInvoiceDetailModal(invoiceData, invoiceId) {
     console.log("openInvoiceDetailModal llamada con ID:", invoiceId, "y datos:", invoiceData);
@@ -1363,6 +1477,14 @@ if (customClientSelect) {
         }
     });
 }
+
+if (generateInvoiceFileBtn) {
+    console.log("Botón 'generateInvoiceFileBtn' encontrado, asignando evento..."); // Para depuración
+    generateInvoiceFileBtn.addEventListener('click', generateInvoicePDF);
+} else {
+    console.error("Botón 'generateInvoiceFileBtn' NO encontrado en el DOM."); // Para depuración
+}
+
 document.addEventListener('click', (event) => {
     if (customClientSelect && !customClientSelect.contains(event.target) && customClientOptions) {
         if (customClientOptions.style.display === 'block') {
