@@ -984,17 +984,33 @@ async function permanentlyDeleteClient(clientId) {
 }
 
 if (closeInvoiceDetailModalBtn) {
-    closeInvoiceDetailModalBtn.addEventListener('click', closeInvoiceDetailModal);
+    console.log("Añadiendo listener al botón de cierre del modal."); // Log
+    closeInvoiceDetailModalBtn.addEventListener('click', () => {
+        console.log("Clic en botón de cierre del modal detectado."); // Log
+        closeInvoiceDetailModal();
+    });
+} else {
+    console.warn("Botón de cierre del modal (closeInvoiceDetailModalBtn) no encontrado.");
 }
 
 if (invoiceDetailModal) {
-    // Cerrar el modal si se hace clic en el overlay (fondo)
+    console.log("Añadiendo listener al overlay del modal."); // Log
     invoiceDetailModal.addEventListener('click', (event) => {
-        if (event.target === invoiceDetailModal) { // Si el clic fue directamente en el overlay
+        if (event.target === invoiceDetailModal) { 
+            console.log("Clic en overlay del modal detectado."); // Log
             closeInvoiceDetailModal();
         }
     });
+} else {
+    console.warn("Elemento principal del modal (invoiceDetailModal) no encontrado para listener de overlay.");
 }
+
+document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && invoiceDetailModal && invoiceDetailModal.classList.contains('active')) {
+        console.log("Tecla Escape presionada y modal activo, cerrando modal."); // Log
+        closeInvoiceDetailModal();
+    }
+});
 
 // Opcional: Cerrar el modal con la tecla Escape
 document.addEventListener('keydown', (event) => {
