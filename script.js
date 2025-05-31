@@ -366,10 +366,8 @@ function populateExportTemplate(invoiceData) {
 
     // Código Alfanumérico de Consulta
     const uniqueCodeEl = template.querySelector("#export-unique-alphanumeric-code");
-    if (invoiceData.uniqueCode && uniqueCodeEl) {
-        uniqueCodeEl.textContent = invoiceData.uniqueCode;
-    } else if (uniqueCodeEl) {
-        uniqueCodeEl.textContent = "N/A";
+    if (uniqueCodeEl) {
+        uniqueCodeEl.textContent = invoiceData.uniqueQueryCode || "N/D"; // Muestra el código o N/D si no existe
     }
 
     // --- Poblar Ítems de la Factura ---
