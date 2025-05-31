@@ -458,16 +458,6 @@ function populateExportTemplate(invoiceData) {
     return true;
 }
 
-function generateRandomAlphanumericCode(length = 7) {
-    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    let resultCode = '';
-    const charactersLength = characters.length;
-    for (let i = 0; i < length; i++) {
-        resultCode += characters.charAt(Math.floor(Math.random() * charactersLength));
-    }
-    return resultCode;
-}
-
 // ====> AQUÍ PUEDES PEGAR LA FUNCIÓN isCodeUniqueForUser <====
 async function isCodeUniqueForUser(code, userId) {
     if (!userId || !code) {
