@@ -367,6 +367,17 @@ function populateExportTemplate(invoiceData) {
     // Código Alfanumérico de Consulta
     const uniqueCodeEl = template.querySelector("#export-unique-alphanumeric-code");
     if (uniqueCodeEl) {
+        // DEBUG: Verifica qué hay en invoiceData.uniqueQueryCode
+        console.log("Código de consulta para PDF:", invoiceData.uniqueQueryCode); 
+    
+        if (invoiceData.uniqueQueryCode) {
+            uniqueCodeEl.textContent = invoiceData.uniqueQueryCode;
+        } else {
+            uniqueCodeEl.textContent = "N/D"; // O "---" si no hay código
+        }
+    }
+    
+    if (uniqueCodeEl) {
         uniqueCodeEl.textContent = invoiceData.uniqueQueryCode || "N/D"; // Muestra el código o N/D si no existe
     }
 
