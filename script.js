@@ -1695,6 +1695,7 @@ if (invoiceForm) {
             userId: user.uid,
             invoiceNumberFormatted: `FCT-${formattedInvoiceNumberStr}`,
             invoiceNumberNumeric: actualNumericInvoiceNumber,
+            uniqueQueryCode: uniqueQueryCode,
             invoiceDate: invoiceDateInput.value,
             serviceStartDate: document.getElementById('serviceStartDate')?.value || null,
             emitter: {
@@ -1718,6 +1719,8 @@ if (invoiceForm) {
             createdAt: serverTimestamp()
         };
 
+        console.log("Objeto invoiceToSave ANTES de guardar en Firestore:", JSON.stringify(invoiceToSave, null, 2));
+        
         try {
             const docRef = await addDoc(collection(db, "facturas"), invoiceToSave);
             alert(`¡Factura FCT-${formattedInvoiceNumberStr} guardada! ID: ${docRef.id}`);
