@@ -1685,6 +1685,16 @@ if (invoiceForm) {
             return; 
         }
 
+        const uniqueQueryCode = await getTrulyUniqueCode(user.uid); // Usamos la longitud por defecto (7)
+
+        if (!uniqueQueryCode) {
+            // getTrulyUniqueCode ya muestra una alerta si falla después de los reintentos.
+            showLoading(false);
+            if (saveInvoiceBtn) saveInvoiceBtn.disabled = false;
+            if (generateInvoiceFileBtn) generateInvoiceFileBtn.disabled = false;
+            return; // No continuar si no se pudo generar el código único
+        }
+        
         const invoiceToSave = {
             userId: user.uid,
             invoiceNumberFormatted: `FCT-${formattedInvoiceNumberStr}`,
