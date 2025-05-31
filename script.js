@@ -241,6 +241,16 @@ function collectInvoiceDataFromForm() {
     return invoiceData;
 }
 
+function generateRandomAlphanumericCode(length = 7) { // Longitud por defecto de 7 caracteres
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let resultCode = '';
+    const charactersLength = characters.length;
+    for (let i = 0; i < length; i++) {
+        resultCode += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return resultCode;
+}
+
 function populateExportTemplate(invoiceData) {
     if (!originalInvoiceExportTemplate || !invoiceData) { // Verifica que originalInvoiceExportTemplate exista
         console.error("Plantilla de exportación (#invoice-export-template) o datos de factura no disponibles.");
