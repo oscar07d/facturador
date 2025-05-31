@@ -460,6 +460,58 @@ function populateExportTemplate(invoiceData) {
     return true;
 }
 
+function generateRandomAlphanumericCode(length = 7) {
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let resultCode = '';
+    const charactersLength = characters.length;
+    for (let i = 0; i < length; i++) {
+        resultCode += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return resultCode;
+}
+
+// ====> AQUÍ PUEDES PEGAR LA FUNCIÓN isCodeUniqueForUser <====
+async function isCodeUniqueForUser(code, userId) {
+    if (!userId || !code) {
+        console.error("UserID o Código no proporcionado para la verificación de unicidad.");
+        return false; // No se puede verificar, asume que no es único para ser seguro
+    }
+    try {
+        const facturasRef = collection(db, "facturas");
+        // Buscamos si alguna factura del MISMO usuario ya tiene este código
+        const q = query(facturasRef,
+                        where("userId", "==", userId),
+                        where("uniqueQueryCode", "==", code));
+        
+        const querySnapshot = await getDocs(q);
+        return querySnapshot.empty; // Devuelve true si no se encontraron documentos (el código es único)
+    } catch (error) {
+        console.error("Error al verificar la unicidad del código:", error);
+        return false; // En caso de error, asume que no es único para evitar duplicados
+    }
+}
+
+async function getTrulyUniqueCode(userId, codeLength = 7, maxRetries = 10) {
+    if (!userId) {
+        console.error("UserID no proporcionado para generar código único.");
+        return null;
+    }
+    let attempts = 0;
+    while (attempts < maxRetries) {
+        const newCode = generateRandomAlphanumericCode(codeLength);
+        // Asegúrate que las importaciones de Firestore (collection, query, where, getDocs) estén al inicio de tu script.js
+        const unique = await isCodeUniqueForUser(newCode, userId); // Llama a la función que acabas de pegar
+        if (unique) {
+            return newCode; 
+        }
+        attempts++;
+        console.log(`Intento ${attempts}: Código ${newCode} ya existe, generando uno nuevo.`);
+    }
+    console.error(`No se pudo generar un código único después de ${maxRetries} intentos.`);
+    alert("Error crítico: No se pudo generar un código de consulta único para la factura. Por favor, intenta guardar de nuevo.");
+    return null; 
+}
+
 async function generateInvoicePDF() {
     const invoiceData = collectInvoiceDataFromForm();
     if (!invoiceData) {
