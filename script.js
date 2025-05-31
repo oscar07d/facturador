@@ -460,6 +460,7 @@ function populateExportTemplate(invoiceData) {
 
 // ====> AQUÍ PUEDES PEGAR LA FUNCIÓN isCodeUniqueForUser <====
 async function isCodeUniqueForUser(code, userId) {
+    console.log(`[isCodeUniqueForUser] Verificando código: ${code} para userId: ${userId}`);
     if (!userId || !code) {
         console.error("UserID o Código no proporcionado para la verificación de unicidad.");
         return false; // No se puede verificar, asume que no es único para ser seguro
@@ -472,6 +473,7 @@ async function isCodeUniqueForUser(code, userId) {
                         where("uniqueQueryCode", "==", code));
         
         const querySnapshot = await getDocs(q);
+        console.log(`[isCodeUniqueForUser] Consulta para código ${code} encontró ${querySnapshot.size} documentos.`);
         return querySnapshot.empty; // Devuelve true si no se encontraron documentos (el código es único)
     } catch (error) {
         console.error("Error al verificar la unicidad del código:", error);
@@ -480,6 +482,7 @@ async function isCodeUniqueForUser(code, userId) {
 }
 
 async function getTrulyUniqueCode(userId, codeLength = 7, maxRetries = 10) {
+    console.log("[getTrulyUniqueCode] Iniciando para userId:", userId);
     if (!userId) {
         console.error("UserID no proporcionado para generar código único.");
         return null;
@@ -487,9 +490,13 @@ async function getTrulyUniqueCode(userId, codeLength = 7, maxRetries = 10) {
     let attempts = 0;
     while (attempts < maxRetries) {
         const newCode = generateRandomAlphanumericCode(codeLength);
+        console.log(`[getTrulyUniqueCode] Intento ${attempts + 1}: Código generado = ${newCode}`);
         // Asegúrate que las importaciones de Firestore (collection, query, where, getDocs) estén al inicio de tu script.js
         const unique = await isCodeUniqueForUser(newCode, userId); // Llama a la función que acabas de pegar
+        console.log(`[getTrulyUniqueCode] Código ${newCode} es único para ${userId}? ${unique}`);
+        
         if (unique) {
+            console.log("[getTrulyUniqueCode] Código único encontrado:", newCode);
             return newCode; 
         }
         attempts++;
