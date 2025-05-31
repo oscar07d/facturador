@@ -1674,7 +1674,8 @@ if (invoiceForm) {
         }
 
         const uniqueQueryCode = await getTrulyUniqueCode(user.uid); // Usamos la longitud por defecto (7)
-
+        console.log("Valor devuelto por getTrulyUniqueCode:", uniqueQueryCode);
+        
         if (!uniqueQueryCode) {
             // getTrulyUniqueCode ya muestra una alerta si falla después de los reintentos.
             showLoading(false);
