@@ -795,9 +795,12 @@ input.input-error, select.input-error, textarea.input-error { border-color: var(
 }
 
 #invoice-export-template .export-logo-container {
-    flex: 0 0 180px;
+    flex: 0 0 180px; /* Define un ancho para el contenedor */
+    width: 180px;    /* Fuerza el ancho */
+    height: 70px;    /* Define una altura explícita para el contenedor */
     max-height: 70px;
-    overflow: hidden; /* Ajusta el tamaño máximo del logo */
+    overflow: hidden; /* Ayuda a que el contenido no desborde su contenedor */
+    /* border: 1px dashed red; /* Descomenta para ver los límites del contenedor */
 }
 /* Si usas una imagen para el logo, dale estilos: */
 #invoice-export-template #export-logo-placeholder img {
@@ -1114,12 +1117,12 @@ input.input-error, select.input-error, textarea.input-error { border-color: var(
     max-height: 70px;
 }
 #invoice-export-template #export-logo-image {
-    width: 100%; /* Hace que el SVG/imagen intente llenar el contenedor */
-    height: 100%; /* Hace que el SVG/imagen intente llenar el contenedor */
+    width: 100%; /* La imagen ocupa el 100% del ancho de su contenedor */
+    height: 100%;/* La imagen ocupa el 100% de la altura de su contenedor */
     display: block;
-    object-fit: contain; /* Muy importante para SVGs e imágenes:
-                            Escala la imagen manteniendo su aspect ratio
-                            para que quepa completamente dentro del contenedor. */
+    object-fit: contain; /* Muy importante: Escala la imagen para que quepa DENTRO del contenedor
+                           manteniendo su aspect ratio. No se cortará. */
+    /* object-position: left center; /* Si quieres alinear el logo dentro de su caja, ej. a la izquierda */
 }
 #invoice-export-template .export-title-status {
     flex-grow: 1;
