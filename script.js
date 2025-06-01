@@ -568,8 +568,8 @@ async function generateInvoicePDF() {
             // El ancho de 210mm (A4) es aproximadamente 793.7 píxeles a 96 DPI.
             // Podrías usar invoiceElement.offsetWidth o invoiceElement.scrollWidth si es más preciso
             // para tu caso después de que se le apliquen los estilos y esté 'block'.
-            // width: invoiceElement.scrollWidth, // Intenta usar el ancho real renderizado
-            // height: invoiceElement.scrollHeight, // Intenta usar la altura real renderizada
+            width: invoiceElement.scrollWidth, // Intenta usar el ancho real renderizado
+            height: invoiceElement.scrollHeight, // Intenta usar la altura real renderizada
             // windowWidth: invoiceElement.scrollWidth, // Similar a width
             // windowHeight: invoiceElement.scrollHeight, // Similar a height
             // --- FIN OPCIONES ADICIONALES ---
