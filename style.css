@@ -795,10 +795,13 @@ input.input-error, select.input-error, textarea.input-error { border-color: var(
 }
 
 #invoice-export-template .export-logo-container {
-    width: 180px;  /* Define un ANCHO EXPLÍCITO para el contenedor del logo */
-    height: 70px;   /* Define una ALTURA EXPLÍCITA para el contenedor del logo */
-    /* border: 1px dashed red; /* Descomenta para ver los límites del contenedor */
-    overflow: hidden; /* Es buena idea, aunque con background-size contain no debería ser necesario */
+    width: 250px;  /* ANCHO MÁS GRANDE para el contenedor del logo durante la captura */
+    height: 100px; /* ALTO MÁS GRANDE para el contenedor del logo durante la captura */
+    /* Si necesitas que visualmente en la factura sea más pequeño,
+       ajustaremos el tamaño de la imagen en el PDF con jsPDF,
+       pero para html2canvas, un tamaño base más grande ayuda a la calidad. */
+    /* border: 1px dashed #008000; /* Descomenta para ver el área del contenedor */
+    overflow: hidden; /* Para asegurar que si el SVG escala mal, no rompa el layout */
 }
 
 #invoice-export-template #export-logo-bg-image {
@@ -1127,13 +1130,14 @@ input.input-error, select.input-error, textarea.input-error { border-color: var(
     max-height: 70px;
 }
 
-#invoice-export-template #export-logo-image { /* Si estás usando la etiqueta <img> */
-    width: 100%;    /* La imagen ocupa el 100% del ancho de su contenedor */
-    height: 100%;   /* La imagen ocupa el 100% de la altura de su contenedor */
-    display: block; /* Asegura que se comporte como un bloque */
-    object-fit: contain; /* Escala la imagen para que quepa DENTRO del contenedor
-                           manteniendo su aspect ratio. No se cortará. */
-    object-position: left center; /* Alinea la imagen a la izquierda dentro de su contenedor */
+#invoice-export-template #export-logo-image {
+    display: block;
+    width: 100%;                /* La imagen SVG ocupa el 100% del ancho de su contenedor */
+    height: 100%;               /* La imagen SVG ocupa el 100% del alto de su contenedor */
+    object-fit: contain;        /* ESENCIAL: Escala el SVG manteniendo su proporción para que quepa
+                                   completamente dentro de las dimensiones de su contenedor. */
+    object-position: left center; /* Alinea el SVG a la izquierda y centrado verticalmente
+                                   dentro de su contenedor, si no lo llena por completo. */
 }
 
 #invoice-export-template .export-title-status {
