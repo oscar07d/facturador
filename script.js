@@ -524,61 +524,85 @@ async function generateInvoicePDF() {
         return; // No generar si faltan datos o hay error
     }
 
-    // Verificar que la plantilla exista antes de poblarla
-    const invoiceElement = document.getElementById('invoice-export-template'); // Moví la obtención aquí para una sola verificación
+    const invoiceElement = document.getElementById('invoice-export-template');
     if (!invoiceElement) {
         alert("Error: No se encontró la plantilla de factura para exportar (#invoice-export-template).");
         return;
     }
-    // También verifica que originalInvoiceExportTemplate (usada en populateExportTemplate) esté disponible
     if (!originalInvoiceExportTemplate) { 
         console.error("La variable global originalInvoiceExportTemplate no está definida o es null.");
         alert("Error de configuración: Plantilla original no encontrada.");
         return;
     }
 
-
     if (!populateExportTemplate(invoiceData)) {
         alert("Error al preparar los datos de la factura para exportar.");
         return;
     }
 
-    showLoading(true); // Mostrar pantalla de carga
+    showLoading(true);
 
-    // Mostrar temporalmente la plantilla para que html2canvas la capture correctamente
     const originalDisplayStyle = invoiceElement.style.display;
     const originalPosition = invoiceElement.style.position;
     const originalLeft = invoiceElement.style.left;
     const originalTop = invoiceElement.style.top;
     const originalZIndex = invoiceElement.style.zIndex;
 
-    // Ajustes para la captura
-    // Es importante que la plantilla sea 'block' y esté en el flujo visible (aunque fuera de pantalla)
-    // para que html2canvas capture todos los estilos correctamente.
-    // Posicionarla fuera de la vista es una técnica común.
     invoiceElement.style.position = 'fixed'; 
-    invoiceElement.style.left = '-9999px'; // Posicionar muy lejos a la izquierda
-    invoiceElement.style.top = '0px'; 
-    // invoiceElement.style.zIndex = '-1'; // No es necesario si está fuera de la pantalla con left
+    invoiceElement.style.left = '-9999px'; 
+    invoiceElement.style.top = '0px';  
     invoiceElement.style.display = 'block';
 
-    // Pequeña demora para asegurar que los estilos se apliquen
-    await new Promise(resolve => setTimeout(resolve, 250)); // Incrementé un poco la demora
+    await new Promise(resolve => setTimeout(resolve, 300)); // Un poco más de tiempo por si acaso
 
     try {
+        // --- INICIO DE AJUSTES EN html2canvas ---
         const canvas = await html2canvas(invoiceElement, {
             scale: 2, 
             useCORS: true, 
-            logging: true,
-            // Puedes añadir más opciones si es necesario, como width y height si la captura no es correcta
-            // windowWidth: invoiceElement.scrollWidth,
-            // windowHeight: invoiceElement.scrollHeight,
+            logging: true, // Mantenlo en true mientras depuras
+            
+            // --- OPCIONES ADICIONALES (DESCOMENTA PARA PROBAR SI ES NECESARIO) ---
+            // A veces, especificar el ancho y alto puede ayudar si la detección automática falla.
+            // Necesitarías obtener el ancho renderizado del elemento.
+            // El ancho de 210mm (A4) es aproximadamente 793.7 píxeles a 96 DPI.
+            // Podrías usar invoiceElement.offsetWidth o invoiceElement.scrollWidth si es más preciso
+            // para tu caso después de que se le apliquen los estilos y esté 'block'.
+            // width: invoiceElement.scrollWidth, // Intenta usar el ancho real renderizado
+            // height: invoiceElement.scrollHeight, // Intenta usar la altura real renderizada
+            // windowWidth: invoiceElement.scrollWidth, // Similar a width
+            // windowHeight: invoiceElement.scrollHeight, // Similar a height
+            // --- FIN OPCIONES ADICIONALES ---
+
+            onclone: (documentCloned) => {
+                // Esta función se ejecuta después de que html2canvas clona el DOM
+                // y ANTES de que lo renderice en el canvas.
+                // Es útil para asegurar que ciertos estilos se apliquen o para cargar imágenes.
+                
+                const logoImgElement = documentCloned.querySelector('#export-logo-image');
+                if (logoImgElement) {
+                    console.log("Logo encontrado en el clon del DOM para html2canvas.");
+                    // Asegurar estilos para el logo dentro del clon.
+                    // Esto puede ayudar si los estilos no se heredan o aplican bien en el clon.
+                    logoImgElement.style.maxWidth = '100%';
+                    logoImgElement.style.maxHeight = '100%';
+                    logoImgElement.style.objectFit = 'contain';
+                    logoImgElement.style.display = 'block'; // Asegurar que sea block
+
+                    // Si es un SVG y tienes problemas, a veces forzar sus atributos de tamaño aquí puede ayudar,
+                    // pero `object-fit: contain` en un `<img>` debería ser suficiente.
+                } else {
+                    console.warn("Logo #export-logo-image no encontrado en el clon del DOM para html2canvas.");
+                }
+
+                // Puedes añadir más lógica aquí si otros elementos necesitan ajustes en el clon.
+            }
         });
+        // --- FIN DE AJUSTES EN html2canvas ---
 
         const imgData = canvas.toDataURL('image/png');
         
-        // Restaurar estilos de la plantilla original inmediatamente
-        invoiceElement.style.display = originalDisplayStyle || 'none'; // Restaura o asegura 'none'
+        invoiceElement.style.display = originalDisplayStyle || 'none';
         invoiceElement.style.position = originalPosition;
         invoiceElement.style.left = originalLeft;
         invoiceElement.style.top = originalTop;
@@ -593,8 +617,6 @@ async function generateInvoicePDF() {
 
         const pdfWidth = pdf.internal.pageSize.getWidth();
         const pdfHeight = pdf.internal.pageSize.getHeight();
-        
-        // Ajuste de márgenes (en mm)
         const margin = 10; 
         const contentWidth = pdfWidth - (2 * margin);
         const contentHeight = pdfHeight - (2 * margin);
@@ -612,7 +634,7 @@ async function generateInvoicePDF() {
             newImgWidth = newImgHeight * ratio;
         }
         
-        const x = margin + (contentWidth - newImgWidth) / 2; // Centrar dentro del área de contenido
+        const x = margin + (contentWidth - newImgWidth) / 2;
         const y = margin;
 
         pdf.addImage(imgData, 'PNG', x, y, newImgWidth, newImgHeight);
@@ -621,7 +643,6 @@ async function generateInvoicePDF() {
     } catch (error) {
         console.error("Error al generar el PDF:", error);
         alert("Hubo un error al generar el PDF. Revisa la consola para más detalles.");
-        // Asegurar que se restauren los estilos en caso de error
         invoiceElement.style.display = originalDisplayStyle || 'none';
         invoiceElement.style.position = originalPosition;
         invoiceElement.style.left = originalLeft;
@@ -631,6 +652,11 @@ async function generateInvoicePDF() {
         showLoading(false);
     }
 }
+
+// La asignación del evento al botón permanece igual:
+// if (generateInvoiceFileBtn) {
+//     generateInvoiceFileBtn.addEventListener('click', generateInvoicePDF);
+// }
 
 // --- Funciones para Modal de Detalle de Factura ---
 function openInvoiceDetailModal(invoiceData, invoiceId) {
