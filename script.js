@@ -1243,6 +1243,12 @@ async function loadAndDisplayInvoices() {
                         <span class="status-badge status-${statusClassName.toLowerCase()}">${statusText}</span>
                     </div>
                     <div class="invoice-list-client">${invoice.client?.name || 'N/A'}</div>
+
+                    ${invoice.uniqueQueryCode ? 
+                        `<div class="invoice-list-query-code">Cód. Consulta: <strong>${invoice.uniqueQueryCode}</strong></div>` 
+                        : ''
+                    }
+                    
                     <div class="invoice-list-details">
                         <span class="invoice-list-date">Fecha: ${invoice.invoiceDate || 'N/A'}</span>
                         <span class="invoice-list-total">${(invoice.totals?.grandTotal || 0).toLocaleString('es-CO', { style: 'currency', currency: 'COP' })}</span>
