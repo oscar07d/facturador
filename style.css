@@ -795,23 +795,23 @@ input.input-error, select.input-error, textarea.input-error { border-color: var(
 }
 
 #invoice-export-template .export-logo-container {
-    width: 180px;     /* Ancho fijo y generoso para el contenedor del logo */
-    height: 75px;    /* Alto fijo y generoso para el contenedor del logo */
-    /* flex: 0 0 180px; /* Puedes comentar o quitar esto si estableces width y height fijos */
-    /* max-height: 75px; /* Ya controlado por height */
-    overflow: hidden;  /* Para evitar desbordamientos inesperados */
-    /* border: 1px dashed #00f; /* Descomenta para depurar el tamaño del contenedor */
+    width: 180px;  /* Define un ANCHO EXPLÍCITO para el contenedor del logo */
+    height: 70px;   /* Define una ALTURA EXPLÍCITA para el contenedor del logo */
+    /* border: 1px dashed red; /* Descomenta para ver los límites del contenedor */
+    overflow: hidden; /* Es buena idea, aunque con background-size contain no debería ser necesario */
 }
 
 #invoice-export-template #export-logo-bg-image {
-    width: 100%;
-    height: 100%;
-    background-image: url('../img/Logo OSCAR 07D Studios.svg'); /* Ajusta la ruta si style.css está en otra carpeta */
+    width: 100%; /* El div ocupa todo el contenedor */
+    height: 100%; /* El div ocupa todo el contenedor */
+    background-image: url('img/Logo OSCAR 07D Studios.svg'); /* <= ¡VERIFICA ESTA RUTA! */
+                                                             /* Si style.css está en la raíz y img es una carpeta hermana,
+                                                                sería url('img/Logo OSCAR 07D Studios.svg') */
     background-repeat: no-repeat;
-    background-position: left center; /* Logo a la izquierda, centrado verticalmente */
-    background-size: contain; /* Escala para que quepa manteniendo proporción */
+    background-position: left center; /* Alinea el logo a la izquierda y centrado verticalmente */
+    background-size: contain;         /* Escala el logo para que quepa sin cortarse, manteniendo proporción */
+    /* border: 1px solid blue; /* Descomenta para ver los límites de este div interno */
 }
-
 /* Si usas una imagen para el logo, dale estilos: */
 #invoice-export-template #export-logo-placeholder img {
     max-width: 100%;
