@@ -795,21 +795,21 @@ input.input-error, select.input-error, textarea.input-error { border-color: var(
 }
 
 #invoice-export-template .export-logo-container {
-    width: 200px;  /* Aumenta el ancho base del contenedor para la captura */
-    height: 80px;   /* Aumenta la altura base del contenedor para la captura */
-    /* flex: 0 0 200px; también funciona si prefieres flex-basis */
-    max-height: none; /* Temporalmente quitar max-height si interfiere con el tamaño de captura deseado */
-    overflow: visible; /* Para asegurar que nada se corte durante la captura si el SVG es más grande */
-    /* border: 1px dashed green; /* Para depurar el tamaño real del contenedor */
+    width: 180px;     /* Ancho fijo y generoso para el contenedor del logo */
+    height: 75px;    /* Alto fijo y generoso para el contenedor del logo */
+    /* flex: 0 0 180px; /* Puedes comentar o quitar esto si estableces width y height fijos */
+    /* max-height: 75px; /* Ya controlado por height */
+    overflow: hidden;  /* Para evitar desbordamientos inesperados */
+    /* border: 1px dashed #00f; /* Descomenta para depurar el tamaño del contenedor */
 }
 
-#invoice-export-template #export-logo-bg-image { /* El nuevo div */
+#invoice-export-template #export-logo-bg-image {
     width: 100%;
     height: 100%;
-    background-image: url('img/Logo OSCAR 07D Studios.svg'); /* Ruta relativa a tu CSS o HTML */
+    background-image: url('../img/Logo OSCAR 07D Studios.svg'); /* Ajusta la ruta si style.css está en otra carpeta */
     background-repeat: no-repeat;
-    background-position: center center; /* O left center, top left, etc. */
-    background-size: contain; /* Escala la imagen para que quepa manteniendo proporción */
+    background-position: left center; /* Logo a la izquierda, centrado verticalmente */
+    background-size: contain; /* Escala para que quepa manteniendo proporción */
 }
 
 /* Si usas una imagen para el logo, dale estilos: */
@@ -1127,11 +1127,13 @@ input.input-error, select.input-error, textarea.input-error { border-color: var(
     max-height: 70px;
 }
 
-#invoice-export-template #export-logo-image {
-    width: 100%;
-    height: 100%;
-    object-fit: contain; /* Mantiene la proporción dentro del contenedor más grande */
-    display: block;
+#invoice-export-template #export-logo-image { /* Si estás usando la etiqueta <img> */
+    width: 100%;    /* La imagen ocupa el 100% del ancho de su contenedor */
+    height: 100%;   /* La imagen ocupa el 100% de la altura de su contenedor */
+    display: block; /* Asegura que se comporte como un bloque */
+    object-fit: contain; /* Escala la imagen para que quepa DENTRO del contenedor
+                           manteniendo su aspect ratio. No se cortará. */
+    object-position: left center; /* Alinea la imagen a la izquierda dentro de su contenedor */
 }
 
 #invoice-export-template .export-title-status {
