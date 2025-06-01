@@ -601,15 +601,16 @@ async function generateInvoicePDF() {
             onclone: (documentCloned) => {
                 const logoImgInClone = documentCloned.querySelector('#export-logo-image');
                 if (logoImgInClone) {
-                    // Estos estilos aseguran que la imagen se comporte bien dentro de su contenedor en el clon
                     logoImgInClone.style.display = 'block';
-                    logoImgInClone.style.width = '100%'; 
-                    logoImgInClone.style.height = '100%';
+                    // Quitamos el width y height 100% aquí para dejar que max-width/max-height y auto hagan su trabajo
+                    // Si los estilos CSS ya tienen width: auto y height: auto, esto no es necesario.
+                    // Lo importante es que el CSS del contenedor y el object-fit estén bien.
+                    logoImgInClone.style.maxWidth = '100%'; // Debería tomar el 100% del .export-logo-container
+                    logoImgInClone.style.maxHeight = '100%';// Debería tomar el 100% del .export-logo-container
+                    logoImgInClone.style.width = 'auto';
+                    logoImgInClone.style.height = 'auto';
                     logoImgInClone.style.objectFit = 'contain';
                     logoImgInClone.style.objectPosition = 'left center';
-                    // console.log('Logo #export-logo-image (PNG) encontrado y estilos asegurados en el clon.');
-                } else {
-                    // console.warn('Logo #export-logo-image NO encontrado en el DOM clonado.');
                 }
             }
         });
