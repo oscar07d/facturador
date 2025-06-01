@@ -281,42 +281,58 @@ function populateExportTemplate(invoiceData) {
     
     // --- Poblar Datos del Emisor (Tu Comercio) ---
     const emitterNameEl = template.querySelector("#export-emitter-name");
-    if (emitterNameEl) emitterNameEl.textContent = invoiceData.emitter?.name || "Nombre de tu Comercio";
-    
-    const emitterAddressLineEl = template.querySelector("#export-emitter-address-line");
-    const emitterAddressEl = template.querySelector("#export-emitter-address");
-    if (invoiceData.emitter?.address) {
-        if (emitterAddressEl) emitterAddressEl.textContent = invoiceData.emitter.address;
-        if (emitterAddressLineEl) emitterAddressLineEl.style.display = 'block';
-    } else if (emitterAddressLineEl) {
-        emitterAddressLineEl.style.display = 'none';
+    // El H3 para el nombre del comercio:
+    if (emitterNameEl) {
+        emitterNameEl.textContent = invoiceData.emitter?.name || "OSCAR 07D Studios"; // Nombre de tu estudio
+        console.log("Emitter Name en PDF:", emitterNameEl.textContent); // DEBUG
     }
 
+    // NIT/ID
     const emitterIdLineEl = template.querySelector("#export-emitter-id-line");
     const emitterIdEl = template.querySelector("#export-emitter-id");
-    if (invoiceData.emitter?.id) {
-        if (emitterIdEl) emitterIdEl.textContent = invoiceData.emitter.id;
-        if (emitterIdLineEl) emitterIdLineEl.style.display = 'block';
+    if (invoiceData.emitter?.id && emitterIdEl) {
+        emitterIdEl.textContent = invoiceData.emitter.id;
+        if (emitterIdLineEl) emitterIdLineEl.style.display = 'block'; // O 'flex' si es un contenedor flex
+        console.log("Emitter ID en PDF:", invoiceData.emitter.id); // DEBUG
     } else if (emitterIdLineEl) {
         emitterIdLineEl.style.display = 'none';
+        console.log("Emitter ID Line ocultada para PDF"); // DEBUG
     }
 
+    // Dirección
+    const emitterAddressLineEl = template.querySelector("#export-emitter-address-line");
+    const emitterAddressEl = template.querySelector("#export-emitter-address");
+    if (invoiceData.emitter?.address && emitterAddressEl) {
+        emitterAddressEl.textContent = invoiceData.emitter.address;
+        if (emitterAddressLineEl) emitterAddressLineEl.style.display = 'block';
+        console.log("Emitter Address en PDF:", invoiceData.emitter.address); // DEBUG
+    } else if (emitterAddressLineEl) {
+        emitterAddressLineEl.style.display = 'none';
+        console.log("Emitter Address Line ocultada para PDF"); // DEBUG
+    }
+
+    // Teléfono
     const emitterPhoneLineEl = template.querySelector("#export-emitter-phone-line");
     const emitterPhoneEl = template.querySelector("#export-emitter-phone");
-    if (invoiceData.emitter?.phone) {
-        if (emitterPhoneEl) emitterPhoneEl.textContent = invoiceData.emitter.phone;
+    if (invoiceData.emitter?.phone && emitterPhoneEl) {
+        emitterPhoneEl.textContent = invoiceData.emitter.phone;
         if (emitterPhoneLineEl) emitterPhoneLineEl.style.display = 'block';
+        console.log("Emitter Phone en PDF:", invoiceData.emitter.phone); // DEBUG
     } else if (emitterPhoneLineEl) {
         emitterPhoneLineEl.style.display = 'none';
+        console.log("Emitter Phone Line ocultada para PDF"); // DEBUG
     }
 
+    // Email
     const emitterEmailLineEl = template.querySelector("#export-emitter-email-line");
     const emitterEmailEl = template.querySelector("#export-emitter-email");
-    if (invoiceData.emitter?.email) {
-        if (emitterEmailEl) emitterEmailEl.textContent = invoiceData.emitter.email;
+    if (invoiceData.emitter?.email && emitterEmailEl) {
+        emitterEmailEl.textContent = invoiceData.emitter.email;
         if (emitterEmailLineEl) emitterEmailLineEl.style.display = 'block';
+        console.log("Emitter Email en PDF:", invoiceData.emitter.email); // DEBUG
     } else if (emitterEmailLineEl) {
         emitterEmailLineEl.style.display = 'none';
+        console.log("Emitter Email Line ocultada para PDF"); // DEBUG
     }
 
     // --- Fecha de Generación del Archivo ---
