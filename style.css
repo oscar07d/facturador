@@ -795,26 +795,25 @@ input.input-error, select.input-error, textarea.input-error { border-color: var(
 }
 
 #invoice-export-template .export-logo-container {
-    width: 180px;  /* Ancho MÁXIMO que quieres que ocupe el logo */
-    height: 70px;   /* Alto MÁXIMO que quieres para el logo */
-    display: flex; /* Para ayudar con la alineación si la imagen es más pequeña */
-    justify-content: flex-start; /* Alinea el logo a la izquierda dentro del contenedor */
-    align-items: center;     /* Centra el logo verticalmente dentro del contenedor */
-    /* border: 1px dashed #008000; /* Descomenta para ver el área real del contenedor */
-    overflow: hidden; /* Evita que la imagen se desborde si algo sale mal */
+    width: 180px;
+    height: 70px;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    /* border: 1px dashed #008000; */
+    overflow: hidden; 
 }
 
 #invoice-export-template #export-logo-bg-image {
-    width: 100%; /* El div ocupa todo el contenedor */
-    height: 100%; /* El div ocupa todo el contenedor */
-    background-image: url('img/Logo OSCAR 07D Studios.svg'); /* <= ¡VERIFICA ESTA RUTA! */
-                                                             /* Si style.css está en la raíz y img es una carpeta hermana,
-                                                                sería url('img/Logo OSCAR 07D Studios.svg') */
+    width: 100%;
+    height: 100%; 
+    background-image: url('img/Logo OSCAR 07D Studios.svg');
     background-repeat: no-repeat;
-    background-position: left center; /* Alinea el logo a la izquierda y centrado verticalmente */
-    background-size: contain;         /* Escala el logo para que quepa sin cortarse, manteniendo proporción */
-    /* border: 1px solid blue; /* Descomenta para ver los límites de este div interno */
+    background-position: left center;
+    background-size: contain;
+    /* border: 1px solid blue; */
 }
+
 /* Si usas una imagen para el logo, dale estilos: */
 #invoice-export-template #export-logo-placeholder img {
     max-width: 100%;
