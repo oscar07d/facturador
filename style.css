@@ -795,10 +795,13 @@ input.input-error, select.input-error, textarea.input-error { border-color: var(
 }
 
 #invoice-export-template .export-logo-container {
-    width: 180px;  /* Ancho que quieres que ocupe el logo en la factura */
-    height: 70px;   /* Alto máximo que quieres para el logo */
-    /* border: 1px dashed #008000; /* Descomenta para ver el área del contenedor */
-    overflow: hidden; 
+    width: 180px;  /* Ancho MÁXIMO que quieres que ocupe el logo */
+    height: 70px;   /* Alto MÁXIMO que quieres para el logo */
+    display: flex; /* Para ayudar con la alineación si la imagen es más pequeña */
+    justify-content: flex-start; /* Alinea el logo a la izquierda dentro del contenedor */
+    align-items: center;     /* Centra el logo verticalmente dentro del contenedor */
+    /* border: 1px dashed #008000; /* Descomenta para ver el área real del contenedor */
+    overflow: hidden; /* Evita que la imagen se desborde si algo sale mal */
 }
 
 #invoice-export-template #export-logo-bg-image {
@@ -1129,11 +1132,15 @@ input.input-error, select.input-error, textarea.input-error { border-color: var(
 
 #invoice-export-template #export-logo-image { /* Tu etiqueta <img> */
     display: block;
-    width: 100%;                /* La imagen se ajustará al ancho del contenedor */
-    height: 100%;               /* La imagen se ajustará al alto del contenedor */
-    object-fit: contain;        /* Muy importante: Escala la imagen para que quepa DENTRO 
-                                   del contenedor manteniendo su proporción, sin cortarse. */
-    object-position: left center; /* Alinea la imagen a la izquierda si no llena todo el contenedor */
+    max-width: 100%;    /* La imagen no será más ancha que su contenedor */
+    max-height: 100%;   /* La imagen no será más alta que su contenedor */
+    width: auto;        /* El navegador calculará el ancho para mantener la proporción,
+                           basado en la altura que ocupe (limitada por max-height) */
+    height: auto;       /* El navegador calculará la altura para mantener la proporción,
+                           basado en el ancho que ocupe (limitado por max-width) */
+    object-fit: contain; /* ASEGURA que la imagen se escale manteniendo su proporción
+                           y quepa completamente dentro del contenedor.
+                           NO se estirará ni se cortará. */
 }
 
 #invoice-export-template .export-title-status {
