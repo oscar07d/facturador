@@ -601,12 +601,13 @@ async function generateInvoicePDF() {
             onclone: (documentCloned) => {
                 const logoImgInClone = documentCloned.querySelector('#export-logo-image');
                 if (logoImgInClone) {
+                    // Estos estilos aseguran que la imagen se comporte bien dentro de su contenedor en el clon
                     logoImgInClone.style.display = 'block';
-                    logoImgInClone.style.width = '100%';
+                    logoImgInClone.style.width = '100%'; 
                     logoImgInClone.style.height = '100%';
                     logoImgInClone.style.objectFit = 'contain';
                     logoImgInClone.style.objectPosition = 'left center';
-                    // console.log('Logo #export-logo-image encontrado y estilos asegurados en el clon.');
+                    // console.log('Logo #export-logo-image (PNG) encontrado y estilos asegurados en el clon.');
                 } else {
                     // console.warn('Logo #export-logo-image NO encontrado en el DOM clonado.');
                 }
