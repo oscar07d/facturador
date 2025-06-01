@@ -574,44 +574,22 @@ async function generateInvoicePDF() {
     try {
         // --- INICIO DE AJUSTES EN html2canvas ---
         const canvas = await html2canvas(invoiceElement, {
-            scale: 2, 
-            useCORS: true, 
-            logging: true, // Mantenlo en true mientras depuras
-            
-            // --- OPCIONES ADICIONALES (DESCOMENTA PARA PROBAR SI ES NECESARIO) ---
-            // A veces, especificar el ancho y alto puede ayudar si la detección automática falla.
-            // Necesitarías obtener el ancho renderizado del elemento.
-            // El ancho de 210mm (A4) es aproximadamente 793.7 píxeles a 96 DPI.
-            // Podrías usar invoiceElement.offsetWidth o invoiceElement.scrollWidth si es más preciso
-            // para tu caso después de que se le apliquen los estilos y esté 'block'.
-            width: invoiceElement.scrollWidth, // Intenta usar el ancho real renderizado
-            height: invoiceElement.scrollHeight, // Intenta usar la altura real renderizada
-            // windowWidth: invoiceElement.scrollWidth, // Similar a width
-            // windowHeight: invoiceElement.scrollHeight, // Similar a height
-            // --- FIN OPCIONES ADICIONALES ---
-
+            scale: 2,
+            useCORS: true,
+            logging: true,
             onclone: (documentCloned) => {
-                // Esta función se ejecuta después de que html2canvas clona el DOM
-                // y ANTES de que lo renderice en el canvas.
-                // Es útil para asegurar que ciertos estilos se apliquen o para cargar imágenes.
+                const logoContainer = documentCloned.querySelector('.export-logo-container');
+                const logoImg = documentCloned.querySelector('#export-logo-image');
                 
-                const logoImgElement = documentCloned.querySelector('#export-logo-image');
-                if (logoImgElement) {
-                    console.log("Logo encontrado en el clon del DOM para html2canvas.");
-                    // Asegurar estilos para el logo dentro del clon.
-                    // Esto puede ayudar si los estilos no se heredan o aplican bien en el clon.
-                    logoImgElement.style.maxWidth = '100%';
-                    logoImgElement.style.maxHeight = '100%';
-                    logoImgElement.style.objectFit = 'contain';
-                    logoImgElement.style.display = 'block'; // Asegurar que sea block
-
-                    // Si es un SVG y tienes problemas, a veces forzar sus atributos de tamaño aquí puede ayudar,
-                    // pero `object-fit: contain` en un `<img>` debería ser suficiente.
-                } else {
-                    console.warn("Logo #export-logo-image no encontrado en el clon del DOM para html2canvas.");
+                if (logoContainer) {
+                    logoContainer.style.width = '400px'; // Temporalmente un tamaño mayor para la captura
+                    logoContainer.style.height = '150px';// Temporalmente un tamaño mayor
                 }
-
-                // Puedes añadir más lógica aquí si otros elementos necesitan ajustes en el clon.
+                if (logoImg) {
+                    logoImg.style.width = '100%';
+                    logoImg.style.height = '100%';
+                    logoImg.style.objectFit = 'contain';
+                }
             }
         });
         // --- FIN DE AJUSTES EN html2canvas ---
