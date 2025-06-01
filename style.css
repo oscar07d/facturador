@@ -795,12 +795,9 @@ input.input-error, select.input-error, textarea.input-error { border-color: var(
 }
 
 #invoice-export-template .export-logo-container {
-    width: 280px;  /* AUMENTAMOS BASTANTE EL ANCHO para la captura */
-    height: 100px; /* AUMENTAMOS BASTANTE LA ALTURA para la captura */
-    /* Estas dimensiones son para que html2canvas capture una imagen grande del logo.
-       El tamaño visual final en el PDF lo controlaremos con jsPDF si es necesario,
-       o si este tamaño ya se ve bien en la proporción de la factura, perfecto. */
-    /* border: 1px dashed green; /* Para depurar el tamaño real del contenedor */
+    width: 180px;  /* Ancho que quieres que ocupe el logo en la factura */
+    height: 70px;   /* Alto máximo que quieres para el logo */
+    /* border: 1px dashed #008000; /* Descomenta para ver el área del contenedor */
     overflow: hidden; 
 }
 
@@ -1130,13 +1127,13 @@ input.input-error, select.input-error, textarea.input-error { border-color: var(
     max-height: 70px;
 }
 
-#invoice-export-template #export-logo-image { /* La etiqueta <img> */
+#invoice-export-template #export-logo-image { /* Tu etiqueta <img> */
     display: block;
-    width: 100%;    /* La imagen ocupa el 100% del ancho de su contenedor */
-    height: 100%;   /* La imagen ocupa el 100% del alto de su contenedor */
-    object-fit: contain; /* Escala el SVG para que quepa DENTRO del contenedor
-                           manteniendo su proporción. No se cortará. */
-    object-position: left center; /* Alinea el SVG a la izquierda dentro de su contenedor */
+    width: 100%;                /* La imagen se ajustará al ancho del contenedor */
+    height: 100%;               /* La imagen se ajustará al alto del contenedor */
+    object-fit: contain;        /* Muy importante: Escala la imagen para que quepa DENTRO 
+                                   del contenedor manteniendo su proporción, sin cortarse. */
+    object-position: left center; /* Alinea la imagen a la izquierda si no llena todo el contenedor */
 }
 
 #invoice-export-template .export-title-status {
