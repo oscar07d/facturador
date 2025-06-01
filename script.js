@@ -715,6 +715,11 @@ function openInvoiceDetailModal(invoiceData, invoiceId) {
     // Detalles de la Factura
     detailsHTML += `<h3>Detalles de la Factura</h3>`;
     detailsHTML += `<p><strong>Número:</strong> ${invoiceData.invoiceNumberFormatted || 'N/A'}</p>`;
+
+    if (invoiceData.uniqueQueryCode) {
+        detailsHTML += `<p><strong>Código Consulta:</strong> ${invoiceData.uniqueQueryCode}</p>`;
+    }
+    
     detailsHTML += `<p><strong>Fecha:</strong> ${invoiceData.invoiceDate ? new Date(invoiceData.invoiceDate + 'T00:00:00').toLocaleDateString('es-CO', {day: '2-digit', month: '2-digit', year: 'numeric'}) : 'N/A'}</p>`;
     if (invoiceData.serviceStartDate) {
         detailsHTML += `<p><strong>Inicio Servicio:</strong> ${new Date(invoiceData.serviceStartDate + 'T00:00:00').toLocaleDateString('es-CO', {day: '2-digit', month: '2-digit', year: 'numeric'})}</p>`;
