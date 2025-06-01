@@ -755,6 +755,20 @@ input.input-error, select.input-error, textarea.input-error { border-color: var(
 .invoice-list-header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 10px; border-bottom: 1px dashed var(--border-color); } 
 .invoice-list-number { font-weight: 600; font-size: 1.1rem; color: var(--primary-color); }
 .invoice-list-client { font-size: 1.05rem; color: var(--text-color); font-weight: 500; }
+
+.invoice-list-query-code {
+    font-size: 0.8em; /* Un poco más pequeño que el texto principal del ítem */
+    color: var(--text-muted-color, #6c757d); /* Color grisáceo */
+    margin-top: 4px; /* Pequeño espacio arriba */
+    margin-bottom: 4px; /* Pequeño espacio abajo */
+    /* text-align: right; */ /* Descomenta si prefieres alinearlo a la derecha */
+}
+
+.invoice-list-query-code strong {
+    color: var(--text-color, #212529); /* Hacer el código un poco más oscuro */
+    font-weight: 600;
+}
+
 .invoice-list-details { display: flex; justify-content: space-between; font-size: 0.9rem; color: var(--text-muted-color); flex-wrap: wrap; gap: 10px; }
 .invoice-list-date, .invoice-list-total { flex-basis: calc(50% - 5px); min-width: 120px; }
 .invoice-list-total { font-weight: 600; color: var(--text-color); text-align: right; }
