@@ -538,24 +538,20 @@ async function getTrulyUniqueCode(userId, codeLength = 7, maxRetries = 10) {
 async function generateInvoicePDF() {
     const invoiceData = collectInvoiceDataFromForm();
     if (!invoiceData) {
-        // collectInvoiceDataFromForm ya debería haber mostrado una alerta si hay error.
-        return; 
+        // La función collectInvoiceDataFromForm ya debería manejar las alertas si faltan datos.
+        return;
     }
 
-    // Es buena práctica usar el mismo elemento consistentemente.
-    // Si originalInvoiceExportTemplate es el elemento de la plantilla, úsalo directamente.
-    // Si no, obtén invoiceElement aquí.
-    const invoiceElement = document.getElementById('invoice-export-template'); 
-
+    const invoiceElement = document.getElementById('invoice-export-template');
     if (!invoiceElement) {
         alert("Error: Plantilla de factura (#invoice-export-template) no encontrada en el DOM.");
         return;
     }
     // Si populateExportTemplate usa una variable global 'originalInvoiceExportTemplate', 
-    // asegúrate de que esté definida.
+    // esta verificación también es importante.
     if (typeof originalInvoiceExportTemplate === 'undefined' || !originalInvoiceExportTemplate) { 
         console.error("La variable global originalInvoiceExportTemplate (usada por populateExportTemplate) no está definida o es null.");
-        alert("Error de configuración: Plantilla base (originalInvoiceExportTemplate) no encontrada para poblar.");
+        alert("Error de configuración: Plantilla base (originalInvoiceExportTemplate) no encontrada para poblar los datos.");
         return;
     }
 
@@ -573,61 +569,52 @@ async function generateInvoicePDF() {
         left: invoiceElement.style.left,
         top: invoiceElement.style.top,
         zIndex: invoiceElement.style.zIndex,
-        transform: invoiceElement.style.transform // Guardar transform si lo usas
+        transform: invoiceElement.style.transform // Guardar transform también
     };
 
     // Preparar la plantilla para la captura por html2canvas
-    // Se posiciona temporalmente para asegurar una renderización precisa.
     invoiceElement.style.position = 'fixed';
-    invoiceElement.style.left = '0px';      // Renderizar en la esquina visible (0,0)
+    invoiceElement.style.left = '0px'; // Posicionar en la esquina visible para renderizado preciso
     invoiceElement.style.top = '0px';
-    invoiceElement.style.zIndex = '-1';     // Ponerla detrás de todo si (0,0) causa parpadeo visual.
-                                            // Alternativa: invoiceElement.style.left = '-9999px'; (moverla fuera de la pantalla)
-    // invoiceElement.style.transform = 'none'; // Limpiar transformaciones temporales si las usas para ocultar
-    invoiceElement.style.display = 'block'; // Esencial para que html2canvas calcule dimensiones
+    invoiceElement.style.zIndex = '-1'; // Intentar ponerla detrás, si no funciona, usar left: '-9999px'
+    // invoiceElement.style.left = '-9999px'; // Alternativa para moverla completamente fuera de la pantalla
+    invoiceElement.style.transform = 'none'; // Limpiar transformaciones que puedan interferir
+    invoiceElement.style.display = 'block'; // Esencial para que tenga dimensiones
 
-    // Forzar un reflujo/repintado del navegador (a veces ayuda con SVGs o estilos complejos)
-    // Acceder a offsetHeight es una forma de forzarlo.
-    if (invoiceElement.offsetHeight) { /* No se necesita hacer nada con el valor */ }
+    // Forzar un reflujo del navegador
+    if (invoiceElement.offsetHeight) { /* Acceder a offsetHeight */ }
     
-    // Pequeña demora para asegurar que el navegador haya renderizado completamente
-    await new Promise(resolve => setTimeout(resolve, 400)); // Puedes ajustar este tiempo
+    await new Promise(resolve => setTimeout(resolve, 400)); // Demora para asegurar renderizado
 
     try {
         const canvas = await html2canvas(invoiceElement, {
-            scale: 3, // Escala aumentada para mayor resolución de captura
-            useCORS: true, // Necesario si tu plantilla carga imágenes de otros dominios
-            logging: true, // Habilita para ver logs detallados de html2canvas en la consola (útil para depurar)
-            allowTaint: true, // Puede ayudar con algunos SVGs o recursos externos
-            // foreignObjectRendering: true, // Prueba esta opción si los SVGs siguen dando problemas
+            scale: 3, // Escala aumentada para mayor resolución
+            useCORS: true,
+            logging: true, // Habilita para ver logs de html2canvas (cambia a false en producción)
+            allowTaint: true, // Puede ayudar con algunos SVGs/imágenes
+            // foreignObjectRendering: true, // Prueba si los SVGs siguen dando problemas
             
-            // Opciones de tamaño (generalmente es mejor que html2canvas las infiera del elemento
-            // si el CSS del elemento define bien su tamaño, ej. width: 210mm):
-            // width: invoiceElement.scrollWidth,
-            // height: invoiceElement.scrollHeight,
-            // windowWidth: document.documentElement.scrollWidth, // O el ancho del invoiceElement
-            // windowHeight: document.documentElement.scrollHeight, // O el alto del invoiceElement
+            // Opcional: Definir el ancho y alto de la ventana de captura si es necesario
+            // windowWidth: invoiceElement.scrollWidth,
+            // windowHeight: invoiceElement.scrollHeight,
 
             onclone: (documentCloned) => {
-                // Esta función se ejecuta sobre el DOM clonado ANTES de renderizarlo a canvas.
                 const logoImgInClone = documentCloned.querySelector('#export-logo-image');
                 if (logoImgInClone) {
-                    // Re-aplicar estilos al logo en el clon puede ayudar
                     logoImgInClone.style.display = 'block';
-                    logoImgInClone.style.width = '100%'; // Relativo al .export-logo-container
-                    logoImgInClone.style.height = '100%';// Relativo al .export-logo-container
+                    logoImgInClone.style.width = '100%';
+                    logoImgInClone.style.height = '100%';
                     logoImgInClone.style.objectFit = 'contain';
                     logoImgInClone.style.objectPosition = 'left center';
                     // console.log('Logo #export-logo-image encontrado y estilos asegurados en el clon.');
                 } else {
                     // console.warn('Logo #export-logo-image NO encontrado en el DOM clonado.');
                 }
-                // Puedes añadir más manipulaciones al documentCloned aquí si otros elementos lo necesitan.
             }
         });
 
         // Restaurar estilos de la plantilla original inmediatamente después de la captura
-        invoiceElement.style.display = originalStyles.display || 'none';
+        invoiceElement.style.display = originalStyles.display || 'none'; // Asegura que vuelva a estar oculto
         invoiceElement.style.position = originalStyles.position;
         invoiceElement.style.left = originalStyles.left;
         invoiceElement.style.top = originalStyles.top;
@@ -636,7 +623,8 @@ async function generateInvoicePDF() {
 
         const imgData = canvas.toDataURL('image/png', 1.0); // PNG de máxima calidad
 
-        const { jsPDF } = window.jspdf; // Asumiendo que jsPDF está en el scope global desde el CDN
+        // Usar jsPDF (asegúrate que window.jspdf.jsPDF esté disponible si usas CDN)
+        const { jsPDF } = window.jspdf; 
         const pdf = new jsPDF({
             orientation: 'p', // 'portrait'
             unit: 'mm',       // unidades en milímetros
@@ -671,7 +659,7 @@ async function generateInvoicePDF() {
         console.error("Error detallado al generar el PDF:", error);
         alert("Hubo un error al generar el PDF. Por favor, revisa la consola para más detalles técnicos.");
         
-        // Asegurar que se restauren los estilos en caso de error
+        // Asegurar que se restauren los estilos en caso de error también
         invoiceElement.style.display = originalStyles.display || 'none';
         invoiceElement.style.position = originalStyles.position;
         invoiceElement.style.left = originalStyles.left;
@@ -680,9 +668,10 @@ async function generateInvoicePDF() {
         invoiceElement.style.transform = originalStyles.transform;
 
     } finally {
-        showLoading(false);
+        showLoading(false); // Ocultar pantalla de carga en cualquier caso
     }
 }
+
 // La asignación del evento al botón permanece igual:
 // if (generateInvoiceFileBtn) {
 //     generateInvoiceFileBtn.addEventListener('click', generateInvoicePDF);
