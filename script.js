@@ -543,7 +543,7 @@ async function getTrulyUniqueCode(userId, codeLength = 7, maxRetries = 10) {
     return null; 
 }
 
-async function generateInvoicePDF(invoiceDataSource) { // El parámetro ya estaba aquí, perfecto.
+async function generateInvoicePDF(invoiceDataSource) {
     let invoiceDataToUse;
 
     if (typeof invoiceDataSource === 'string' && invoiceDataSource === 'form') {
@@ -552,12 +552,10 @@ async function generateInvoicePDF(invoiceDataSource) { // El parámetro ya estab
         invoiceDataToUse = invoiceDataSource;
     } else {
         alert("Fuente de datos para PDF no válida o no proporcionada.");
-        console.error("generateInvoicePDF: invoiceDataSource no es válido:", invoiceDataSource);
         return;
     }
 
     if (!invoiceDataToUse) {
-        console.log("generateInvoicePDF: invoiceDataToUse es null o undefined después de procesar la fuente.");
         return;
     }
 
@@ -570,13 +568,8 @@ async function generateInvoicePDF(invoiceDataSource) { // El parámetro ya estab
     }
 
     const invoiceElement = document.getElementById('invoice-export-template');
-    if (!invoiceElement) { 
-        alert("Error: Plantilla de factura (#invoice-export-template) no encontrada en el DOM.");
-        return;
-    }
-    if (typeof originalInvoiceExportTemplate === 'undefined' || !originalInvoiceExportTemplate) { 
-        console.error("La variable global originalInvoiceExportTemplate (usada por populateExportTemplate) no está definida o es null.");
-        alert("Error de configuración: Plantilla base (originalInvoiceExportTemplate) no encontrada para poblar los datos.");
+    if (!invoiceElement || (typeof originalInvoiceExportTemplate !== 'undefined' && !originalInvoiceExportTemplate) ) {
+        alert("Error: Plantilla de factura o referencia original no encontrada.");
         return;
     }
 
@@ -593,75 +586,51 @@ async function generateInvoicePDF(invoiceDataSource) { // El parámetro ya estab
         left: invoiceElement.style.left,
         top: invoiceElement.style.top,
         zIndex: invoiceElement.style.zIndex,
-        transform: invoiceElement.style.transform,
-        backgroundColor: invoiceElement.style.backgroundColor // Guardar también el fondo si lo cambias
+        // No necesitamos guardar transform si siempre lo vamos a poner a 'none' y luego restaurar
+        // transform: invoiceElement.style.transform 
     };
 
-    // Preparar plantilla para captura
+    // --- AJUSTE CLAVE PARA OCULTAR LA PLANTILLA DURANTE LA CAPTURA ---
     invoiceElement.style.position = 'fixed';
-    invoiceElement.style.left = '0px'; 
-    invoiceElement.style.top = '0px';
-    // === CAMBIO SUGERIDO: Aumentar zIndex temporalmente y asegurar fondo ===
-    invoiceElement.style.zIndex = '10001'; // Para que esté por encima de otros elementos (ej. el modal)
-    invoiceElement.style.backgroundColor = '#fff'; // Asegurar fondo blanco para la captura
-    // === FIN CAMBIO SUGERIDO ===
-    invoiceElement.style.transform = 'none'; 
-    invoiceElement.style.display = 'block'; 
-
-    if (invoiceElement.offsetHeight) { /* Forzar reflujo */ }
+    invoiceElement.style.left = '-9999px'; // Mover muy lejos a la izquierda, fuera de la pantalla
+    invoiceElement.style.top = '0px';      // La posición top no importa tanto si está tan lejos a la izquierda
+    // invoiceElement.style.zIndex = 'auto'; // zIndex no es crucial si está fuera de pantalla
+    invoiceElement.style.display = 'block'; // Esencial para que html2canvas calcule dimensiones
+    // --- FIN DEL AJUSTE ---
     
-    await new Promise(resolve => setTimeout(resolve, 400)); // Mantener una demora razonable
+    if (invoiceElement.offsetHeight) { /* Forzar reflujo */ }
+    await new Promise(resolve => setTimeout(resolve, 400));
 
     try {
         const canvas = await html2canvas(invoiceElement, {
             scale: 3, 
             useCORS: true,
-            logging: true, // Mantenlo en true mientras depuras el logo
+            logging: false, // Poner en true para depurar html2canvas si es necesario
             allowTaint: true,
-            // === CAMBIO SUGERIDO: Usar scrollWidth/Height para windowWidth/Height ===
             windowWidth: invoiceElement.scrollWidth, 
             windowHeight: invoiceElement.scrollHeight,
-            // === FIN CAMBIO SUGERIDO ===
-            
+            // Asegúrate de que el scrollX y scrollY sean 0 para la captura del elemento posicionado
+            scrollX: 0,
+            scrollY: 0,
             onclone: (documentCloned) => {
-                const logoContainerInClone = documentCloned.querySelector('.export-logo-container');
                 const logoImgInClone = documentCloned.querySelector('#export-logo-image');
-
-                // === CAMBIO SUGERIDO: Aplicar estilos al contenedor y a la imagen en el clon ===
-                if (logoContainerInClone) {
-                    // Estas dimensiones deben coincidir con las que quieres para la captura
-                    // y con las que tienes en tu CSS para .export-logo-container
-                    logoContainerInClone.style.width = '180px'; // Ejemplo, usa tu valor de CSS
-                    logoContainerInClone.style.height = '70px'; // Ejemplo, usa tu valor de CSS
-                    logoContainerInClone.style.display = 'flex'; // O el display que uses
-                    logoContainerInClone.style.justifyContent = 'flex-start';
-                    logoContainerInClone.style.alignItems = 'center';
-                    logoContainerInClone.style.overflow = 'hidden';
-                }
                 if (logoImgInClone) {
                     logoImgInClone.style.display = 'block';
-                    logoImgInClone.style.maxWidth = '100%';
-                    logoImgInClone.style.maxHeight = '100%';
-                    logoImgInClone.style.width = 'auto'; 
-                    logoImgInClone.style.height = 'auto';
-                    logoImgInClone.style.objectFit = 'contain'; 
+                    logoImgInClone.style.width = '100%';
+                    logoImgInClone.style.height = '100%';
+                    logoImgInClone.style.objectFit = 'contain';
                     logoImgInClone.style.objectPosition = 'left center';
-                    console.log('Estilos del logo aplicados en clon para html2canvas.');
-                } else {
-                    console.warn('Logo #export-logo-image NO encontrado en el DOM clonado.');
                 }
-                // === FIN CAMBIO SUGERIDO ===
             }
         });
 
-        // Restaurar estilos originales (incluyendo backgroundColor)
+        // Restaurar estilos de la plantilla original inmediatamente
         invoiceElement.style.display = originalStyles.display || 'none';
         invoiceElement.style.position = originalStyles.position;
         invoiceElement.style.left = originalStyles.left;
         invoiceElement.style.top = originalStyles.top;
         invoiceElement.style.zIndex = originalStyles.zIndex;
-        invoiceElement.style.transform = originalStyles.transform;
-        invoiceElement.style.backgroundColor = originalStyles.backgroundColor;
+        // invoiceElement.style.transform = originalStyles.transform; // Restaurar si lo guardaste
 
 
         const imgData = canvas.toDataURL('image/png', 1.0); 
@@ -697,14 +666,12 @@ async function generateInvoicePDF(invoiceDataSource) { // El parámetro ya estab
         console.error("Error detallado al generar el PDF:", error);
         alert("Hubo un error al generar el PDF. Por favor, revisa la consola para más detalles técnicos.");
         
-        // Restaurar estilos en caso de error
         invoiceElement.style.display = originalStyles.display || 'none';
         invoiceElement.style.position = originalStyles.position;
         invoiceElement.style.left = originalStyles.left;
         invoiceElement.style.top = originalStyles.top;
         invoiceElement.style.zIndex = originalStyles.zIndex;
-        invoiceElement.style.transform = originalStyles.transform;
-        invoiceElement.style.backgroundColor = originalStyles.backgroundColor;
+        // invoiceElement.style.transform = originalStyles.transform;
 
     } finally {
         showLoading(false);
