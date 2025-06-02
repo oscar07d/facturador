@@ -124,7 +124,7 @@ const ivaAmountSpan = document.getElementById('ivaAmount');
 const totalAmountSpan = document.getElementById('totalAmount');
 
 const saveInvoiceBtn = document.getElementById('saveInvoiceBtn');
-const generateInvoiceFileBtn = document.getElementById('generateInvoiceFileBtn');
+// const generateInvoiceFileBtn = document.getElementById('generateInvoiceFileBtn');
 
 // --- Variables Globales ---
 const paymentStatusDetails = {
@@ -1625,12 +1625,12 @@ if (customClientSelect) {
     });
 }
 
-if (generateInvoiceFileBtn) {
+/* if (generateInvoiceFileBtn) {
     console.log("Botón 'generateInvoiceFileBtn' encontrado, asignando evento..."); // Para depuración
     generateInvoiceFileBtn.addEventListener('click', generateInvoicePDF);
 } else {
     console.error("Botón 'generateInvoiceFileBtn' NO encontrado en el DOM."); // Para depuración
-}
+} */
 
 document.addEventListener('click', (event) => {
     if (customClientSelect && !customClientSelect.contains(event.target) && customClientOptions) {
