@@ -701,12 +701,12 @@ async function generateInvoicePDF(invoiceDataSource) { // <--- PARÁMETRO AÑADI
     }
 }
 
-if (generateInvoiceFileBtn) {
-    console.log("Asignando evento a generateInvoiceFileBtn (botón del formulario)");
-    generateInvoiceFileBtn.addEventListener('click', () => generateInvoicePDF('form')); // Pasa 'form'
-} else {
-    console.error("Botón generateInvoiceFileBtn no encontrado en el DOM");
-}
+// if (generateInvoiceFileBtn) {
+//    console.log("Asignando evento a generateInvoiceFileBtn (botón del formulario)");
+//    generateInvoiceFileBtn.addEventListener('click', () => generateInvoicePDF('form')); // Pasa 'form'
+//} else {
+//    console.error("Botón generateInvoiceFileBtn no encontrado en el DOM");
+//}
 
 // --- Funciones para Modal de Detalle de Factura ---
 function openInvoiceDetailModal(invoiceData, invoiceId) {
