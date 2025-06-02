@@ -1640,15 +1640,83 @@ body.modal-active {
 }
 
 .modal-footer {
-    padding-top: 15px; /* Reducido */
-    margin-top: 15px;  /* Reducido */
+    padding-top: 15px; 
+    margin-top: 15px;  
     border-top: 1px solid var(--border-color);
-    text-align: right;
-    flex-shrink: 0; /* Para que no se encoja */
+    text-align: right; /* Esto puede quitarse si display:flex y justify-content lo manejan */
+    flex-shrink: 0;
+    /* NUEVOS ESTILOS PARA EL FOOTER DEL MODAL PARA ALINEAR BOTONES */
+    display: flex; 
+    justify-content: flex-end; 
+    gap: 10px; 
+    flex-wrap: wrap; 
 }
 
 .modal-footer .btn {
     margin-left: 10px;
+}
+
+.btn-icon {
+    padding: 8px 12px; /* Ajusta el padding si es necesario */
+    font-size: 0.85rem; /* Tamaño de fuente para el texto del botón */
+}
+
+.btn-icon .icon-svg {
+    width: 16px;  /* Tamaño del icono SVG */
+    height: 16px;
+    margin-right: 6px; /* Espacio entre el icono y el texto */
+    vertical-align: middle; /* Alinear icono con el texto */
+}
+
+/* Estilos para botones "outline" (si no los tienes ya) */
+.btn-secondary-outline {
+    background-color: transparent;
+    color: var(--secondary-color, #6c757d);
+    border: 1px solid var(--secondary-color, #6c757d);
+}
+.btn-secondary-outline:hover:not(:disabled) {
+    background-color: var(--secondary-color, #6c757d);
+    color: white;
+}
+
+.btn-success-outline {
+    background-color: transparent;
+    color: var(--success-color, #28a745);
+    border: 1px solid var(--success-color, #28a745);
+}
+.btn-success-outline:hover:not(:disabled) {
+    background-color: var(--success-color, #28a745);
+    color: white;
+}
+
+.btn-info-outline {
+    background-color: transparent;
+    color: var(--info-color, #17a2b8);
+    border: 1px solid var(--info-color, #17a2b8);
+}
+.btn-info-outline:hover:not(:disabled) {
+    background-color: var(--info-color, #17a2b8);
+    color: white;
+}
+
+.btn-warning-outline {
+    background-color: transparent;
+    color: var(--warning-color, #ffc107);
+    border: 1px solid var(--warning-color, #ffc107);
+}
+.btn-warning-outline:hover:not(:disabled) {
+    background-color: var(--warning-color, #ffc107);
+    color: var(--text-color, #212529); /* Texto oscuro para fondo amarillo */
+}
+
+.btn-danger-outline { 
+    background-color: transparent;
+    color: var(--danger-color, #dc3545);
+    border: 1px solid var(--danger-color, #dc3545);
+}
+.btn-danger-outline:hover:not(:disabled) {
+    background-color: var(--danger-color, #dc3545);
+    color: white;
 }
 
 /* Media Query para el modal en pantallas pequeñas */
