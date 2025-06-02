@@ -1138,10 +1138,10 @@ input.input-error, select.input-error, textarea.input-error { border-color: var(
     margin-bottom: 8mm;
     border-bottom: 2px solid var(--pdf-primary-color);
 }
-#invoice-export-template .export-logo-container {
+/* #invoice-export-template .export-logo-container {
     flex: 0 0 180px;
     max-height: 70px;
-}
+} */
 
 #invoice-export-template #export-logo-image { /* Tu etiqueta <img> */
     display: block;
