@@ -56,6 +56,12 @@ console.log("Botón de Cierre del Modal:", closeInvoiceDetailModalBtn);
 
 const printInvoiceFromModalBtn = document.getElementById('printInvoiceFromModalBtn');
 
+const modalShareBtn = document.getElementById('modalShareBtn');
+const modalWhatsAppBtn = document.getElementById('modalWhatsAppBtn');
+const modalImageBtn = document.getElementById('modalImageBtn');
+const modalEmailBtn = document.getElementById('modalEmailBtn');
+const modalPdfBtn = document.getElementById('modalPdfBtn');
+
 console.log("DOM Modal - invoiceDetailModal:", invoiceDetailModal);
 console.log("DOM Modal - modalInvoiceTitle:", modalInvoiceTitle);
 console.log("DOM Modal - modalInvoiceDetailsContent:", modalInvoiceDetailsContent);
@@ -683,6 +689,8 @@ async function generateInvoicePDF() {
 
 // --- Funciones para Modal de Detalle de Factura ---
 function openInvoiceDetailModal(invoiceData, invoiceId) {
+    currentInvoiceDataForModalActions = invoiceData; // Guardar datos de la factura actual para los botones del modal
+    currentInvoiceIdForModalActions = invoiceId;   // Guardar ID de la factura actual para los botones del modal
     console.log("openInvoiceDetailModal llamada con ID:", invoiceId, "y datos:", invoiceData);
     if (!invoiceDetailModal || !modalInvoiceTitle || !modalInvoiceDetailsContent) {
         console.error("Elementos del modal no encontrados al intentar abrir.");
