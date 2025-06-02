@@ -348,6 +348,54 @@
             </div>
         </div>
 
+        <div id="templateSelectionModal" class="modal-overlay" style="display: none;">
+            <div class="modal-content small-modal-content">
+                <div class="modal-header">
+                    <h2 id="templateSelectionModalTitle">Seleccionar Tipo de Imagen</h2>
+                    <button id="closeTemplateSelectionModalBtn" class="modal-close-btn">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p>¿Qué tipo de imagen deseas generar/usar?</p>
+                    <div class="form-group">
+                        <label for="isReminderCheckbox">
+                            <input type="checkbox" id="isReminderCheckbox" name="isReminderCheckbox" class="inline-checkbox">
+                            Es un recordatorio de pago
+                        </label>
+                        <small class="form-text text-muted">
+                            Si marcas esto, se usará la plantilla de recordatorio. Si no, se usará la plantilla optimizada para WhatsApp.
+                        </small>
+                    </div>
+                    <div id="imageFormatSelection" style="display: none;" class="form-group">
+                        <label for="imageFormatSelect">Formato de imagen:</label>
+                        <select id="imageFormatSelect" name="imageFormatSelect" class="form-control">
+                            <option value="png">PNG</option>
+                            <option value="jpeg">JPG</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="cancelTemplateSelectionBtn" class="btn btn-secondary">Cancelar</button>
+                    <button type="button" id="proceedWithTemplateSelectionBtn" class="btn btn-primary">Continuar</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="loadingOverlay" class="loading-overlay" style="display: none;">
+        <div class="loading-content">
+            <svg id="Capa_2_loading_logo_overlay" data-name="Capa 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 306.53 264.67" class="loading-logo-spinner">
+              <g id="Capa_2-2_loading_logo_overlay" data-name="Capa 2">
+                <g id="Logo_Negro_loading_logo_overlay" data-name="Logo Negro">
+                  <g id="Logo_loading_logo_overlay">
+                    <path class="logo-path-spinner" d="M191.61,0c-63.46,0-114.92,51.46-114.92,114.92s51.46,114.92,114.92,114.92,114.92-51.46,114.92-114.92S255.08,0,191.61,0Zm0,172.38c-31.73,0-57.46-25.73-57.46-57.46s25.73-57.46,57.46-57.46,57.46,25.73,57.46,57.46-25.73,57.46-57.46,57.46Z"/>
+                    <path class="logo-path-spinner" d="M184.6,241.14c-19.34,14.77-43.48,23.53-69.68,23.53C51.46,264.67,0,213.23,0,149.75,0,94.12,39.53,47.72,92.05,37.1c-16.81,21.48-26.85,48.5-26.85,77.81,0,67.34,52.95,122.56,119.4,126.22Z"/>
+                  </g>
+                </g>
+              </g>
+            </svg>
+            <p>Procesando...</p> 
+        </div>
+    </div>
+
     </div> 
     <div id="payment-reminder-export-template" style="display: none; width: var(--reminder-width, 580px);">
     <div class="reminder-header">
