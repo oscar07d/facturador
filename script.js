@@ -142,6 +142,8 @@ let currentInvoiceItems = [];
 let nextItemId = 0;
 let loadedClients = [];
 let isEditingClient = false;
+let currentInvoiceDataForModalActions = null;
+let currentInvoiceIdForModalActions = null;
 
 // --- Funciones Auxiliares y de UI ---
 const showLoading = (show) => {
