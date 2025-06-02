@@ -809,13 +809,13 @@ input.input-error, select.input-error, textarea.input-error { border-color: var(
 }
 
 #invoice-export-template .export-logo-container {
-    width: 180px;
-    height: 70px;
+    width: 180px;  /* ANCHO para el espacio del logo en el PDF */
+    height: 70px;   /* ALTO para el espacio del logo en el PDF */
     display: flex; 
     justify-content: flex-start; 
     align-items: center;    
     overflow: hidden; 
-    /* border: 1px dashed purple; /* Para depurar TAMAÑO Y POSICIÓN del CONTENEDOR */
+    /* border: 1px dashed purple; */
 }
 
 #invoice-export-template #export-logo-bg-image {
@@ -1143,15 +1143,14 @@ input.input-error, select.input-error, textarea.input-error { border-color: var(
     max-height: 70px;
 }
 
-#invoice-export-template #export-logo-image {
+#invoice-export-template #export-logo-image { /* Tu etiqueta <img> */
     display: block;
     max-width: 100%;   
     max-height: 100%;  
     width: auto;       
     height: auto;      
-    object-fit: contain !important;
+    object-fit: contain; /* Mantiene la proporción y asegura que todo el logo PNG sea visible */
     object-position: left center; 
-    /* border: 1px dashed lime; /* Para depurar TAMAÑO Y POSICIÓN de la IMAGEN DENTRO del contenedor */
 }
 
 #invoice-export-template .export-title-status {
