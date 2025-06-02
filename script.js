@@ -546,10 +546,11 @@ async function getTrulyUniqueCode(userId, codeLength = 7, maxRetries = 10) {
 async function generateInvoicePDF(invoiceDataSource) {
     let invoiceDataToUse;
 
+    // Determinar la fuente de los datos de la factura
     if (typeof invoiceDataSource === 'string' && invoiceDataSource === 'form') {
         invoiceDataToUse = collectInvoiceDataFromForm();
     } else if (typeof invoiceDataSource === 'object' && invoiceDataSource !== null) {
-        invoiceDataToUse = invoiceDataSource;
+        invoiceDataToUse = invoiceDataSource; // Usar datos pasados (ej. desde el modal)
     } else {
         alert("Fuente de datos para PDF no válida o no proporcionada.");
         console.error("generateInvoicePDF: invoiceDataSource no es válido:", invoiceDataSource);
@@ -557,10 +558,12 @@ async function generateInvoicePDF(invoiceDataSource) {
     }
 
     if (!invoiceDataToUse) {
-        console.log("generateInvoicePDF: invoiceDataToUse es null o undefined después de procesar la fuente.");
+        // Si invoiceDataToUse sigue siendo null o undefined (ej. collectInvoiceDataFromForm devolvió null)
+        console.log("generateInvoicePDF: No se pudieron obtener los datos de la factura.");
         return;
     }
 
+    // Asegurar que 'generatedAt' exista en invoiceDataToUse para la plantilla PDF
     if (!invoiceDataToUse.generatedAt) {
         if (invoiceDataToUse.createdAt && invoiceDataToUse.createdAt.toDate) {
             invoiceDataToUse.generatedAt = invoiceDataToUse.createdAt.toDate().toISOString();
@@ -574,6 +577,7 @@ async function generateInvoicePDF(invoiceDataSource) {
         alert("Error: Plantilla de factura (#invoice-export-template) no encontrada en el DOM.");
         return;
     }
+    // Verifica 'originalInvoiceExportTemplate' si populateExportTemplate depende de ella globalmente
     if (typeof originalInvoiceExportTemplate === 'undefined' || !originalInvoiceExportTemplate) { 
         console.error("La variable global originalInvoiceExportTemplate (usada por populateExportTemplate) no está definida o es null.");
         alert("Error de configuración: Plantilla base (originalInvoiceExportTemplate) no encontrada para poblar los datos.");
@@ -587,7 +591,7 @@ async function generateInvoicePDF(invoiceDataSource) {
 
     showLoading(true);
 
-    // Guardar los estilos originales para restaurarlos después
+    // Guardar los estilos originales del elemento de la plantilla para restaurarlos después
     const originalStyles = {
         display: invoiceElement.style.display,
         position: invoiceElement.style.position,
@@ -595,62 +599,70 @@ async function generateInvoicePDF(invoiceDataSource) {
         top: invoiceElement.style.top,
         zIndex: invoiceElement.style.zIndex,
         transform: invoiceElement.style.transform,
-        backgroundColor: invoiceElement.style.backgroundColor // Guardar backgroundColor también
+        backgroundColor: invoiceElement.style.backgroundColor
     };
 
-    // Preparar plantilla para captura
+    // Preparar la plantilla para la captura por html2canvas
     invoiceElement.style.position = 'fixed';
-    invoiceElement.style.left = '-9999px'; // Mover completamente fuera de pantalla para evitar parpadeo
-    invoiceElement.style.top = '0px';     // La posición top no importa tanto si está muy a la izquierda
-    // invoiceElement.style.zIndex = '10001'; // No es tan crucial si está fuera de pantalla con left: -9999px
+    invoiceElement.style.left = '-9999px'; // Mover completamente fuera del área visible
+    invoiceElement.style.top = '0px';
+    // invoiceElement.style.zIndex = '10001'; // No es tan necesario si está fuera de pantalla
     invoiceElement.style.backgroundColor = '#fff'; // Asegurar fondo blanco para la captura
-    invoiceElement.style.display = 'block'; // Esencial para que html2canvas calcule dimensiones
-    invoiceElement.style.transform = 'none'; // Limpiar transformaciones que podrían interferir con la captura
+    invoiceElement.style.display = 'block'; // Esencial para que tenga dimensiones
+    invoiceElement.style.transform = 'none'; // Limpiar transformaciones que puedan interferir
 
-    if (invoiceElement.offsetHeight) { /* Forzar reflujo del navegador */ }
+    // Forzar un reflujo del navegador para asegurar que los estilos se apliquen
+    if (invoiceElement.offsetHeight) { /* Acceder a offsetHeight fuerza el reflujo */ }
     
-    await new Promise(resolve => setTimeout(resolve, 400)); // Demora para asegurar renderizado completo
+    // Pequeña demora para asegurar renderizado completo
+    await new Promise(resolve => setTimeout(resolve, 450)); // Ligeramente aumentada la demora
 
     try {
         const canvas = await html2canvas(invoiceElement, {
-            scale: 3, 
-            useCORS: true,
-            logging: false, // Cambia a true para depurar html2canvas si es necesario
-            allowTaint: true,
-            width: invoiceElement.scrollWidth, // Usar el ancho del contenido del elemento
-            height: invoiceElement.scrollHeight, // Usar el alto del contenido del elemento
+            scale: 3, // Escala alta para intentar mejorar la calidad de la imagen capturada
+            useCORS: true, // Necesario si la plantilla carga imágenes de otros dominios
+            logging: true, // Habilita para ver logs detallados de html2canvas en la consola (útil para depurar)
+            allowTaint: true, // Puede ayudar con algunos tipos de imágenes o SVGs
+            
+            // Definir explícitamente el área de captura basada en el tamaño renderizado del elemento
+            width: invoiceElement.scrollWidth,
+            height: invoiceElement.scrollHeight,
             windowWidth: invoiceElement.scrollWidth, // Darle a html2canvas un "viewport" del tamaño del elemento
             windowHeight: invoiceElement.scrollHeight,
             x: 0, // Capturar desde la esquina superior izquierda del elemento
             y: 0,
+
             onclone: (documentCloned) => {
                 const logoContainerInClone = documentCloned.querySelector('.export-logo-container');
                 const logoImgInClone = documentCloned.querySelector('#export-logo-image');
                 
-                if (logoContainerInClone) {
-                    // Estas dimensiones deben coincidir con las de tu CSS para .export-logo-container
-                    // para asegurar que el logo tenga el espacio correcto para renderizarse.
+                if (logoContainerInClone && logoImgInClone) {
+                    // Forzar dimensiones y estilos al contenedor del logo en el clon
+                    // Estos valores DEBEN COINCIDIR con los que tienes en tu style.css
+                    // para #invoice-export-template .export-logo-container
                     logoContainerInClone.style.width = '180px';  // Ejemplo, ajusta al valor de tu CSS
                     logoContainerInClone.style.height = '70px'; // Ejemplo, ajusta al valor de tu CSS
                     logoContainerInClone.style.display = 'flex';
                     logoContainerInClone.style.justifyContent = 'flex-start';
                     logoContainerInClone.style.alignItems = 'center';
                     logoContainerInClone.style.overflow = 'hidden';
-                }
-                if (logoImgInClone) {
+
+                    // Forzar estilos a la imagen PNG en el clon para asegurar la proporción
                     logoImgInClone.style.display = 'block';
                     logoImgInClone.style.maxWidth = '100%';
                     logoImgInClone.style.maxHeight = '100%';
                     logoImgInClone.style.width = 'auto'; 
                     logoImgInClone.style.height = 'auto'; 
-                    logoImgInClone.style.objectFit = 'contain'; 
+                    logoImgInClone.style.objectFit = 'contain'; // CRUCIAL para mantener la proporción del PNG
                     logoImgInClone.style.objectPosition = 'left center';
                     // console.log('Estilos del logo y contenedor aplicados en clon para html2canvas.');
+                } else {
+                    console.warn('Logo (#export-logo-image) o su contenedor (.export-logo-container) NO encontrado en el DOM clonado por html2canvas.');
                 }
             }
         });
 
-        // Restaurar estilos de la plantilla original inmediatamente
+        // Restaurar estilos de la plantilla original inmediatamente después de la captura
         invoiceElement.style.display = originalStyles.display || 'none';
         invoiceElement.style.position = originalStyles.position;
         invoiceElement.style.left = originalStyles.left;
@@ -661,7 +673,7 @@ async function generateInvoicePDF(invoiceDataSource) {
 
         const imgData = canvas.toDataURL('image/png', 1.0); // PNG de máxima calidad
 
-        const { jsPDF } = window.jspdf; 
+        const { jsPDF } = window.jspdf; // Asumiendo que jsPDF está en el scope global desde el CDN
         const pdf = new jsPDF({
             orientation: 'p', 
             unit: 'mm',       
