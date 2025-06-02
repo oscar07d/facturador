@@ -543,14 +543,13 @@ async function getTrulyUniqueCode(userId, codeLength = 7, maxRetries = 10) {
     return null; 
 }
 
-async function generateInvoicePDF(invoiceDataSource) { // <--- PARÁMETRO AÑADIDO
+async function generateInvoicePDF(invoiceDataSource) { // El parámetro ya estaba aquí, perfecto.
     let invoiceDataToUse;
 
-    // === INICIO DEL BLOQUE QUE ME DISTE PARA MANEJAR invoiceDataSource ===
     if (typeof invoiceDataSource === 'string' && invoiceDataSource === 'form') {
-        invoiceDataToUse = collectInvoiceDataFromForm(); // Para el botón original del formulario
+        invoiceDataToUse = collectInvoiceDataFromForm();
     } else if (typeof invoiceDataSource === 'object' && invoiceDataSource !== null) {
-        invoiceDataToUse = invoiceDataSource; // Para los botones del modal
+        invoiceDataToUse = invoiceDataSource;
     } else {
         alert("Fuente de datos para PDF no válida o no proporcionada.");
         console.error("generateInvoicePDF: invoiceDataSource no es válido:", invoiceDataSource);
@@ -558,46 +557,30 @@ async function generateInvoicePDF(invoiceDataSource) { // <--- PARÁMETRO AÑADI
     }
 
     if (!invoiceDataToUse) {
-        // La alerta ya debería haberse mostrado en collectInvoiceDataFromForm si es 'form' y falla,
-        // o si invoiceDataSource (objeto) era null.
-        // Si invoiceDataSource era un objeto vacío y falló alguna validación interna que no tenemos,
-        // aquí se podría añadir una alerta genérica.
-        // Por ahora, si es un objeto y es null/undefined, la condición anterior ya lo atrapó.
         console.log("generateInvoicePDF: invoiceDataToUse es null o undefined después de procesar la fuente.");
         return;
     }
 
-    // Asegurar que 'generatedAt' exista en invoiceDataToUse.
-    // collectInvoiceDataFromForm ya lo añade. Si invoiceDataToUse viene de otro lado (ej. una factura guardada),
-    // podría no tenerlo, o tener 'createdAt'.
     if (!invoiceDataToUse.generatedAt) {
         if (invoiceDataToUse.createdAt && invoiceDataToUse.createdAt.toDate) {
-            // Si es una factura guardada con timestamp de Firestore, usarlo
             invoiceDataToUse.generatedAt = invoiceDataToUse.createdAt.toDate().toISOString();
         } else {
-            // Si no, usar la fecha actual
             invoiceDataToUse.generatedAt = new Date().toISOString();
         }
     }
-    // === FIN DEL BLOQUE QUE ME DISTE ===
-
-    // Ahora el resto de la función usará 'invoiceDataToUse'
 
     const invoiceElement = document.getElementById('invoice-export-template');
-    if (!invoiceElement ) { 
+    if (!invoiceElement) { 
         alert("Error: Plantilla de factura (#invoice-export-template) no encontrada en el DOM.");
-        // No es necesario verificar originalInvoiceExportTemplate aquí si invoiceElement es lo que usa html2canvas
-        // y populateExportTemplate usa originalInvoiceExportTemplate (que debe estar definida globalmente)
         return;
     }
-    // Verificación para originalInvoiceExportTemplate (usada por populateExportTemplate)
     if (typeof originalInvoiceExportTemplate === 'undefined' || !originalInvoiceExportTemplate) { 
         console.error("La variable global originalInvoiceExportTemplate (usada por populateExportTemplate) no está definida o es null.");
         alert("Error de configuración: Plantilla base (originalInvoiceExportTemplate) no encontrada para poblar los datos.");
         return;
     }
 
-    if (!populateExportTemplate(invoiceDataToUse)) { // <--- USA invoiceDataToUse
+    if (!populateExportTemplate(invoiceDataToUse)) {
         alert("Error al preparar los datos de la factura para la exportación.");
         return;
     }
@@ -610,55 +593,81 @@ async function generateInvoicePDF(invoiceDataSource) { // <--- PARÁMETRO AÑADI
         left: invoiceElement.style.left,
         top: invoiceElement.style.top,
         zIndex: invoiceElement.style.zIndex,
-        transform: invoiceElement.style.transform 
+        transform: invoiceElement.style.transform,
+        backgroundColor: invoiceElement.style.backgroundColor // Guardar también el fondo si lo cambias
     };
 
+    // Preparar plantilla para captura
     invoiceElement.style.position = 'fixed';
     invoiceElement.style.left = '0px'; 
     invoiceElement.style.top = '0px';
-    invoiceElement.style.zIndex = '-1'; 
+    // === CAMBIO SUGERIDO: Aumentar zIndex temporalmente y asegurar fondo ===
+    invoiceElement.style.zIndex = '10001'; // Para que esté por encima de otros elementos (ej. el modal)
+    invoiceElement.style.backgroundColor = '#fff'; // Asegurar fondo blanco para la captura
+    // === FIN CAMBIO SUGERIDO ===
     invoiceElement.style.transform = 'none'; 
     invoiceElement.style.display = 'block'; 
 
     if (invoiceElement.offsetHeight) { /* Forzar reflujo */ }
     
-    await new Promise(resolve => setTimeout(resolve, 400));
+    await new Promise(resolve => setTimeout(resolve, 400)); // Mantener una demora razonable
 
     try {
         const canvas = await html2canvas(invoiceElement, {
             scale: 3, 
             useCORS: true,
-            logging: false, // Cambiado a false para producción, true para depurar
+            logging: true, // Mantenlo en true mientras depuras el logo
             allowTaint: true,
-            windowWidth: document.documentElement.scrollWidth,
-            windowHeight: document.documentElement.scrollHeight,
+            // === CAMBIO SUGERIDO: Usar scrollWidth/Height para windowWidth/Height ===
+            windowWidth: invoiceElement.scrollWidth, 
+            windowHeight: invoiceElement.scrollHeight,
+            // === FIN CAMBIO SUGERIDO ===
+            
             onclone: (documentCloned) => {
+                const logoContainerInClone = documentCloned.querySelector('.export-logo-container');
                 const logoImgInClone = documentCloned.querySelector('#export-logo-image');
+
+                // === CAMBIO SUGERIDO: Aplicar estilos al contenedor y a la imagen en el clon ===
+                if (logoContainerInClone) {
+                    // Estas dimensiones deben coincidir con las que quieres para la captura
+                    // y con las que tienes en tu CSS para .export-logo-container
+                    logoContainerInClone.style.width = '180px'; // Ejemplo, usa tu valor de CSS
+                    logoContainerInClone.style.height = '70px'; // Ejemplo, usa tu valor de CSS
+                    logoContainerInClone.style.display = 'flex'; // O el display que uses
+                    logoContainerInClone.style.justifyContent = 'flex-start';
+                    logoContainerInClone.style.alignItems = 'center';
+                    logoContainerInClone.style.overflow = 'hidden';
+                }
                 if (logoImgInClone) {
                     logoImgInClone.style.display = 'block';
-                    logoImgInClone.style.width = '100%';
-                    logoImgInClone.style.height = '100%';
-                    logoImgInClone.style.objectFit = 'contain';
+                    logoImgInClone.style.maxWidth = '100%';
+                    logoImgInClone.style.maxHeight = '100%';
+                    logoImgInClone.style.width = 'auto'; 
+                    logoImgInClone.style.height = 'auto';
+                    logoImgInClone.style.objectFit = 'contain'; 
                     logoImgInClone.style.objectPosition = 'left center';
+                    console.log('Estilos del logo aplicados en clon para html2canvas.');
+                } else {
+                    console.warn('Logo #export-logo-image NO encontrado en el DOM clonado.');
                 }
+                // === FIN CAMBIO SUGERIDO ===
             }
         });
 
+        // Restaurar estilos originales (incluyendo backgroundColor)
         invoiceElement.style.display = originalStyles.display || 'none';
         invoiceElement.style.position = originalStyles.position;
         invoiceElement.style.left = originalStyles.left;
         invoiceElement.style.top = originalStyles.top;
         invoiceElement.style.zIndex = originalStyles.zIndex;
         invoiceElement.style.transform = originalStyles.transform;
+        invoiceElement.style.backgroundColor = originalStyles.backgroundColor;
+
 
         const imgData = canvas.toDataURL('image/png', 1.0); 
 
         const { jsPDF } = window.jspdf; 
-        const pdf = new jsPDF({
-            orientation: 'p', 
-            unit: 'mm',       
-            format: 'a4'      
-        });
+        const pdf = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4' });
 
         const pdfWidth = pdf.internal.pageSize.getWidth();
         const pdfHeight = pdf.internal.pageSize.getHeight();
@@ -682,19 +691,20 @@ async function generateInvoicePDF(invoiceDataSource) { // <--- PARÁMETRO AÑADI
         const y = margin;
 
         pdf.addImage(imgData, 'PNG', x, y, newImgWidthInPdf, newImgHeightInPdf);
-        // Usar invoiceDataToUse para el nombre del archivo
         pdf.save(`Factura-${invoiceDataToUse.invoiceNumberFormatted || 'NroFactura'}.pdf`);
 
     } catch (error) {
         console.error("Error detallado al generar el PDF:", error);
         alert("Hubo un error al generar el PDF. Por favor, revisa la consola para más detalles técnicos.");
         
+        // Restaurar estilos en caso de error
         invoiceElement.style.display = originalStyles.display || 'none';
         invoiceElement.style.position = originalStyles.position;
         invoiceElement.style.left = originalStyles.left;
         invoiceElement.style.top = originalStyles.top;
         invoiceElement.style.zIndex = originalStyles.zIndex;
         invoiceElement.style.transform = originalStyles.transform;
+        invoiceElement.style.backgroundColor = originalStyles.backgroundColor;
 
     } finally {
         showLoading(false);
