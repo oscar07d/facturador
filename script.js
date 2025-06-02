@@ -543,107 +543,126 @@ async function getTrulyUniqueCode(userId, codeLength = 7, maxRetries = 10) {
     return null; 
 }
 
-async function generateInvoicePDF() {
-    const invoiceData = collectInvoiceDataFromForm();
-    if (!invoiceData) {
-        // La función collectInvoiceDataFromForm ya debería manejar las alertas si faltan datos.
+async function generateInvoicePDF(invoiceDataSource) { // <--- PARÁMETRO AÑADIDO
+    let invoiceDataToUse;
+
+    // === INICIO DEL BLOQUE QUE ME DISTE PARA MANEJAR invoiceDataSource ===
+    if (typeof invoiceDataSource === 'string' && invoiceDataSource === 'form') {
+        invoiceDataToUse = collectInvoiceDataFromForm(); // Para el botón original del formulario
+    } else if (typeof invoiceDataSource === 'object' && invoiceDataSource !== null) {
+        invoiceDataToUse = invoiceDataSource; // Para los botones del modal
+    } else {
+        alert("Fuente de datos para PDF no válida o no proporcionada.");
+        console.error("generateInvoicePDF: invoiceDataSource no es válido:", invoiceDataSource);
         return;
     }
 
-    const invoiceElement = document.getElementById('invoice-export-template');
-    if (!invoiceElement) {
-        alert("Error: Plantilla de factura (#invoice-export-template) no encontrada en el DOM.");
+    if (!invoiceDataToUse) {
+        // La alerta ya debería haberse mostrado en collectInvoiceDataFromForm si es 'form' y falla,
+        // o si invoiceDataSource (objeto) era null.
+        // Si invoiceDataSource era un objeto vacío y falló alguna validación interna que no tenemos,
+        // aquí se podría añadir una alerta genérica.
+        // Por ahora, si es un objeto y es null/undefined, la condición anterior ya lo atrapó.
+        console.log("generateInvoicePDF: invoiceDataToUse es null o undefined después de procesar la fuente.");
         return;
     }
-    // Si populateExportTemplate usa una variable global 'originalInvoiceExportTemplate', 
-    // esta verificación también es importante.
+
+    // Asegurar que 'generatedAt' exista en invoiceDataToUse.
+    // collectInvoiceDataFromForm ya lo añade. Si invoiceDataToUse viene de otro lado (ej. una factura guardada),
+    // podría no tenerlo, o tener 'createdAt'.
+    if (!invoiceDataToUse.generatedAt) {
+        if (invoiceDataToUse.createdAt && invoiceDataToUse.createdAt.toDate) {
+            // Si es una factura guardada con timestamp de Firestore, usarlo
+            invoiceDataToUse.generatedAt = invoiceDataToUse.createdAt.toDate().toISOString();
+        } else {
+            // Si no, usar la fecha actual
+            invoiceDataToUse.generatedAt = new Date().toISOString();
+        }
+    }
+    // === FIN DEL BLOQUE QUE ME DISTE ===
+
+    // Ahora el resto de la función usará 'invoiceDataToUse'
+
+    const invoiceElement = document.getElementById('invoice-export-template');
+    if (!invoiceElement ) { 
+        alert("Error: Plantilla de factura (#invoice-export-template) no encontrada en el DOM.");
+        // No es necesario verificar originalInvoiceExportTemplate aquí si invoiceElement es lo que usa html2canvas
+        // y populateExportTemplate usa originalInvoiceExportTemplate (que debe estar definida globalmente)
+        return;
+    }
+    // Verificación para originalInvoiceExportTemplate (usada por populateExportTemplate)
     if (typeof originalInvoiceExportTemplate === 'undefined' || !originalInvoiceExportTemplate) { 
         console.error("La variable global originalInvoiceExportTemplate (usada por populateExportTemplate) no está definida o es null.");
         alert("Error de configuración: Plantilla base (originalInvoiceExportTemplate) no encontrada para poblar los datos.");
         return;
     }
 
-    if (!populateExportTemplate(invoiceData)) {
+    if (!populateExportTemplate(invoiceDataToUse)) { // <--- USA invoiceDataToUse
         alert("Error al preparar los datos de la factura para la exportación.");
         return;
     }
 
     showLoading(true);
 
-    // Guardar los estilos originales para restaurarlos después
     const originalStyles = {
         display: invoiceElement.style.display,
         position: invoiceElement.style.position,
         left: invoiceElement.style.left,
         top: invoiceElement.style.top,
         zIndex: invoiceElement.style.zIndex,
-        transform: invoiceElement.style.transform // Guardar transform también
+        transform: invoiceElement.style.transform 
     };
 
-    // Preparar la plantilla para la captura por html2canvas
     invoiceElement.style.position = 'fixed';
-    invoiceElement.style.left = '0px'; // Posicionar en la esquina visible para renderizado preciso
+    invoiceElement.style.left = '0px'; 
     invoiceElement.style.top = '0px';
-    invoiceElement.style.zIndex = '-1'; // Intentar ponerla detrás, si no funciona, usar left: '-9999px'
-    // invoiceElement.style.left = '-9999px'; // Alternativa para moverla completamente fuera de la pantalla
-    invoiceElement.style.transform = 'none'; // Limpiar transformaciones que puedan interferir
-    invoiceElement.style.display = 'block'; // Esencial para que tenga dimensiones
+    invoiceElement.style.zIndex = '-1'; 
+    invoiceElement.style.transform = 'none'; 
+    invoiceElement.style.display = 'block'; 
 
-    // Forzar un reflujo del navegador
-    if (invoiceElement.offsetHeight) { /* Acceder a offsetHeight */ }
+    if (invoiceElement.offsetHeight) { /* Forzar reflujo */ }
     
-    await new Promise(resolve => setTimeout(resolve, 400)); // Demora para asegurar renderizado
+    await new Promise(resolve => setTimeout(resolve, 400));
 
     try {
         const canvas = await html2canvas(invoiceElement, {
-            scale: 3, // Escala aumentada para mayor resolución
+            scale: 3, 
             useCORS: true,
-            logging: true, // Habilita para ver logs de html2canvas (cambia a false en producción)
-            allowTaint: true, // Puede ayudar con algunos SVGs/imágenes
-            // foreignObjectRendering: true, // Prueba si los SVGs siguen dando problemas
-            
-            // Opcional: Definir el ancho y alto de la ventana de captura si es necesario
-            // windowWidth: invoiceElement.scrollWidth,
-            // windowHeight: invoiceElement.scrollHeight,
-
+            logging: false, // Cambiado a false para producción, true para depurar
+            allowTaint: true,
+            windowWidth: document.documentElement.scrollWidth,
+            windowHeight: document.documentElement.scrollHeight,
             onclone: (documentCloned) => {
                 const logoImgInClone = documentCloned.querySelector('#export-logo-image');
                 if (logoImgInClone) {
                     logoImgInClone.style.display = 'block';
-                    // Quitamos el width y height 100% aquí para dejar que max-width/max-height y auto hagan su trabajo
-                    // Si los estilos CSS ya tienen width: auto y height: auto, esto no es necesario.
-                    // Lo importante es que el CSS del contenedor y el object-fit estén bien.
-                    logoImgInClone.style.maxWidth = '100%'; // Debería tomar el 100% del .export-logo-container
-                    logoImgInClone.style.maxHeight = '100%';// Debería tomar el 100% del .export-logo-container
-                    logoImgInClone.style.width = 'auto';
-                    logoImgInClone.style.height = 'auto';
+                    logoImgInClone.style.width = '100%';
+                    logoImgInClone.style.height = '100%';
                     logoImgInClone.style.objectFit = 'contain';
                     logoImgInClone.style.objectPosition = 'left center';
                 }
             }
         });
 
-        // Restaurar estilos de la plantilla original inmediatamente después de la captura
-        invoiceElement.style.display = originalStyles.display || 'none'; // Asegura que vuelva a estar oculto
+        invoiceElement.style.display = originalStyles.display || 'none';
         invoiceElement.style.position = originalStyles.position;
         invoiceElement.style.left = originalStyles.left;
         invoiceElement.style.top = originalStyles.top;
         invoiceElement.style.zIndex = originalStyles.zIndex;
         invoiceElement.style.transform = originalStyles.transform;
 
-        const imgData = canvas.toDataURL('image/png', 1.0); // PNG de máxima calidad
+        const imgData = canvas.toDataURL('image/png', 1.0); 
 
-        // Usar jsPDF (asegúrate que window.jspdf.jsPDF esté disponible si usas CDN)
         const { jsPDF } = window.jspdf; 
         const pdf = new jsPDF({
-            orientation: 'p', // 'portrait'
-            unit: 'mm',       // unidades en milímetros
-            format: 'a4'      // tamaño de página A4
+            orientation: 'p', 
+            unit: 'mm',       
+            format: 'a4'      
         });
 
         const pdfWidth = pdf.internal.pageSize.getWidth();
         const pdfHeight = pdf.internal.pageSize.getHeight();
-        const margin = 10; // Margen de 10mm en todos los lados del PDF
+        const margin = 10; 
         const contentWidth = pdfWidth - (2 * margin);
         const contentHeight = pdfHeight - (2 * margin);
 
@@ -659,17 +678,17 @@ async function generateInvoicePDF() {
             newImgWidthInPdf = newImgHeightInPdf * ratio;
         }
         
-        const x = margin + (contentWidth - newImgWidthInPdf) / 2; // Centrar imagen en el área de contenido
-        const y = margin; // Margen superior
+        const x = margin + (contentWidth - newImgWidthInPdf) / 2;
+        const y = margin;
 
         pdf.addImage(imgData, 'PNG', x, y, newImgWidthInPdf, newImgHeightInPdf);
-        pdf.save(`Factura-${invoiceData.invoiceNumberFormatted || 'NroFactura'}.pdf`);
+        // Usar invoiceDataToUse para el nombre del archivo
+        pdf.save(`Factura-${invoiceDataToUse.invoiceNumberFormatted || 'NroFactura'}.pdf`);
 
     } catch (error) {
         console.error("Error detallado al generar el PDF:", error);
         alert("Hubo un error al generar el PDF. Por favor, revisa la consola para más detalles técnicos.");
         
-        // Asegurar que se restauren los estilos en caso de error también
         invoiceElement.style.display = originalStyles.display || 'none';
         invoiceElement.style.position = originalStyles.position;
         invoiceElement.style.left = originalStyles.left;
@@ -678,14 +697,16 @@ async function generateInvoicePDF() {
         invoiceElement.style.transform = originalStyles.transform;
 
     } finally {
-        showLoading(false); // Ocultar pantalla de carga en cualquier caso
+        showLoading(false);
     }
 }
 
-// La asignación del evento al botón permanece igual:
-// if (generateInvoiceFileBtn) {
-//     generateInvoiceFileBtn.addEventListener('click', generateInvoicePDF);
-// }
+if (generateInvoiceFileBtn) {
+    console.log("Asignando evento a generateInvoiceFileBtn (botón del formulario)");
+    generateInvoiceFileBtn.addEventListener('click', () => generateInvoicePDF('form')); // Pasa 'form'
+} else {
+    console.error("Botón generateInvoiceFileBtn no encontrado en el DOM");
+}
 
 // --- Funciones para Modal de Detalle de Factura ---
 function openInvoiceDetailModal(invoiceData, invoiceId) {
@@ -1540,6 +1561,19 @@ document.addEventListener('keydown', (event) => {
         closeInvoiceDetailModal();
     }
 });
+
+if (modalPdfBtn) {
+    modalPdfBtn.addEventListener('click', async () => {
+        if (currentInvoiceDataForModalActions) {
+            // La variable currentInvoiceDataForModalActions se llena cuando abres el modal
+            console.log("Generando PDF desde modal con datos:", currentInvoiceDataForModalActions); // Log para depurar
+            await generateInvoicePDF(currentInvoiceDataForModalActions); // Pasa el objeto de datos
+        } else {
+            alert("No hay datos de factura cargados en el modal para generar el PDF.");
+            console.error("currentInvoiceDataForModalActions es null o undefined al intentar generar PDF desde modal.");
+        }
+    });
+}
 
 // Placeholder para el botón de imprimir/descargar en el modal
 if (printInvoiceFromModalBtn) {
