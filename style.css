@@ -809,13 +809,13 @@ input.input-error, select.input-error, textarea.input-error { border-color: var(
 }
 
 #invoice-export-template .export-logo-container {
-    width: 180px;  /* ANCHO para el espacio del logo en el PDF */
-    height: 70px;   /* ALTO para el espacio del logo en el PDF */
-    display: flex; 
-    justify-content: flex-start; 
-    align-items: center;    
-    overflow: hidden; 
-    /* border: 1px dashed purple; */
+    width: 180px;
+    height: 70px;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    overflow: hidden;
+    /* border: 1px dashed blue; /* Descomenta para ver los límites de este contenedor al diseñar */
 }
 
 #invoice-export-template #export-logo-bg-image {
