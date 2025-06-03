@@ -1581,89 +1581,21 @@ body {
 /* ======================================================= */
 
 /* === ESTILOS PARA LA SECCIÓN CLIENTES === */
-.client-list-subsection {
-    margin-bottom: 30px;
-    padding-bottom: 20px;
-    border-bottom: 1px solid var(--border-color);
-}
-.client-list-subsection:last-child {
-    border-bottom: none;
-    margin-bottom: 0;
-}
 
-.client-list-subsection h3 {
-    font-size: 1.4rem; /* Un poco más grande el título de la subsección */
-    color: var(--secondary-color);
-    margin-bottom: 18px; /* Más espacio debajo del título */
-    font-weight: 600;
-    padding-bottom: 8px;
-    border-bottom: 1px dashed var(--light-gray-color); /* Línea sutil debajo del título de subsección */
-}
+.client-list-subsection { margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid var(--border-color); }
+.client-list-subsection:last-child { border-bottom: none; margin-bottom: 0; }
+.client-list-subsection h3 { font-size: 1.3rem; color: var(--secondary-color); margin-bottom: 15px; }
+.client-list { display: grid; grid-template-columns: 1fr; gap: 15px; }
+.client-list-item { background-color: #fff; border: 1px solid var(--border-color); border-radius: var(--border-radius-m); padding: 15px; box-shadow: var(--box-shadow-light); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+.client-list-item.client-inactive { background-color: #f8f9fa; opacity: 0.7; }
+.client-list-item .client-info { display: flex; flex-direction: column; flex-grow: 1; margin-right: 10px; }
+.client-list-item .client-name { font-weight: 600; font-size: 1.1rem; color: var(--text-color); }
+.client-list-item .client-contact { font-size: 0.9rem; color: var(--text-muted-color); }
+.client-list-item .client-deleted-date { font-size: 0.8rem; color: var(--danger-color); font-style: italic; margin-top: 4px; }
+.client-list-item .client-pills { display: flex; gap: 5px; flex-shrink: 0; }
+.client-list-item .client-actions-list { display: flex; gap: 10px; flex-shrink: 0; }
+.client-list-item .client-actions-list .btn-sm { padding: 5px 10px; font-size: 0.8rem; }
 
-.client-list {
-    display: grid;
-    gap: 20px; /* Espacio entre tarjetas de cliente */
-    grid-template-columns: 1fr; /* Por defecto: 1 columna (móvil) */
-}
-
-.client-list-item {
-    background-color: var(--container-background);
-    border: 1px solid var(--border-color);
-    border-radius: var(--border-radius-m);
-    padding: 18px 20px; /* Padding ajustado */
-    box-shadow: var(--box-shadow-light);
-    transition: box-shadow var(--transition-speed) ease, transform var(--transition-speed) ease;
-    display: flex;
-    flex-direction: column; /* Apilar elementos internos verticalmente por defecto (móvil) */
-    gap: 12px; 
-}
-
-.client-list-item:hover {
-    box-shadow: var(--box-shadow-medium);
-    transform: translateY(-3px); /* Efecto hover más pronunciado */
-}
-
-.client-list-item.client-inactive {
-    background-color: #fdfdfd; /* Fondo casi blanco pero diferente */
-    opacity: 0.75;
-    border-left: 4px solid var(--secondary-color); /* Indicador visual de inactivo */
-}
-
-.client-list-item .client-info {
-    display: flex;
-    flex-direction: column;
-    gap: 3px; /* Menos espacio entre nombre y contacto */
-    flex-grow: 1; /* Para que la sección de info principal ocupe espacio si está en fila */
-    min-width: 0; /* Importante para flexbox y text-overflow */
-}
-
-.client-list-item .client-name {
-    font-weight: 600;
-    font-size: 1.1rem; /* Tamaño de fuente del nombre del cliente */
-    color: var(--text-color);
-    word-break: break-word; /* Para nombres largos */
-}
-
-.client-list-item .client-contact {
-    font-size: 0.85rem;
-    color: var(--text-muted-color);
-    word-break: break-all;
-}
-
-.client-list-item .client-deleted-date {
-    font-size: 0.8rem;
-    color: var(--danger-color);
-    font-style: italic;
-    margin-top: 3px;
-}
-
-.client-list-item .client-pills {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-    margin-top: 8px; /* Espacio si está en layout de columna */
-    align-items: center; /* Alinear píldoras si están en diferentes alturas */
-}
 /* Las clases .option-status-pill y sus variantes de color ya deberían estar definidas
    en tu sección de .custom-select-options y se reutilizarán aquí.
    Si no, necesitarías copiar esas definiciones de píldoras aquí también. */
@@ -1685,162 +1617,280 @@ body {
 }
 
 /* === ESTILOS PARA MODAL DETALLE DE FACTURA === */
-/* (Los estilos del modal de detalle que ya tenías y los de los botones con iconos) */
+
+body.modal-active {
+    overflow: hidden; /* Evita el scroll del body cuando el modal está activo */
+}
+
 .modal-overlay {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.65);
+    background-color: rgba(0, 0, 0, 0.6); /* Fondo semitransparente */
     display: flex;
     justify-content: center;
     align-items: center;
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
+    z-index: 1050; /* Un z-index alto para estar por encima de otros elementos */
+
+    opacity: 0;                /* Inicia transparente */
+    visibility: hidden;        /* Inicia oculto (importante para accesibilidad y transiciones) */
+    pointer-events: none;      /* No interactuable cuando está oculto */
+    /* Transición para ocultar: la visibilidad cambia DESPUÉS de que la opacidad llega a 0 */
     transition: opacity 0.3s ease, visibility 0s linear 0.3s;
-    z-index: 1050; /* Asegúrate de que este z-index sea suficiente */
 }
 
 .modal-overlay.active {
-    opacity: 1;
-    visibility: visible;
-    pointer-events: auto;
+    opacity: 1;                /* Totalmente visible */
+    visibility: visible;       /* Visible */
+    pointer-events: auto;      /* Interactuable */
+    /* Transición para mostrar: la visibilidad cambia INMEDIATAMENTE cuando la opacidad empieza a cambiar */
     transition: opacity 0.3s ease, visibility 0s linear 0s;
 }
 
-.modal-overlay .modal-content {
-    background-color: var(--container-background, #fff);
-    padding: 20px 25px;
-    border-radius: var(--border-radius-m, 15px);
-    box-shadow: var(--box-shadow-medium, 0 8px 25px rgba(0,0,0,0.1));
+.modal-content {
+    background-color: var(--container-background);
+    padding: 25px 30px;
+    border-radius: var(--border-radius-m);
+    box-shadow: var(--box-shadow-medium);
+    width: 90%;
+    max-width: 750px; /* Puedes ajustar este valor */
+    max-height: 85vh; /* Altura máxima, el resto será scroll dentro del modal-body */
     display: flex;
     flex-direction: column;
     position: relative;
-    transform: scale(0.95);
-    transition: transform 0.3s ease-out;
-    max-width: 750px; /* Ancho por defecto para .modal-content */
-    max-height: 85vh;
-    width: 90%;
+    transform: scale(0.95); /* Estado inicial para la animación de escala */
+    transition: transform 0.3s ease; /* Transición para la animación de escala */
 }
-
-.modal-content { background-color: var(--container-background); padding: 25px 30px; border-radius: var(--border-radius-m); box-shadow: var(--box-shadow-medium); width: 90%; max-width: 750px; max-height: 85vh; display: flex; flex-direction: column; position: relative; transform: scale(0.95); transition: transform 0.3s ease; }
 
 .modal-overlay.active .modal-content {
-    transform: scale(1);
+    transform: scale(1); /* Escala final cuando el modal está activo */
 }
 
-.modal-header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 15px; border-bottom: 1px solid var(--border-color); margin-bottom: 15px; flex-shrink: 0; }
-.modal-header h2 { margin: 0; font-size: 1.5rem; color: var(--primary-color); font-weight: 600; }
-.modal-close-btn { background: none; border: none; font-size: 2.2rem; font-weight: 300; color: var(--text-muted-color); cursor: pointer; padding: 0 5px; line-height: 1; transition: color var(--transition-speed) ease; }
-.modal-close-btn:hover { color: var(--danger-color); }
-.modal-body { overflow-y: auto; flex-grow: 1; min-height: 150px; padding-right: 5px; margin-bottom: 15px; }
-#modalInvoiceDetailsContent { font-size: 0.95rem; }
-#modalInvoiceDetailsContent h3 { font-size: 1.1rem; color: var(--secondary-color); margin-top: 15px; margin-bottom: 10px; padding-bottom: 5px; border-bottom: 1px dashed var(--border-color); }
-#modalInvoiceDetailsContent h3:first-child { margin-top: 0; }
-#modalInvoiceDetailsContent p { margin-bottom: 8px; line-height: 1.5; }
-#modalInvoiceDetailsContent strong { font-weight: 600; }
-#modalInvoiceDetailsContent .modal-section-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px 20px; margin-bottom: 15px; }
-#modalInvoiceDetailsContent .modal-items-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.9rem; }
-#modalInvoiceDetailsContent .modal-items-table th, #modalInvoiceDetailsContent .modal-items-table td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border-color); }
-#modalInvoiceDetailsContent .modal-items-table th { background-color: #f8f9fa; font-weight: 500; white-space: nowrap; }
-#modalInvoiceDetailsContent .modal-items-table .text-right { text-align: right; }
-#modalInvoiceDetailsContent .item-profile-details { font-size: 0.8em; color: var(--text-muted-color); display: block; margin-top: 2px; }
-#modalInvoiceDetailsContent .modal-totals-summary { margin-top: 20px; padding-top: 15px; border-top: 1px solid var(--border-color); }
-#modalInvoiceDetailsContent .modal-totals-summary p { font-size: 1rem; margin-bottom: 6px; display: flex; justify-content: space-between; gap: 15px; }
-#modalInvoiceDetailsContent .modal-totals-summary p span:first-child { color: var(--text-muted-color); font-weight: normal; text-align: left; }
-#modalInvoiceDetailsContent .modal-totals-summary p span:last-child { font-weight: 600; text-align: right; }
-#modalInvoiceDetailsContent .modal-totals-summary .modal-grand-total span { font-size: 1.2rem; font-weight: bold; color: var(--primary-color); }
-.modal-footer { padding-top: 15px; margin-top: 15px; border-top: 1px solid var(--border-color); flex-shrink: 0; display: flex; justify-content: flex-end; gap: 10px; flex-wrap: wrap; }
-.modal-footer .btn { margin-left: 0; /* El gap se encarga del espaciado */ } 
-.btn-icon { padding: 8px 12px; font-size: 0.85rem; }
-.btn-icon .icon-svg { width: 16px; height: 16px; margin-right: 6px; vertical-align: middle; }
-.btn-secondary-outline { background-color: transparent; color: var(--secondary-color, #6c757d); border: 1px solid var(--secondary-color, #6c757d); }
-.btn-secondary-outline:hover:not(:disabled) { background-color: var(--secondary-color, #6c757d); color: white; }
-.btn-success-outline { background-color: transparent; color: var(--success-color, #28a745); border: 1px solid var(--success-color, #28a745); }
-.btn-success-outline:hover:not(:disabled) { background-color: var(--success-color, #28a745); color: white; }
-.btn-info-outline { background-color: transparent; color: var(--info-color, #17a2b8); border: 1px solid var(--info-color, #17a2b8); }
-.btn-info-outline:hover:not(:disabled) { background-color: var(--info-color, #17a2b8); color: white; }
-.btn-warning-outline { background-color: transparent; color: var(--warning-color, #ffc107); border: 1px solid var(--warning-color, #ffc107); }
-.btn-warning-outline:hover:not(:disabled) { background-color: var(--warning-color, #ffc107); color: var(--text-color, #212529); }
-.btn-danger-outline { background-color: transparent; color: var(--danger-color, #dc3545); border: 1px solid var(--danger-color, #dc3545); }
-.btn-danger-outline:hover:not(:disabled) { background-color: var(--danger-color, #dc3545); color: white; }
-
-/* Estilos para el Modal de Selección de Plantilla */
-#templateSelectionModal .modal-content { 
-    max-width: 480px;
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 15px;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 15px; /* Ligeramente reducido */
+    flex-shrink: 0; /* Para que no se encoja si el contenido es grande */
 }
 
-#templateSelectionModal .modal-body p {
-    margin-bottom: 18px;
-    font-size: 0.95rem;
-    color: var(--text-color);
+.modal-header h2 { /* Para #modalInvoiceTitle */
+    margin: 0;
+    font-size: 1.5rem;
+    color: var(--primary-color);
+    font-weight: 600;
 }
 
-#templateSelectionModal .modal-header h2 {
-    font-size: 1.3rem;
-    color: var(--text-color); /* O un color específico si lo deseas */
+.modal-close-btn {
+    background: none;
+    border: none;
+    font-size: 2.2rem; /* Un poco más grande para que sea fácil de clickear */
+    font-weight: 300;
+    color: var(--text-muted-color);
+    cursor: pointer;
+    padding: 0 5px;
+    line-height: 1;
+    transition: color var(--transition-speed) ease;
 }
 
-#templateSelectionModal .form-group { margin-bottom: 20px; }
-#templateSelectionModal .form-group label[for="isReminderCheckbox"] { display: flex; align-items: center; font-weight: 500; cursor: pointer; font-size: 1rem; color: var(--text-color); }
-#templateSelectionModal .inline-checkbox { width: 18px; height: 18px; margin-right: 10px; accent-color: var(--primary-color); cursor: pointer; }
-#templateSelectionModal .form-text.text-muted { font-size: 0.85em; color: var(--text-muted-color); display: block; margin-left: 28px; margin-top: 5px; }
-#templateSelectionModal #imageFormatSelection label { font-weight: 500; margin-bottom: 8px; font-size: 0.95rem; }
-#templateSelectionModal #imageFormatSelect.form-control { width: 100%; padding: 10px 12px; border: 1px solid var(--border-color); border-radius: var(--border-radius-s); font-size: 0.95rem; min-height: 42px; background-color: var(--container-background); color: var(--text-color); font-family: 'Poppins', sans-serif; transition: border-color var(--transition-speed) ease, box-shadow var(--transition-speed) ease; }
-#templateSelectionModal #imageFormatSelect.form-control:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25); }
-#templateSelectionModal .modal-footer { display: flex; justify-content: flex-end; gap: 10px; padding-top: 20px; margin-top: 10px; border-top: 1px solid var(--border-color); }
-#templateSelectionModal.modal-overlay { /* Sé más específico si es necesario */
-    z-index: 1060; /* Un valor mayor que el de invoiceDetailModal */
+.modal-close-btn:hover {
+    color: var(--danger-color);
 }
 
-/* === MEDIA QUERIES PARA ADAPTABILIDAD (Generales de la app) === */
-/* ... (tus media queries existentes) ... */
-@media (min-width: 769px) { .form-grid.two-columns { grid-template-columns: repeat(2, 1fr); } .form-grid.three-columns { grid-template-columns: repeat(3, 1fr); } .add-item-form > .form-grid.three-columns.item-details-grid { grid-template-columns: 1fr 1fr auto; } .totals-grid { grid-template-columns: 0.8fr 1.2fr; align-items: flex-start; } .share-actions .button-group { flex-direction: row; } #invoiceListContainer { grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); } .client-list { grid-template-columns: repeat(auto-fit, minmax(450px, 1fr)); } }
-@media (max-width: 992px) { .app-header { padding: 15px 20px; flex-direction: column; gap: 15px; } .logo-app-container { max-width: 220px; } .app-title-container h1 { font-size: 1.5rem; } .app-nav ul { justify-content: center; } .invoice-app-container { padding: 25px; } .form-section { padding: 20px; } .form-section legend { font-size: 1.15rem; } #invoiceListContainer { grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); } .client-list { grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); } }
-@media (max-width: 768px) { body { padding: 15px; } .login-container { max-width: 90%; padding: 25px;} .app-header { gap: 10px; } .logo-app-container { max-width: 200px; } .app-title-container h1 { font-size: 1.4rem; } .app-nav ul li a { padding: 12px 15px; font-size: 0.9rem; } .invoice-app-container { padding: 20px; } .form-grid.two-columns, .form-grid.three-columns, .add-item-form > .form-grid.three-columns.item-details-grid, #streamingProfileFields .form-grid.two-columns, .totals-grid, #invoiceListContainer, .client-list { grid-template-columns: 1fr; } .form-actions { flex-direction: column; } .form-actions .btn { width: 100%; } .client-actions { flex-direction: column; gap: 8px; } .client-actions .btn { width: 100%; } .share-actions .button-group { flex-direction: column; } .share-actions .btn-share { width: 100%; margin-right: 0; } .invoice-list-item { padding: 15px; } .invoice-list-details { flex-direction: column; align-items: flex-start; gap: 5px; margin-bottom: 10px; } .invoice-list-date, .invoice-list-total { text-align: left; flex-basis: auto;} .invoice-list-actions { text-align: left; } .client-list-item { flex-direction: column; align-items: flex-start; } .client-list-item .client-pills { margin-top: 5px; margin-bottom: 5px; } .client-list-item .client-actions-list { width: 100%; justify-content: flex-start; margin-top: 5px; } .modal-content { width: 95%; padding: 20px 15px; max-height: 90vh; } .modal-header h2 { font-size: 1.3rem; } #modalInvoiceDetailsContent .modal-section-grid { grid-template-columns: 1fr; } #modalInvoiceDetailsContent .modal-items-table th, #modalInvoiceDetailsContent .modal-items-table td { padding: 6px 8px; } }
-@media (max-width: 480px) { body { padding: 10px; } .login-container { padding: 20px 18px; max-width: 95%; } .app-header { padding: 10px 15px; } .app-title-container h1 { font-size: 1.2rem; } .user-actions #logoutButton { padding: 8px 15px; font-size: 0.85rem; } .app-nav ul { gap: 5px; flex-wrap: wrap; justify-content: space-around; } .app-nav ul li a { padding: 10px 8px; font-size: 0.8rem; } .invoice-app-container { padding: 15px; } .form-section { padding: 15px; } .form-section legend { font-size: 1.1rem; } .form-group input[type="text"], .form-group input[type="email"], .form-group input[type="tel"], .form-group input[type="date"], .form-group input[type="number"], .form-group select, .form-group textarea { padding: 10px 12px; font-size: 0.95rem; } .btn { padding: 10px 15px; font-size: 0.9rem; } .totals-summary-box { padding: 15px; } .totals-summary-box h3 { font-size: 1.15rem; } .loading-content { padding: 25px; max-width: 80%;} .loading-logo-spinner { width: 60px;} .loading-overlay p { font-size: 1rem;} .invoice-list-item { padding: 12px; } .invoice-list-header, .invoice-list-client, .invoice-list-details { font-size: 0.9rem; } .invoice-list-number { font-size: 1rem; } .status-badge { padding: 3px 8px; font-size: 0.75rem; } #selectedClientNameDisplay { flex-wrap: wrap; gap: 5px; } .selected-client-name-text { white-space: normal; } #selectedClientNameDisplay .pills-container { margin-left: 0; flex-basis: 100%; justify-content: flex-start; } }
-@media (min-width: 576px) {
-    .client-list-item {
-        flex-direction: row; /* Elementos en fila: [Info | Pills | Actions] */
-        justify-content: space-between;
-        align-items: center;
-        gap: 15px;
+.modal-body {
+    overflow-y: auto;   /* Habilita el scroll vertical SI el contenido excede la altura */
+    flex-grow: 1;       /* Permite que el body ocupe el espacio disponible entre header y footer */
+    min-height: 150px;  /* Una altura mínima para que el área de scroll sea usable incluso con poco contenido */
+    padding-right: 5px; /* Pequeño espacio por si aparece la barra de scroll, para que no pegue al borde */
+    margin-bottom: 15px;
+}
+
+#modalInvoiceDetailsContent {
+    font-size: 0.95rem; /* Ajusta el tamaño de fuente base para el contenido del modal */
+}
+
+#modalInvoiceDetailsContent h3 {
+    font-size: 1.1rem;
+    color: var(--secondary-color);
+    margin-top: 15px;
+    margin-bottom: 10px;
+    padding-bottom: 5px;
+    border-bottom: 1px dashed var(--border-color);
+}
+#modalInvoiceDetailsContent h3:first-child {
+    margin-top: 0;
+}
+
+#modalInvoiceDetailsContent p {
+    margin-bottom: 8px;
+    line-height: 1.5;
+}
+#modalInvoiceDetailsContent strong {
+    font-weight: 600;
+}
+#modalInvoiceDetailsContent .modal-section-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Columnas adaptables */
+    gap: 15px 20px; /* Espacio vertical y horizontal */
+    margin-bottom: 15px;
+}
+#modalInvoiceDetailsContent .modal-items-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    font-size: 0.9rem;
+}
+#modalInvoiceDetailsContent .modal-items-table th,
+#modalInvoiceDetailsContent .modal-items-table td {
+    text-align: left;
+    padding: 8px 10px; /* Ajuste de padding */
+    border-bottom: 1px solid var(--border-color);
+}
+#modalInvoiceDetailsContent .modal-items-table th {
+    background-color: #f8f9fa;
+    font-weight: 500;
+    white-space: nowrap; /* Evita que los títulos de las columnas se partan */
+}
+#modalInvoiceDetailsContent .modal-items-table .text-right {
+    text-align: right;
+}
+#modalInvoiceDetailsContent .item-profile-details { /* Para los detalles de perfil en la tabla del modal */
+    font-size: 0.8em;
+    color: var(--text-muted-color);
+    display: block; /* Para que ocupe su propia línea debajo de la descripción */
+    margin-top: 2px;
+}
+
+#modalInvoiceDetailsContent .modal-totals-summary {
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid var(--border-color);
+}
+#modalInvoiceDetailsContent .modal-totals-summary p {
+    font-size: 1rem;
+    margin-bottom: 6px; /* Ligeramente reducido */
+    display: flex;
+    justify-content: space-between; /* Etiqueta a la izquierda, valor a la derecha */
+    gap: 15px;
+}
+#modalInvoiceDetailsContent .modal-totals-summary p span:first-child {
+    color: var(--text-muted-color);
+    font-weight: normal;
+    text-align: left; /* Asegurar que la etiqueta esté a la izquierda */
+}
+#modalInvoiceDetailsContent .modal-totals-summary p span:last-child {
+    font-weight: 600; /* El valor del total en negrita */
+    text-align: right; /* Asegurar que el valor esté a la derecha */
+}
+#modalInvoiceDetailsContent .modal-totals-summary .modal-grand-total span { /* Ambos spans del gran total */
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
+.modal-footer {
+    padding-top: 15px; 
+    margin-top: 15px;  
+    border-top: 1px solid var(--border-color);
+    text-align: right; /* Esto puede quitarse si display:flex y justify-content lo manejan */
+    flex-shrink: 0;
+    /* NUEVOS ESTILOS PARA EL FOOTER DEL MODAL PARA ALINEAR BOTONES */
+    display: flex; 
+    justify-content: flex-end; 
+    gap: 10px; 
+    flex-wrap: wrap; 
+}
+
+.modal-footer .btn {
+    margin-left: 10px;
+}
+
+.btn-icon {
+    padding: 8px 12px; /* Ajusta el padding si es necesario */
+    font-size: 0.85rem; /* Tamaño de fuente para el texto del botón */
+}
+
+.btn-icon .icon-svg {
+    width: 16px;  /* Tamaño del icono SVG */
+    height: 16px;
+    margin-right: 6px; /* Espacio entre el icono y el texto */
+    vertical-align: middle; /* Alinear icono con el texto */
+}
+
+/* Estilos para botones "outline" (si no los tienes ya) */
+.btn-secondary-outline {
+    background-color: transparent;
+    color: var(--secondary-color, #6c757d);
+    border: 1px solid var(--secondary-color, #6c757d);
+}
+.btn-secondary-outline:hover:not(:disabled) {
+    background-color: var(--secondary-color, #6c757d);
+    color: white;
+}
+
+.btn-success-outline {
+    background-color: transparent;
+    color: var(--success-color, #28a745);
+    border: 1px solid var(--success-color, #28a745);
+}
+.btn-success-outline:hover:not(:disabled) {
+    background-color: var(--success-color, #28a745);
+    color: white;
+}
+
+.btn-info-outline {
+    background-color: transparent;
+    color: var(--info-color, #17a2b8);
+    border: 1px solid var(--info-color, #17a2b8);
+}
+.btn-info-outline:hover:not(:disabled) {
+    background-color: var(--info-color, #17a2b8);
+    color: white;
+}
+
+.btn-warning-outline {
+    background-color: transparent;
+    color: var(--warning-color, #ffc107);
+    border: 1px solid var(--warning-color, #ffc107);
+}
+.btn-warning-outline:hover:not(:disabled) {
+    background-color: var(--warning-color, #ffc107);
+    color: var(--text-color, #212529); /* Texto oscuro para fondo amarillo */
+}
+
+.btn-danger-outline { 
+    background-color: transparent;
+    color: var(--danger-color, #dc3545);
+    border: 1px solid var(--danger-color, #dc3545);
+}
+.btn-danger-outline:hover:not(:disabled) {
+    background-color: var(--danger-color, #dc3545);
+    color: white;
+}
+
+/* Media Query para el modal en pantallas pequeñas */
+@media (max-width: 768px) {
+    .modal-content {
+        width: 95%;
+        padding: 20px 15px; /* Ajuste de padding */
+        max-height: 90vh;
     }
-    .client-list-item .client-info {
-        margin-right: 0; 
-        flex-grow: 1; 
+    .modal-header h2 {
+        font-size: 1.3rem;
     }
-    .client-list-item .client-pills {
-        margin-top: 0; /* Ya no necesita margen superior en layout de fila */
-        /* margin-left: auto;  Puedes usar esto si quieres que las pills se peguen a la info y las acciones a la derecha */
-        margin-right: 15px; /* Espacio antes de las acciones */
-        flex-shrink: 0;
-        justify-content: flex-start; /* Alinear píldoras al inicio de su contenedor */
+    #modalInvoiceDetailsContent .modal-section-grid {
+        grid-template-columns: 1fr; /* Apilar columnas de info en móvil */
     }
-    .client-list-item .client-actions-list {
-        margin-top: 0;
-        padding-top: 0;
-        border-top: none; /* Sin borde superior en layout de fila */
-        width: auto; /* Ancho automático para el contenedor de botones */
-        justify-content: flex-end; /* Acciones a la derecha */
-        flex-shrink: 0;
+    #modalInvoiceDetailsContent .modal-items-table th,
+    #modalInvoiceDetailsContent .modal-items-table td {
+        padding: 6px 8px;
     }
 }
-
-@media (min-width: 768px) {
-    .client-list {
-        grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); /* Ajusta minmax según tu preferencia */
-    }
-}
-
-@media (min-width: 1200px) { /* Coincide con tu max-width de #app */
-    .client-list {
-        grid-template-columns: repeat(auto-fit, minmax(450px, 1fr)); /* Más espacio por tarjeta */
-    }
-}
-
+/* ELIMINA LA LÍNEA "Add commentMore actions" SI ESTABA JUSTO AQUÍ EN TU ARCHIVO ORIGINAL */
 /* === ANIMACIÓN PARA EL GRADIENTE DEL APP-NAV === */
 @keyframes moveGradient {
     0% { background-position: 0% 50%; }
