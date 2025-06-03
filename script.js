@@ -123,6 +123,14 @@ const taxableBaseAmountSpan = document.getElementById('taxableBaseAmount');
 const ivaAmountSpan = document.getElementById('ivaAmount');
 const totalAmountSpan = document.getElementById('totalAmount');
 
+const templateSelectionModal = document.getElementById('templateSelectionModal');
+const closeTemplateSelectionModalBtn = document.getElementById('closeTemplateSelectionModalBtn');
+const cancelTemplateSelectionBtn = document.getElementById('cancelTemplateSelectionBtn');
+const proceedWithTemplateSelectionBtn = document.getElementById('proceedWithTemplateSelectionBtn');
+const isReminderCheckbox = document.getElementById('isReminderCheckbox');
+const imageFormatSelectionDiv = document.getElementById('imageFormatSelection'); // Para mostrar/ocultar
+const imageFormatSelect = document.getElementById('imageFormatSelect'); // Para leer el formato
+
 const saveInvoiceBtn = document.getElementById('saveInvoiceBtn');
 // const generateInvoiceFileBtn = document.getElementById('generateInvoiceFileBtn');
 
@@ -148,6 +156,7 @@ let currentInvoiceItems = [];
 let nextItemId = 0;
 let loadedClients = [];
 let isEditingClient = false;
+let currentActionForTemplateSelection = null;
 let currentInvoiceDataForModalActions = null;
 let currentInvoiceIdForModalActions = null;
 
@@ -493,6 +502,8 @@ function populateExportTemplate(invoiceData) {
 
     return true;
 }
+
+
 
 // ====> AQUÍ PUEDES PEGAR LA FUNCIÓN isCodeUniqueForUser <====
 async function isCodeUniqueForUser(code, userId) {
@@ -870,6 +881,8 @@ function closeInvoiceDetailModal() {
         modalInvoiceTitle.textContent = 'Detalle de Factura';
     }
 }
+
+
 
 function formatInvoiceNumber(number) {
     return String(number).padStart(3, '0');
