@@ -1258,37 +1258,41 @@ function closeInvoiceDetailModal() {
 }
 
 function openTemplateSelectionModal(actionType) {
-    console.log("[openTemplateSelectionModal] Iniciando para acción:", actionType); // Ya lo teníamos
+    console.log("[openTemplateSelectionModal] Iniciando para acción:", actionType);
     currentActionForTemplateSelection = actionType;
 
-    // Verificar los elementos internos del modal
-    if (!isReminderCheckbox) {
-        console.error("[openTemplateSelectionModal] Checkbox 'isReminderCheckbox' NO encontrado.");
-        // No podemos continuar si faltan elementos cruciales
-        return; 
-    }
-    isReminderCheckbox.checked = false; // Resetear checkbox
-    console.log("[openTemplateSelectionModal] Checkbox reseteado.");
-
-    if (!imageFormatSelectionDiv) {
-        console.error("[openTemplateSelectionModal] Div 'imageFormatSelectionDiv' NO encontrado.");
+    if (isReminderCheckbox) {
+        isReminderCheckbox.checked = false;
     } else {
+        console.error("[openTemplateSelectionModal] Checkbox 'isReminderCheckbox' NO encontrado.");
+        // Podrías retornar aquí si este elemento es crucial y no se encuentra
+    }
+
+    if (imageFormatSelectionDiv) {
         if (actionType === 'image') {
             imageFormatSelectionDiv.style.display = 'block';
-            console.log("[openTemplateSelectionModal] Mostrando selección de formato de imagen.");
         } else {
             imageFormatSelectionDiv.style.display = 'none';
-            console.log("[openTemplateSelectionModal] Ocultando selección de formato de imagen.");
         }
+    } else {
+        console.error("[openTemplateSelectionModal] Div 'imageFormatSelectionDiv' NO encontrado.");
     }
 
     if (templateSelectionModal) {
         templateSelectionModal.classList.add('active');
         console.log("[openTemplateSelectionModal] Clase 'active' AÑADIDA a templateSelectionModal.");
-        // Opcional: Verificar si el body necesita la clase modal-active
+
+        // Forzar estilos de depuración con JS también (temporal)
+        templateSelectionModal.style.setProperty('display', 'flex', 'important');
+        templateSelectionModal.style.setProperty('opacity', '1', 'important');
+        templateSelectionModal.style.setProperty('visibility', 'visible', 'important');
+        templateSelectionModal.style.setProperty('z-index', '1070', 'important'); // Coincidir con el CSS de depuración
+
+
+        // Manejo de la clase modal-active en el body
         if (bodyElement && !bodyElement.classList.contains('modal-active')) {
-             // bodyElement.classList.add('modal-active'); // Descomenta si quieres que este modal también bloquee scroll
-             // console.log("[openTemplateSelectionModal] Clase 'modal-active' AÑADIDA al body.");
+            bodyElement.classList.add('modal-active');
+            console.log("[openTemplateSelectionModal] Clase 'modal-active' AÑADIDA al body.");
         }
     } else {
         console.error("[openTemplateSelectionModal] Elemento 'templateSelectionModal' es null. No se puede mostrar.");
@@ -1297,22 +1301,28 @@ function openTemplateSelectionModal(actionType) {
 }
 
 function closeTemplateSelectionModal() {
+    console.log("[closeTemplateSelectionModal] Intentando cerrar modal de selección.");
     if (templateSelectionModal) {
         templateSelectionModal.classList.remove('active');
-        console.log("Modal de selección cerrado, clase 'active' quitada."); // Log para depurar
+        // Quitar estilos de depuración forzados por JS
+        templateSelectionModal.style.removeProperty('display');
+        templateSelectionModal.style.removeProperty('opacity');
+        templateSelectionModal.style.removeProperty('visibility');
+        templateSelectionModal.style.removeProperty('z-index');
+
+        console.log("[closeTemplateSelectionModal] Clase 'active' quitada de templateSelectionModal.");
     } else {
-        console.error("closeTemplateSelectionModal: templateSelectionModal es null.");
+        console.error("[closeTemplateSelectionModal] templateSelectionModal es null.");
     }
     
-    // Lógica para quitar 'modal-active' del body solo si ningún otro modal está activo
-    // (Asumiendo que invoiceDetailModal es el otro modal principal que podría estar activo)
+    // Solo quitar 'modal-active' del body si el modal de DETALLES tampoco está activo
     if (bodyElement) {
-        const mainModalActive = invoiceDetailModal && invoiceDetailModal.classList.contains('active');
-        const selectionModalActive = templateSelectionModal && templateSelectionModal.classList.contains('active');
-        
-        if (!mainModalActive && !selectionModalActive) {
+        const mainDetailModalStillActive = invoiceDetailModal && invoiceDetailModal.classList.contains('active');
+        if (!mainDetailModalStillActive) {
             bodyElement.classList.remove('modal-active');
-            console.log("Ningún modal activo, clase 'modal-active' quitada del body."); // Log para depurar
+            console.log("[closeTemplateSelectionModal] Clase 'modal-active' quitada del body porque el modal de detalles tampoco está activo.");
+        } else {
+            console.log("[closeTemplateSelectionModal] El modal de detalles aún está activo, no se quita 'modal-active' del body.");
         }
     }
 }
