@@ -796,6 +796,131 @@ async function getTrulyUniqueCode(userId, codeLength = 7, maxRetries = 10) {
     return null; 
 }
 
+async function generateInvoiceImage(templateId, invoiceData, imageFormat = 'png', reminderStatus = null) {
+    let populatedCorrectly = false;
+    if (templateId === 'whatsapp-image-export-template') {
+        populatedCorrectly = populateWhatsappImageTemplate(invoiceData);
+    } else if (templateId === 'payment-reminder-export-template') {
+        populatedCorrectly = populateReminderImageTemplate(invoiceData, reminderStatus);
+    } else {
+        console.error("generateInvoiceImage: ID de plantilla no reconocido:", templateId);
+        alert("Error: Tipo de plantilla de imagen no válido.");
+        return null;
+    }
+
+    if (!populatedCorrectly) {
+        alert("Error al preparar los datos para generar la imagen.");
+        return null;
+    }
+
+    const elementToCapture = document.getElementById(templateId);
+    if (!elementToCapture) {
+        alert(`Error: No se encontró la plantilla con ID "${templateId}" para generar la imagen.`);
+        return null;
+    }
+
+    showLoading(true);
+
+    // Guardar estilos originales y preparar para captura
+    const originalStyles = {
+        display: elementToCapture.style.display,
+        position: elementToCapture.style.position,
+        left: elementToCapture.style.left,
+        top: elementToCapture.style.top,
+        transform: elementToCapture.style.transform,
+        backgroundColor: elementToCapture.style.backgroundColor,
+        // Añade aquí cualquier otra propiedad CSS que modifiques temporalmente
+    };
+
+    elementToCapture.style.position = 'fixed';
+    elementToCapture.style.left = '-9999px'; // Mover completamente fuera del área visible
+    elementToCapture.style.top = '0px';      // O 'auto' si es necesario
+    elementToCapture.style.transform = 'none'; // Limpiar transformaciones
+    elementToCapture.style.backgroundColor = '#FFFFFF'; // Fondo blanco para la captura
+    elementToCapture.style.display = 'block'; // Esencial para que tenga dimensiones
+
+    // Forzar un reflujo del navegador para asegurar que los estilos se apliquen
+    if (elementToCapture.offsetHeight) { /* Acceder a offsetHeight fuerza el reflujo */ }
+    
+    await new Promise(resolve => setTimeout(resolve, 350)); // Pequeña demora para renderizado
+
+    try {
+        const canvas = await html2canvas(elementToCapture, {
+            scale: 2, // Buena calidad para imágenes de chat/web. Puedes aumentarla (ej. 2.5 o 3) si necesitas más resolución.
+            useCORS: true,
+            logging: false, // Cambiar a true para depurar problemas de html2canvas
+            allowTaint: true,
+            backgroundColor: '#FFFFFF', // Asegura fondo blanco explícito para el canvas
+            width: elementToCapture.scrollWidth,   // Usar el ancho renderizado
+            height: elementToCapture.scrollHeight, // Usar el alto renderizado
+            windowWidth: elementToCapture.scrollWidth,
+            windowHeight: elementToCapture.scrollHeight,
+            x: 0,
+            y: 0,
+            onclone: (documentCloned) => {
+                // Puedes añadir aquí manipulaciones específicas al clon si es necesario
+                // Por ejemplo, forzar la carga de imágenes si html2canvas tiene problemas
+                const imgs = documentCloned.querySelectorAll('img');
+                imgs.forEach(img => {
+                    if (img.src && !img.complete) {
+                        // console.warn(`Imagen no completamente cargada en clon: ${img.src}`);
+                        // Intentar forzar recarga o usar un placeholder, aunque es complejo aquí.
+                    }
+                });
+            }
+        });
+
+        // Restaurar estilos de la plantilla original inmediatamente después de la captura
+        elementToCapture.style.display = originalStyles.display || 'none';
+        elementToCapture.style.position = originalStyles.position;
+        elementToCapture.style.left = originalStyles.left;
+        elementToCapture.style.top = originalStyles.top;
+        elementToCapture.style.transform = originalStyles.transform;
+        elementToCapture.style.backgroundColor = originalStyles.backgroundColor;
+
+        // Devolver el blob para la API Web Share o para descarga
+        return new Promise((resolve, reject) => {
+            canvas.toBlob(blob => {
+                if (blob) {
+                    resolve(blob);
+                } else {
+                    reject(new Error('Fallo al convertir canvas a Blob.'));
+                }
+            }, `image/${imageFormat}`, 0.92); // 0.92 es una buena calidad para JPG, para PNG no afecta tanto.
+        });
+
+    } catch (error) {
+        console.error(`Error detallado al generar la imagen desde ${templateId}:`, error);
+        alert("Hubo un error al generar la imagen. Por favor, revisa la consola para más detalles técnicos.");
+        
+        // Asegurar que se restauren los estilos en caso de error también
+        elementToCapture.style.display = originalStyles.display || 'none';
+        elementToCapture.style.position = originalStyles.position;
+        // ... restaurar otros originalStyles ...
+        return null;
+    } finally {
+        showLoading(false);
+    }
+}
+
+// Función auxiliar para descargar el blob como archivo (si no la tienes ya)
+function downloadBlob(blob, filename) {
+    if (!blob) {
+        console.error("downloadBlob: No se proporcionó un blob válido.");
+        return;
+    }
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.style.display = 'none'; // No es necesario mostrar el enlace
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    // Limpieza
+    window.URL.revokeObjectURL(url);
+    document.body.removeChild(a);
+}
+
 async function generateInvoicePDF(invoiceDataSource) {
     let invoiceDataToUse;
 
@@ -1906,34 +2031,79 @@ if (proceedWithTemplateSelectionBtn) {
             closeTemplateSelectionModal();
             return;
         }
+
         const useReminderTemplate = isReminderCheckbox.checked;
         let templateIdToUse;
-        let reminderStatus = null; 
+        let reminderStatus = null;
+        let baseFileName = `Factura_${currentInvoiceDataForModalActions.invoiceNumberFormatted?.replace(/[^a-zA-Z0-9]/g, '_') || 'INV'}`; // Nombre de archivo base
+
         if (useReminderTemplate) {
             templateIdToUse = 'payment-reminder-export-template';
             const paymentStatus = currentInvoiceDataForModalActions.paymentStatus;
             if (paymentStatus === 'pending' || paymentStatus === 'in_process') { reminderStatus = 'pending'; } 
             else if (paymentStatus === 'overdue') { reminderStatus = 'overdue'; } 
-            else { reminderStatus = 'pending'; console.warn(`Estado de factura '${paymentStatus}' no ideal para recordatorio, usando '${reminderStatus}'.`);}
-            console.log(`Acción: ${currentActionForTemplateSelection}, Usando Plantilla de Recordatorio (estado: ${reminderStatus})`);
+            else { 
+                reminderStatus = 'pending'; 
+                console.warn(`Estado de factura '${paymentStatus}' no ideal para recordatorio, usando '${reminderStatus}'.`);
+            }
+            baseFileName = `Recordatorio_${currentInvoiceDataForModalActions.invoiceNumberFormatted?.replace(/[^a-zA-Z0-9]/g, '_') || 'REM'}`;
+            // console.log(`Acción: ${currentActionForTemplateSelection}, Usando Plantilla de Recordatorio (estado: ${reminderStatus})`);
         } else {
             templateIdToUse = 'whatsapp-image-export-template';
-            console.log(`Acción: ${currentActionForTemplateSelection}, Usando Plantilla de WhatsApp`);
+            // console.log(`Acción: ${currentActionForTemplateSelection}, Usando Plantilla de WhatsApp`);
         }
-        closeTemplateSelectionModal();
+        
+        const imageFormat = (currentActionForTemplateSelection === 'image') ? imageFormatSelect.value : 'png'; // PNG para compartir, configurable para descarga
+        const fullFileName = `${baseFileName}.${imageFormat}`;
+
+        closeTemplateSelectionModal(); // Cerrar el modal de selección antes de procesar
+
+        const imageBlob = await generateInvoiceImage(templateIdToUse, currentInvoiceDataForModalActions, imageFormat, reminderStatus);
+
+        if (!imageBlob) {
+            // generateInvoiceImage ya muestra una alerta en caso de error,
+            // pero podrías añadir un mensaje más específico aquí si quieres.
+            // alert("No se pudo generar la imagen para la acción seleccionada.");
+            return;
+        }
+
+        // Convertir el Blob a un File object para la Web Share API
+        const imageFile = new File([imageBlob], fullFileName, { type: `image/${imageFormat}` });
+
         if (currentActionForTemplateSelection === 'image') {
-            const selectedFormat = imageFormatSelect.value; 
-            alert(`PENDIENTE: Generar Imagen.\nPlantilla ID: ${templateIdToUse}\nFormato: ${selectedFormat}\nPara Factura: ${currentInvoiceDataForModalActions.invoiceNumberFormatted}\n(Estado Recordatorio si aplica: ${reminderStatus})`);
-            // TODO: Llamar a: await generateInvoiceImage(templateIdToUse, currentInvoiceDataForModalActions, selectedFormat, reminderStatus);
-        } else if (currentActionForTemplateSelection === 'whatsapp') {
-            alert(`PENDIENTE: Enviar a WhatsApp.\nPlantilla ID: ${templateIdToUse}\nPara Factura: ${currentInvoiceDataForModalActions.invoiceNumberFormatted}\n(Estado Recordatorio si aplica: ${reminderStatus})`);
-            // TODO: await generateAndShareViaWhatsApp(templateIdToUse, currentInvoiceDataForModalActions, reminderStatus);
-        } else if (currentActionForTemplateSelection === 'share') {
-            alert(`PENDIENTE: Compartir General.\nPlantilla ID: ${templateIdToUse}\nPara Factura: ${currentInvoiceDataForModalActions.invoiceNumberFormatted}\n(Estado Recordatorio si aplica: ${reminderStatus})`);
-            // TODO: await generateAndShareGeneric(templateIdToUse, currentInvoiceDataForModalActions, reminderStatus);
+            // Acción: Descargar la imagen
+            downloadBlob(imageBlob, imageFile.name);
+            console.log(`Imagen ${imageFile.name} generada y descargada.`);
+        } else if (currentActionForTemplateSelection === 'whatsapp' || currentActionForTemplateSelection === 'share') {
+            // Acción: Intentar compartir con Web Share API
+            if (navigator.share && navigator.canShare && navigator.canShare({ files: [imageFile] })) {
+                try {
+                    await navigator.share({
+                        files: [imageFile],
+                        title: useReminderTemplate ? `Recordatorio ${currentInvoiceDataForModalActions.invoiceNumberFormatted}` : `Factura ${currentInvoiceDataForModalActions.invoiceNumberFormatted}`,
+                        text: `Aquí está tu ${useReminderTemplate ? 'recordatorio de pago' : 'factura'} de OSCAR 07D Studios.`
+                        // No se puede pre-seleccionar WhatsApp con navigator.share, el usuario elige.
+                    });
+                    console.log('Contenido compartido exitosamente vía Web Share API.');
+                } catch (error) {
+                    console.error('Error al usar Web Share API:', error);
+                    // Fallback si el usuario cancela el share o hay un error
+                    if (error.name !== 'AbortError') { // No mostrar alerta si solo canceló
+                        alert('No se pudo compartir. Descargando imagen para que la compartas manualmente.');
+                    }
+                    downloadBlob(imageBlob, imageFile.name); // Descargar como fallback
+                }
+            } else {
+                // Fallback para navegadores que no soportan Web Share API con archivos
+                alert('Tu navegador no soporta compartir archivos directamente. Descargando la imagen para que la puedas compartir manualmente.');
+                downloadBlob(imageBlob, imageFile.name);
+            }
         }
+        // Limpiar la acción actual después de procesarla
+        currentActionForTemplateSelection = null; 
     });
 }
+
 if (templateSelectionModal) {
     templateSelectionModal.addEventListener('click', (event) => {
         if (event.target === templateSelectionModal) {
