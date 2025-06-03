@@ -59,6 +59,10 @@ const printInvoiceFromModalBtn = document.getElementById('printInvoiceFromModalB
 const modalShareBtn = document.getElementById('modalShareBtn');
 const modalWhatsAppBtn = document.getElementById('modalWhatsAppBtn');
 const modalImageBtn = document.getElementById('modalImageBtn');
+console.log("modalShareBtn:", modalShareBtn);
+console.log("modalWhatsAppBtn:", modalWhatsAppBtn);
+console.log("modalImageBtn:", modalImageBtn);
+
 const modalEmailBtn = document.getElementById('modalEmailBtn');
 const modalPdfBtn = document.getElementById('modalPdfBtn');
 
@@ -1250,6 +1254,7 @@ function closeInvoiceDetailModal() {
 }
 
 function openTemplateSelectionModal(actionType) {
+    console.log("Abriendo modal de selección para acción:", actionType);
     currentActionForTemplateSelection = actionType;
     if(isReminderCheckbox) isReminderCheckbox.checked = false;
 
@@ -1987,8 +1992,12 @@ document.addEventListener('keydown', (event) => {
 
 if (modalShareBtn) {
     modalShareBtn.addEventListener('click', () => {
-        if (currentInvoiceDataForModalActions) { openTemplateSelectionModal('share'); } 
-        else { alert("No hay datos de factura para compartir."); }
+        console.log("Clic en modalShareBtn"); // LOG
+        if (currentInvoiceDataForModalActions) {
+            openTemplateSelectionModal('share');
+        } else {
+            alert("No hay datos de factura para compartir.");
+        }
     });
 }
 if (modalWhatsAppBtn) {
@@ -2026,6 +2035,10 @@ if (cancelTemplateSelectionBtn) {
 }
 if (proceedWithTemplateSelectionBtn) {
     proceedWithTemplateSelectionBtn.addEventListener('click', async () => {
+        console.log("Botón 'Continuar' del modal de selección presionado.");
+        console.log("currentActionForTemplateSelection:", currentActionForTemplateSelection); // Para saber qué botón original lo llamó
+        console.log("currentInvoiceDataForModalActions:", currentInvoiceDataForModalActions); // Para ver los datos de la factura
+        
         if (!currentInvoiceDataForModalActions) {
             alert("Error: No hay datos de factura seleccionados.");
             closeTemplateSelectionModal();
@@ -2033,6 +2046,8 @@ if (proceedWithTemplateSelectionBtn) {
         }
 
         const useReminderTemplate = isReminderCheckbox.checked;
+        console.log("Usar plantilla de recordatorio:", useReminderTemplate);
+        
         let templateIdToUse;
         let reminderStatus = null;
         let baseFileName = `Factura_${currentInvoiceDataForModalActions.invoiceNumberFormatted?.replace(/[^a-zA-Z0-9]/g, '_') || 'INV'}`; // Nombre de archivo base
@@ -2052,15 +2067,21 @@ if (proceedWithTemplateSelectionBtn) {
             templateIdToUse = 'whatsapp-image-export-template';
             // console.log(`Acción: ${currentActionForTemplateSelection}, Usando Plantilla de WhatsApp`);
         }
+        console.log("Plantilla a usar (ID):", templateIdToUse, "Estado recordatorio (si aplica):", reminderStatus);
         
         const imageFormat = (currentActionForTemplateSelection === 'image') ? imageFormatSelect.value : 'png'; // PNG para compartir, configurable para descarga
         const fullFileName = `${baseFileName}.${imageFormat}`;
+        console.log("Formato de imagen:", imageFormat, "Nombre de archivo:", fullFileName);
 
         closeTemplateSelectionModal(); // Cerrar el modal de selección antes de procesar
-
+        
+        console.log("Llamando a generateInvoiceImage...");
         const imageBlob = await generateInvoiceImage(templateIdToUse, currentInvoiceDataForModalActions, imageFormat, reminderStatus);
 
+        console.log("Resultado de generateInvoiceImage (imageBlob):", imageBlob); // MUY IMPORTANTE VER ESTO
+
         if (!imageBlob) {
+            console.error("generateInvoiceImage devolvió null o undefined. No se puede continuar.");
             // generateInvoiceImage ya muestra una alerta en caso de error,
             // pero podrías añadir un mensaje más específico aquí si quieres.
             // alert("No se pudo generar la imagen para la acción seleccionada.");
@@ -2069,12 +2090,15 @@ if (proceedWithTemplateSelectionBtn) {
 
         // Convertir el Blob a un File object para la Web Share API
         const imageFile = new File([imageBlob], fullFileName, { type: `image/${imageFormat}` });
+        console.log("Archivo de imagen creado:", imageFile);
 
         if (currentActionForTemplateSelection === 'image') {
+            console.log("Acción: Descargar imagen.");
             // Acción: Descargar la imagen
             downloadBlob(imageBlob, imageFile.name);
-            console.log(`Imagen ${imageFile.name} generada y descargada.`);
+            console.log(`Imagen ${imageFile.name} debería haber sido descargada.`);
         } else if (currentActionForTemplateSelection === 'whatsapp' || currentActionForTemplateSelection === 'share') {
+            console.log("Acción: Compartir (WhatsApp/General). Intentando navigator.share...");
             // Acción: Intentar compartir con Web Share API
             if (navigator.share && navigator.canShare && navigator.canShare({ files: [imageFile] })) {
                 try {
@@ -2094,6 +2118,7 @@ if (proceedWithTemplateSelectionBtn) {
                     downloadBlob(imageBlob, imageFile.name); // Descargar como fallback
                 }
             } else {
+                console.warn('navigator.share no disponible o no puede compartir archivos. Descargando como fallback.');
                 // Fallback para navegadores que no soportan Web Share API con archivos
                 alert('Tu navegador no soporta compartir archivos directamente. Descargando la imagen para que la puedas compartir manualmente.');
                 downloadBlob(imageBlob, imageFile.name);
