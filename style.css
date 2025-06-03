@@ -794,8 +794,40 @@ input.input-error, select.input-error, textarea.input-error { border-color: var(
     }
 }
 
-@media (min-width: 1200px) {
-    .client-list {
-        grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+    #clientsSection .client-list-item { /* Selector más específico */
+            flex-direction: row !important; /* **¡FORZAR A FILA para pantallas más grandes!** */
+            justify-content: space-between;
+            align-items: center; 
+            gap: 15px; 
+        }
+    
+        #clientsSection .client-list-item .client-info {
+            flex-grow: 1; 
+            margin-right: 10px; /* Espacio antes de las píldoras */
+            min-width: 0; /* Para que text-overflow en .client-name funcione */
+        }
+    
+        #clientsSection .client-list-item .client-pills {
+            margin-top: 0; /* Quitar margen si ya no es necesario en layout de fila */
+            margin-left: auto;  /* Empuja las píldoras hacia la derecha, antes de las acciones */
+            margin-right: 15px; 
+            flex-shrink: 0; 
+            order: 1; /* Orden visual: Info (0), Pills (1), Actions (2) */
+        }
+    
+        #clientsSection .client-list-item .client-actions-list {
+            margin-top: 0;
+            padding-top: 0;
+            border-top: none; 
+            width: auto; /* Ancho automático para el contenedor de botones */
+            justify-content: flex-end; /* Acciones a la derecha */
+            flex-shrink: 0;
+            order: 2; 
+        }
     }
-}
+    
+    @media (min-width: 1200px) {
+        .client-list {
+            grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+        }
+    }
