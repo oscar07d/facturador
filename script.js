@@ -1295,6 +1295,28 @@ function openTemplateSelectionModal(actionType) {
         alert("Error: No se pudo abrir el diálogo de selección de plantilla.");
     }
 }
+
+function closeTemplateSelectionModal() {
+    if (templateSelectionModal) {
+        templateSelectionModal.classList.remove('active');
+        console.log("Modal de selección cerrado, clase 'active' quitada."); // Log para depurar
+    } else {
+        console.error("closeTemplateSelectionModal: templateSelectionModal es null.");
+    }
+    
+    // Lógica para quitar 'modal-active' del body solo si ningún otro modal está activo
+    // (Asumiendo que invoiceDetailModal es el otro modal principal que podría estar activo)
+    if (bodyElement) {
+        const mainModalActive = invoiceDetailModal && invoiceDetailModal.classList.contains('active');
+        const selectionModalActive = templateSelectionModal && templateSelectionModal.classList.contains('active');
+        
+        if (!mainModalActive && !selectionModalActive) {
+            bodyElement.classList.remove('modal-active');
+            console.log("Ningún modal activo, clase 'modal-active' quitada del body."); // Log para depurar
+        }
+    }
+}
+
 function formatInvoiceNumber(number) {
     return String(number).padStart(3, '0');
 }
