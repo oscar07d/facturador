@@ -1718,12 +1718,12 @@ if (modalPdfBtn) {
     });
 }
 
-// Placeholder para el botón de imprimir/descargar en el modal
-if (printInvoiceFromModalBtn) {
-    printInvoiceFromModalBtn.addEventListener('click', () => {
-        alert("Funcionalidad de Imprimir/Descargar PDF desde el modal está pendiente.");
-    });
-}
+// Placeholder para el botón de imprimir/descargar en el modal ELIMINADO ya que se retiro del index.html
+// if (printInvoiceFromModalBtn) {
+//    printInvoiceFromModalBtn.addEventListener('click', () => {
+//        alert("Funcionalidad de Imprimir/Descargar PDF desde el modal está pendiente.");
+//    });
+//}
 
 // --- Lógica de Autenticación y Estado ---
 if (loginButton) { 
