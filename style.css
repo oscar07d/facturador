@@ -1448,9 +1448,28 @@ textarea.input-error {
 /* ======================================================= */
 /* === ESTILOS PARA PLANTILLA IMAGEN RECORDATORIO === */
 /* ======================================================= */
+
+/* Estilo base para el contenedor de la factura de WhatsApp en la página de diseño */
+/* Esto es para plantilla_diseno_Recordatorio.html y no es estrictamente necesario
+   si solo usas el #payment-reminder-export-template en index.html */
+/*
+body {
+    font-family: var(--reminder-font-family);
+    background-color: #dde2e7;
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    box-sizing: border-box;
+}
+*/
+
+/* Selector para el contenedor de la plantilla en index.html */
 #payment-reminder-export-template {
     background-color: var(--reminder-bg-main);
-    width: var(--reminder-width);
+    width: var(--reminder-width); /* Ej: 580px, definido en :root */
     aspect-ratio: 16 / 9;
     display: flex;
     flex-direction: column;
@@ -1462,31 +1481,81 @@ textarea.input-error {
     color: var(--reminder-text-primary);
     box-sizing: border-box;
     font-family: var(--reminder-font-family);
-    border-top: 4px solid var(--reminder-pending-accent);
+    border-top: 4px solid var(--reminder-pending-accent); /* Color por defecto */
     transition: border-top-color 0.3s ease;
-    overflow: hidden;
+    overflow: hidden; /* Sin scroll */
 }
-#payment-reminder-export-template.status-pending { border-top-color: var(--reminder-pending-accent); }
-#payment-reminder-export-template.status-pending .status-pill { background-color: var(--reminder-pending-bg-pill); color: var(--reminder-pending-text); }
-#payment-reminder-export-template.status-pending .amount-highlight .info-value { color: var(--reminder-pending-accent); }
-#payment-reminder-export-template.status-pending .reminder-title-section #reminder-main-title { color: var(--reminder-pending-accent); }
-#payment-reminder-export-template.status-overdue { border-top-color: var(--reminder-overdue-accent); }
-#payment-reminder-export-template.status-overdue .status-pill { background-color: var(--reminder-overdue-bg-pill); color: var(--reminder-overdue-text); }
-#payment-reminder-export-template.status-overdue .amount-highlight .info-value { color: var(--reminder-overdue-accent); }
-#payment-reminder-export-template.status-overdue .reminder-title-section #reminder-main-title { color: var(--reminder-overdue-accent); }
-#payment-reminder-export-template .reminder-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px solid var(--reminder-border-color); flex-shrink: 0; }
+
+/* Temas de color para el CONTENEDOR y TÍTULO PRINCIPAL basados en la clase de tema */
+#payment-reminder-export-template.status-theme-paid { border-top-color: var(--reminder-paid-accent); }
+#payment-reminder-export-template.status-theme-paid #reminder-main-title { color: var(--reminder-paid-text-strong); }
+#payment-reminder-export-template.status-theme-paid .amount-highlight .info-value { color: var(--reminder-paid-text-strong); }
+
+#payment-reminder-export-template.status-theme-pending { border-top-color: var(--reminder-pending-accent); }
+#payment-reminder-export-template.status-theme-pending #reminder-main-title { color: var(--reminder-pending-text-strong); }
+#payment-reminder-export-template.status-theme-pending .amount-highlight .info-value { color: var(--reminder-pending-text-strong); }
+
+#payment-reminder-export-template.status-theme-overdue { border-top-color: var(--reminder-overdue-accent); }
+#payment-reminder-export-template.status-theme-overdue #reminder-main-title { color: var(--reminder-overdue-text-strong); }
+#payment-reminder-export-template.status-theme-overdue .amount-highlight .info-value { color: var(--reminder-overdue-text-strong); }
+
+#payment-reminder-export-template.status-theme-cancelled { border-top-color: var(--reminder-cancelled-accent); }
+#payment-reminder-export-template.status-theme-cancelled #reminder-main-title { color: var(--reminder-cancelled-text-strong); }
+#payment-reminder-export-template.status-theme-cancelled .amount-highlight .info-value { color: var(--reminder-cancelled-text-strong); }
+
+#payment-reminder-export-template.status-theme-default { border-top-color: var(--reminder-default-accent); }
+#payment-reminder-export-template.status-theme-default #reminder-main-title { color: var(--reminder-default-text-strong); }
+#payment-reminder-export-template .status-theme-default .amount-highlight .info-value { color: var(--reminder-default-text-strong); }
+
+
+/* ENCABEZADO */
+#payment-reminder-export-template .reminder-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 8px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--reminder-border-color);
+    flex-shrink: 0;
+}
 #payment-reminder-export-template .reminder-company-branding { display: flex; flex-direction: column; }
 #payment-reminder-export-template .reminder-logo-container { margin-bottom: 4px; width: 38px; height: 38px; }
 #payment-reminder-export-template #reminder-logo-image { max-width: 100%; max-height: 100%; display: block; object-fit: contain; }
 #payment-reminder-export-template .company-name-header { font-size: 10.5px; font-weight: 600; color: var(--reminder-text-secondary); line-height: 1.2; }
 #payment-reminder-export-template .reminder-status-area { flex-shrink: 0; padding-top: 2px; }
-#payment-reminder-export-template .status-pill { padding: 4px 9px; border-radius: 50px; font-size: 8px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; line-height: 1; }
+
+/* Píldora de estado en el encabezado del recordatorio (usa el estado REAL de la factura) */
+#payment-reminder-export-template .status-pill { 
+    padding: 4px 9px;
+    border-radius: 50px;
+    font-size: 8px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    line-height: 1;
+    display: inline-block; /* Asegurar que se muestre */
+}
+#payment-reminder-export-template .status-pill.pill-status-paid { background-color: var(--reminder-paid-bg-pill); color: var(--reminder-paid-text); }
+#payment-reminder-export-template .status-pill.pill-status-pending { background-color: var(--reminder-pending-bg-pill); color: var(--reminder-pending-text); }
+#payment-reminder-export-template .status-pill.pill-status-overdue { background-color: var(--reminder-overdue-bg-pill); color: var(--reminder-overdue-text); }
+#payment-reminder-export-template .status-pill.pill-status-in_process { background-color: var(--reminder-pending-bg-pill); color: var(--reminder-pending-text); } /* Ejemplo: in_process como pending */
+#payment-reminder-export-template .status-pill.pill-status-partial_payment { background-color: var(--reminder-pending-bg-pill); color: var(--reminder-pending-text); } /* Ejemplo */
+#payment-reminder-export-template .status-pill.pill-status-cancelled { background-color: var(--reminder-cancelled-pill-bg, var(--reminder-default-bg-pill)); color: var(--reminder-cancelled-text, var(--reminder-default-text-pill)); }
+#payment-reminder-export-template .status-pill.pill-status-default { background-color: var(--reminder-default-bg-pill); color: var(--reminder-default-text-pill); }
+/* Asegúrate de tener clases para todos los estados que uses, ej. pill-status-disputed, pill-status-uncollectible */
+
+
+/* TÍTULO PRINCIPAL */
 #payment-reminder-export-template .reminder-title-section { text-align: center; margin-bottom: 8px; padding: 3px 0; flex-shrink: 0; }
 #payment-reminder-export-template #reminder-main-title { font-size: 14.5px; font-weight: 700; margin: 0; text-transform: uppercase; }
+
+/* CUERPO DEL RECORDATORIO */
 #payment-reminder-export-template .reminder-body { margin-bottom: 6px; flex-grow: 1; overflow: hidden; display: flex; flex-direction: column; justify-content: space-around; }
 #payment-reminder-export-template .reminder-greeting { font-size: 12px; margin-bottom: 5px; flex-shrink: 0; }
 #payment-reminder-export-template .reminder-greeting strong { font-weight: 600; color: var(--reminder-text-primary); }
 #payment-reminder-export-template #reminder-message-content { font-size: 10.5px; color: var(--reminder-text-secondary); margin-bottom: 8px; padding: 7px 9px; background-color: var(--reminder-bg-soft-accent); border-radius: 5px; flex-shrink: 0; line-height: 1.45; }
+
+/* DETALLES DE FACTURA */
 #payment-reminder-export-template .reminder-invoice-info { padding: 8px 10px; border-radius: 5px; margin-bottom: 8px; background-color: #fff; border: 1px solid var(--reminder-border-color); flex-shrink: 0; }
 #payment-reminder-export-template .reminder-invoice-info .info-item { display: flex; justify-content: space-between; align-items: baseline; padding: 2.5px 0; font-size: 10px; }
 #payment-reminder-export-template .reminder-invoice-info .info-item:not(:last-child) { border-bottom: 1px dotted #efefef; }
@@ -1495,12 +1564,20 @@ textarea.input-error {
 #payment-reminder-export-template .reminder-invoice-info .amount-highlight { margin-top: 3px; padding-top: 3px; }
 #payment-reminder-export-template .reminder-invoice-info .amount-highlight .info-label { font-size: 10.5px; font-weight: 600; color: var(--reminder-text-primary); }
 #payment-reminder-export-template .reminder-invoice-info .amount-highlight .info-value { font-size: 13.5px; font-weight: 700; padding: 1px 3px; border-radius: 3px; }
+
+/* INSTRUCCIONES DE PAGO */
 #payment-reminder-export-template .reminder-payment-instructions { margin-top: 6px; padding: 7px 9px; background-color: var(--reminder-bg-soft-accent); border-radius: 5px; font-size: 10px; text-align: center; flex-shrink: 0; }
 #payment-reminder-export-template .reminder-payment-instructions p { margin: 0; color: var(--reminder-text-secondary); line-height: 1.4; }
 #payment-reminder-export-template .reminder-payment-instructions strong { font-weight: 600; color: var(--reminder-text-primary); }
+
+/* PIE DE PÁGINA */
 #payment-reminder-export-template .reminder-footer { margin-top: 8px; padding-top: 6px; border-top: 1px solid var(--reminder-border-color); text-align: center; font-size: 8.5px; color: var(--reminder-text-light); flex-shrink: 0; line-height: 1.3; }
 #payment-reminder-export-template .reminder-footer p { margin: 0 0 2px 0; }
 #payment-reminder-export-template .reminder-footer .contact-email { color: var(--reminder-text-secondary); font-weight: 600; }
+
+/* ======================================================= */
+/* === FIN ESTILOS PLANTILLA IMAGEN RECORDATORIO === */
+/* ======================================================= */
 
 /* === ESTILOS PARA MODAL DETALLE DE FACTURA === */
 /* (Los estilos del modal de detalle que ya tenías y los de los botones con iconos) */
