@@ -135,6 +135,10 @@ const isReminderCheckbox = document.getElementById('isReminderCheckbox');
 const imageFormatSelectionDiv = document.getElementById('imageFormatSelection'); // Para mostrar/ocultar
 const imageFormatSelect = document.getElementById('imageFormatSelect'); // Para leer el formato
 
+console.log("templateSelectionModal al cargar:", templateSelectionModal);
+console.log("isReminderCheckbox al cargar:", isReminderCheckbox);
+console.log("proceedWithTemplateSelectionBtn al cargar:", proceedWithTemplateSelectionBtn);
+
 const saveInvoiceBtn = document.getElementById('saveInvoiceBtn');
 // const generateInvoiceFileBtn = document.getElementById('generateInvoiceFileBtn');
 
