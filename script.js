@@ -882,7 +882,29 @@ function closeInvoiceDetailModal() {
     }
 }
 
+function openTemplateSelectionModal(actionType) {
+    currentActionForTemplateSelection = actionType;
+    if(isReminderCheckbox) isReminderCheckbox.checked = false;
 
+    if (actionType === 'image') {
+        if (imageFormatSelectionDiv) imageFormatSelectionDiv.style.display = 'block';
+    } else {
+        if (imageFormatSelectionDiv) imageFormatSelectionDiv.style.display = 'none';
+    }
+
+    if (templateSelectionModal) templateSelectionModal.classList.add('active');
+    if (bodyElement && !bodyElement.classList.contains('modal-active')) { // Para no añadirla dos veces si ya está por el modal principal
+        bodyElement.classList.add('modal-active');
+    }
+}
+
+function closeTemplateSelectionModal() {
+    if (templateSelectionModal) templateSelectionModal.classList.remove('active');
+    // Solo quitar modal-active del body si el modal de DETALLES tampoco está activo
+    if (bodyElement && invoiceDetailModal && !invoiceDetailModal.classList.contains('active')) {
+        bodyElement.classList.remove('modal-active');
+    }
+}
 
 function formatInvoiceNumber(number) {
     return String(number).padStart(3, '0');
@@ -1593,6 +1615,93 @@ if (invoiceDetailModal) {
 document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape' && invoiceDetailModal && invoiceDetailModal.classList.contains('active')) {
         closeInvoiceDetailModal();
+    }
+});
+
+if (modalShareBtn) {
+    modalShareBtn.addEventListener('click', () => {
+        if (currentInvoiceDataForModalActions) { openTemplateSelectionModal('share'); } 
+        else { alert("No hay datos de factura para compartir."); }
+    });
+}
+if (modalWhatsAppBtn) {
+    modalWhatsAppBtn.addEventListener('click', () => {
+        if (currentInvoiceDataForModalActions) { openTemplateSelectionModal('whatsapp'); } 
+        else { alert("No hay datos de factura para enviar a WhatsApp."); }
+    });
+}
+if (modalImageBtn) {
+    modalImageBtn.addEventListener('click', () => {
+        if (currentInvoiceDataForModalActions) { openTemplateSelectionModal('image'); } 
+        else { alert("No hay datos de factura para generar imagen."); }
+    });
+}
+if (modalEmailBtn) {
+    modalEmailBtn.addEventListener('click', async () => {
+        if (currentInvoiceDataForModalActions) {
+            alert(`ACCIÓN PENDIENTE: Enviar por Email la factura PDF para ${currentInvoiceDataForModalActions.client?.name}. Destinatario: ${currentInvoiceDataForModalActions.client?.email}`);
+        } else { alert("No hay datos de factura para enviar por email."); }
+    });
+}
+if (modalPdfBtn) {
+    modalPdfBtn.addEventListener('click', async () => {
+        if (currentInvoiceDataForModalActions) { await generateInvoicePDF(currentInvoiceDataForModalActions); } 
+        else { alert("No hay datos de factura cargados en el modal para generar el PDF."); }
+    });
+}
+
+// --- Event Listeners para el Modal de Selección de Plantilla (#templateSelectionModal) ---
+if (closeTemplateSelectionModalBtn) {
+    closeTemplateSelectionModalBtn.addEventListener('click', closeTemplateSelectionModal);
+}
+if (cancelTemplateSelectionBtn) {
+    cancelTemplateSelectionBtn.addEventListener('click', closeTemplateSelectionModal);
+}
+if (proceedWithTemplateSelectionBtn) {
+    proceedWithTemplateSelectionBtn.addEventListener('click', async () => {
+        if (!currentInvoiceDataForModalActions) {
+            alert("Error: No hay datos de factura seleccionados.");
+            closeTemplateSelectionModal();
+            return;
+        }
+        const useReminderTemplate = isReminderCheckbox.checked;
+        let templateIdToUse;
+        let reminderStatus = null; 
+        if (useReminderTemplate) {
+            templateIdToUse = 'payment-reminder-export-template';
+            const paymentStatus = currentInvoiceDataForModalActions.paymentStatus;
+            if (paymentStatus === 'pending' || paymentStatus === 'in_process') { reminderStatus = 'pending'; } 
+            else if (paymentStatus === 'overdue') { reminderStatus = 'overdue'; } 
+            else { reminderStatus = 'pending'; console.warn(`Estado de factura '${paymentStatus}' no ideal para recordatorio, usando '${reminderStatus}'.`);}
+            console.log(`Acción: ${currentActionForTemplateSelection}, Usando Plantilla de Recordatorio (estado: ${reminderStatus})`);
+        } else {
+            templateIdToUse = 'whatsapp-image-export-template';
+            console.log(`Acción: ${currentActionForTemplateSelection}, Usando Plantilla de WhatsApp`);
+        }
+        closeTemplateSelectionModal();
+        if (currentActionForTemplateSelection === 'image') {
+            const selectedFormat = imageFormatSelect.value; 
+            alert(`PENDIENTE: Generar Imagen.\nPlantilla ID: ${templateIdToUse}\nFormato: ${selectedFormat}\nPara Factura: ${currentInvoiceDataForModalActions.invoiceNumberFormatted}\n(Estado Recordatorio si aplica: ${reminderStatus})`);
+            // TODO: Llamar a: await generateInvoiceImage(templateIdToUse, currentInvoiceDataForModalActions, selectedFormat, reminderStatus);
+        } else if (currentActionForTemplateSelection === 'whatsapp') {
+            alert(`PENDIENTE: Enviar a WhatsApp.\nPlantilla ID: ${templateIdToUse}\nPara Factura: ${currentInvoiceDataForModalActions.invoiceNumberFormatted}\n(Estado Recordatorio si aplica: ${reminderStatus})`);
+            // TODO: await generateAndShareViaWhatsApp(templateIdToUse, currentInvoiceDataForModalActions, reminderStatus);
+        } else if (currentActionForTemplateSelection === 'share') {
+            alert(`PENDIENTE: Compartir General.\nPlantilla ID: ${templateIdToUse}\nPara Factura: ${currentInvoiceDataForModalActions.invoiceNumberFormatted}\n(Estado Recordatorio si aplica: ${reminderStatus})`);
+            // TODO: await generateAndShareGeneric(templateIdToUse, currentInvoiceDataForModalActions, reminderStatus);
+        }
+    });
+}
+if (templateSelectionModal) {
+    templateSelectionModal.addEventListener('click', (event) => {
+        if (event.target === templateSelectionModal) {
+            closeTemplateSelectionModal();
+        }
+    });
+}
+document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && templateSelectionModal && templateSelectionModal.classList.contains('active')) {
+        closeTemplateSelectionModal();
     }
 });
 
