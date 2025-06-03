@@ -675,54 +675,67 @@ function populateReminderImageTemplate(invoiceData, reminderStatus) {
         console.error("Plantilla Recordatorio (#payment-reminder-export-template) o datos de factura no disponibles para poblar.");
         return false;
     }
-    // console.log("Poblando plantilla Recordatorio con datos:", invoiceData, "y estado:", reminderStatus);
+    // console.log("Poblando plantilla Recordatorio con datos:", invoiceData, "y estado para tema:", reminderStatus);
 
-    template.className = 'reminder-container'; 
-    if (reminderStatus === 'pending') {
-        template.classList.add('status-pending');
-    } else if (reminderStatus === 'overdue') {
-        template.classList.add('status-overdue');
+    // 1. Aplicar clase de estado general al contenedor para el tema de color
+    template.className = 'reminder-container'; // Resetear a clase base primero
+    if (reminderStatus) {
+        // La clase 'status-theme-*' controlará el borde superior y el color del título principal.
+        template.classList.add(`status-theme-${reminderStatus.toLowerCase().replace(/ /g, '_')}`);
     } else {
-        template.classList.add('status-pending'); // Fallback
+        template.classList.add('status-theme-default'); // Un fallback si no hay reminderStatus
     }
-    
+
+    // 2. Poblar logo
     const logoImgRem = template.querySelector("#reminder-logo-image");
-    if (logoImgRem) logoImgRem.src = "img/Isologo.svg"; // Asegura la ruta
+    if (logoImgRem) {
+        // Asegúrate de que la ruta a Isologo_img.png sea correcta desde index.html
+        logoImgRem.src = "img/Isologo_img.png"; 
+    }
 
     const emitterNameRem = template.querySelector("#reminder-emitter-name");
     if (emitterNameRem) emitterNameRem.textContent = invoiceData.emitter?.name || "OSCAR 07D Studios";
     
-    // Píldora de estado en el recordatorio
-    const paymentStatusPillRem = template.querySelector("#reminder-payment-status-pill");
-    if(paymentStatusPillRem) {
-        const statusKey = reminderStatus || invoiceData.paymentStatus || 'pending';
-        const statusDetail = paymentStatusDetails[statusKey];
-        paymentStatusPillRem.textContent = statusDetail ? statusDetail.text.toUpperCase() : statusKey.replace(/_/g, ' ').toUpperCase();
-        paymentStatusPillRem.className = 'status-pill'; // Clase base
-        if (statusKey === 'pending') {
-            paymentStatusPillRem.classList.add('status-pending'); 
-        } else if (statusKey === 'overdue') {
-            paymentStatusPillRem.classList.add('status-overdue');
-        } else {
-            paymentStatusPillRem.classList.add('status-default'); // Asumiendo que tienes .status-pill.status-default
-        }
-    }
-    
+    // 3. Título y Mensaje Principal basados en el reminderStatus (el propósito del recordatorio)
     const titleElRem = template.querySelector("#reminder-main-title");
     const messageElRem = template.querySelector("#reminder-message-content");
     if (titleElRem && messageElRem) {
-        if (reminderStatus === 'pending') {
-            titleElRem.textContent = "RECORDATORIO DE PAGO";
-            messageElRem.textContent = `Te escribimos para recordarte amablemente que el pago de tu factura está programado para la siguiente fecha. ¡Evita contratiempos!`;
-        } else if (reminderStatus === 'overdue') {
-            titleElRem.textContent = "AVISO: FACTURA VENCIDA";
-            messageElRem.textContent = `Hemos notado que el pago de tu factura ha vencido. Te agradecemos si puedes realizarlo a la brevedad para continuar disfrutando de nuestros servicios.`;
-        } else { // Un mensaje por defecto si el status no es ni pending ni overdue
-            titleElRem.textContent = "INFORMACIÓN DE PAGO";
-            messageElRem.textContent = `Detalles de tu factura a continuación.`;
+        switch (reminderStatus) {
+            case 'paid': // O 'paid_reminder' si lo definiste así en el listener
+                titleElRem.textContent = "PAGO CONFIRMADO";
+                messageElRem.textContent = `¡Gracias! Hemos recibido tu pago para la factura N° ${invoiceData.invoiceNumberFormatted || 'N/A'}.`;
+                break;
+            case 'overdue':
+                titleElRem.textContent = "AVISO: FACTURA VENCIDA";
+                messageElRem.textContent = `Notamos que el pago de tu factura N° ${invoiceData.invoiceNumberFormatted || 'N/A'} ha vencido. Te agradecemos realizarlo pronto para evitar inconvenientes.`;
+                break;
+            case 'pending':
+                titleElRem.textContent = "RECORDATORIO DE PAGO";
+                messageElRem.textContent = `Este es un recordatorio amigable para el pago de tu factura N° ${invoiceData.invoiceNumberFormatted || 'N/A'}, programado para la fecha indicada.`;
+                break;
+            case 'cancelled':
+                titleElRem.textContent = "FACTURA CANCELADA";
+                messageElRem.textContent = `Te informamos que la factura N° ${invoiceData.invoiceNumberFormatted || 'N/A'} ha sido cancelada.`;
+                break;
+            default: // 'default_reminder' o cualquier otro caso
+                titleElRem.textContent = "INFORMACIÓN DE FACTURA";
+                messageElRem.textContent = `Detalles correspondientes a tu factura N° ${invoiceData.invoiceNumberFormatted || 'N/A'}.`;
         }
     }
     
+    // 4. Píldora de Estado en el encabezado (refleja el estado REAL de la factura)
+    const paymentStatusPillRem = template.querySelector("#reminder-payment-status-pill");
+    if (paymentStatusPillRem) {
+        const actualInvoiceStatusKey = invoiceData.paymentStatus || 'pending'; // Estado real de la factura
+        const statusDetail = paymentStatusDetails[actualInvoiceStatusKey];
+        paymentStatusPillRem.textContent = statusDetail ? statusDetail.text.toUpperCase() : actualInvoiceStatusKey.replace(/_/g, ' ').toUpperCase();
+        
+        paymentStatusPillRem.className = 'status-pill'; // Clase base
+        // Clase para el color de la píldora, basada en el estado real de la factura
+        paymentStatusPillRem.classList.add(`pill-status-${actualInvoiceStatusKey.toLowerCase().replace(/ /g, '_')}`);
+    }
+
+    // --- Poblar otros datos ---
     const clientNameRem = template.querySelector("#reminder-client-name");
     if (clientNameRem) clientNameRem.textContent = invoiceData.client?.name || 'Cliente Valioso';
 
@@ -731,25 +744,26 @@ function populateReminderImageTemplate(invoiceData, reminderStatus) {
 
     const dueDateRem = template.querySelector("#reminder-due-date");
     if(dueDateRem) {
-        const dateToUse = invoiceData.serviceStartDate || invoiceData.invoiceDate; // Usa serviceStartDate o invoiceDate
+        const dateToUse = invoiceData.serviceStartDate || invoiceData.invoiceDate; // Usa serviceStartDate o invoiceDate para el vencimiento
         dueDateRem.textContent = dateToUse ? new Date(dateToUse + 'T00:00:00').toLocaleDateString('es-CO', {day: 'numeric', month: 'long', year: 'numeric'}) : 'N/A';
     }
     
     const amountDueRem = template.querySelector("#reminder-amount-due");
     if(amountDueRem) amountDueRem.textContent = (invoiceData.totals?.grandTotal || 0).toLocaleString('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits:0 });
 
+    // Instrucciones de Pago
     const paymentDetailsEl = template.querySelector("#reminder-payment-method-details");
-    if(paymentDetailsEl) { // Ejemplo de cómo podrías hacerlo más dinámico si tuvieras los datos en el objeto invoiceData.emitter o similar
-        const nequiAccount = invoiceData.emitter?.nequiAccount || "3023935392"; // Ejemplo
-        const nequiName = invoiceData.emitter?.nequiName || "OS*** ROL***";   // Ejemplo
+    if(paymentDetailsEl) {
+        // Puedes hacer esto más dinámico si guardas esta info en alguna parte
+        const nequiAccount = "3023935392"; // Ejemplo
+        const nequiName = "OS* ROL***";   // Ejemplo
         paymentDetailsEl.innerHTML = `Nequi: <strong>${nequiAccount}</strong> (${nequiName})`;
     }
     
+    // Información de Contacto en el Footer
     const contactInfoRem = template.querySelector("#reminder-contact-info");
-    if(contactInfoRem && invoiceData.emitter?.email) {
-        contactInfoRem.innerHTML = `Dudas: ${invoiceData.emitter.email}`;
-    } else if (contactInfoRem) {
-        contactInfoRem.innerHTML = `Dudas: info@oscar07dstudios.com`; // Fallback
+    if(contactInfoRem) {
+        contactInfoRem.innerHTML = `Dudas: ${invoiceData.emitter?.email || "info@oscar07dstudios.com"}`;
     }
 
     return true;
@@ -2103,18 +2117,31 @@ if (proceedWithTemplateSelectionBtn) {
 
         if (useReminderTemplate) {
             templateIdToUse = 'payment-reminder-export-template';
-            const paymentStatus = currentInvoiceDataForModalActions.paymentStatus;
-            if (paymentStatus === 'pending' || paymentStatus === 'in_process') { reminderStatus = 'pending'; } 
-            else if (paymentStatus === 'overdue') { reminderStatus = 'overdue'; } 
-            else { 
-                reminderStatus = 'pending'; 
-                console.warn(`Estado de factura '${paymentStatus}' no ideal para recordatorio, usando '${reminderStatus}'.`);
+            const paymentStatus = currentInvoiceDataForModalActions.paymentStatus; // Estado real de la factura
+        
+            // Determinar el 'reminderStatus' para el tema general y el mensaje
+            switch (paymentStatus) {
+                case 'paid':
+                    reminderStatus = 'paid'; // Para un tema de "pagado" o agradecimiento
+                    break;
+                case 'overdue':
+                    reminderStatus = 'overdue'; // Tema rojo de vencido
+                    break;
+                case 'pending':
+                case 'in_process':
+                case 'partial_payment':
+                    reminderStatus = 'pending'; // Tema ámbar de recordatorio amigable
+                    break;
+                case 'cancelled':
+                    reminderStatus = 'cancelled'; // Tema gris/neutro
+                    break;
+                default:
+                    reminderStatus = 'default'; // Un tema por defecto
             }
             baseFileName = `Recordatorio_${currentInvoiceDataForModalActions.invoiceNumberFormatted?.replace(/[^a-zA-Z0-9]/g, '_') || 'REM'}`;
-            // console.log(`Acción: ${currentActionForTemplateSelection}, Usando Plantilla de Recordatorio (estado: ${reminderStatus})`);
         } else {
             templateIdToUse = 'whatsapp-image-export-template';
-            // console.log(`Acción: ${currentActionForTemplateSelection}, Usando Plantilla de WhatsApp`);
+            reminderStatus = null; // No aplica a la plantilla de WhatsApp directamente aquí
         }
         console.log("Plantilla a usar (ID):", templateIdToUse, "Estado recordatorio (si aplica):", reminderStatus);
         
