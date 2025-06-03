@@ -503,7 +503,249 @@ function populateExportTemplate(invoiceData) {
     return true;
 }
 
+function populateWhatsappImageTemplate(invoiceData) {
+    const template = document.getElementById('whatsapp-image-export-template');
+    if (!template || !invoiceData) {
+        console.error("Plantilla WhatsApp (#whatsapp-image-export-template) o datos de factura no disponibles para poblar.");
+        return false;
+    }
+    // console.log("Poblando plantilla WhatsApp con datos:", invoiceData);
 
+    // --- Poblar Encabezado ---
+    const logoImgWA = template.querySelector("#wa-logo-image");
+    if (logoImgWA) {
+        // Asegúrate de que la ruta a tu Isologo.svg sea correcta desde index.html
+        logoImgWA.src = "img/Isologo.svg"; 
+    }
+
+    const emitterNameWA = template.querySelector("#wa-emitter-name");
+    if (emitterNameWA) emitterNameWA.textContent = invoiceData.emitter?.name || "OSCAR 07D Studios";
+    
+    const emitterIdWA = template.querySelector("#wa-emitter-id");
+    if (emitterIdWA) {
+        if (invoiceData.emitter?.id) {
+            emitterIdWA.textContent = `NIT/ID: ${invoiceData.emitter.id}`;
+            emitterIdWA.style.display = ''; // Asegurar que sea visible si tiene dato
+        } else {
+            emitterIdWA.style.display = 'none'; // Ocultar si no hay dato
+        }
+    }
+
+    const emitterPhoneWA = template.querySelector("#wa-emitter-phone");
+    if (emitterPhoneWA) {
+        if (invoiceData.emitter?.phone) {
+            emitterPhoneWA.textContent = `Cel: ${invoiceData.emitter.phone}`;
+            emitterPhoneWA.style.display = '';
+        } else {
+            emitterPhoneWA.style.display = 'none';
+        }
+    }
+
+    // Estado de Pago (Píldora)
+    const paymentStatusPillWA = template.querySelector("#wa-payment-status");
+    if(paymentStatusPillWA) {
+        const statusKey = invoiceData.paymentStatus || 'pending';
+        const statusDetail = paymentStatusDetails[statusKey]; // paymentStatusDetails debe estar accesible
+        paymentStatusPillWA.textContent = statusDetail ? statusDetail.text.toUpperCase() : statusKey.replace(/_/g, ' ').toUpperCase();
+        paymentStatusPillWA.className = 'wa-status-pill'; 
+        paymentStatusPillWA.classList.add(`wa-status-${statusKey.toLowerCase()}`);
+    }
+
+    // N° de referencia
+    const invoiceRefWA = template.querySelector("#wa-invoice-ref-number");
+    if (invoiceRefWA) invoiceRefWA.textContent = `N° ${invoiceData.invoiceNumberFormatted || 'N/A'}`;
+
+    // Fecha de creación de la factura
+    const creationDateWA = template.querySelector("#wa-invoice-creation-date");
+    if (creationDateWA) {
+        const dateToDisplay = invoiceData.createdAt?.toDate ? invoiceData.createdAt.toDate() : (invoiceData.generatedAt ? new Date(invoiceData.generatedAt) : null);
+        if (dateToDisplay) {
+            creationDateWA.textContent = `Emitida: ${dateToDisplay.toLocaleString('es-CO', { day:'numeric', month: 'long', year:'numeric', hour:'2-digit', minute:'2-digit' })}`;
+        } else {
+            creationDateWA.textContent = 'Emitida: N/A';
+        }
+    }
+    
+    // --- Poblar Datos del Cliente ---
+    const clientNamePWA = template.querySelector("#wa-client-name"); // Este apunta al <p>
+    if (clientNamePWA) clientNamePWA.innerHTML = `<strong>Cliente:</strong> ${invoiceData.client?.name || 'N/A'}`;
+    
+    const clientPhonePWA = template.querySelector("#wa-client-phone"); // Este apunta al <p>
+    if (clientPhonePWA) clientPhonePWA.innerHTML = `<strong>Celular:</strong> ${invoiceData.client?.phone || 'N/A'}`;
+    
+    const clientEmailPWA = template.querySelector("#wa-client-email"); // Este apunta al <p>
+    if (clientEmailPWA) {
+        if (invoiceData.client?.email) {
+            clientEmailPWA.innerHTML = `<strong>Correo:</strong> ${invoiceData.client.email}`;
+            clientEmailPWA.style.display = 'block';
+        } else {
+            clientEmailPWA.style.display = 'none';
+        }
+    }
+    
+    // --- Poblar Ítems de la Factura ---
+    const itemsTableBodyWA = template.querySelector("#wa-invoice-items-body");
+    const headerProfileWA = template.querySelector("#wa-header-profile");
+    const headerPinWA = template.querySelector("#wa-header-pin");
+
+    if (itemsTableBodyWA) {
+        itemsTableBodyWA.innerHTML = ''; 
+        let hasStreamingDetailsWA = false;
+        if (invoiceData.items && invoiceData.items.length > 0) {
+            invoiceData.items.forEach(item => {
+                if(item.isStreaming && (item.profileName || item.profilePin)) {
+                    hasStreamingDetailsWA = true;
+                }
+                const row = itemsTableBodyWA.insertRow();
+                
+                const cellDesc = row.insertCell();
+                let descContent = item.description || 'N/A';
+                if (item.isStreaming && item.profileName) {
+                    descContent += `<small class="wa-item-profile-details">P: ${item.profileName}${item.profilePin ? ` (PIN: ${item.profilePin})` : ''}</small>`;
+                }
+                cellDesc.innerHTML = descContent;
+
+                const cellProfile = row.insertCell();
+                cellProfile.textContent = item.isStreaming ? (item.profileName || 'N/A') : 'N/A';
+                
+                const cellPin = row.insertCell();
+                cellPin.textContent = item.isStreaming ? (item.profilePin || 'N/A') : 'N/A';
+
+                const cellQty = row.insertCell();
+                cellQty.textContent = item.quantity || 0;
+                cellQty.classList.add('text-right');
+                
+                const cellPU = row.insertCell();
+                cellPU.textContent = (item.price || 0).toLocaleString('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 });
+                cellPU.classList.add('text-right');
+                
+                const cellTotal = row.insertCell();
+                cellTotal.textContent = ((item.quantity || 0) * (item.price || 0)).toLocaleString('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 });
+                cellTotal.classList.add('text-right');
+            });
+        }
+        if (headerProfileWA) headerProfileWA.style.display = hasStreamingDetailsWA ? 'table-cell' : 'none';
+        if (headerPinWA) headerPinWA.style.display = hasStreamingDetailsWA ? 'table-cell' : 'none';
+        if (itemsTableBodyWA) { // Re-iterar para ocultar celdas si es necesario
+            Array.from(itemsTableBodyWA.rows).forEach(row => {
+                if(row.cells[1]) row.cells[1].style.display = hasStreamingDetailsWA ? 'table-cell' : 'none';
+                if(row.cells[2]) row.cells[2].style.display = hasStreamingDetailsWA ? 'table-cell' : 'none';
+            });
+        }
+    }
+
+    // --- Poblar Total a Pagar ---
+    const totalAmountWA = template.querySelector("#wa-grand-total-amount");
+    if (totalAmountWA) totalAmountWA.textContent = (invoiceData.totals?.grandTotal || 0).toLocaleString('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits:0 });
+
+    // --- Poblar Pie de Página ---
+    const dueDateLineWA = template.querySelector("#wa-due-date-line");
+    const dueDateWA = template.querySelector("#wa-due-date");
+    if (invoiceData.serviceStartDate && dueDateWA) {
+        dueDateWA.textContent = new Date(invoiceData.serviceStartDate + 'T00:00:00').toLocaleDateString('es-CO', {day: 'numeric', month: 'long', year: 'numeric'});
+        if(dueDateLineWA) dueDateLineWA.style.display = 'block'; // O el display que tenga el <p>
+    } else if (dueDateLineWA) {
+        dueDateLineWA.style.display = 'none';
+    }
+    
+    const uniqueCodeLineWA = template.querySelector("#wa-unique-code-line");
+    const uniqueCodeWA = template.querySelector("#wa-unique-code");
+    if (invoiceData.uniqueQueryCode && uniqueCodeWA) {
+        uniqueCodeWA.textContent = invoiceData.uniqueQueryCode;
+        if(uniqueCodeLineWA) uniqueCodeLineWA.style.display = 'block'; // O el display que tenga el <p>
+    } else if (uniqueCodeLineWA) {
+         uniqueCodeLineWA.style.display = 'none';
+    }
+
+    return true;
+}
+
+// ====> AQUÍ PUEDES PEGAR LA FUNCIÓN populateReminderImageTemplate COMPLETA <====
+function populateReminderImageTemplate(invoiceData, reminderStatus) {
+    const template = document.getElementById('payment-reminder-export-template');
+    if (!template || !invoiceData) {
+        console.error("Plantilla Recordatorio (#payment-reminder-export-template) o datos de factura no disponibles para poblar.");
+        return false;
+    }
+    // console.log("Poblando plantilla Recordatorio con datos:", invoiceData, "y estado:", reminderStatus);
+
+    template.className = 'reminder-container'; 
+    if (reminderStatus === 'pending') {
+        template.classList.add('status-pending');
+    } else if (reminderStatus === 'overdue') {
+        template.classList.add('status-overdue');
+    } else {
+        template.classList.add('status-pending'); // Fallback
+    }
+    
+    const logoImgRem = template.querySelector("#reminder-logo-image");
+    if (logoImgRem) logoImgRem.src = "img/Isologo.svg"; // Asegura la ruta
+
+    const emitterNameRem = template.querySelector("#reminder-emitter-name");
+    if (emitterNameRem) emitterNameRem.textContent = invoiceData.emitter?.name || "OSCAR 07D Studios";
+    
+    // Píldora de estado en el recordatorio
+    const paymentStatusPillRem = template.querySelector("#reminder-payment-status-pill");
+    if(paymentStatusPillRem) {
+        const statusKey = reminderStatus || invoiceData.paymentStatus || 'pending';
+        const statusDetail = paymentStatusDetails[statusKey];
+        paymentStatusPillRem.textContent = statusDetail ? statusDetail.text.toUpperCase() : statusKey.replace(/_/g, ' ').toUpperCase();
+        paymentStatusPillRem.className = 'status-pill'; // Clase base
+        if (statusKey === 'pending') {
+            paymentStatusPillRem.classList.add('status-pending'); 
+        } else if (statusKey === 'overdue') {
+            paymentStatusPillRem.classList.add('status-overdue');
+        } else {
+            paymentStatusPillRem.classList.add('status-default'); // Asumiendo que tienes .status-pill.status-default
+        }
+    }
+    
+    const titleElRem = template.querySelector("#reminder-main-title");
+    const messageElRem = template.querySelector("#reminder-message-content");
+    if (titleElRem && messageElRem) {
+        if (reminderStatus === 'pending') {
+            titleElRem.textContent = "RECORDATORIO DE PAGO";
+            messageElRem.textContent = `Te escribimos para recordarte amablemente que el pago de tu factura está programado para la siguiente fecha. ¡Evita contratiempos!`;
+        } else if (reminderStatus === 'overdue') {
+            titleElRem.textContent = "AVISO: FACTURA VENCIDA";
+            messageElRem.textContent = `Hemos notado que el pago de tu factura ha vencido. Te agradecemos si puedes realizarlo a la brevedad para continuar disfrutando de nuestros servicios.`;
+        } else { // Un mensaje por defecto si el status no es ni pending ni overdue
+            titleElRem.textContent = "INFORMACIÓN DE PAGO";
+            messageElRem.textContent = `Detalles de tu factura a continuación.`;
+        }
+    }
+    
+    const clientNameRem = template.querySelector("#reminder-client-name");
+    if (clientNameRem) clientNameRem.textContent = invoiceData.client?.name || 'Cliente Valioso';
+
+    const invNumRem = template.querySelector("#reminder-invoice-number");
+    if(invNumRem) invNumRem.textContent = invoiceData.invoiceNumberFormatted || 'N/A';
+
+    const dueDateRem = template.querySelector("#reminder-due-date");
+    if(dueDateRem) {
+        const dateToUse = invoiceData.serviceStartDate || invoiceData.invoiceDate; // Usa serviceStartDate o invoiceDate
+        dueDateRem.textContent = dateToUse ? new Date(dateToUse + 'T00:00:00').toLocaleDateString('es-CO', {day: 'numeric', month: 'long', year: 'numeric'}) : 'N/A';
+    }
+    
+    const amountDueRem = template.querySelector("#reminder-amount-due");
+    if(amountDueRem) amountDueRem.textContent = (invoiceData.totals?.grandTotal || 0).toLocaleString('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits:0 });
+
+    const paymentDetailsEl = template.querySelector("#reminder-payment-method-details");
+    if(paymentDetailsEl) { // Ejemplo de cómo podrías hacerlo más dinámico si tuvieras los datos en el objeto invoiceData.emitter o similar
+        const nequiAccount = invoiceData.emitter?.nequiAccount || "3023935392"; // Ejemplo
+        const nequiName = invoiceData.emitter?.nequiName || "OS*** ROL***";   // Ejemplo
+        paymentDetailsEl.innerHTML = `Nequi: <strong>${nequiAccount}</strong> (${nequiName})`;
+    }
+    
+    const contactInfoRem = template.querySelector("#reminder-contact-info");
+    if(contactInfoRem && invoiceData.emitter?.email) {
+        contactInfoRem.innerHTML = `Dudas: ${invoiceData.emitter.email}`;
+    } else if (contactInfoRem) {
+        contactInfoRem.innerHTML = `Dudas: info@oscar07dstudios.com`; // Fallback
+    }
+
+    return true;
+}
 
 // ====> AQUÍ PUEDES PEGAR LA FUNCIÓN isCodeUniqueForUser <====
 async function isCodeUniqueForUser(code, userId) {
