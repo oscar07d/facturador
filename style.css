@@ -1617,6 +1617,7 @@ body {
     transition: transform 0.3s ease-out;
     max-width: 750px; /* Ancho por defecto para .modal-content */
     max-height: 85vh;
+    width: 90%;
 }
 
 .modal-content { background-color: var(--container-background); padding: 25px 30px; border-radius: var(--border-radius-m); box-shadow: var(--box-shadow-medium); width: 90%; max-width: 750px; max-height: 85vh; display: flex; flex-direction: column; position: relative; transform: scale(0.95); transition: transform 0.3s ease; }
