@@ -1592,50 +1592,56 @@ body {
 }
 
 .client-list-subsection h3 {
-    font-size: 1.3rem;
+    font-size: 1.4rem; /* Un poco más grande el título de la subsección */
     color: var(--secondary-color);
-    margin-bottom: 15px;
+    margin-bottom: 18px; /* Más espacio debajo del título */
     font-weight: 600;
+    padding-bottom: 8px;
+    border-bottom: 1px dashed var(--light-gray-color); /* Línea sutil debajo del título de subsección */
 }
 
 .client-list {
     display: grid;
-    gap: 18px;
+    gap: 20px; /* Espacio entre tarjetas de cliente */
     grid-template-columns: 1fr; /* Por defecto: 1 columna (móvil) */
 }
 
 .client-list-item {
-    background-color: var(--container-background); /* Usar tu variable */
+    background-color: var(--container-background);
     border: 1px solid var(--border-color);
     border-radius: var(--border-radius-m);
-    padding: 18px;
+    padding: 18px 20px; /* Padding ajustado */
     box-shadow: var(--box-shadow-light);
     transition: box-shadow var(--transition-speed) ease, transform var(--transition-speed) ease;
     display: flex;
     flex-direction: column; /* Apilar elementos internos verticalmente por defecto (móvil) */
-    gap: 10px; /* Espacio entre las secciones internas de la tarjeta */
+    gap: 12px; 
 }
+
 .client-list-item:hover {
     box-shadow: var(--box-shadow-medium);
-    transform: translateY(-2px);
+    transform: translateY(-3px); /* Efecto hover más pronunciado */
 }
 
 .client-list-item.client-inactive {
-    background-color: #f8f9fa;
-    opacity: 0.8;
+    background-color: #fdfdfd; /* Fondo casi blanco pero diferente */
+    opacity: 0.75;
+    border-left: 4px solid var(--secondary-color); /* Indicador visual de inactivo */
 }
 
 .client-list-item .client-info {
     display: flex;
     flex-direction: column;
-    gap: 4px;
-    /* flex-grow: 1; No es necesario si el padre es column y los hijos tienen ancho completo */
+    gap: 3px; /* Menos espacio entre nombre y contacto */
+    flex-grow: 1; /* Para que la sección de info principal ocupe espacio si está en fila */
+    min-width: 0; /* Importante para flexbox y text-overflow */
 }
 
 .client-list-item .client-name {
     font-weight: 600;
-    font-size: 1.15rem;
+    font-size: 1.1rem; /* Tamaño de fuente del nombre del cliente */
     color: var(--text-color);
+    word-break: break-word; /* Para nombres largos */
 }
 
 .client-list-item .client-contact {
@@ -1643,18 +1649,20 @@ body {
     color: var(--text-muted-color);
     word-break: break-all;
 }
+
 .client-list-item .client-deleted-date {
-    font-size: 0.75rem;
+    font-size: 0.8rem;
     color: var(--danger-color);
     font-style: italic;
-    margin-top: 2px;
+    margin-top: 3px;
 }
 
 .client-list-item .client-pills {
     display: flex;
     gap: 8px;
-    flex-wrap: wrap; /* Para que las píldoras se ajusten si no caben */
+    flex-wrap: wrap;
     margin-top: 8px; /* Espacio si está en layout de columna */
+    align-items: center; /* Alinear píldoras si están en diferentes alturas */
 }
 /* Las clases .option-status-pill y sus variantes de color ya deberían estar definidas
    en tu sección de .custom-select-options y se reutilizarán aquí.
@@ -1663,14 +1671,16 @@ body {
 .client-list-item .client-actions-list {
     display: flex;
     gap: 10px;
-    margin-top: 10px; /* Espacio antes de los botones en layout de columna */
-    padding-top: 10px;
+    margin-top: 12px; 
+    padding-top: 12px;
     border-top: 1px solid var(--light-gray-color);
-    width: 100%;
-    justify-content: flex-start; /* Alinea botones a la izquierda en layout de columna */
+    width: 100%; /* Por defecto ocupa todo el ancho para centrar/alinear los botones */
+    justify-content: flex-start; /* Botones a la izquierda en móvil */
+    flex-wrap: wrap; /* Para que los botones se ajusten */
 }
+
 .client-list-item .client-actions-list .btn-sm {
-    padding: 5px 10px;
+    padding: 6px 12px; /* Padding de botones pequeños */
     font-size: 0.8rem;
 }
 
@@ -1793,33 +1803,43 @@ body {
 @media (max-width: 480px) { body { padding: 10px; } .login-container { padding: 20px 18px; max-width: 95%; } .app-header { padding: 10px 15px; } .app-title-container h1 { font-size: 1.2rem; } .user-actions #logoutButton { padding: 8px 15px; font-size: 0.85rem; } .app-nav ul { gap: 5px; flex-wrap: wrap; justify-content: space-around; } .app-nav ul li a { padding: 10px 8px; font-size: 0.8rem; } .invoice-app-container { padding: 15px; } .form-section { padding: 15px; } .form-section legend { font-size: 1.1rem; } .form-group input[type="text"], .form-group input[type="email"], .form-group input[type="tel"], .form-group input[type="date"], .form-group input[type="number"], .form-group select, .form-group textarea { padding: 10px 12px; font-size: 0.95rem; } .btn { padding: 10px 15px; font-size: 0.9rem; } .totals-summary-box { padding: 15px; } .totals-summary-box h3 { font-size: 1.15rem; } .loading-content { padding: 25px; max-width: 80%;} .loading-logo-spinner { width: 60px;} .loading-overlay p { font-size: 1rem;} .invoice-list-item { padding: 12px; } .invoice-list-header, .invoice-list-client, .invoice-list-details { font-size: 0.9rem; } .invoice-list-number { font-size: 1rem; } .status-badge { padding: 3px 8px; font-size: 0.75rem; } #selectedClientNameDisplay { flex-wrap: wrap; gap: 5px; } .selected-client-name-text { white-space: normal; } #selectedClientNameDisplay .pills-container { margin-left: 0; flex-basis: 100%; justify-content: flex-start; } }
 @media (min-width: 576px) {
     .client-list-item {
-        flex-direction: row; /* Elementos en fila: [Info+Pills | Actions] o [Info | Pills | Actions] */
+        flex-direction: row; /* Elementos en fila: [Info | Pills | Actions] */
         justify-content: space-between;
-        align-items: center; /* Centrar verticalmente los grupos */
-        gap: 15px; /* Espacio entre los grupos principales */
+        align-items: center;
+        gap: 15px;
     }
     .client-list-item .client-info {
-        margin-right: 0; /* Quitar margen si flex lo maneja */
-        flex-grow: 1; /* Permitir que la info del cliente crezca */
-        min-width: 0; /* Para que flex-grow funcione bien con text-overflow */
+        margin-right: 0; 
+        flex-grow: 1; 
     }
     .client-list-item .client-pills {
-        margin-top: 0; /* Ya no necesita margen superior */
-        margin-left: auto; /* Empuja las píldoras a la derecha de la info, si las acciones van después */
+        margin-top: 0; /* Ya no necesita margen superior en layout de fila */
+        /* margin-left: auto;  Puedes usar esto si quieres que las pills se peguen a la info y las acciones a la derecha */
         margin-right: 15px; /* Espacio antes de las acciones */
-        flex-shrink: 0; /* Evita que se encojan */
+        flex-shrink: 0;
+        justify-content: flex-start; /* Alinear píldoras al inicio de su contenedor */
     }
     .client-list-item .client-actions-list {
         margin-top: 0;
         padding-top: 0;
-        border-top: none;
-        width: auto; /* Ancho automático para los botones */
+        border-top: none; /* Sin borde superior en layout de fila */
+        width: auto; /* Ancho automático para el contenedor de botones */
         justify-content: flex-end; /* Acciones a la derecha */
         flex-shrink: 0;
     }
 }
 
+@media (min-width: 768px) {
+    .client-list {
+        grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); /* Ajusta minmax según tu preferencia */
+    }
+}
 
+@media (min-width: 1200px) { /* Coincide con tu max-width de #app */
+    .client-list {
+        grid-template-columns: repeat(auto-fit, minmax(450px, 1fr)); /* Más espacio por tarjeta */
+    }
+}
 
 /* === ANIMACIÓN PARA EL GRADIENTE DEL APP-NAV === */
 @keyframes moveGradient {
