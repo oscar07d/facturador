@@ -1637,12 +1637,12 @@ textarea.input-error {
     opacity: 1 !important;
     visibility: visible !important;
     z-index: 1070 !important;
-    border: 5px solid limegreen;
+    /* border: 5px solid limegreen; */
 }
 
 #templateSelectionModal.modal-overlay.active .modal-content {
     transform: scale(1) !important;
-    border: 3px solid deeppink;
+    /* border: 3px solid deeppink; */
     min-height: 100px;
     min-width: 100px;
 }
