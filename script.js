@@ -1258,30 +1258,43 @@ function closeInvoiceDetailModal() {
 }
 
 function openTemplateSelectionModal(actionType) {
-    console.log("Abriendo modal de selección para acción:", actionType);
+    console.log("[openTemplateSelectionModal] Iniciando para acción:", actionType); // Ya lo teníamos
     currentActionForTemplateSelection = actionType;
-    if(isReminderCheckbox) isReminderCheckbox.checked = false;
 
-    if (actionType === 'image') {
-        if (imageFormatSelectionDiv) imageFormatSelectionDiv.style.display = 'block';
+    // Verificar los elementos internos del modal
+    if (!isReminderCheckbox) {
+        console.error("[openTemplateSelectionModal] Checkbox 'isReminderCheckbox' NO encontrado.");
+        // No podemos continuar si faltan elementos cruciales
+        return; 
+    }
+    isReminderCheckbox.checked = false; // Resetear checkbox
+    console.log("[openTemplateSelectionModal] Checkbox reseteado.");
+
+    if (!imageFormatSelectionDiv) {
+        console.error("[openTemplateSelectionModal] Div 'imageFormatSelectionDiv' NO encontrado.");
     } else {
-        if (imageFormatSelectionDiv) imageFormatSelectionDiv.style.display = 'none';
+        if (actionType === 'image') {
+            imageFormatSelectionDiv.style.display = 'block';
+            console.log("[openTemplateSelectionModal] Mostrando selección de formato de imagen.");
+        } else {
+            imageFormatSelectionDiv.style.display = 'none';
+            console.log("[openTemplateSelectionModal] Ocultando selección de formato de imagen.");
+        }
     }
 
-    if (templateSelectionModal) templateSelectionModal.classList.add('active');
-    if (bodyElement && !bodyElement.classList.contains('modal-active')) { // Para no añadirla dos veces si ya está por el modal principal
-        bodyElement.classList.add('modal-active');
+    if (templateSelectionModal) {
+        templateSelectionModal.classList.add('active');
+        console.log("[openTemplateSelectionModal] Clase 'active' AÑADIDA a templateSelectionModal.");
+        // Opcional: Verificar si el body necesita la clase modal-active
+        if (bodyElement && !bodyElement.classList.contains('modal-active')) {
+             // bodyElement.classList.add('modal-active'); // Descomenta si quieres que este modal también bloquee scroll
+             // console.log("[openTemplateSelectionModal] Clase 'modal-active' AÑADIDA al body.");
+        }
+    } else {
+        console.error("[openTemplateSelectionModal] Elemento 'templateSelectionModal' es null. No se puede mostrar.");
+        alert("Error: No se pudo abrir el diálogo de selección de plantilla.");
     }
 }
-
-function closeTemplateSelectionModal() {
-    if (templateSelectionModal) templateSelectionModal.classList.remove('active');
-    // Solo quitar modal-active del body si el modal de DETALLES tampoco está activo
-    if (bodyElement && invoiceDetailModal && !invoiceDetailModal.classList.contains('active')) {
-        bodyElement.classList.remove('modal-active');
-    }
-}
-
 function formatInvoiceNumber(number) {
     return String(number).padStart(3, '0');
 }
