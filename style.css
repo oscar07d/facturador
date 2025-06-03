@@ -788,12 +788,11 @@ input.input-error, select.input-error, textarea.input-error { border-color: var(
     }
 }
 
-@media (min-width: 768px) {
-    .client-list {
-        grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); /* Tarjetas un poco más anchas */
-    }
-}
-
+    @media (min-width: 768px) {
+        .client-list {
+            grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); /* Tarjetas un poco más anchas */
+        }
+    
     #clientsSection .client-list-item { /* Selector más específico */
             flex-direction: row !important; /* **¡FORZAR A FILA para pantallas más grandes!** */
             justify-content: space-between;
