@@ -496,37 +496,24 @@ input.input-error, select.input-error, textarea.input-error { border-color: var(
     width: 100%;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.65);
-    display: flex;
+    display: none; /* Estado base: oculto con display none */
     justify-content: center;
     align-items: center;
-
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none; 
-    transition: opacity 0.25s ease-in-out, visibility 0s linear 0.25s;
-    z-index: 1050; /* Z-index base para modales */
+    z-index: 1050; 
 }
 
 .modal-overlay.active {
-    opacity: 1;
-    visibility: visible;
-    pointer-events: auto;
-    transition: opacity 0.25s ease-in-out, visibility 0s linear 0s;
+    display: flex !important; /* Forzar display flex al estar activo */
+    opacity: 1 !important;    /* Forzar para ver si es un problema de opacidad */
+    visibility: visible !important; /* Forzar para ver si es un problema de visibilidad */
 }
 
-.modal-overlay .modal-content { /* Estilo base para el contenido de CUALQUIER modal */
-    background-color: var(--container-background, #fff);
-    padding: 20px 25px;
-    border-radius: var(--border-radius-m, 15px);
-    box-shadow: var(--box-shadow-medium, 0 8px 25px rgba(0,0,0,0.1));
-    display: flex;
-    flex-direction: column;
-    position: relative;
-    transform: translateY(-30px) scale(0.95); /* Inicia un poco arriba y pequeño */
-    opacity: 0; /* Inicia transparente */
-    transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-    max-height: 90vh; 
-    width: 90%; /* Por defecto responsive */
+.modal-overlay .modal-content {
+    background-color: white;
+    padding: 20px;
+    border: 2px solid red; /* Para ver si el contenido se renderiza */
+    width: 70%; /* Dale un ancho */
+    height: 70%; /* Dale un alto */
 }
 
 .modal-content {
