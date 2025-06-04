@@ -861,28 +861,83 @@ function openInvoiceDetailModal(invoiceData, invoiceId) {
 }
 
 function closeInvoiceDetailModal() {
-    console.log("Intentando cerrar modal...");
     if (!invoiceDetailModal) {
         console.error("Elemento invoiceDetailModal no encontrado al intentar cerrar.");
         return; 
     }
 
-    invoiceDetailModal.classList.remove('active');  // << Esto es correcto para ocultar el modal
-    bodyElement.classList.remove('modal-active'); // << AÑADE ESTA LÍNEA para desbloquear scroll del body
+    invoiceDetailModal.classList.remove('active'); // Quita .active del modal de detalles
 
+    // Lógica para quitar 'modal-active' del body:
+    // Solo quitar si el modal de SELECCIÓN tampoco está activo.
+    const selectionModalIsActive = templateSelectionModal && templateSelectionModal.classList.contains('active');
+    
+    if (bodyElement && !selectionModalIsActive) { 
+        // Si el modal de selección NO está activo, entonces podemos quitar la clase del body.
+        bodyElement.classList.remove('modal-active');
+        // console.log("[closeInvoiceDetailModal] Clase 'modal-active' quitada del body porque el modal de selección no está activo.");
+    } else if (bodyElement && selectionModalIsActive) {
+        // Si el modal de selección AÚN ESTÁ ACTIVO, no quitamos la clase del body
+        // porque ese otro modal la necesita para el overlay y el bloqueo de scroll.
+        // console.log("[closeInvoiceDetailModal] El modal de selección aún está activo, no se quita 'modal-active' del body.");
+    }
+
+
+    // Resetear el contenido del modal de detalles después de un breve momento
     if (modalInvoiceDetailsContent) {
         setTimeout(() => { 
-            if(modalInvoiceDetailsContent) {
+            if(modalInvoiceDetailsContent) { // Doble verificación por si el modal se destruye rápido
                 modalInvoiceDetailsContent.innerHTML = '<p>Cargando detalles de la factura...</p>'; 
             }
-        }, 300); 
+        }, 300); // La demora permite que la animación de cierre del modal termine antes de cambiar el contenido.
     }
     if (modalInvoiceTitle) {
         modalInvoiceTitle.textContent = 'Detalle de Factura';
     }
 }
 
+function openTemplateSelectionModal(actionType) {
+    currentActionForTemplateSelection = actionType;
+    if(isReminderCheckbox) isReminderCheckbox.checked = false;
 
+    if (imageFormatSelectionDiv) { // Asegurarse que el elemento exista
+        imageFormatSelectionDiv.style.display = (actionType === 'image') ? 'block' : 'none';
+    } else if (actionType === 'image') {
+        console.warn("Elemento #imageFormatSelection no encontrado para la acción 'image'.");
+    }
+
+    if (templateSelectionModal) {
+        templateSelectionModal.classList.add('active');
+        // console.log("[openTemplateSelectionModal] Clase 'active' AÑADIDA a templateSelectionModal.");
+        if (bodyElement && !bodyElement.classList.contains('modal-active')) {
+            bodyElement.classList.add('modal-active');
+            // console.log("[openTemplateSelectionModal] Clase 'modal-active' AÑADIDA al body.");
+        }
+    } else {
+        console.error("Elemento #templateSelectionModal no encontrado.");
+    }
+}
+
+function closeTemplateSelectionModal() {
+    // console.log("[closeTemplateSelectionModal] Intentando cerrar modal de selección.");
+    if (templateSelectionModal) {
+        templateSelectionModal.classList.remove('active');
+        // console.log("[closeTemplateSelectionModal] Clase 'active' quitada de templateSelectionModal.");
+    } else {
+        // console.error("[closeTemplateSelectionModal] templateSelectionModal es null.");
+    }
+    
+    // Solo quitar 'modal-active' del body si el modal de DETALLES tampoco está activo
+    if (bodyElement) {
+        const mainDetailModalIsActive = invoiceDetailModal && invoiceDetailModal.classList.contains('active');
+        if (!mainDetailModalIsActive) { // Si el modal de detalles NO está activo
+            bodyElement.classList.remove('modal-active');
+            // console.log("[closeTemplateSelectionModal] Clase 'modal-active' quitada del body porque el modal de detalles tampoco está activo.");
+        } else {
+            // console.log("[closeTemplateSelectionModal] El modal de detalles aún está activo, no se quita 'modal-active' del body.");
+        }
+    }
+}
 
 function formatInvoiceNumber(number) {
     return String(number).padStart(3, '0');
