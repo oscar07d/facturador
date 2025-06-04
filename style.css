@@ -493,25 +493,25 @@ body.modal-active {
     overflow: hidden; 
 }
 
-.modal-overlay {
+.modal-overlay { /* Estilo base para TODOS los overlays de modal */
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.65); /* Fondo semitransparente */
-    display: flex; 
+    background-color: rgba(0, 0, 0, 0.65);
+    display: flex; /* Para centrar .modal-content */
     justify-content: center;
     align-items: center;
-    
+
     opacity: 0;
     visibility: hidden;
     pointer-events: none; 
     transition: opacity 0.25s ease-in-out, visibility 0s linear 0.25s;
-    /* z-index base se definirá por ID si es necesario diferenciar */
+    z-index: 1050; /* Z-index para invoiceDetailModal */
 }
 
-.modal-overlay.active {
+.modal-overlay.active { /* Cuando CUALQUIER modal con .modal-overlay tiene la clase .active */
     opacity: 1;
     visibility: visible;
     pointer-events: auto;
@@ -519,19 +519,20 @@ body.modal-active {
 }
 
 /* Contenido base para todos los modales */
-.modal-content { /* Ya no está anidado bajo .modal-overlay aquí para evitar duplicidad de selectores */
+.modal-content { /* Estilo base para el contenido de CUALQUIER modal */
     background-color: var(--container-background, #fff);
-    padding: 20px 25px;
+    padding: 20px 25px; /* O los valores que tenías en tus ejemplos más recientes */
     border-radius: var(--border-radius-m, 15px);
     box-shadow: var(--box-shadow-medium, 0 8px 25px rgba(0,0,0,0.1));
     display: flex;
     flex-direction: column;
-    position: relative; /* Para el botón de cierre si es absoluto */
-    transform: translateY(-30px) scale(0.95); /* Estado inicial para la animación */
-    opacity: 0; /* Inicia transparente para la animación */
+    position: relative; /* Para el posicionamiento de hijos como el botón de cierre si es absoluto */
+    transform: translateY(-30px) scale(0.95); /* Estado inicial para la animación de entrada */
+    opacity: 0; /* Inicia transparente para la animación de entrada */
     transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-    max-height: 90vh; 
-    width: 90%; /* Responsive por defecto */
+    max-height: 90vh; /* Altura máxima para evitar que sea más alto que la pantalla */
+    width: 90%; /* Responsive por defecto, se ajusta con max-width más abajo */
+    overflow: hidden; /* Para que el .modal-body interno maneje el scroll */
 }
 
 /* Cuando el modal (overlay) está activo, se anima el contenido */
