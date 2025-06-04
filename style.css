@@ -878,3 +878,23 @@ body.modal-active {
     min-height: 100px;
     min-width: 100px;
 }*/
+
+#invoiceDetailModal.modal-overlay.active {
+    display: flex !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+    z-index: 20000 !important; /* Un z-index extremadamente alto */
+    background-color: rgba(0, 255, 0, 0.3) !important; /* Fondo verde brillante para verlo */
+}
+
+#invoiceDetailModal.modal-overlay.active .modal-content {
+    transform: scale(1) translateY(0) !important;
+    opacity: 1 !important;
+    border: 5px solid red !important; /* Borde rojo brillante para ver el contenido */
+    width: 70% !important; /* Asegurar un tamaño */
+    height: 70% !important; /* Asegurar un tamaño */
+    min-height: 300px !important; /* Asegurar que tenga algo de altura */
+    min-width: 300px !important;  /* Asegurar que tenga algo de ancho */
+    background-color: white !important; /* Asegurar fondo */
+}
