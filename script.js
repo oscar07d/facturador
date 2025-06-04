@@ -864,11 +864,16 @@ function openInvoiceDetailModal(invoiceData, invoiceId) {
     if(modalInvoiceDetailsContent) modalInvoiceDetailsContent.innerHTML = detailsHTML;
     
     if (invoiceDetailModal) {
-        // console.log("Activando modal de detalles y clase modal-active en body.");
+        // console.log("Activando modal de detalles y clase modal-active en body."); // Log de depuración opcional
         invoiceDetailModal.classList.add('active');
-        // if (bodyElement) bodyElement.classList.add('modal-active');
+        if (bodyElement) { // Asegúrate que bodyElement esté definido globalmente
+            bodyElement.classList.add('modal-active');
+        } else {
+            console.error("Variable bodyElement no definida. No se pudo añadir clase modal-active al body.");
+        }
     } else {
-        // console.error("invoiceDetailModal es null, no se puede activar.");
+        console.error("Elemento #invoiceDetailModal no encontrado. No se puede activar el modal.");
+        alert("Error: No se pudo mostrar el detalle de la factura porque el contenedor del modal no existe.");
     }
 }
 
