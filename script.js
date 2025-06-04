@@ -1341,6 +1341,33 @@ function closeTemplateSelectionModal() {
     }
 }
 
+function closeTemplateSelectionModal() {
+    console.log("[closeTemplateSelectionModal] Intentando cerrar modal de selección.");
+    if (templateSelectionModal) {
+        templateSelectionModal.classList.remove('active');
+        // Quitar estilos de depuración forzados por JS
+        templateSelectionModal.style.removeProperty('display');
+        templateSelectionModal.style.removeProperty('opacity');
+        templateSelectionModal.style.removeProperty('visibility');
+        templateSelectionModal.style.removeProperty('z-index');
+
+        console.log("[closeTemplateSelectionModal] Clase 'active' quitada de templateSelectionModal.");
+    } else {
+        console.error("[closeTemplateSelectionModal] templateSelectionModal es null.");
+    }
+    
+    // Solo quitar 'modal-active' del body si el modal de DETALLES tampoco está activo
+    if (bodyElement) {
+        const mainDetailModalStillActive = invoiceDetailModal && invoiceDetailModal.classList.contains('active');
+        if (!mainDetailModalStillActive) {
+            bodyElement.classList.remove('modal-active');
+            console.log("[closeTemplateSelectionModal] Clase 'modal-active' quitada del body porque el modal de detalles tampoco está activo.");
+        } else {
+            console.log("[closeTemplateSelectionModal] El modal de detalles aún está activo, no se quita 'modal-active' del body.");
+        }
+    }
+}
+
 function formatInvoiceNumber(number) {
     return String(number).padStart(3, '0');
 }
