@@ -27,7 +27,7 @@
         </div>
 
         <div id="mainContent" class="main-content" style="display: none;"> 
-            
+
             <header class="app-header">
                 <div class="logo-app-container">
                     <svg id="Capa_2_app_logo" data-name="Capa 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 879.14 85.62" class="app-logo-completo">
@@ -54,7 +54,7 @@
                     <button id="logoutButton" class="btn btn-outline">Cerrar Sesión</button>
                 </div>
             </header>
-            
+
             <nav class="app-nav">
                 <ul>
                     <li><a href="#" id="navCreateInvoice" class="active-nav">Crear Factura</a></li>
@@ -62,11 +62,11 @@
                     <li><a href="#" id="navClients">Clientes</a></li>
                 </ul>
             </nav>
-    
+
             <main class="invoice-app-container">
                 <section id="createInvoiceSection" class="invoice-section active-section">
                     <form id="invoiceForm" class="invoice-form">
-                        
+
                         <fieldset class="form-section">
                             <legend>Datos del Emisor (Tu Comercio) <span class="optional-tag">(Opcional)</span></legend>
                             <div class="form-grid two-columns">
@@ -77,7 +77,7 @@
                                 <div class="form-group"><label for="emitterEmail">Correo Electrónico:</label><input type="email" id="emitterEmail" name="emitterEmail"></div>
                             </div>
                         </fieldset>
-    
+
                         <fieldset class="form-section">
                             <legend>Datos del Cliente</legend>
                             <div class="form-group">
@@ -103,7 +103,7 @@
                                 <div class="form-group full-width"><label for="clientEmail">Correo Electrónico:</label><input type="email" id="clientEmail" name="clientEmail" required></div>
                             </div>
                         </fieldset>
-    
+
                         <fieldset class="form-section">
                             <legend>Detalles de la Factura</legend>
                             <div class="form-grid three-columns">
@@ -112,7 +112,7 @@
                                 <div class="form-group"><label for="serviceStartDate">Fecha Inicio de Servicio (Pagos Mensuales):</label><input type="date" id="serviceStartDate" name="serviceStartDate"></div>
                             </div>
                         </fieldset>
-    
+
                         <fieldset class="form-section">
                             <legend>Ítems de la Factura</legend>
                             <div id="invoiceItemsContainer"><div class="invoice-item-placeholder">Aún no has agregado ítems.</div></div>
@@ -161,7 +161,7 @@
                                 <button type="button" id="addItemBtn" class="btn btn-primary">Agregar Ítem</button>
                             </div>
                         </fieldset>
-    
+
                         <fieldset class="form-section">
                             <legend>Totales y Estado de Pago</legend>
                             <div class="totals-grid">
@@ -185,7 +185,7 @@
                                 <p><strong>Acción Sugerida:</strong> <span id="paymentStatusAction"></span></p>
                             </div>
                         </fieldset>
-    
+
                         <fieldset class="form-section actions-section">
                             <legend>Acciones Finales</legend>
                             <div class="form-actions main-actions">
@@ -201,14 +201,14 @@
                         </fieldset>
                     </form>
                 </section>
-    
+
                 <section id="viewInvoicesSection" class="invoice-section" style="display: none;">
                     <h2>Mis Facturas</h2>
                     <div id="invoiceListContainer">
                         {/* Las facturas se cargarán aquí con JS */}
                     </div>
                 </section>
-    
+
                 <section id="clientsSection" class="invoice-section" style="display: none;">
                     <h2>Clientes</h2>
                     <div id="clientListContainer">
@@ -216,7 +216,7 @@
                     </div>
                 </section>
             </main>
-            
+
         </div> <div id="invoice-export-template" style="display: none; width: 210mm;">
             <div class="export-header">
                 <div class="export-logo-container">
@@ -271,8 +271,7 @@
         <div id="whatsapp-image-export-template" style="display: none; width: 580px;">
             <div class="wa-header">
                 <div class="wa-company-details">
-                    <div class="wa-logo-container">
-                        <img src="img/Isologo_img.png" alt="Isologo OSCAR 07D Studios" id="wa-logo-image">
+                    <div class="wa-logo-container"><img src="img/Isologo.svg" alt="Isologo OSCAR 07D Studios" id="wa-logo-image"></div>
                     <div id="wa-emitter-name" class="wa-emitter-info">OSCAR 07D Studios</div>
                     <div id="wa-emitter-id" class="wa-emitter-info">NIT/ID: 987.654.321-0</div>
                     <div id="wa-emitter-phone" class="wa-emitter-info">Cel: (+57) 310 987 6543</div>
@@ -295,8 +294,7 @@
 
         <div id="payment-reminder-export-template" style="display: none; width: 580px;">
             <div class="reminder-header">
-                <div class="reminder-company-branding"><div class="reminder-logo-container">
-                    <img src="img/Isologo_img.png" alt="Logo OSCAR 07D Studios" id="reminder-logo-image"></div><div id="reminder-emitter-name" class="company-name-header">OSCAR 07D Studios</div></div>
+                <div class="reminder-company-branding"><div class="reminder-logo-container"><img src="img/Isologo.svg" alt="Logo OSCAR 07D Studios" id="reminder-logo-image"></div><div id="reminder-emitter-name" class="company-name-header">OSCAR 07D Studios</div></div>
                 <div class="reminder-status-area"><div id="reminder-payment-status-pill" class="status-pill">PENDIENTE</div></div>
             </div>
             <div class="reminder-title-section"><h2 id="reminder-main-title">RECORDATORIO DE PAGO</h2></div>
@@ -309,9 +307,48 @@
             <div class="reminder-footer"><p id="reminder-final-note">Si ya pagaste, ignora este mensaje. ¡Gracias!</p><p id="reminder-contact-info">Dudas: info@oscar07dstudios.com</p></div>
         </div>
 
-        
+        <div id="invoiceDetailModal" class="modal-overlay">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 id="modalInvoiceTitle">Detalle de Factura</h2>
+                    <button id="closeInvoiceDetailModalBtn" class="modal-close-btn">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div id="modalInvoiceDetailsContent">
+                        <p>Cargando detalles de la factura...</p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="modalShareBtn" class="btn btn-icon btn-secondary-outline" title="Compartir">
+                        <img src="img/Share_icon.svg" alt="Compartir" class="icon-svg">
+                        <span>Compartir</span>
+                    </button>
 
-        <div id="templateSelectionModal" class="modal-overlay">
+                    <button type="button" id="modalWhatsAppBtn" class="btn btn-icon btn-success-outline" title="WhatsApp">
+                        <img src="img/WhatsApp_icon.svg" alt="WhatsApp" class="icon-svg">
+                        <span>WhatsApp</span>
+                    </button>
+
+                    <button type="button" id="modalImageBtn" class="btn btn-icon btn-info-outline" title="Descargar Imagen">
+                        <img src="img/Img_icon.svg" alt="Imagen" class="icon-svg">
+                        <span>Imagen</span>
+                    </button>
+
+                    <button type="button" id="modalEmailBtn" class="btn btn-icon btn-warning-outline" title="Enviar por Email">
+                        <img src="img/Email_icon.svg" alt="Email" class="icon-svg">
+                        <span>Email</span>
+                    </button>
+
+                    <button type="button" id="modalPdfBtn" class="btn btn-icon btn-danger-outline" title="Descargar PDF">
+                        <img src="img/Pdf_icon.svg" alt="PDF" class="icon-svg">
+                        <span>PDF</span>
+                    </button>
+
+                    </div>
+            </div>
+        </div>
+
+        <div id="templateSelectionModal" class="modal-overlay" style="display: none;">
             <div class="modal-content small-modal-content">
                 <div class="modal-header">
                     <h2 id="templateSelectionModalTitle">Seleccionar Tipo de Imagen</h2>
@@ -359,47 +396,6 @@
         </div>
     </div>
 
-    <div id="invoiceDetailModal" class="modal-overlay">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h2 id="modalInvoiceTitle">Detalle de Factura</h2>
-                    <button id="closeInvoiceDetailModalBtn" class="modal-close-btn">&times;</button>
-                </div>
-                <div class="modal-body">
-                    <div id="modalInvoiceDetailsContent">
-                        <p>Cargando detalles de la factura...</p>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" id="modalShareBtn" class="btn btn-icon btn-secondary-outline" title="Compartir">
-                        <img src="img/Share_icon.svg" alt="Compartir" class="icon-svg">
-                        <span>Compartir</span>
-                    </button>
-                
-                    <button type="button" id="modalWhatsAppBtn" class="btn btn-icon btn-success-outline" title="WhatsApp">
-                        <img src="img/WhatsApp_icon.svg" alt="WhatsApp" class="icon-svg">
-                        <span>WhatsApp</span>
-                    </button>
-                
-                    <button type="button" id="modalImageBtn" class="btn btn-icon btn-info-outline" title="Descargar Imagen">
-                        <img src="img/Img_icon.svg" alt="Imagen" class="icon-svg">
-                        <span>Imagen</span>
-                    </button>
-                
-                    <button type="button" id="modalEmailBtn" class="btn btn-icon btn-warning-outline" title="Enviar por Email">
-                        <img src="img/Email_icon.svg" alt="Email" class="icon-svg">
-                        <span>Email</span>
-                    </button>
-                
-                    <button type="button" id="modalPdfBtn" class="btn btn-icon btn-danger-outline" title="Descargar PDF">
-                        <img src="img/Pdf_icon.svg" alt="PDF" class="icon-svg">
-                        <span>PDF</span>
-                    </button>
-                
-                    </div>
-            </div>
-        </div>
-            
     </div> 
     <div id="payment-reminder-export-template" style="display: none; width: var(--reminder-width, 580px);">
     <div class="reminder-header">
@@ -422,7 +418,7 @@
 
     <div class="reminder-body">
         <p class="reminder-greeting">Hola, <strong id="reminder-client-name">[Nombre del Cliente Ejemplo]</strong>,</p>
-        
+
         <p id="reminder-message-content">
             Te escribimos para recordarte amablemente que el pago de tu factura está programado para la siguiente fecha.
             </p>
@@ -455,6 +451,6 @@
         </div>
 </div> <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" integrity="sha512-BNaRQnYJYiPSqHHDb58B0yaPfCu+Wgds8Gp/gU33kqBtgNS4tSPHuGibyoeqMV/TJlSKda6FXzoEyYGjTe+vXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" integrity="sha512-qZvrmS2ekKPF2mSznTQsxqPgnpkI4DNTlrdUmTzrDgektczlKNRRhy5X5AAOnx5S09ydFYWWNSfcEqDTTHgtNA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script type="module" src="script.js"></script>
+    <script type="module" src="script.js"></script>More actions
 </body>
 </html>
