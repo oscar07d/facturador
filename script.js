@@ -1978,8 +1978,8 @@ if (invoiceForm) {
     });
 }
 
-if (generateInvoiceFileBtn) { 
-    generateInvoiceFileBtn.addEventListener('click', () => {
-        alert("Funcionalidad 'Generar Factura (Archivo)' pendiente.");
-    });
-}
+// if (generateInvoiceFileBtn) { 
+//     generateInvoiceFileBtn.addEventListener('click', () => {
+//         alert("Funcionalidad 'Generar Factura (Archivo)' pendiente.");
+//     });
+// }
