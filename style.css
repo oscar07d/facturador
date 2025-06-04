@@ -868,3 +868,21 @@ body.modal-active {
             grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
         }
     }
+
+#templateSelectionModal.modal-overlay.active {
+    display: flex !important; /* ¡Fuerza flex! */
+    opacity: 1 !important;    /* ¡Fuerza opacidad! */
+    visibility: visible !important; /* ¡Fuerza visibilidad! */
+    z-index: 1070 !important; /* ¡Un z-index aún mayor que el modal de detalles (1050) y el loading (10000 es mucho, pero probemos con uno intermedio alto) */
+                               /* Si loadingOverlay es 10000, este debería ser 10001 o más si se muestra sobre el loading */
+                               /* Pero usualmente un modal no se muestra sobre el loading. */
+                               /* Vamos a probar con 1070 para estar seguro sobre el modal de detalles */
+    border: 5px solid limegreen; /* Borde brillante para verlo fácilmente si aparece */
+}
+
+#templateSelectionModal.modal-overlay.active .modal-content {
+    transform: scale(1) !important; /* Asegurar que no esté escalado a 0 */
+    border: 3px solid deeppink; /* Borde para ver el contenido del modal */
+    min-height: 100px; /* Asegurar que tenga algo de altura */
+    min-width: 100px;  /* Asegurar que tenga algo de ancho */
+}
