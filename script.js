@@ -1271,7 +1271,7 @@ function closeInvoiceDetailModal() {
     }
 }
 
-function openTemplateSelectionModal(actionType) {Add commentMore actions
+function openTemplateSelectionModal(actionType) { //Add commentMore actions
     console.log("[openTemplateSelectionModal] Iniciando para acción:", actionType); // Ya lo teníamos
     console.log("[openTemplateSelectionModal] Iniciando para acción:", actionType);
     currentActionForTemplateSelection = actionType;
@@ -1356,7 +1356,7 @@ function closeTemplateSelectionModal() {
     }
 }
 
-function closeTemplateSelectionModal() {Add commentMore actions
+function closeTemplateSelectionModal() { // Add commentMore actions
     console.log("[closeTemplateSelectionModal] Intentando cerrar modal de selección.");
     if (templateSelectionModal) {
         templateSelectionModal.classList.remove('active');
