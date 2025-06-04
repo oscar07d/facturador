@@ -513,6 +513,14 @@ input.input-error, select.input-error, textarea.input-error { border-color: var(
     transition: opacity 0.25s ease-in-out, visibility 0s linear 0s;
 }
 
+#invoiceDetailModal.modal-overlay.active {
+  display: flex !important;
+  opacity: 1      !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+  z-index: 9999     !important;
+}
+
 .modal-overlay .modal-content { /* Aplica a .modal-content dentro de CUALQUIER .modal-overlay */
     background-color: var(--container-background, #fff);
     padding: 20px 25px;
@@ -552,6 +560,7 @@ input.input-error, select.input-error, textarea.input-error { border-color: var(
     display: flex !important;
     opacity: 1 !important;
     visibility: visible !important;
+    z-index: 9999;
 }
 
 #invoiceDetailModal .modal-content {
