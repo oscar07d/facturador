@@ -866,7 +866,7 @@ function openInvoiceDetailModal(invoiceData, invoiceId) {
     if (invoiceDetailModal) {
         // console.log("Activando modal de detalles y clase modal-active en body.");
         invoiceDetailModal.classList.add('active');
-        if (bodyElement) bodyElement.classList.add('modal-active');
+        // if (bodyElement) bodyElement.classList.add('modal-active');
     } else {
         // console.error("invoiceDetailModal es null, no se puede activar.");
     }
