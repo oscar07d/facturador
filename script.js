@@ -850,11 +850,28 @@ function openInvoiceDetailModal(invoiceData, invoiceId) {
     detailsHTML += `</div>`;
 
     if(modalInvoiceDetailsContent) modalInvoiceDetailsContent.innerHTML = detailsHTML;
-    
+
     if (invoiceDetailModal) {
-        console.log("Activando modal y clase modal-active en body.");
         invoiceDetailModal.classList.add('active');
-        bodyElement.classList.add('modal-active');
+        console.log("Clase 'active' añadida a invoiceDetailModal."); // Log para confirmar
+    
+            // === INICIO: FORZAR ESTILOS PARA DEPURACIÓN ===
+        invoiceDetailModal.style.setProperty('display', 'flex', 'important');
+        invoiceDetailModal.style.setProperty('opacity', '1', 'important');
+        invoiceDetailModal.style.setProperty('visibility', 'visible', 'important');
+        invoiceDetailModal.style.setProperty('pointer-events', 'auto', 'important');
+        invoiceDetailModal.style.setProperty('z-index', '1055', 'important'); // Un z-index muy alto para pruebas
+
+        const modalContent = invoiceDetailModal.querySelector('.modal-content');
+        if (modalContent) {
+            modalContent.style.setProperty('opacity', '1', 'important');
+            modalContent.style.setProperty('transform', 'scale(1) translateY(0)', 'important');
+            modalContent.style.setProperty('border', '3px solid limegreen', 'important'); // Borde brillante para verlo
+             console.log("Estilos de depuración forzados a invoiceDetailModal y su contenido.");
+        }
+        // === FIN: FORZAR ESTILOS PARA DEPURACIÓN ===
+
+        if (bodyElement) bodyElement.classList.add('modal-active');
     } else {
         console.error("invoiceDetailModal es null, no se puede activar.");
     }
