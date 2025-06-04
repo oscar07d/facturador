@@ -495,25 +495,37 @@ input.input-error, select.input-error, textarea.input-error { border-color: var(
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.65);
-    display: none; /* Estado base: oculto con display none */
+    background-color: rgba(0, 0, 0, 0.65); /* Fondo semitransparente */
+    display: flex; /* Para centrar .modal-content */
     justify-content: center;
     align-items: center;
+    
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none; 
+    transition: opacity 0.25s ease-in-out, visibility 0s linear 0.25s;
     z-index: 1050; 
 }
-
 .modal-overlay.active {
-    display: flex !important; /* Forzar display flex al estar activo */
-    opacity: 1 !important;    /* Forzar para ver si es un problema de opacidad */
-    visibility: visible !important; /* Forzar para ver si es un problema de visibilidad */
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transition: opacity 0.25s ease-in-out, visibility 0s linear 0s;
 }
 
-.modal-overlay .modal-content {
-    background-color: white;
-    padding: 20px;
-    border: 2px solid red; /* Para ver si el contenido se renderiza */
-    width: 70%; /* Dale un ancho */
-    height: 70%; /* Dale un alto */
+.modal-overlay .modal-content { /* Aplica a .modal-content dentro de CUALQUIER .modal-overlay */
+    background-color: var(--container-background, #fff);
+    padding: 20px 25px;
+    border-radius: var(--border-radius-m, 15px);
+    box-shadow: var(--box-shadow-medium, 0 8px 25px rgba(0,0,0,0.1));
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    transform: translateY(-30px) scale(0.95); 
+    opacity: 0; 
+    transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    max-height: 90vh; 
+    width: 90%;
 }
 
 .modal-content {
@@ -607,9 +619,7 @@ input.input-error, select.input-error, textarea.input-error { border-color: var(
 #templateSelectionModal #imageFormatSelect.form-control:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25); }
 #templateSelectionModal .modal-footer { display: flex; justify-content: flex-end; gap: 10px; padding-top: 20px; margin-top: 10px; border-top: 1px solid var(--border-color); }
 #templateSelectionModal.modal-overlay { z-index: 1060; /* Para que aparezca encima del modal de detalles */ }
-#templateSelectionModal .modal-content {
-    max-width: 480px; /* Más pequeño */
-}
+
 
 
 /* === MEDIA QUERIES PARA ADAPTABILIDAD (Generales de la app) === */
