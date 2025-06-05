@@ -2396,14 +2396,20 @@ if (invoiceForm) {
     invoiceForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const user = auth.currentUser;
-        if (!user) { alert("Debes iniciar sesión."); return; }
-        if (currentInvoiceItems.length === 0) { alert("Agrega al menos un ítem."); return; }
-
+        if (!user) { alert("Debes iniciar sesión para guardar."); return; }
+        
+        // --- VALIDACIONES INICIALES ---
+        if (currentInvoiceItems.length === 0) { alert("Por favor, agrega al menos un ítem a la factura."); return; }
         let clientName = clientNameInput?.value.trim();
         let clientPhone = clientPhoneInput?.value.trim();
         let clientEmail = clientEmailInput?.value.trim();
-        if (!clientName || !clientPhone || !clientEmail) { alert("Completa los datos del cliente."); return; }
+        if (!clientName || !clientPhone || !clientEmail) { alert("Por favor, completa los datos del cliente."); return; }
+        if (!invoiceDateInput.value) { alert("Por favor, selecciona una fecha para la factura."); return; }
+        
+        if (saveInvoiceBtn) saveInvoiceBtn.disabled = true;
+        showLoading(true);
 
+        // --- LÓGICA PARA CLIENTES (NUEVO O EDITADO) ---
         const selectedClientId = hiddenSelectedClientIdInput.value;
         if (selectedClientId && isEditingClient) {
             const clientRef = doc(db, "clientes", selectedClientId);
@@ -2411,16 +2417,11 @@ if (invoiceForm) {
             try {
                 await updateDoc(clientRef, clientUpdates);
                 const clientIndex = loadedClients.findIndex(c => c.id === selectedClientId);
-                if (clientIndex > -1) {
-                    loadedClients[clientIndex] = { ...loadedClients[clientIndex], name, phone, email, updatedAt: new Date() }; 
-                }
-                if (selectedClientNameDisplay && hiddenSelectedClientIdInput.value === selectedClientId) {
-                     handleClientSelection(selectedClientId, clientName, loadedClients[clientIndex]); 
-                }
-
+                if (clientIndex > -1) { loadedClients[clientIndex] = { ...loadedClients[clientIndex], ...clientUpdates }; }
+                handleClientSelection(selectedClientId, clientName, loadedClients.find(c => c.id === selectedClientId));
             } catch (error) {
                 console.error("Error al actualizar cliente:", error);
-                alert("Error al actualizar datos del cliente. Se guardará la factura con los datos anteriores.");
+                alert("Error al actualizar datos del cliente. Se guardará la factura con los datos anteriores del cliente.");
                 const originalClient = loadedClients.find(client => client.id === selectedClientId);
                 if (originalClient) {
                     clientName = originalClient.name; clientPhone = originalClient.phone; clientEmail = originalClient.email;
@@ -2432,35 +2433,30 @@ if (invoiceForm) {
             if (clientEmailInput) clientEmailInput.disabled = true;
         }
 
-        if (typeof recalculateTotals === 'function') recalculateTotals();
+        // --- RECOLECCIÓN DE DATOS CON PARSEO CORRECTO ---
+        recalculateTotals();
 
+        const parseCurrencyString = (str) => {
+            if (typeof str !== 'string') return 0;
+            // Quita todo lo que no sea dígito o coma, luego reemplaza la coma
+            const cleanNumberStr = str.replace(/[^\d,]/g, '').replace(',', '.');
+            return parseFloat(cleanNumberStr) || 0;
+        };
+        
         let actualNumericInvoiceNumber;
         let formattedInvoiceNumberStr;
-
-        if (saveInvoiceBtn) saveInvoiceBtn.disabled = true;
-        if (generateInvoiceFileBtn) generateInvoiceFileBtn.disabled = true;
-        showLoading(true);
-
+        let uniqueQueryCode;
+        
         try {
             actualNumericInvoiceNumber = await getNextInvoiceNumber(user.uid);
             formattedInvoiceNumberStr = formatInvoiceNumber(actualNumericInvoiceNumber);
+            uniqueQueryCode = await getTrulyUniqueCode(user.uid);
+            if (!uniqueQueryCode) throw new Error("No se pudo generar un código único.");
         } catch (error) { 
-            alert("Error crítico al generar número de factura. No se guardó la factura.");
+            alert("Error crítico al generar el número o código de la factura. No se guardó la factura.");
             showLoading(false); 
             if (saveInvoiceBtn) saveInvoiceBtn.disabled = false;
-            if (generateInvoiceFileBtn) generateInvoiceFileBtn.disabled = false;
             return; 
-        }
-
-        const uniqueQueryCode = await getTrulyUniqueCode(user.uid); // Usamos la longitud por defecto (7)
-        console.log("Valor devuelto por getTrulyUniqueCode:", uniqueQueryCode);
-
-        if (!uniqueQueryCode) {
-            // getTrulyUniqueCode ya muestra una alerta si falla después de los reintentos.
-            showLoading(false);
-            if (saveInvoiceBtn) saveInvoiceBtn.disabled = false;
-            if (generateInvoiceFileBtn) generateInvoiceFileBtn.disabled = false;
-            return; // No continuar si no se pudo generar el código único
         }
 
         const invoiceToSave = {
@@ -2480,69 +2476,55 @@ if (invoiceForm) {
             client: { name: clientName, phone: clientPhone, email: clientEmail }, 
             items: currentInvoiceItems,
             discount: { type: discountTypeSelect.value, value: (parseFloat(discountValueInput.value) || 0) },
-            totals: {
-                subtotal: parseFloat(subtotalAmountSpan.textContent.replace(/[^\d,.-]/g, '').replace(',', '.')) || 0,
-                discountApplied: parseFloat(discountAmountAppliedSpan.textContent.replace(/[^\d,.-]/g, '').replace(',', '.')) || 0,
-                taxableBase: parseFloat(taxableBaseAmountSpan.textContent.replace(/[^\d,.-]/g, '').replace(',', '.')) || 0,
-                iva: parseFloat(ivaAmountSpan.textContent.replace(/[^\d,.-]/g, '').replace(',', '.')) || 0,
-                grandTotal: parseFloat(totalAmountSpan.textContent.replace(/[^\d,.-]/g, '').replace(',', '.')) || 0
+            totals: { // Usando la función de parseo correcta
+                subtotal: parseCurrencyString(subtotalAmountSpan.textContent),
+                discountApplied: parseCurrencyString(discountAmountAppliedSpan.textContent),
+                taxableBase: parseCurrencyString(taxableBaseAmountSpan.textContent),
+                iva: parseCurrencyString(ivaAmountSpan.textContent),
+                grandTotal: parseCurrencyString(totalAmountSpan.textContent)
             },
             paymentStatus: paymentStatusSelect.value,
             createdAt: serverTimestamp()
         };
 
-        console.log("Objeto invoiceToSave ANTES de guardar en Firestore:", JSON.stringify(invoiceToSave, null, 2));
-
+        // --- GUARDADO EN FIRESTORE ---
         try {
             const docRef = await addDoc(collection(db, "facturas"), invoiceToSave);
-            alert(`¡Factura FCT-${formattedInvoiceNumberStr} guardada! ID: ${docRef.id}`);
+            alert(`¡Factura FCT-${formattedInvoiceNumberStr} guardada exitosamente!`);
 
-            // Si es un cliente nuevo, guardarlo y asignarle estados por defecto
-            if (hiddenSelectedClientIdInput && hiddenSelectedClientIdInput.value === "") {
+            if (!selectedClientId) { // Cliente nuevo
                 const newClientData = { 
                     userId: user.uid, name: clientName, phone: clientPhone, email: clientEmail, 
-                    createdAt: serverTimestamp(), 
-                    isDeleted: false, 
+                    createdAt: serverTimestamp(), isDeleted: false, 
                     estadoGeneralCliente: "Nuevo", 
-                    estadoUltimaFacturaCliente: invoiceToSave.paymentStatus // Usar el estado de esta primera factura
+                    estadoUltimaFacturaCliente: invoiceToSave.paymentStatus 
                 };
-                try {
-                    await addDoc(collection(db, "clientes"), newClientData);
-                } catch (clientError) { console.error("Error al guardar nuevo cliente:", clientError); }
-            } else if (selectedClientId) { 
-                // Si es un cliente existente, ACTUALIZAR su estadoUltimaFacturaCliente
+                await addDoc(collection(db, "clientes"), newClientData);
+            } else { // Cliente existente
                 const clientRef = doc(db, "clientes", selectedClientId);
-                try {
-                    await updateDoc(clientRef, {
-                        estadoUltimaFacturaCliente: invoiceToSave.paymentStatus,
-                        // Aquí también podríamos actualizar 'estadoGeneralCliente' basado en una lógica más compleja
-                        // Por ahora, solo actualizamos el de la última factura.
-                        updatedAt: serverTimestamp() 
-                    });
-                } catch (clientUpdateError) {
-                    console.error("Error al actualizar estado del cliente existente:", clientUpdateError);
-                }
+                await updateDoc(clientRef, {
+                    estadoUltimaFacturaCliente: invoiceToSave.paymentStatus,
+                    updatedAt: serverTimestamp() 
+                });
             }
-
+            
+            // Limpiar y reiniciar formulario
             invoiceForm.reset();
-            currentInvoiceItems = []; nextItemId = 0;
-            handleClientSelection("", "-- Nuevo Cliente --"); 
-
+            currentInvoiceItems = []; 
+            nextItemId = 0;
             renderItems(); 
             setDefaultInvoiceDate(); 
             updateQuantityBasedOnStreaming(); 
             handleDiscountChange();
             await loadClientsIntoDropdown(); 
             await displayNextPotentialInvoiceNumber();
-
+            
         } catch (error) { 
-            console.error("Error al guardar factura en Firestore o al procesar post-guardado:", error);
+            console.error("Error al guardar en Firestore:", error);
             alert(`Error durante el guardado: ${error.message}`);
         } finally { 
             if (saveInvoiceBtn) saveInvoiceBtn.disabled = false;
-            if (generateInvoiceFileBtn) generateInvoiceFileBtn.disabled = false;
             showLoading(false);
-            console.log("Proceso de guardado finalizado, pantalla de carga oculta.");
         }
     });
 }
