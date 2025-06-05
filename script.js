@@ -2089,10 +2089,32 @@ document.addEventListener('keydown', (event) => {
 
 // 1. Definimos las funciones que manejarán los clics
 const handleModalPdfClick = async () => {
+    // 1. Primero, verifica la bandera. Si ya está en true, no hace nada y sale.
+    if (isGeneratingPdf) {
+        console.warn("PDF ya en proceso de generación. Se ha ignorado el segundo clic.");
+        return; 
+    }
+
+    // 2. Si no, levanta la bandera para bloquear futuros clics y ejecuta la acción.
+    isGeneratingPdf = true;
+
     if (currentInvoiceDataForModalActions) {
-        await generateInvoicePDF(currentInvoiceDataForModalActions);
+        try {
+            // Llama a la función para generar el PDF
+            await generateInvoicePDF(currentInvoiceDataForModalActions);
+        } catch (error) {
+            console.error("Error capturado durante la generación del PDF en el handler:", error);
+        } finally {
+            // 3. Después de 1.5 segundos, baja la bandera para permitir que el botón se use de nuevo.
+            //    Esto da tiempo suficiente para que la descarga comience y evita clics accidentales.
+            setTimeout(() => {
+                isGeneratingPdf = false;
+                // console.log("Bandera de generación de PDF reiniciada.");
+            }, 1500); // 1.5 segundos
+        }
     } else {
         alert("No hay datos de factura para generar el PDF.");
+        isGeneratingPdf = false; // Si no hay datos, baja la bandera inmediatamente.
     }
 };
 
