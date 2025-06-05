@@ -2069,14 +2069,20 @@ if (modalPdfBtn) {
 // --- Event Listeners para el Modal de Selección de Plantilla (#templateSelectionModal) ---
 // Botón 'X' para cerrar el modal de selección
 if (closeTemplateSelectionModalBtn) {
-    closeTemplateSelectionModalBtn.addEventListener('click', closeTemplateSelectionModal);
+    closeTemplateSelectionModalBtn.addEventListener('click', () => {
+        console.log("Clic en Botón X del Modal de Selección"); // LOG DE DEPURACIÓN
+        closeTemplateSelectionModal();
+    });
 } else {
     console.warn("Botón #closeTemplateSelectionModalBtn (X) no encontrado en el DOM.");
 }
 
 // Botón 'Cancelar' del modal de selección
 if (cancelTemplateSelectionBtn) {
-    cancelTemplateSelectionBtn.addEventListener('click', closeTemplateSelectionModal);
+    cancelTemplateSelectionBtn.addEventListener('click', () => {
+        console.log("Clic en Botón Cancelar del Modal de Selección"); // LOG DE DEPURACIÓN
+        closeTemplateSelectionModal();
+    });
 } else {
     console.warn("Botón #cancelTemplateSelectionBtn no encontrado en el DOM.");
 }
@@ -2084,10 +2090,7 @@ if (cancelTemplateSelectionBtn) {
 // Checkbox 'Es un recordatorio de pago'
 if (isReminderCheckbox) {
     isReminderCheckbox.addEventListener('change', () => {
-        // Aquí podrías añadir lógica si algo necesita cambiar dinámicamente
-        // en el modal cuando el checkbox se marca/desmarca, pero por ahora
-        // solo leemos su estado cuando se presiona "Continuar".
-        // console.log("Checkbox 'Es Recordatorio' cambió a:", isReminderCheckbox.checked);
+        console.log("Checkbox 'Es Recordatorio' cambió a:", isReminderCheckbox.checked);
     });
 } else {
     console.warn("Checkbox #isReminderCheckbox no encontrado en el DOM.");
@@ -2096,7 +2099,7 @@ if (isReminderCheckbox) {
 // Botón 'Continuar' del modal de selección
 if (proceedWithTemplateSelectionBtn) {
     proceedWithTemplateSelectionBtn.addEventListener('click', async () => {
-        // console.log("Botón 'Continuar' del modal de selección presionado.");
+        console.log("Clic en Botón 'Continuar' del modal de selección."); // LOG DE DEPURACIÓN
         if (!currentInvoiceDataForModalActions) {
             alert("Error: No hay datos de factura seleccionados para esta acción.");
             closeTemplateSelectionModal();
@@ -2105,7 +2108,7 @@ if (proceedWithTemplateSelectionBtn) {
 
         const useReminderTemplate = isReminderCheckbox ? isReminderCheckbox.checked : false;
         let templateIdToUse;
-        let reminderStatus = null; // 'pending', 'overdue', 'paid', 'cancelled', 'default'
+        let reminderStatus = null; 
         let baseFileName = `Factura_${currentInvoiceDataForModalActions.invoiceNumberFormatted?.replace(/[^a-zA-Z0-9]/g, '_') || 'INV'}`;
 
         if (useReminderTemplate) {
@@ -2114,11 +2117,7 @@ if (proceedWithTemplateSelectionBtn) {
             switch (paymentStatus) {
                 case 'paid': reminderStatus = 'paid'; break;
                 case 'overdue': reminderStatus = 'overdue'; break;
-                case 'pending':
-                case 'in_process':
-                case 'partial_payment':
-                    reminderStatus = 'pending';
-                    break;
+                case 'pending': case 'in_process': case 'partial_payment': reminderStatus = 'pending'; break;
                 case 'cancelled': reminderStatus = 'cancelled'; break;
                 default: reminderStatus = 'default';
             }
@@ -2130,23 +2129,17 @@ if (proceedWithTemplateSelectionBtn) {
         const imageFormat = (currentActionForTemplateSelection === 'image' && imageFormatSelect) ? imageFormatSelect.value : 'png';
         const fullFileName = `${baseFileName}.${imageFormat}`;
 
-        closeTemplateSelectionModal(); // Cerrar este modal antes de procesar la imagen
+        closeTemplateSelectionModal(); 
 
-        // Llamar a la función para generar la imagen (esta función debe estar definida y completa)
         const imageBlob = await generateInvoiceImage(templateIdToUse, currentInvoiceDataForModalActions, imageFormat, reminderStatus);
         
-        if (!imageBlob) {
-            // generateInvoiceImage ya debería haber mostrado una alerta en caso de error y devuelto null.
-            return; 
-        }
+        if (!imageBlob) { return; }
 
         const imageFile = new File([imageBlob], fullFileName, { type: `image/${imageFormat}` });
 
         if (currentActionForTemplateSelection === 'image') {
-            // Acción: Descargar la imagen (esta función debe estar definida)
             downloadBlob(imageBlob, imageFile.name);
         } else if (currentActionForTemplateSelection === 'whatsapp' || currentActionForTemplateSelection === 'share') {
-            // Acción: Intentar compartir con Web Share API
             if (navigator.share && navigator.canShare && navigator.canShare({ files: [imageFile] })) {
                 try {
                     await navigator.share({
@@ -2155,31 +2148,30 @@ if (proceedWithTemplateSelectionBtn) {
                         text: `Aquí está tu ${useReminderTemplate ? 'recordatorio de pago' : 'factura'} de OSCAR 07D Studios.`
                     });
                 } catch (error) {
-                    if (error.name !== 'AbortError') { // No alertar si el usuario simplemente canceló el diálogo de compartir
-                        alert('No se pudo compartir. Descargando imagen para que la compartas manually.');
+                    if (error.name !== 'AbortError') {
+                        alert('No se pudo compartir. Descargando imagen para que la compartas manualmente.');
                     }
-                    downloadBlob(imageBlob, imageFile.name); // Descargar como fallback
+                    downloadBlob(imageBlob, imageFile.name); 
                 }
             } else {
                 alert('Tu navegador no soporta compartir archivos directamente. Descargando la imagen para que la puedas compartir manualmente.');
                 downloadBlob(imageBlob, imageFile.name);
             }
         }
-        currentActionForTemplateSelection = null; // Resetear la acción actual
+        currentActionForTemplateSelection = null; 
     });
 } else {
     console.warn("Botón #proceedWithTemplateSelectionBtn no encontrado en el DOM.");
 }
 
-// Cerrar el modal de selección si se hace clic en el overlay
+// Cerrar el modal de selección si se hace clic en el overlay (fondo oscuro)
 if (templateSelectionModal) {
     templateSelectionModal.addEventListener('click', (event) => {
-        if (event.target === templateSelectionModal) { // Asegurarse que el clic fue en el overlay y no en su contenido
+        if (event.target === templateSelectionModal) {
             closeTemplateSelectionModal();
         }
     });
 }
-
 // Cerrar el modal de selección con la tecla Escape
 document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape' && templateSelectionModal && templateSelectionModal.classList.contains('active')) {
