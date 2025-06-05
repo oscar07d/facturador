@@ -1504,8 +1504,6 @@ textarea.input-error {
 
 /* === ESTILOS PARA MODAL DETALLE DE FACTURA === */
 /* (Los estilos del modal de detalle que ya tenías y los de los botones con iconos) */
-.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.6); display: flex; justify-content: center; align-items: center; z-index: 1050; opacity: 0; visibility: hidden; pointer-events: none; transition: opacity 0.3s ease, visibility 0s linear 0.3s; }
-.modal-overlay.active { opacity: 1; visibility: visible; pointer-events: auto; transition: opacity 0.3s ease, visibility 0s linear 0s; }
 .modal-overlay {
     position: fixed;
     top: 0;
@@ -1518,16 +1516,16 @@ textarea.input-error {
     align-items: center;
     opacity: 0;
     visibility: hidden;
-    pointer-events: none;
-    transition: opacity 0.3s ease, visibility 0s linear 0.3s;
-    z-index: 1050; /* Asegúrate de que este z-index sea suficiente */
+    pointer-events: none !important; /* ASEGURAR que esté none cuando NO está activo */
+    transition: opacity 0.25s ease-in-out, visibility 0s linear 0.25s;
+    /* z-index se definirá por ID para diferenciar */
 }
 
 .modal-overlay.active {
     opacity: 1;
     visibility: visible;
-    pointer-events: auto;
-    transition: opacity 0.3s ease, visibility 0s linear 0s;
+    pointer-events: auto !important; /* ASEGURAR que esté auto cuando SÍ está activo */
+    transition: opacity 0.25s ease-in-out, visibility 0s linear 0s;
 }
 
 .modal-overlay .modal-content {
@@ -1544,11 +1542,33 @@ textarea.input-error {
     max-height: 85vh;
 }
 
-.modal-content { background-color: var(--container-background); padding: 25px 30px; border-radius: var(--border-radius-m); box-shadow: var(--box-shadow-medium); width: 90%; max-width: 750px; max-height: 85vh; display: flex; flex-direction: column; position: relative; transform: scale(0.95); transition: transform 0.3s ease; }
-.modal-overlay.active .modal-content { transform: scale(1); }
+#invoiceDetailModal.modal-overlay {
+    z-index: 1050;
+}
+
+#templateSelectionModal.modal-overlay { /* Cuando este es el activo, debe estar encima */
+    z-index: 1060; 
+}
+
+.modal-content { 
+    background-color: var(--container-background, #fff);
+    padding: 20px 25px;
+    border-radius: var(--border-radius-m, 15px);
+    box-shadow: var(--box-shadow-medium, 0 8px 25px rgba(0,0,0,0.1));
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    transform: translateY(-30px) scale(0.95); /* Estado inicial para la animación */
+    opacity: 0; /* Inicia transparente para la animación */
+    transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); /* Transición para ambas propiedades */
+    max-height: 90vh; 
+    width: 90%; /* Responsive por defecto */
+    /* max-width será definido por el ID del modal específico si es necesario */
+}
 
 .modal-overlay.active .modal-content {
-    transform: scale(1);
+    transform: translateY(0) scale(1); /* Vuelve a su posición y escala normal */
+    opacity: 1;                       /* ¡ESTO ES CRUCIAL PARA HACERLO VISIBLE! */
 }
 
 .modal-header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 15px; border-bottom: 1px solid var(--border-color); margin-bottom: 15px; flex-shrink: 0; }
