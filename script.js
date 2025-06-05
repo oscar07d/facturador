@@ -2065,23 +2065,38 @@ if (modalPdfBtn) {
 }
 
 // --- Event Listeners para el Modal de Selección de Plantilla (#templateSelectionModal) ---
+// Botón 'X' para cerrar el modal de selección
 if (closeTemplateSelectionModalBtn) {
     closeTemplateSelectionModalBtn.addEventListener('click', closeTemplateSelectionModal);
 } else {
-    console.warn("Botón #closeTemplateSelectionModalBtn no encontrado en el DOM.");
+    console.warn("Botón #closeTemplateSelectionModalBtn (X) no encontrado en el DOM.");
 }
 
+// Botón 'Cancelar' del modal de selección
 if (cancelTemplateSelectionBtn) {
     cancelTemplateSelectionBtn.addEventListener('click', closeTemplateSelectionModal);
 } else {
     console.warn("Botón #cancelTemplateSelectionBtn no encontrado en el DOM.");
 }
 
+// Checkbox 'Es un recordatorio de pago'
+if (isReminderCheckbox) {
+    isReminderCheckbox.addEventListener('change', () => {
+        // Aquí podrías añadir lógica si algo necesita cambiar dinámicamente
+        // en el modal cuando el checkbox se marca/desmarca, pero por ahora
+        // solo leemos su estado cuando se presiona "Continuar".
+        // console.log("Checkbox 'Es Recordatorio' cambió a:", isReminderCheckbox.checked);
+    });
+} else {
+    console.warn("Checkbox #isReminderCheckbox no encontrado en el DOM.");
+}
+
+// Botón 'Continuar' del modal de selección
 if (proceedWithTemplateSelectionBtn) {
     proceedWithTemplateSelectionBtn.addEventListener('click', async () => {
         // console.log("Botón 'Continuar' del modal de selección presionado.");
         if (!currentInvoiceDataForModalActions) {
-            alert("Error: No hay datos de factura seleccionados.");
+            alert("Error: No hay datos de factura seleccionados para esta acción.");
             closeTemplateSelectionModal();
             return;
         }
@@ -2097,7 +2112,11 @@ if (proceedWithTemplateSelectionBtn) {
             switch (paymentStatus) {
                 case 'paid': reminderStatus = 'paid'; break;
                 case 'overdue': reminderStatus = 'overdue'; break;
-                case 'pending': case 'in_process': case 'partial_payment': reminderStatus = 'pending'; break;
+                case 'pending':
+                case 'in_process':
+                case 'partial_payment':
+                    reminderStatus = 'pending';
+                    break;
                 case 'cancelled': reminderStatus = 'cancelled'; break;
                 default: reminderStatus = 'default';
             }
@@ -2105,24 +2124,27 @@ if (proceedWithTemplateSelectionBtn) {
         } else {
             templateIdToUse = 'whatsapp-image-export-template';
         }
-
+        
         const imageFormat = (currentActionForTemplateSelection === 'image' && imageFormatSelect) ? imageFormatSelect.value : 'png';
-        const fullFileName = `<span class="math-inline">\{baseFileName\}\.</span>{imageFormat}`;
+        const fullFileName = `${baseFileName}.${imageFormat}`;
 
-        closeTemplateSelectionModal(); 
+        closeTemplateSelectionModal(); // Cerrar este modal antes de procesar la imagen
 
+        // Llamar a la función para generar la imagen (esta función debe estar definida y completa)
         const imageBlob = await generateInvoiceImage(templateIdToUse, currentInvoiceDataForModalActions, imageFormat, reminderStatus);
-
-        if (!imageBlob) { 
-            // generateInvoiceImage ya debería haber mostrado una alerta si falló.
+        
+        if (!imageBlob) {
+            // generateInvoiceImage ya debería haber mostrado una alerta en caso de error y devuelto null.
             return; 
         }
 
         const imageFile = new File([imageBlob], fullFileName, { type: `image/${imageFormat}` });
 
         if (currentActionForTemplateSelection === 'image') {
+            // Acción: Descargar la imagen (esta función debe estar definida)
             downloadBlob(imageBlob, imageFile.name);
         } else if (currentActionForTemplateSelection === 'whatsapp' || currentActionForTemplateSelection === 'share') {
+            // Acción: Intentar compartir con Web Share API
             if (navigator.share && navigator.canShare && navigator.canShare({ files: [imageFile] })) {
                 try {
                     await navigator.share({
@@ -2132,16 +2154,16 @@ if (proceedWithTemplateSelectionBtn) {
                     });
                 } catch (error) {
                     if (error.name !== 'AbortError') { // No alertar si el usuario simplemente canceló el diálogo de compartir
-                        alert('No se pudo compartir. Descargando imagen para que la compartas manualmente.');
+                        alert('No se pudo compartir. Descargando imagen para que la compartas manually.');
                     }
-                    downloadBlob(imageBlob, imageFile.name); 
+                    downloadBlob(imageBlob, imageFile.name); // Descargar como fallback
                 }
             } else {
                 alert('Tu navegador no soporta compartir archivos directamente. Descargando la imagen para que la puedas compartir manualmente.');
                 downloadBlob(imageBlob, imageFile.name);
             }
         }
-        currentActionForTemplateSelection = null; 
+        currentActionForTemplateSelection = null; // Resetear la acción actual
     });
 } else {
     console.warn("Botón #proceedWithTemplateSelectionBtn no encontrado en el DOM.");
@@ -2150,11 +2172,12 @@ if (proceedWithTemplateSelectionBtn) {
 // Cerrar el modal de selección si se hace clic en el overlay
 if (templateSelectionModal) {
     templateSelectionModal.addEventListener('click', (event) => {
-        if (event.target === templateSelectionModal) {
+        if (event.target === templateSelectionModal) { // Asegurarse que el clic fue en el overlay y no en su contenido
             closeTemplateSelectionModal();
         }
     });
 }
+
 // Cerrar el modal de selección con la tecla Escape
 document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape' && templateSelectionModal && templateSelectionModal.classList.contains('active')) {
