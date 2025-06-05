@@ -225,10 +225,19 @@ function collectInvoiceDataFromForm() {
         return null;
     }
 
-    // Simular recálculo para asegurar que los totales estén actualizados en el DOM
+    // Asegurarse de que los totales estén actualizados en el DOM
     if (typeof recalculateTotals === 'function') {
         recalculateTotals();
     }
+
+    const parseCurrencyString = (str) => {
+        if (typeof str !== 'string') return 0;
+        const cleanNumberStr = str
+            .replace(/[^\d,.]/g, '') 
+            .replace(/\./g, '')      
+            .replace(',', '.');      
+        return parseFloat(cleanNumberStr) || 0;
+    };
 
     const invoiceData = {
         invoiceNumberFormatted: `FCT-${invoiceNumberText.textContent || 'PENDIENTE'}`,
@@ -254,15 +263,18 @@ function collectInvoiceDataFromForm() {
             value: parseFloat(discountValueInput.value) || 0
         },
         totals: {
-            subtotal: parseFloat(subtotalAmountSpan.textContent.replace(/[^\d,.-]/g, '').replace(',', '.')) || 0,
-            discountApplied: parseFloat(discountAmountAppliedSpan.textContent.replace(/[^\d,.-]/g, '').replace(',', '.')) || 0,
-            taxableBase: parseFloat(taxableBaseAmountSpan.textContent.replace(/[^\d,.-]/g, '').replace(',', '.')) || 0,
-            iva: parseFloat(ivaAmountSpan.textContent.replace(/[^\d,.-]/g, '').replace(',', '.')) || 0,
-            grandTotal: parseFloat(totalAmountSpan.textContent.replace(/[^\d,.-]/g, '').replace(',', '.')) || 0
+            // Usar la nueva función para leer los totales correctamente
+            subtotal: parseCurrencyString(subtotalAmountSpan.textContent),
+            discountApplied: parseCurrencyString(discountAmountAppliedSpan.textContent),
+            taxableBase: parseCurrencyString(taxableBaseAmountSpan.textContent),
+            iva: parseCurrencyString(ivaAmountSpan.textContent),
+            grandTotal: parseCurrencyString(totalAmountSpan.textContent)
         },
         paymentStatus: paymentStatusSelect.value,
         generatedAt: new Date().toISOString()
     };
+
+    console.log("Datos de factura recolectados:", invoiceData.totals); // Descomenta para depurar
     return invoiceData;
 }
 
@@ -643,7 +655,7 @@ function populateWhatsappImageTemplate(invoiceData) {
 
     // --- Poblar Total a Pagar ---
     const totalAmountWA = template.querySelector("#wa-grand-total-amount");
-    if (totalAmountWA) totalAmountWA.textContent = (invoiceData.totals?.grandTotal || 0).toLocaleString('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits:0 });
+    if (totalAmountWA) totalAmountWA.textContent = (invoiceData.totals?.grandTotal || 0).toLocaleString('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0, maximumFractionDigits: 0 });
 
     // --- Poblar Pie de Página ---
     const dueDateLineWA = template.querySelector("#wa-due-date-line");
@@ -741,7 +753,7 @@ function populateReminderImageTemplate(invoiceData, reminderStatus) {
     }
 
     const amountDueRem = template.querySelector("#reminder-amount-due");
-    if(amountDueRem) amountDueRem.textContent = (invoiceData.totals?.grandTotal || 0).toLocaleString('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits:0 });
+    if(amountDueRem) amountDueRem.textContent = (invoiceData.totals?.grandTotal || 0).toLocaleString('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0, maximumFractionDigits: 0 });
 
     const paymentDetailsEl = template.querySelector("#reminder-payment-method-details");
     if(paymentDetailsEl) { // Ejemplo de cómo podrías hacerlo más dinámico si tuvieras los datos en el objeto invoiceData.emitter o similar
