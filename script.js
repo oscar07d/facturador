@@ -1,3 +1,5 @@
+
+
 // Importaciones de Firebase
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
 import {
@@ -58,10 +60,6 @@ const printInvoiceFromModalBtn = document.getElementById('printInvoiceFromModalB
 const modalShareBtn = document.getElementById('modalShareBtn');
 const modalWhatsAppBtn = document.getElementById('modalWhatsAppBtn');
 const modalImageBtn = document.getElementById('modalImageBtn');
-console.log("modalShareBtn:", modalShareBtn);
-console.log("modalWhatsAppBtn:", modalWhatsAppBtn);
-console.log("modalImageBtn:", modalImageBtn);
-
 const modalEmailBtn = document.getElementById('modalEmailBtn');
 const modalPdfBtn = document.getElementById('modalPdfBtn');
 
@@ -133,18 +131,6 @@ const proceedWithTemplateSelectionBtn = document.getElementById('proceedWithTemp
 const isReminderCheckbox = document.getElementById('isReminderCheckbox');
 const imageFormatSelectionDiv = document.getElementById('imageFormatSelection'); // Para mostrar/ocultar
 const imageFormatSelect = document.getElementById('imageFormatSelect'); // Para leer el formato
-
-console.log("templateSelectionModal al cargar:", templateSelectionModal);
-console.log("closeTemplateSelectionModalBtn al cargar:", closeTemplateSelectionModalBtn);
-console.log("cancelTemplateSelectionBtn al cargar:", cancelTemplateSelectionBtn);
-console.log("isReminderCheckbox al cargar:", isReminderCheckbox);
-console.log("proceedWithTemplateSelectionBtn al cargar:", proceedWithTemplateSelectionBtn);
-
-console.log("templateSelectionModal (al cargar):", templateSelectionModal);
-console.log("closeTemplateSelectionModalBtn (al cargar):", closeTemplateSelectionModalBtn);
-console.log("cancelTemplateSelectionBtn (al cargar):", cancelTemplateSelectionBtn);
-console.log("proceedWithTemplateSelectionBtn (al cargar):", proceedWithTemplateSelectionBtn);
-console.log("isReminderCheckbox (al cargar):", isReminderCheckbox);
 
 const saveInvoiceBtn = document.getElementById('saveInvoiceBtn');
 // const generateInvoiceFileBtn = document.getElementById('generateInvoiceFileBtn');
@@ -311,7 +297,7 @@ function populateExportTemplate(invoiceData) {
         paymentStatusEl.textContent = statusDetail ? statusDetail.text.toUpperCase() : statusKey.replace(/_/g, ' ').toUpperCase();
         paymentStatusEl.className = `payment-status-badge export-status-${statusKey.toLowerCase()}`;
     }
-
+    
     // --- Poblar Datos del Emisor (Tu Comercio) ---
     const emitterNameEl = template.querySelector("#export-emitter-name");
     // El H3 para el nombre del comercio:
@@ -384,7 +370,7 @@ function populateExportTemplate(invoiceData) {
     // --- Poblar Datos del Cliente ---
     const clientNameEl = template.querySelector("#export-client-name");
     if (clientNameEl) clientNameEl.innerHTML = `<strong>${invoiceData.client?.name || 'N/A'}</strong>`;
-
+    
     const clientEmailLineEl = template.querySelector("#export-client-email-line");
     const clientEmailEl = template.querySelector("#export-client-email");
     if (invoiceData.client?.email) {
@@ -399,10 +385,10 @@ function populateExportTemplate(invoiceData) {
     // --- Poblar Detalles de la Factura (Número, Fecha de Emisión de Factura) ---
     const invNumEl = template.querySelector("#export-invoice-sequential-number");
     if (invNumEl) invNumEl.textContent = invoiceData.invoiceNumberFormatted || 'N/A';
-
+    
     const invDateEl = template.querySelector("#export-invoice-date");
     if (invDateEl) invDateEl.textContent = invoiceData.invoiceDate ? new Date(invoiceData.invoiceDate + 'T00:00:00').toLocaleDateString('es-CO', { year: 'numeric', month: 'long', day: 'numeric'}) : 'N/A';
-
+    
     // Fecha de Pago (recurrente)
     const dueDateLineEl = template.querySelector("#export-due-date-line");
     const dueDateEl = template.querySelector("#export-due-date");
@@ -418,14 +404,14 @@ function populateExportTemplate(invoiceData) {
     if (uniqueCodeEl) {
         // DEBUG: Verifica qué hay en invoiceData.uniqueQueryCode
         console.log("Código de consulta para PDF:", invoiceData.uniqueQueryCode); 
-
+    
         if (invoiceData.uniqueQueryCode) {
             uniqueCodeEl.textContent = invoiceData.uniqueQueryCode;
         } else {
             uniqueCodeEl.textContent = "N/D"; // O "---" si no hay código
         }
     }
-
+    
     if (uniqueCodeEl) {
         uniqueCodeEl.textContent = invoiceData.uniqueQueryCode || "N/D"; // Muestra el código o N/D si no existe
     }
@@ -436,7 +422,7 @@ function populateExportTemplate(invoiceData) {
     const headerPinEl = template.querySelector("#export-header-pin");
 
     if (itemsTableBody) itemsTableBody.innerHTML = ''; 
-
+    
     let hasStreamingItemsWithDetails = false;
     if (invoiceData.items && Array.isArray(invoiceData.items)) {
         invoiceData.items.forEach(item => {
@@ -470,7 +456,7 @@ function populateExportTemplate(invoiceData) {
             cellPrice.textContent = (item.price || 0).toLocaleString('es-CO', { style: 'currency', currency: 'COP' });
             cellPrice.classList.add('text-right');
             cellPrice.style.padding = '10px'; cellPrice.style.borderBottom = '1px solid #eee'; cellPrice.style.verticalAlign = 'top';
-
+            
             const cellTotal = row.insertCell();
             cellTotal.textContent = ((item.quantity || 0) * (item.price || 0)).toLocaleString('es-CO', { style: 'currency', currency: 'COP' });
             cellTotal.classList.add('text-right');
@@ -480,7 +466,7 @@ function populateExportTemplate(invoiceData) {
 
     if (headerProfileEl) headerProfileEl.style.display = hasStreamingItemsWithDetails ? 'table-cell' : 'none';
     if (headerPinEl) headerPinEl.style.display = hasStreamingItemsWithDetails ? 'table-cell' : 'none';
-
+    
     if (itemsTableBody) {
         Array.from(itemsTableBody.rows).forEach(row => {
             if(row.cells[1]) row.cells[1].style.display = hasStreamingItemsWithDetails ? 'table-cell' : 'none'; // Celda Perfil
@@ -490,10 +476,10 @@ function populateExportTemplate(invoiceData) {
 
     // --- Poblar Totales ---
     const formatCOPExport = (value) => (typeof value === 'number' ? value.toLocaleString('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 2, maximumFractionDigits: 2 }) : 'COP 0.00');
-
+    
     const subtotalEl = template.querySelector("#export-subtotal");
     if (subtotalEl) subtotalEl.textContent = formatCOPExport(invoiceData.totals?.subtotal);
-
+    
     const ivaLineEl = template.querySelector("#export-iva-line");
     const ivaEl = template.querySelector("#export-iva");
     if (invoiceData.totals?.iva > 0) {
@@ -511,256 +497,14 @@ function populateExportTemplate(invoiceData) {
     } else if (discountLineEl) {
         discountLineEl.style.display = 'none';
     }
-
+    
     const grandTotalEl = template.querySelector("#export-grand-total");
     if (grandTotalEl) grandTotalEl.textContent = formatCOPExport(invoiceData.totals?.grandTotal);
 
     return true;
 }
 
-function populateWhatsappImageTemplate(invoiceData) {
-    const template = document.getElementById('whatsapp-image-export-template');
-    if (!template || !invoiceData) {
-        console.error("Plantilla WhatsApp (#whatsapp-image-export-template) o datos de factura no disponibles para poblar.");
-        return false;
-    }
-    // console.log("Poblando plantilla WhatsApp con datos:", invoiceData);
 
-    // --- Poblar Encabezado ---
-    const logoImgWA = template.querySelector("#wa-logo-image");
-    if (logoImgWA) {
-        // Asegúrate de que la ruta a tu Isologo.svg sea correcta desde index.html
-        logoImgWA.src = "img/Isologo.svg"; 
-    }
-
-    const emitterNameWA = template.querySelector("#wa-emitter-name");
-    if (emitterNameWA) emitterNameWA.textContent = invoiceData.emitter?.name || "OSCAR 07D Studios";
-
-    const emitterIdWA = template.querySelector("#wa-emitter-id");
-    if (emitterIdWA) {
-        if (invoiceData.emitter?.id) {
-            emitterIdWA.textContent = `NIT/ID: ${invoiceData.emitter.id}`;
-            emitterIdWA.style.display = ''; // Asegurar que sea visible si tiene dato
-        } else {
-            emitterIdWA.style.display = 'none'; // Ocultar si no hay dato
-        }
-    }
-
-    const emitterPhoneWA = template.querySelector("#wa-emitter-phone");
-    if (emitterPhoneWA) {
-        if (invoiceData.emitter?.phone) {
-            emitterPhoneWA.textContent = `Cel: ${invoiceData.emitter.phone}`;
-            emitterPhoneWA.style.display = '';
-        } else {
-            emitterPhoneWA.style.display = 'none';
-        }
-    }
-
-    // Estado de Pago (Píldora)
-    const paymentStatusPillWA = template.querySelector("#wa-payment-status");
-    if(paymentStatusPillWA) {
-        const statusKey = invoiceData.paymentStatus || 'pending';
-        const statusDetail = paymentStatusDetails[statusKey]; // paymentStatusDetails debe estar accesible
-        paymentStatusPillWA.textContent = statusDetail ? statusDetail.text.toUpperCase() : statusKey.replace(/_/g, ' ').toUpperCase();
-        paymentStatusPillWA.className = 'wa-status-pill'; 
-        paymentStatusPillWA.classList.add(`wa-status-${statusKey.toLowerCase()}`);
-    }
-
-    // N° de referencia
-    const invoiceRefWA = template.querySelector("#wa-invoice-ref-number");
-    if (invoiceRefWA) invoiceRefWA.textContent = `N° ${invoiceData.invoiceNumberFormatted || 'N/A'}`;
-
-    // Fecha de creación de la factura
-    const creationDateWA = template.querySelector("#wa-invoice-creation-date");
-    if (creationDateWA) {
-        const dateToDisplay = invoiceData.createdAt?.toDate ? invoiceData.createdAt.toDate() : (invoiceData.generatedAt ? new Date(invoiceData.generatedAt) : null);
-        if (dateToDisplay) {
-            creationDateWA.textContent = `Emitida: ${dateToDisplay.toLocaleString('es-CO', { day:'numeric', month: 'long', year:'numeric', hour:'2-digit', minute:'2-digit' })}`;
-        } else {
-            creationDateWA.textContent = 'Emitida: N/A';
-        }
-    }
-
-    // --- Poblar Datos del Cliente ---
-    const clientNamePWA = template.querySelector("#wa-client-name"); // Este apunta al <p>
-    if (clientNamePWA) clientNamePWA.innerHTML = `<strong>Cliente:</strong> ${invoiceData.client?.name || 'N/A'}`;
-
-    const clientPhonePWA = template.querySelector("#wa-client-phone"); // Este apunta al <p>
-    if (clientPhonePWA) clientPhonePWA.innerHTML = `<strong>Celular:</strong> ${invoiceData.client?.phone || 'N/A'}`;
-
-    const clientEmailPWA = template.querySelector("#wa-client-email"); // Este apunta al <p>
-    if (clientEmailPWA) {
-        if (invoiceData.client?.email) {
-            clientEmailPWA.innerHTML = `<strong>Correo:</strong> ${invoiceData.client.email}`;
-            clientEmailPWA.style.display = 'block';
-        } else {
-            clientEmailPWA.style.display = 'none';
-        }
-    }
-
-    // --- Poblar Ítems de la Factura ---
-    const itemsTableBodyWA = template.querySelector("#wa-invoice-items-body");
-    const headerProfileWA = template.querySelector("#wa-header-profile");
-    const headerPinWA = template.querySelector("#wa-header-pin");
-
-    if (itemsTableBodyWA) {
-        itemsTableBodyWA.innerHTML = ''; 
-        let hasStreamingDetailsWA = false;
-        if (invoiceData.items && invoiceData.items.length > 0) {
-            invoiceData.items.forEach(item => {
-                if(item.isStreaming && (item.profileName || item.profilePin)) {
-                    hasStreamingDetailsWA = true;
-                }
-                const row = itemsTableBodyWA.insertRow();
-
-                const cellDesc = row.insertCell();
-                let descContent = item.description || 'N/A';
-                if (item.isStreaming && item.profileName) {
-                    descContent += `<small class="wa-item-profile-details">P: ${item.profileName}${item.profilePin ? ` (PIN: ${item.profilePin})` : ''}</small>`;
-                }
-                cellDesc.innerHTML = descContent;
-
-                const cellProfile = row.insertCell();
-                cellProfile.textContent = item.isStreaming ? (item.profileName || 'N/A') : 'N/A';
-
-                const cellPin = row.insertCell();
-                cellPin.textContent = item.isStreaming ? (item.profilePin || 'N/A') : 'N/A';
-
-                const cellQty = row.insertCell();
-                cellQty.textContent = item.quantity || 0;
-                cellQty.classList.add('text-right');
-
-                const cellPU = row.insertCell();
-                cellPU.textContent = (item.price || 0).toLocaleString('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 });
-                cellPU.classList.add('text-right');
-
-                const cellTotal = row.insertCell();
-                cellTotal.textContent = ((item.quantity || 0) * (item.price || 0)).toLocaleString('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 });
-                cellTotal.classList.add('text-right');
-            });
-        }
-        if (headerProfileWA) headerProfileWA.style.display = hasStreamingDetailsWA ? 'table-cell' : 'none';
-        if (headerPinWA) headerPinWA.style.display = hasStreamingDetailsWA ? 'table-cell' : 'none';
-        if (itemsTableBodyWA) { // Re-iterar para ocultar celdas si es necesario
-            Array.from(itemsTableBodyWA.rows).forEach(row => {
-                if(row.cells[1]) row.cells[1].style.display = hasStreamingDetailsWA ? 'table-cell' : 'none';
-                if(row.cells[2]) row.cells[2].style.display = hasStreamingDetailsWA ? 'table-cell' : 'none';
-            });
-        }
-    }
-
-    // --- Poblar Total a Pagar ---
-    const totalAmountWA = template.querySelector("#wa-grand-total-amount");
-    if (totalAmountWA) totalAmountWA.textContent = (invoiceData.totals?.grandTotal || 0).toLocaleString('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits:0 });
-
-    // --- Poblar Pie de Página ---
-    const dueDateLineWA = template.querySelector("#wa-due-date-line");
-    const dueDateWA = template.querySelector("#wa-due-date");
-    if (invoiceData.serviceStartDate && dueDateWA) {
-        dueDateWA.textContent = new Date(invoiceData.serviceStartDate + 'T00:00:00').toLocaleDateString('es-CO', {day: 'numeric', month: 'long', year: 'numeric'});
-        if(dueDateLineWA) dueDateLineWA.style.display = 'block'; // O el display que tenga el <p>
-    } else if (dueDateLineWA) {
-        dueDateLineWA.style.display = 'none';
-    }
-
-    const uniqueCodeLineWA = template.querySelector("#wa-unique-code-line");
-    const uniqueCodeWA = template.querySelector("#wa-unique-code");
-    if (invoiceData.uniqueQueryCode && uniqueCodeWA) {
-        uniqueCodeWA.textContent = invoiceData.uniqueQueryCode;
-        if(uniqueCodeLineWA) uniqueCodeLineWA.style.display = 'block'; // O el display que tenga el <p>
-    } else if (uniqueCodeLineWA) {
-         uniqueCodeLineWA.style.display = 'none';
-    }
-
-    return true;
-}
-
-// ====> AQUÍ PUEDES PEGAR LA FUNCIÓN populateReminderImageTemplate COMPLETA <====
-function populateReminderImageTemplate(invoiceData, reminderStatus) {
-    const template = document.getElementById('payment-reminder-export-template');
-    if (!template || !invoiceData) {
-        console.error("Plantilla Recordatorio (#payment-reminder-export-template) o datos de factura no disponibles para poblar.");
-        return false;
-    }
-    // console.log("Poblando plantilla Recordatorio con datos:", invoiceData, "y estado:", reminderStatus);
-
-    template.className = 'reminder-container'; 
-    if (reminderStatus === 'pending') {
-        template.classList.add('status-pending');
-    } else if (reminderStatus === 'overdue') {
-        template.classList.add('status-overdue');
-    } else {
-        template.classList.add('status-pending'); // Fallback
-    }
-
-    const logoImgRem = template.querySelector("#reminder-logo-image");
-    if (logoImgRem) logoImgRem.src = "img/Isologo.svg"; // Asegura la ruta
-
-    const emitterNameRem = template.querySelector("#reminder-emitter-name");
-    if (emitterNameRem) emitterNameRem.textContent = invoiceData.emitter?.name || "OSCAR 07D Studios";
-
-    // Píldora de estado en el recordatorio
-    const paymentStatusPillRem = template.querySelector("#reminder-payment-status-pill");
-    if(paymentStatusPillRem) {
-        const statusKey = reminderStatus || invoiceData.paymentStatus || 'pending';
-        const statusDetail = paymentStatusDetails[statusKey];
-        paymentStatusPillRem.textContent = statusDetail ? statusDetail.text.toUpperCase() : statusKey.replace(/_/g, ' ').toUpperCase();
-        paymentStatusPillRem.className = 'status-pill'; // Clase base
-        if (statusKey === 'pending') {
-            paymentStatusPillRem.classList.add('status-pending'); 
-        } else if (statusKey === 'overdue') {
-            paymentStatusPillRem.classList.add('status-overdue');
-        } else {
-            paymentStatusPillRem.classList.add('status-default'); // Asumiendo que tienes .status-pill.status-default
-        }
-    }
-
-    const titleElRem = template.querySelector("#reminder-main-title");
-    const messageElRem = template.querySelector("#reminder-message-content");
-    if (titleElRem && messageElRem) {
-        if (reminderStatus === 'pending') {
-            titleElRem.textContent = "RECORDATORIO DE PAGO";
-            messageElRem.textContent = `Te escribimos para recordarte amablemente que el pago de tu factura está programado para la siguiente fecha. ¡Evita contratiempos!`;
-        } else if (reminderStatus === 'overdue') {
-            titleElRem.textContent = "AVISO: FACTURA VENCIDA";
-            messageElRem.textContent = `Hemos notado que el pago de tu factura ha vencido. Te agradecemos si puedes realizarlo a la brevedad para continuar disfrutando de nuestros servicios.`;
-        } else { // Un mensaje por defecto si el status no es ni pending ni overdue
-            titleElRem.textContent = "INFORMACIÓN DE PAGO";
-            messageElRem.textContent = `Detalles de tu factura a continuación.`;
-        }
-    }
-
-    const clientNameRem = template.querySelector("#reminder-client-name");
-    if (clientNameRem) clientNameRem.textContent = invoiceData.client?.name || 'Cliente Valioso';
-
-    const invNumRem = template.querySelector("#reminder-invoice-number");
-    if(invNumRem) invNumRem.textContent = invoiceData.invoiceNumberFormatted || 'N/A';
-
-    const dueDateRem = template.querySelector("#reminder-due-date");
-    if(dueDateRem) {
-        const dateToUse = invoiceData.serviceStartDate || invoiceData.invoiceDate; // Usa serviceStartDate o invoiceDate
-        dueDateRem.textContent = dateToUse ? new Date(dateToUse + 'T00:00:00').toLocaleDateString('es-CO', {day: 'numeric', month: 'long', year: 'numeric'}) : 'N/A';
-    }
-
-    const amountDueRem = template.querySelector("#reminder-amount-due");
-    if(amountDueRem) amountDueRem.textContent = (invoiceData.totals?.grandTotal || 0).toLocaleString('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits:0 });
-
-    const paymentDetailsEl = template.querySelector("#reminder-payment-method-details");
-    if(paymentDetailsEl) { // Ejemplo de cómo podrías hacerlo más dinámico si tuvieras los datos en el objeto invoiceData.emitter o similar
-        const nequiAccount = invoiceData.emitter?.nequiAccount || "3023935392"; // Ejemplo
-        const nequiName = invoiceData.emitter?.nequiName || "OS*** ROL***";   // Ejemplo
-        paymentDetailsEl.innerHTML = `Nequi: <strong>${nequiAccount}</strong> (${nequiName})`;
-    }
-
-    const contactInfoRem = template.querySelector("#reminder-contact-info");
-    if(contactInfoRem && invoiceData.emitter?.email) {
-        contactInfoRem.innerHTML = `Dudas: ${invoiceData.emitter.email}`;
-    } else if (contactInfoRem) {
-        contactInfoRem.innerHTML = `Dudas: info@oscar07dstudios.com`; // Fallback
-    }
-
-    return true;
-}
 
 // ====> AQUÍ PUEDES PEGAR LA FUNCIÓN isCodeUniqueForUser <====
 async function isCodeUniqueForUser(code, userId) {
@@ -775,7 +519,7 @@ async function isCodeUniqueForUser(code, userId) {
         const q = query(facturasRef,
                         where("userId", "==", userId),
                         where("uniqueQueryCode", "==", code));
-
+        
         const querySnapshot = await getDocs(q);
         console.log(`[isCodeUniqueForUser] Consulta para código ${code} encontró ${querySnapshot.size} documentos.`);
         return querySnapshot.empty; // Devuelve true si no se encontraron documentos (el código es único)
@@ -798,7 +542,7 @@ async function getTrulyUniqueCode(userId, codeLength = 7, maxRetries = 10) {
         // Asegúrate que las importaciones de Firestore (collection, query, where, getDocs) estén al inicio de tu script.js
         const unique = await isCodeUniqueForUser(newCode, userId); // Llama a la función que acabas de pegar
         console.log(`[getTrulyUniqueCode] Código ${newCode} es único para ${userId}? ${unique}`);
-
+        
         if (unique) {
             console.log("[getTrulyUniqueCode] Código único encontrado:", newCode);
             return newCode; 
@@ -809,131 +553,6 @@ async function getTrulyUniqueCode(userId, codeLength = 7, maxRetries = 10) {
     console.error(`No se pudo generar un código único después de ${maxRetries} intentos.`);
     alert("Error crítico: No se pudo generar un código de consulta único para la factura. Por favor, intenta guardar de nuevo.");
     return null; 
-}
-
-async function generateInvoiceImage(templateId, invoiceData, imageFormat = 'png', reminderStatus = null) {
-    let populatedCorrectly = false;
-    if (templateId === 'whatsapp-image-export-template') {
-        populatedCorrectly = populateWhatsappImageTemplate(invoiceData);
-    } else if (templateId === 'payment-reminder-export-template') {
-        populatedCorrectly = populateReminderImageTemplate(invoiceData, reminderStatus);
-    } else {
-        console.error("generateInvoiceImage: ID de plantilla no reconocido:", templateId);
-        alert("Error: Tipo de plantilla de imagen no válido.");
-        return null;
-    }
-
-    if (!populatedCorrectly) {
-        alert("Error al preparar los datos para generar la imagen.");
-        return null;
-    }
-
-    const elementToCapture = document.getElementById(templateId);
-    if (!elementToCapture) {
-        alert(`Error: No se encontró la plantilla con ID "${templateId}" para generar la imagen.`);
-        return null;
-    }
-
-    showLoading(true);
-
-    // Guardar estilos originales y preparar para captura
-    const originalStyles = {
-        display: elementToCapture.style.display,
-        position: elementToCapture.style.position,
-        left: elementToCapture.style.left,
-        top: elementToCapture.style.top,
-        transform: elementToCapture.style.transform,
-        backgroundColor: elementToCapture.style.backgroundColor,
-        // Añade aquí cualquier otra propiedad CSS que modifiques temporalmente
-    };
-
-    elementToCapture.style.position = 'fixed';
-    elementToCapture.style.left = '-9999px'; // Mover completamente fuera del área visible
-    elementToCapture.style.top = '0px';      // O 'auto' si es necesario
-    elementToCapture.style.transform = 'none'; // Limpiar transformaciones
-    elementToCapture.style.backgroundColor = '#FFFFFF'; // Fondo blanco para la captura
-    elementToCapture.style.display = 'block'; // Esencial para que tenga dimensiones
-
-    // Forzar un reflujo del navegador para asegurar que los estilos se apliquen
-    if (elementToCapture.offsetHeight) { /* Acceder a offsetHeight fuerza el reflujo */ }
-
-    await new Promise(resolve => setTimeout(resolve, 350)); // Pequeña demora para renderizado
-
-    try {
-        const canvas = await html2canvas(elementToCapture, {
-            scale: 2, // Buena calidad para imágenes de chat/web. Puedes aumentarla (ej. 2.5 o 3) si necesitas más resolución.
-            useCORS: true,
-            logging: false, // Cambiar a true para depurar problemas de html2canvas
-            allowTaint: true,
-            backgroundColor: '#FFFFFF', // Asegura fondo blanco explícito para el canvas
-            width: elementToCapture.scrollWidth,   // Usar el ancho renderizado
-            height: elementToCapture.scrollHeight, // Usar el alto renderizado
-            windowWidth: elementToCapture.scrollWidth,
-            windowHeight: elementToCapture.scrollHeight,
-            x: 0,
-            y: 0,
-            onclone: (documentCloned) => {
-                // Puedes añadir aquí manipulaciones específicas al clon si es necesario
-                // Por ejemplo, forzar la carga de imágenes si html2canvas tiene problemas
-                const imgs = documentCloned.querySelectorAll('img');
-                imgs.forEach(img => {
-                    if (img.src && !img.complete) {
-                        // console.warn(`Imagen no completamente cargada en clon: ${img.src}`);
-                        // Intentar forzar recarga o usar un placeholder, aunque es complejo aquí.
-                    }
-                });
-            }
-        });
-
-        // Restaurar estilos de la plantilla original inmediatamente después de la captura
-        elementToCapture.style.display = originalStyles.display || 'none';
-        elementToCapture.style.position = originalStyles.position;
-        elementToCapture.style.left = originalStyles.left;
-        elementToCapture.style.top = originalStyles.top;
-        elementToCapture.style.transform = originalStyles.transform;
-        elementToCapture.style.backgroundColor = originalStyles.backgroundColor;
-
-        // Devolver el blob para la API Web Share o para descarga
-        return new Promise((resolve, reject) => {
-            canvas.toBlob(blob => {
-                if (blob) {
-                    resolve(blob);
-                } else {
-                    reject(new Error('Fallo al convertir canvas a Blob.'));
-                }
-            }, `image/${imageFormat}`, 0.92); // 0.92 es una buena calidad para JPG, para PNG no afecta tanto.
-        });
-
-    } catch (error) {
-        console.error(`Error detallado al generar la imagen desde ${templateId}:`, error);
-        alert("Hubo un error al generar la imagen. Por favor, revisa la consola para más detalles técnicos.");
-
-        // Asegurar que se restauren los estilos en caso de error también
-        elementToCapture.style.display = originalStyles.display || 'none';
-        elementToCapture.style.position = originalStyles.position;
-        // ... restaurar otros originalStyles ...
-        return null;
-    } finally {
-        showLoading(false);
-    }
-}
-
-// Función auxiliar para descargar el blob como archivo (si no la tienes ya)
-function downloadBlob(blob, filename) {
-    if (!blob) {
-        console.error("downloadBlob: No se proporcionó un blob válido.");
-        return;
-    }
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.style.display = 'none'; // No es necesario mostrar el enlace
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    // Limpieza
-    window.URL.revokeObjectURL(url);
-    document.body.removeChild(a);
 }
 
 async function generateInvoicePDF(invoiceDataSource) {
@@ -1006,7 +625,7 @@ async function generateInvoicePDF(invoiceDataSource) {
 
     // Forzar un reflujo del navegador para asegurar que los estilos se apliquen
     if (invoiceElement.offsetHeight) { /* Acceder a offsetHeight fuerza el reflujo */ }
-
+    
     // Pequeña demora para asegurar renderizado completo
     await new Promise(resolve => setTimeout(resolve, 450)); // Ligeramente aumentada la demora
 
@@ -1016,7 +635,7 @@ async function generateInvoicePDF(invoiceDataSource) {
             useCORS: true, // Necesario si la plantilla carga imágenes de otros dominios
             logging: true, // Habilita para ver logs detallados de html2canvas en la consola (útil para depurar)
             allowTaint: true, // Puede ayudar con algunos tipos de imágenes o SVGs
-
+            
             // Definir explícitamente el área de captura basada en el tamaño renderizado del elemento
             width: invoiceElement.scrollWidth,
             height: invoiceElement.scrollHeight,
@@ -1028,7 +647,7 @@ async function generateInvoicePDF(invoiceDataSource) {
             onclone: (documentCloned) => {
                 const logoContainerInClone = documentCloned.querySelector('.export-logo-container');
                 const logoImgInClone = documentCloned.querySelector('#export-logo-image');
-
+                
                 if (logoContainerInClone && logoImgInClone) {
                     // Forzar dimensiones y estilos al contenedor del logo en el clon
                     // Estos valores DEBEN COINCIDIR con los que tienes en tu style.css
@@ -1090,7 +709,7 @@ async function generateInvoicePDF(invoiceDataSource) {
             newImgHeightInPdf = contentHeight;
             newImgWidthInPdf = newImgHeightInPdf * ratio;
         }
-
+        
         const x = margin + (contentWidth - newImgWidthInPdf) / 2;
         const y = margin;
 
@@ -1100,7 +719,7 @@ async function generateInvoicePDF(invoiceDataSource) {
     } catch (error) {
         console.error("Error detallado al generar el PDF:", error);
         alert("Hubo un error al generar el PDF. Por favor, revisa la consola para más detalles técnicos.");
-
+        
         // Asegurar que se restauren los estilos en caso de error también
         invoiceElement.style.display = originalStyles.display || 'none';
         invoiceElement.style.position = originalStyles.position;
@@ -1124,415 +743,224 @@ async function generateInvoicePDF(invoiceDataSource) {
 
 // --- Funciones para Modal de Detalle de Factura ---
 function openInvoiceDetailModal(invoiceData, invoiceId) {
-
-    currentInvoiceDataForModalActions = invoiceData; // Guardar datos de la factura actual para los botones del modal
-
-    currentInvoiceIdForModalActions = invoiceId;   // Guardar ID de la factura actual para los botones del modal
-
-    console.log("openInvoiceDetailModal llamada con ID:", invoiceId, "y datos:", invoiceData);
-
-    if (!invoiceDetailModal || !modalInvoiceTitle || !modalInvoiceDetailsContent) {
-
-        console.error("Elementos del modal no encontrados al intentar abrir.");
-
-        return;
-
-    }
-
-    console.log("Abriendo modal para factura ID:", invoiceId);
-
-
-
-    modalInvoiceTitle.textContent = `Detalle de Factura: ${invoiceData.invoiceNumberFormatted || 'N/A'}`;
-
-
-
-    let detailsHTML = '';
-
-
-
-    // Datos del Emisor
-
-    if (invoiceData.emitter && (invoiceData.emitter.name || invoiceData.emitter.id || invoiceData.emitter.address || invoiceData.emitter.phone || invoiceData.emitter.email)) {
-
-        detailsHTML += `<h3>Datos del Emisor</h3><div class="modal-section-grid">`;
-
-        if (invoiceData.emitter.name) detailsHTML += `<p><strong>Comercio:</strong> ${invoiceData.emitter.name}</p>`;
-
-        if (invoiceData.emitter.id) detailsHTML += `<p><strong>NIT/ID:</strong> ${invoiceData.emitter.id}</p>`;
-
-        if (invoiceData.emitter.address) detailsHTML += `<p><strong>Dirección:</strong> ${invoiceData.emitter.address}</p>`;
-
-        if (invoiceData.emitter.phone) detailsHTML += `<p><strong>Teléfono:</strong> ${invoiceData.emitter.phone}</p>`;
-
-        if (invoiceData.emitter.email) detailsHTML += `<p><strong>Email:</strong> ${invoiceData.emitter.email}</p>`;
-
-        detailsHTML += `</div>`;
-
-    }
-
-
-
-    // Datos del Cliente
-
-    detailsHTML += `<h3>Facturar A:</h3><div class="modal-section-grid">`;
-
-    detailsHTML += `<p><strong>Nombre:</strong> ${invoiceData.client?.name || 'N/A'}</p>`;
-
-    detailsHTML += `<p><strong>Celular:</strong> ${invoiceData.client?.phone || 'N/A'}</p>`;
-
-    if (invoiceData.client?.email) { // El correo del cliente parece estar funcionando bien en tu captura.
-
-        detailsHTML += `<p><strong>Correo:</strong> ${invoiceData.client.email}</p>`;
-
-    }
-
-    detailsHTML += `</div>`;
-
-
-
-    // Detalles de la Factura
-
-    detailsHTML += `<h3>Detalles de la Factura</h3>`;
-
-    detailsHTML += `<p><strong>Número:</strong> ${invoiceData.invoiceNumberFormatted || 'N/A'}</p>`;
-
-
-
-    if (invoiceData.uniqueQueryCode) {
-
-        detailsHTML += `<p><strong>Código Consulta:</strong> ${invoiceData.uniqueQueryCode}</p>`;
-
-    }
-
-
-
-    detailsHTML += `<p><strong>Fecha:</strong> ${invoiceData.invoiceDate ? new Date(invoiceData.invoiceDate + 'T00:00:00').toLocaleDateString('es-CO', {day: '2-digit', month: '2-digit', year: 'numeric'}) : 'N/A'}</p>`;
-
-    if (invoiceData.serviceStartDate) {
-
-        detailsHTML += `<p><strong>Inicio Servicio:</strong> ${new Date(invoiceData.serviceStartDate + 'T00:00:00').toLocaleDateString('es-CO', {day: '2-digit', month: '2-digit', year: 'numeric'})}</p>`;
-
-    }
-
-
-
-    const statusKeyModal = invoiceData.paymentStatus || 'pending';
-
-    const statusInfoModal = paymentStatusDetails[statusKeyModal] || { text: statusKeyModal.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) };
-
-    // CORRECCIÓN AQUÍ: Usar la clase CSS correcta y el texto de statusInfoModal
-
-    const statusBadgeClass = `status-${statusKeyModal.toLowerCase()}`;
-
-    detailsHTML += `<p><strong>Estado:</strong> <span class="status-badge ${statusBadgeClass}">${statusInfoModal.text}</span></p>`;
-
-
-
-    // Ítems
-
-    detailsHTML += `<h3>Ítems:</h3>`;
-
-    if (invoiceData.items && invoiceData.items.length > 0) {
-
-        detailsHTML += `<table class="modal-items-table">
-
-                            <thead>
-
-                                <tr>
-
-                                    <th>Descripción</th>
-
-                                    <th class="text-right">Cant.</th>
-
-                                    <th class="text-right">P.U.</th>
-
-                                    <th class="text-right">Total</th>
-
-                                </tr>
-
-                            </thead>
-
-                            <tbody>`;
-
-        invoiceData.items.forEach(item => {
-
-            let profileInfo = '';
-
-            if (item.isStreaming && item.profileName) {
-
-                profileInfo = `<small class="item-profile-details">Perfil: ${item.profileName}${item.profilePin ? ` (PIN: ${item.profilePin})` : ''}</small>`;
-
-            }
-
-            // CORRECCIONES AQUÍ:
-
-            detailsHTML += `<tr>
-
-                                <td>${item.description || 'N/A'}${profileInfo ? '<br>' + profileInfo : ''}</td>
-
-                                <td class="text-right">${item.quantity || 0}</td>
-
-                                <td class="text-right">${(item.price || 0).toLocaleString('es-CO', { style: 'currency', currency: 'COP' })}</td>
-
-                                <td class="text-right">${((item.quantity || 0) * (item.price || 0)).toLocaleString('es-CO', { style: 'currency', currency: 'COP' })}</td>
-
-                            </tr>`;
-
-        });
-
-        detailsHTML += `</tbody></table>`;
-
-    } else {
-
-        detailsHTML += `<p>No hay ítems en esta factura.</p>`;
-
-    }
-
-
-
-    // Totales (Parecen estar funcionando en tu captura, pero revisemos la estructura)
-
-    detailsHTML += `<div class="modal-totals-summary">`;
-
-    if (invoiceData.totals) {
-
-        detailsHTML += `<p><span>Subtotal:</span> <span>${(invoiceData.totals.subtotal || 0).toLocaleString('es-CO', { style: 'currency', currency: 'COP' })}</span></p>`;
-
-        if (invoiceData.totals.discountApplied > 0) {
-
-            detailsHTML += `<p><span>Descuento:</span> <span>-${(invoiceData.totals.discountApplied || 0).toLocaleString('es-CO', { style: 'currency', currency: 'COP' })}</span></p>`;
-
-        }
-
-
-
-        // Calcular Base Imponible solo si hay descuento o si taxableBase es explícitamente diferente del subtotal.
-
-        const subtotalVal = invoiceData.totals.subtotal || 0;
-
-        const discountVal = invoiceData.totals.discountApplied || 0;
-
-        const taxableBaseVal = invoiceData.totals.taxableBase; // Puede ser undefined
-
-
-
-        if (discountVal > 0 || (taxableBaseVal !== undefined && taxableBaseVal !== subtotalVal) ) {
-
-             detailsHTML += `<p><span>Base Imponible:</span> <span>${(taxableBaseVal !== undefined ? taxableBaseVal : (subtotalVal - discountVal)).toLocaleString('es-CO', { style: 'currency', currency: 'COP' })}</span></p>`;
-
-        }
-
-
-
-        if (invoiceData.totals.iva > 0) {
-
-            detailsHTML += `<p><span>IVA (19%):</span> <span>${(invoiceData.totals.iva || 0).toLocaleString('es-CO', { style: 'currency', currency: 'COP' })}</span></p>`;
-
-        }
-
-        detailsHTML += `<p class="modal-grand-total"><span>TOTAL:</span> <span>${(invoiceData.totals.grandTotal || 0).toLocaleString('es-CO', { style: 'currency', currency: 'COP' })}</span></p>`;
-
-    }
-
-    detailsHTML += `</div>`;
-
-
-
-    if(modalInvoiceDetailsContent) modalInvoiceDetailsContent.innerHTML = detailsHTML;
-
-
-
-    if (invoiceDetailModal) {
-
-        console.log("Activando modal y clase modal-active en body.");
-
-        invoiceDetailModal.classList.add('active');
-
-        bodyElement.classList.add('modal-active');
-
-    } else {
-
-        console.error("invoiceDetailModal es null, no se puede activar.");
-
-    }
+    // Guardar los datos de la factura actual para que los usen los botones de acción del modal
+    currentInvoiceDataForModalActions = invoiceData;
+    currentInvoiceIdForModalActions = invoiceId;
+
+    // console.log("openInvoiceDetailModal llamada con ID:", invoiceId, "y datos:", invoiceData); // Log útil para depurar
+    if (!invoiceDetailModal || !modalInvoiceTitle || !modalInvoiceDetailsContent) {
+        console.error("Elementos del modal de detalle (#invoiceDetailModal) no encontrados al intentar abrir.");
+        return;
+    }
+    // console.log("Abriendo modal de detalles para factura ID:", invoiceId);
+
+    modalInvoiceTitle.textContent = `Detalle de Factura: ${invoiceData.invoiceNumberFormatted || 'N/A'}`;
+    
+    let detailsHTML = '';
+
+    // Datos del Emisor
+    if (invoiceData.emitter && (
+        invoiceData.emitter.name || 
+        invoiceData.emitter.id || 
+        invoiceData.emitter.address || 
+        invoiceData.emitter.phone || 
+        invoiceData.emitter.email
+    )) {
+        detailsHTML += `<h3>Datos del Emisor</h3><div class="modal-section-grid">`;
+        if (invoiceData.emitter.name) detailsHTML += `<p><strong>Comercio:</strong> ${invoiceData.emitter.name}</p>`;
+        if (invoiceData.emitter.id) detailsHTML += `<p><strong>NIT/ID:</strong> ${invoiceData.emitter.id}</p>`;
+        if (invoiceData.emitter.address) detailsHTML += `<p><strong>Dirección:</strong> ${invoiceData.emitter.address}</p>`;
+        if (invoiceData.emitter.phone) detailsHTML += `<p><strong>Teléfono:</strong> ${invoiceData.emitter.phone}</p>`;
+        if (invoiceData.emitter.email) detailsHTML += `<p><strong>Email:</strong> ${invoiceData.emitter.email}</p>`;
+        detailsHTML += `</div>`;
+    }
+
+    // Datos del Cliente
+    detailsHTML += `<h3>Facturar A:</h3><div class="modal-section-grid">`;
+    detailsHTML += `<p><strong>Nombre:</strong> ${invoiceData.client?.name || 'N/A'}</p>`;
+    detailsHTML += `<p><strong>Celular:</strong> ${invoiceData.client?.phone || 'N/A'}</p>`;
+    if (invoiceData.client?.email) {
+        detailsHTML += `<p><strong>Correo:</strong> ${invoiceData.client.email}</p>`;
+    }
+    // Si tenías más campos de cliente en la plantilla del modal (como NIT, Dirección), añádelos aquí.
+    // Ejemplo (si existieran en invoiceData.client):
+    // if (invoiceData.client?.id) detailsHTML += `<p><strong>NIT/C.C:</strong> ${invoiceData.client.id}</p>`;
+    // if (invoiceData.client?.address) detailsHTML += `<p><strong>Dirección:</strong> ${invoiceData.client.address}</p>`;
+    detailsHTML += `</div>`;
+
+    // Detalles de la Factura
+    detailsHTML += `<h3>Detalles de la Factura</h3>`;
+    detailsHTML += `<p><strong>Número:</strong> ${invoiceData.invoiceNumberFormatted || 'N/A'}</p>`;
+    
+    // Mostrar Código de Consulta Único
+    if (invoiceData.uniqueQueryCode) {
+        detailsHTML += `<p><strong>Código Consulta:</strong> ${invoiceData.uniqueQueryCode}</p>`;
+    }
+    
+    detailsHTML += `<p><strong>Fecha Emisión:</strong> ${invoiceData.invoiceDate ? new Date(invoiceData.invoiceDate + 'T00:00:00').toLocaleDateString('es-CO', {day: '2-digit', month: 'long', year: 'numeric'}) : 'N/A'}</p>`;
+    if (invoiceData.serviceStartDate) { // O la fecha de vencimiento que uses
+        detailsHTML += `<p><strong>Fecha Vencimiento/Pago:</strong> ${new Date(invoiceData.serviceStartDate + 'T00:00:00').toLocaleDateString('es-CO', {day: '2-digit', month: 'long', year: 'numeric'})}</p>`;
+    }
+
+    // Estado de Pago
+    const statusKeyModal = invoiceData.paymentStatus || 'pending';
+    const statusInfoModal = paymentStatusDetails[statusKeyModal] || { text: statusKeyModal.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) };
+    const statusBadgeClass = `status-${statusKeyModal.toLowerCase().replace(/ /g, '_')}`; // Asegurar que las clases sean válidas
+    detailsHTML += `<p><strong>Estado:</strong> <span class="status-badge ${statusBadgeClass}">${statusInfoModal.text}</span></p>`;
+    
+    // Ítems de la Factura
+    detailsHTML += `<h3>Ítems:</h3>`;
+    if (invoiceData.items && invoiceData.items.length > 0) {
+        detailsHTML += `<table class="modal-items-table">
+                            <thead>
+                                <tr>
+                                    <th>Descripción</th>
+                                    <th class="text-right">Cant.</th>
+                                    <th class="text-right">P.U.</th>
+                                    <th class="text-right">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>`;
+        invoiceData.items.forEach(item => {
+            let profileInfo = '';
+            if (item.isStreaming && item.profileName) {
+                profileInfo = `<small class="item-profile-details">Perfil: ${item.profileName}${item.profilePin ? ` (PIN: ${item.profilePin})` : ''}</small>`;
+            }
+            detailsHTML += `<tr>
+                                <td>${item.description || 'N/A'}${profileInfo ? '<br>' + profileInfo : ''}</td>
+                                <td class="text-right">${item.quantity || 0}</td>
+                                <td class="text-right">${(item.price || 0).toLocaleString('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</td>
+                                <td class="text-right">${((item.quantity || 0) * (item.price || 0)).toLocaleString('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</td>
+                            </tr>`;
+        });
+        detailsHTML += `</tbody></table>`;
+    } else {
+        detailsHTML += `<p>No hay ítems en esta factura.</p>`;
+    }
+
+    // Totales de la Factura
+    detailsHTML += `<div class="modal-totals-summary">`;
+    if (invoiceData.totals) {
+        detailsHTML += `<p><span>Subtotal:</span> <span>${(invoiceData.totals.subtotal || 0).toLocaleString('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span></p>`;
+        if (invoiceData.totals.discountApplied > 0) {
+            detailsHTML += `<p><span>Descuento Aplicado:</span> <span>-${(invoiceData.totals.discountApplied || 0).toLocaleString('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span></p>`;
+        }
+        
+        const subtotalVal = invoiceData.totals.subtotal || 0;
+        const discountVal = invoiceData.totals.discountApplied || 0;
+        const taxableBaseVal = invoiceData.totals.taxableBase;
+
+        // Mostrar Base Imponible si es diferente al subtotal (o si hay descuento)
+        if (discountVal > 0 || (taxableBaseVal !== undefined && taxableBaseVal !== subtotalVal && taxableBaseVal !== (subtotalVal - discountVal) ) ) {
+             detailsHTML += `<p><span>Base Imponible:</span> <span>${(taxableBaseVal !== undefined ? taxableBaseVal : (subtotalVal - discountVal)).toLocaleString('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span></p>`;
+        }
+
+        if (invoiceData.totals.iva > 0) {
+            detailsHTML += `<p><span>IVA (19%):</span> <span>${(invoiceData.totals.iva || 0).toLocaleString('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span></p>`;
+        }
+        detailsHTML += `<p class="modal-grand-total"><span>TOTAL A PAGAR:</span> <span>${(invoiceData.totals.grandTotal || 0).toLocaleString('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span></p>`;
+    }
+    detailsHTML += `</div>`;
+
+    if(modalInvoiceDetailsContent) modalInvoiceDetailsContent.innerHTML = detailsHTML;
+    
+    if (invoiceDetailModal) {
+        console.log("Activando modal de detalles y clase modal-active en body."); // Log de depuración opcional
+        invoiceDetailModal.classList.add('active');
+        if (bodyElement) { // Asegúrate que bodyElement esté definido globalmente
+            bodyElement.classList.add('modal-active');
+        } else {
+            console.error("Variable bodyElement no definida. No se pudo añadir clase modal-active al body.");
+        }
+    } else {
+        console.error("Elemento #invoiceDetailModal no encontrado. No se puede activar el modal.");
+        alert("Error: No se pudo mostrar el detalle de la factura porque el contenedor del modal no existe.");
+    }
 }
 
 function closeInvoiceDetailModal() {
-
-    console.log("Intentando cerrar modal...");
-
-    if (!invoiceDetailModal) {
-
-        console.error("Elemento invoiceDetailModal no encontrado al intentar cerrar.");
-
-        return; 
-
-    }
-
-
-
-    invoiceDetailModal.classList.remove('active');  // << Esto es correcto para ocultar el modal
-
-    bodyElement.classList.remove('modal-active'); // << AÑADE ESTA LÍNEA para desbloquear scroll del body
-
-
-
-    if (modalInvoiceDetailsContent) {
-
-        setTimeout(() => { 
-
-            if(modalInvoiceDetailsContent) {
-
-                modalInvoiceDetailsContent.innerHTML = '<p>Cargando detalles de la factura...</p>'; 
-
-            }
-
-        }, 300); 
-
-    }
-
-    if (modalInvoiceTitle) {
-
-        modalInvoiceTitle.textContent = 'Detalle de Factura';
-
-    }
-
-}
-
-function closeTemplateSelectionModal() {
-    // console.log("[closeTemplateSelectionModal] Cerrando modal de selección.");
-    if (templateSelectionModal) {
-        templateSelectionModal.classList.remove('active');
+    // console.log("Intentando cerrar modal de detalles..."); // Log para depuración
+    if (!invoiceDetailModal) {
+        console.error("Elemento invoiceDetailModal no encontrado al intentar cerrar.");
+        return; 
     }
+
+    invoiceDetailModal.classList.remove('active'); 
+
+    // Lógica para quitar 'modal-active' del body:
+    // Solo quitar si el modal de SELECCIÓN tampoco está activo.
+    const selectionModalIsActive = templateSelectionModal && templateSelectionModal.classList.contains('active');
     
-    // NO quitamos 'modal-active' del body aquí.
-    // El modal de detalles sigue abierto y es el que controla el estado del body.
-    // Se quitará cuando se llame a closeInvoiceDetailModal().
+    if (bodyElement) { // Verificar que bodyElement exista
+        if (!selectionModalIsActive) { 
+            // Si el modal de selección NO está activo, entonces podemos quitar la clase del body.
+            bodyElement.classList.remove('modal-active');
+            // console.log("[closeInvoiceDetailModal] Clase 'modal-active' quitada del body porque el modal de selección no está activo.");
+        } else {
+            // Si el modal de selección AÚN ESTÁ ACTIVO, no quitamos la clase del body
+            // porque ese otro modal la necesita para el overlay y el bloqueo de scroll.
+            // console.log("[closeInvoiceDetailModal] El modal de selección aún está activo, no se quita 'modal-active' del body.");
+        }
+    } else {
+        console.error("Elemento bodyElement no encontrado en closeInvoiceDetailModal.");
+    }
+
+
+    // Resetear el contenido del modal de detalles después de un breve momento
+    // para permitir que la animación de cierre termine antes de que el contenido cambie bruscamente.
+    if (modalInvoiceDetailsContent) {
+        setTimeout(() => { 
+            if(modalInvoiceDetailsContent) { // Doble verificación por si el modal se destruye o la referencia se pierde
+                modalInvoiceDetailsContent.innerHTML = '<p>Cargando detalles de la factura...</p>'; 
+            }
+        }, 300); // 300ms es usualmente suficiente para la mayoría de las transiciones CSS.
+    }
+    if (modalInvoiceTitle) {
+        modalInvoiceTitle.textContent = 'Detalle de Factura';
+    }
 }
 
 function openTemplateSelectionModal(actionType) {
+    currentActionForTemplateSelection = actionType;
+    if(isReminderCheckbox) isReminderCheckbox.checked = false;
 
-    console.log("[openTemplateSelectionModal] ACCIÓN:", actionType);
+    if (imageFormatSelectionDiv) { // Asegurarse que el elemento exista
+        imageFormatSelectionDiv.style.display = (actionType === 'image') ? 'block' : 'none';
+    } else if (actionType === 'image') {
+        console.warn("Elemento #imageFormatSelection no encontrado para la acción 'image'.");
+    }
 
-    currentActionForTemplateSelection = actionType;
-
-
-
-    if (!templateSelectionModal) {
-
-        console.error("CRÍTICO: #templateSelectionModal NO ENCONTRADO EN EL DOM.");
-
-        return;
-
-    }
-
-
-
-    // Forzar visualización directa con JavaScript para la prueba
-
-    templateSelectionModal.style.setProperty('display', 'flex', 'important');
-
-    templateSelectionModal.style.setProperty('opacity', '1', 'important');
-
-    templateSelectionModal.style.setProperty('visibility', 'visible', 'important');
-
-    templateSelectionModal.style.setProperty('z-index', '20000', 'important'); // Z-index extremadamente alto
-
-    // templateSelectionModal.style.setProperty('border', '10px solid orange', 'important'); // Borde muy obvio
-
-
-
-    const content = templateSelectionModal.querySelector('.modal-content');
-
-    if (content) {
-
-        // content.style.setProperty('border', '5px solid cyan', 'important');
-
-        content.style.setProperty('min-height', '50px', 'important');
-
-        console.log("[openTemplateSelectionModal] Estilos de depuración JS aplicados.");
-
-    } else {
-
-        console.error("[openTemplateSelectionModal] .modal-content dentro de #templateSelectionModal no encontrado.");
-
-    }
-
-
-
-    // No manejaremos la clase 'active' ni el bodyElement por ahora para esta prueba de JS
-
+    if (templateSelectionModal) {
+        templateSelectionModal.classList.add('active');
+        // console.log("[openTemplateSelectionModal] Clase 'active' AÑADIDA a templateSelectionModal.");
+        if (bodyElement && !bodyElement.classList.contains('modal-active')) {
+            bodyElement.classList.add('modal-active');
+            // console.log("[openTemplateSelectionModal] Clase 'modal-active' AÑADIDA al body.");
+        }
+    } else {
+        console.error("Elemento #templateSelectionModal no encontrado.");
+    }
 }
 
 function closeTemplateSelectionModal() {
-
-    if (templateSelectionModal) {
-
-        // Quitar todos los estilos forzados por JS
-
-        templateSelectionModal.style.removeProperty('display');
-
-        templateSelectionModal.style.removeProperty('opacity');
-
-        templateSelectionModal.style.removeProperty('visibility');
-
-        templateSelectionModal.style.removeProperty('z-index');
-
-        // templateSelectionModal.style.removeProperty('border');
-
-
-
-        const content = templateSelectionModal.querySelector('.modal-content');
-
-        if (content) {
-
-            // content.style.removeProperty('border');
-
-            content.style.removeProperty('min-height');
-
-            content.style.removeProperty('min-width'); // Si lo añadiste
-
-        }
-
-
-
-        templateSelectionModal.classList.remove('active'); // Quitar la clase normal también
-
-        console.log("[closeTemplateSelectionModal] Modal de selección cerrado y estilos de depuración JS quitados.");
-
-    } else {
-
-        console.error("closeTemplateSelectionModal: templateSelectionModal es null.");
-
-    }
-
-
-
-    // Lógica para quitar 'modal-active' del body si el modal de DETALLES tampoco está activo
-
-    if (bodyElement) {
-
-        const mainDetailModalIsActive = invoiceDetailModal && invoiceDetailModal.classList.contains('active');
-
-        // Si el modal de detalles NO está activo Y el modal de selección tampoco (porque lo estamos cerrando)
-
-        if (!mainDetailModalIsActive && !templateSelectionModal.classList.contains('active')) { 
-
-            bodyElement.classList.remove('modal-active');
-
-        }
-
-    }
-
-}
-
-
-
-function formatInvoiceNumber(number) {
-
-    return String(number).padStart(3, '0');
-
+    // console.log("[closeTemplateSelectionModal] Intentando cerrar modal de selección.");
+    if (templateSelectionModal) {
+        templateSelectionModal.classList.remove('active');
+        // console.log("[closeTemplateSelectionModal] Clase 'active' quitada de templateSelectionModal.");
+    } else {
+        // console.error("[closeTemplateSelectionModal] templateSelectionModal es null.");
+    }
+    
+    // Solo quitar 'modal-active' del body si el modal de DETALLES tampoco está activo
+    if (bodyElement) {
+        const mainDetailModalIsActive = invoiceDetailModal && invoiceDetailModal.classList.contains('active');
+        if (!mainDetailModalIsActive) { // Si el modal de detalles NO está activo
+            bodyElement.classList.remove('modal-active');
+            // console.log("[closeTemplateSelectionModal] Clase 'modal-active' quitada del body porque el modal de detalles tampoco está activo.");
+        } else {
+            // console.log("[closeTemplateSelectionModal] El modal de detalles aún está activo, no se quita 'modal-active' del body.");
+        }
+    }
 }
 
 function formatInvoiceNumber(number) {
@@ -1661,7 +1089,7 @@ function recalculateTotals() {
     } else if (selectedDiscountType === 'fixed' && discountValue > 0) {
         discountAmount = discountValue;
     }
-
+    
     if (discountAmount > subtotal) {
         discountAmount = subtotal;
     }
@@ -1716,7 +1144,7 @@ function handleClientSelection(clientId, clientNameText, clientData = null) {
             else if (estadoGeneral === "Con Pendientes") claseCssEstadoGeneral = "status-client-con-pendientes";
             else if (estadoGeneral === "Moroso") claseCssEstadoGeneral = "status-client-moroso";
             else if (estadoGeneral === "Inactivo") claseCssEstadoGeneral = "status-client-inactivo";
-
+            
             const pillGeneral = document.createElement('span');
             pillGeneral.classList.add('option-status-pill', claseCssEstadoGeneral);
             pillGeneral.textContent = estadoGeneral;
@@ -1732,12 +1160,13 @@ function handleClientSelection(clientId, clientNameText, clientData = null) {
                 textoPildoraFactura = paymentStatusDetails[statusKey]?.text || estadoFacturaCliente;
                 claseCssPildoraFactura = `invoice-status-${statusKey}`;
             }
-
+            
             const pillFactura = document.createElement('span');
             pillFactura.classList.add('option-status-pill', claseCssPildoraFactura);
             pillFactura.textContent = textoPildoraFactura;
-            pillsContainer.appendChild(pillFactura);
 
+            pillsContainer.appendChild(pillFactura);
+            
             selectedClientNameDisplay.appendChild(pillsContainer);
         }
     }
@@ -1778,7 +1207,7 @@ async function loadClientsIntoDropdown() {
         return; 
     }
     const user = auth.currentUser;
-
+    
     customClientOptions.innerHTML = ''; 
     handleClientSelection("", "-- Nuevo Cliente --"); 
 
@@ -1825,7 +1254,7 @@ async function loadClientsIntoDropdown() {
                     textoPildoraFactura = paymentStatusDetails[statusKey]?.text || estadoFacturaCliente;
                     claseCssPildoraFactura = `invoice-status-${statusKey}`;
                 }
-
+                
                 // --- Construir el HTML para la opción con AMBAS píldoras ---
                 clientOption.innerHTML = `
                     <span class="option-client-name">${clientDisplayName}</span>
@@ -1881,7 +1310,7 @@ async function handleNavigation(sectionToShowId) {
 
     const currentSection = sections.find(s => s && s.id === sectionToShowId);
     if (currentSection) currentSection.style.display = 'block';
-
+    
     const currentLink = navLinks.find(l => l && (l.id.replace('nav', '').charAt(0).toLowerCase() + l.id.replace('nav', '').slice(1) + 'Section') === sectionToShowId);
     if (currentLink) currentLink.classList.add('active-nav');
 
@@ -1957,7 +1386,7 @@ async function loadAndDisplayInvoices() {
                 itemElement.setAttribute('data-invoice-id', invoiceId);
                 let statusClassName = invoice.paymentStatus || 'pending';
                 let statusText = paymentStatusDetails[statusClassName]?.text || statusClassName.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-
+            
                 itemElement.innerHTML = `
                     <div class="invoice-list-header">
                         <span class="invoice-list-number">${invoice.invoiceNumberFormatted || 'N/A'}</span>
@@ -1978,7 +1407,7 @@ async function loadAndDisplayInvoices() {
                         <button type="button" class="btn btn-sm btn-info view-details-btn">Ver Detalles</button>
                     </div>
                 `;
-
+            
                 const viewDetailsBtn = itemElement.querySelector('.view-details-btn');
                 if (viewDetailsBtn) {
                     // **NUEVO CONSOLE LOG**
@@ -2128,7 +1557,7 @@ async function displayDeletedClients() {
                 const clientElement = document.createElement('div');
                 clientElement.classList.add('client-list-item', 'client-inactive'); // Clase adicional
                 clientElement.setAttribute('data-client-id', clientId);
-
+                
                 clientElement.innerHTML = `
                     <div class="client-info">
                         <strong class="client-name">${client.name}</strong>
@@ -2247,76 +1676,35 @@ document.addEventListener('keydown', (event) => {
     }
 });
 
-if (modalShareBtn) {
-    modalShareBtn.addEventListener('click', () => {
-        console.log("Clic en modalShareBtn"); // LOG
-        if (currentInvoiceDataForModalActions) {
-            openTemplateSelectionModal('share');
-        } else {
-            alert("No hay datos de factura para compartir.");
-        }
-    });
-}
-if (modalWhatsAppBtn) {
-    modalWhatsAppBtn.addEventListener('click', () => {
-        if (currentInvoiceDataForModalActions) { openTemplateSelectionModal('whatsapp'); } 
-        else { alert("No hay datos de factura para enviar a WhatsApp."); }
-    });
-}
-if (modalImageBtn) {
-    modalImageBtn.addEventListener('click', () => {
-        if (currentInvoiceDataForModalActions) { openTemplateSelectionModal('image'); } 
-        else { alert("No hay datos de factura para generar imagen."); }
-    });
-}
-if (modalEmailBtn) {
-    modalEmailBtn.addEventListener('click', async () => {
-        if (currentInvoiceDataForModalActions) {
-            alert(`ACCIÓN PENDIENTE: Enviar por Email la factura PDF para ${currentInvoiceDataForModalActions.client?.name}. Destinatario: ${currentInvoiceDataForModalActions.client?.email}`);
-        } else { alert("No hay datos de factura para enviar por email."); }
-    });
-}
 if (modalPdfBtn) {
     modalPdfBtn.addEventListener('click', async () => {
-        if (currentInvoiceDataForModalActions) { await generateInvoicePDF(currentInvoiceDataForModalActions); } 
-        else { alert("No hay datos de factura cargados en el modal para generar el PDF."); }
+        if (currentInvoiceDataForModalActions) {
+            // La variable currentInvoiceDataForModalActions se llena cuando abres el modal
+            console.log("Generando PDF desde modal con datos:", currentInvoiceDataForModalActions); // Log para depurar
+            await generateInvoicePDF(currentInvoiceDataForModalActions); // Pasa el objeto de datos
+        } else {
+            alert("No hay datos de factura cargados en el modal para generar el PDF.");
+            console.error("currentInvoiceDataForModalActions es null o undefined al intentar generar PDF desde modal.");
+        }
     });
 }
 
 // --- Event Listeners para el Modal de Selección de Plantilla (#templateSelectionModal) ---
 if (closeTemplateSelectionModalBtn) {
-    console.log("Intentando añadir listener a closeTemplateSelectionModalBtn:", closeTemplateSelectionModalBtn);
-    closeTemplateSelectionModalBtn.addEventListener('click', () => {
-        console.log("Botón X (cerrar) del modal de selección FUE CLICKEADO."); // LOG DE DEPURACIÓN
-        closeTemplateSelectionModal();
-    });
+    closeTemplateSelectionModalBtn.addEventListener('click', closeTemplateSelectionModal);
 } else {
-    console.warn("Botón #closeTemplateSelectionModalBtn (X) no encontrado en el DOM. No se pudo añadir listener.");
+    console.warn("Botón #closeTemplateSelectionModalBtn no encontrado en el DOM.");
 }
 
 if (cancelTemplateSelectionBtn) {
-    console.log("Intentando añadir listener a cancelTemplateSelectionBtn:", cancelTemplateSelectionBtn);
-    cancelTemplateSelectionBtn.addEventListener('click', () => {
-        console.log("Botón Cancelar del modal de selección FUE CLICKEADO."); // LOG DE DEPURACIÓN
-        closeTemplateSelectionModal();
-    });
+    cancelTemplateSelectionBtn.addEventListener('click', closeTemplateSelectionModal);
 } else {
-    console.warn("Botón #cancelTemplateSelectionBtn no encontrado. No se añadió listener.");
-}
-
-if (isReminderCheckbox) {
-    console.log("Intentando añadir listener a isReminderCheckbox:", isReminderCheckbox);
-    isReminderCheckbox.addEventListener('change', () => {
-        console.log("Checkbox 'Es Recordatorio' CAMBIÓ. Nuevo estado:", isReminderCheckbox.checked);
-    });
-} else {
-    console.warn("Checkbox #isReminderCheckbox no encontrado. No se añadió listener.");
+    console.warn("Botón #cancelTemplateSelectionBtn no encontrado en el DOM.");
 }
 
 if (proceedWithTemplateSelectionBtn) {
-    console.log("Intentando añadir listener a proceedWithTemplateSelectionBtn:", proceedWithTemplateSelectionBtn);
     proceedWithTemplateSelectionBtn.addEventListener('click', async () => {
-        console.log("Botón 'Continuar' del modal de selección FUE CLICKEADO.");
+        // console.log("Botón 'Continuar' del modal de selección presionado.");
         if (!currentInvoiceDataForModalActions) {
             alert("Error: No hay datos de factura seleccionados.");
             closeTemplateSelectionModal();
@@ -2399,25 +1787,12 @@ document.addEventListener('keydown', (event) => {
     }
 });
 
-if (modalPdfBtn) {
-    modalPdfBtn.addEventListener('click', async () => {
-        if (currentInvoiceDataForModalActions) {
-            // La variable currentInvoiceDataForModalActions se llena cuando abres el modal
-            console.log("Generando PDF desde modal con datos:", currentInvoiceDataForModalActions); // Log para depurar
-            await generateInvoicePDF(currentInvoiceDataForModalActions); // Pasa el objeto de datos
-        } else {
-            alert("No hay datos de factura cargados en el modal para generar el PDF.");
-            console.error("currentInvoiceDataForModalActions es null o undefined al intentar generar PDF desde modal.");
-        }
+// Placeholder para el botón de imprimir/descargar en el modal
+if (printInvoiceFromModalBtn) {
+    printInvoiceFromModalBtn.addEventListener('click', () => {
+        alert("Funcionalidad de Imprimir/Descargar PDF desde el modal está pendiente.");
     });
 }
-
-// Placeholder para el botón de imprimir/descargar en el modal ELIMINADO ya que se retiro del index.html
-// if (printInvoiceFromModalBtn) {
-//    printInvoiceFromModalBtn.addEventListener('click', () => {
-//        alert("Funcionalidad de Imprimir/Descargar PDF desde el modal está pendiente.");
-//    });
-//}
 
 // --- Lógica de Autenticación y Estado ---
 if (loginButton) { 
@@ -2581,7 +1956,7 @@ if (invoiceForm) {
         let clientPhone = clientPhoneInput?.value.trim();
         let clientEmail = clientEmailInput?.value.trim();
         if (!clientName || !clientPhone || !clientEmail) { alert("Completa los datos del cliente."); return; }
-
+        
         const selectedClientId = hiddenSelectedClientIdInput.value;
         if (selectedClientId && isEditingClient) {
             const clientRef = doc(db, "clientes", selectedClientId);
@@ -2609,16 +1984,16 @@ if (invoiceForm) {
             if (clientPhoneInput) clientPhoneInput.disabled = true;
             if (clientEmailInput) clientEmailInput.disabled = true;
         }
-
+        
         if (typeof recalculateTotals === 'function') recalculateTotals();
 
         let actualNumericInvoiceNumber;
         let formattedInvoiceNumberStr;
-
+        
         if (saveInvoiceBtn) saveInvoiceBtn.disabled = true;
         if (generateInvoiceFileBtn) generateInvoiceFileBtn.disabled = true;
         showLoading(true);
-
+        
         try {
             actualNumericInvoiceNumber = await getNextInvoiceNumber(user.uid);
             formattedInvoiceNumberStr = formatInvoiceNumber(actualNumericInvoiceNumber);
@@ -2632,7 +2007,7 @@ if (invoiceForm) {
 
         const uniqueQueryCode = await getTrulyUniqueCode(user.uid); // Usamos la longitud por defecto (7)
         console.log("Valor devuelto por getTrulyUniqueCode:", uniqueQueryCode);
-
+        
         if (!uniqueQueryCode) {
             // getTrulyUniqueCode ya muestra una alerta si falla después de los reintentos.
             showLoading(false);
@@ -2640,7 +2015,7 @@ if (invoiceForm) {
             if (generateInvoiceFileBtn) generateInvoiceFileBtn.disabled = false;
             return; // No continuar si no se pudo generar el código único
         }
-
+        
         const invoiceToSave = {
             userId: user.uid,
             invoiceNumberFormatted: `FCT-${formattedInvoiceNumberStr}`,
@@ -2670,7 +2045,7 @@ if (invoiceForm) {
         };
 
         console.log("Objeto invoiceToSave ANTES de guardar en Firestore:", JSON.stringify(invoiceToSave, null, 2));
-
+        
         try {
             const docRef = await addDoc(collection(db, "facturas"), invoiceToSave);
             alert(`¡Factura FCT-${formattedInvoiceNumberStr} guardada! ID: ${docRef.id}`);
@@ -2701,18 +2076,18 @@ if (invoiceForm) {
                     console.error("Error al actualizar estado del cliente existente:", clientUpdateError);
                 }
             }
-
+            
             invoiceForm.reset();
             currentInvoiceItems = []; nextItemId = 0;
             handleClientSelection("", "-- Nuevo Cliente --"); 
-
+            
             renderItems(); 
             setDefaultInvoiceDate(); 
             updateQuantityBasedOnStreaming(); 
             handleDiscountChange();
             await loadClientsIntoDropdown(); 
             await displayNextPotentialInvoiceNumber();
-
+            
         } catch (error) { 
             console.error("Error al guardar factura en Firestore o al procesar post-guardado:", error);
             alert(`Error durante el guardado: ${error.message}`);
@@ -2726,7 +2101,7 @@ if (invoiceForm) {
 }
 
 // if (generateInvoiceFileBtn) { 
-//    generateInvoiceFileBtn.addEventListener('click', () => {More actions
-//        alert("Funcionalidad 'Generar Factura (Archivo)' pendiente.");
-//    });
-//}
+//     generateInvoiceFileBtn.addEventListener('click', () => {
+//         alert("Funcionalidad 'Generar Factura (Archivo)' pendiente.");
+//     });
+// }
