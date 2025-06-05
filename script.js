@@ -2127,23 +2127,38 @@ const handleModalEmailClick = () => {
     }
 };
 
-// 2. Ahora, asignamos estas funciones a la propiedad .onclick de cada botón.
-//    Esto asegura que solo haya UNA acción por botón, evitando duplicados.
+// 2. Se asignan los listeners a los botones de forma segura.
 
-if (modalPdfBtn) { 
-    modalPdfBtn.onclick = handleModalPdfClick; 
+if (modalPdfBtn) {
+    // Limpiamos CUALQUIER listener anterior para este botón
+    modalPdfBtn.onclick = null; 
+    modalPdfBtn.removeEventListener('click', handleModalPdfClick);
+    // Añadimos el listener UNA SOLA VEZ
+    modalPdfBtn.addEventListener('click', handleModalPdfClick);
 }
+
 if (modalShareBtn) { 
-    modalShareBtn.onclick = handleModalShareClick;
+    modalShareBtn.onclick = null;
+    modalShareBtn.removeEventListener('click', handleModalShareClick);
+    modalShareBtn.addEventListener('click', handleModalShareClick);
 }
+
 if (modalWhatsAppBtn) { 
-    modalWhatsAppBtn.onclick = handleModalWhatsAppClick;
+    modalWhatsAppBtn.onclick = null;
+    modalWhatsAppBtn.removeEventListener('click', handleModalWhatsAppClick);
+    modalWhatsAppBtn.addEventListener('click', handleModalWhatsAppClick);
 }
+
 if (modalImageBtn) { 
-    modalImageBtn.onclick = handleModalImageClick;
+    modalImageBtn.onclick = null;
+    modalImageBtn.removeEventListener('click', handleModalImageClick);
+    modalImageBtn.addEventListener('click', handleModalImageClick);
 }
+
 if (modalEmailBtn) { 
-    modalEmailBtn.onclick = handleModalEmailClick;
+    modalEmailBtn.onclick = null;
+    modalEmailBtn.removeEventListener('click', handleModalEmailClick);
+    modalEmailBtn.addEventListener('click', handleModalEmailClick);
 }
 
 // --- Event Listeners para el Modal de Selección de Plantilla (#templateSelectionModal) ---
