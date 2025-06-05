@@ -1270,11 +1270,11 @@ function openTemplateSelectionModal(actionType) {
     templateSelectionModal.style.setProperty('opacity', '1', 'important');
     templateSelectionModal.style.setProperty('visibility', 'visible', 'important');
     templateSelectionModal.style.setProperty('z-index', '20000', 'important'); // Z-index extremadamente alto
-    templateSelectionModal.style.setProperty('border', '10px solid orange', 'important'); // Borde muy obvio
+    // templateSelectionModal.style.setProperty('border', '10px solid orange', 'important'); // Borde muy obvio
 
     const content = templateSelectionModal.querySelector('.modal-content');
     if (content) {
-        content.style.setProperty('border', '5px solid cyan', 'important');
+        // content.style.setProperty('border', '5px solid cyan', 'important');
         content.style.setProperty('min-height', '50px', 'important');
         console.log("[openTemplateSelectionModal] Estilos de depuración JS aplicados.");
     } else {
@@ -1291,11 +1291,11 @@ function closeTemplateSelectionModal() {
         templateSelectionModal.style.removeProperty('opacity');
         templateSelectionModal.style.removeProperty('visibility');
         templateSelectionModal.style.removeProperty('z-index');
-        templateSelectionModal.style.removeProperty('border');
+        // templateSelectionModal.style.removeProperty('border');
 
         const content = templateSelectionModal.querySelector('.modal-content');
         if (content) {
-            content.style.removeProperty('border');
+            // content.style.removeProperty('border');
             content.style.removeProperty('min-height');
             content.style.removeProperty('min-width'); // Si lo añadiste
         }
