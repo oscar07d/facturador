@@ -163,6 +163,7 @@ let currentInvoiceItems = [];
 let nextItemId = 0;
 let loadedClients = [];
 let isEditingClient = false;
+let isGeneratingPdf = false;
 let currentActionForTemplateSelection = null;
 let currentInvoiceDataForModalActions = null;
 let currentInvoiceIdForModalActions = null;
@@ -2129,36 +2130,20 @@ const handleModalEmailClick = () => {
 
 // 2. Se asignan los listeners a los botones de forma segura.
 
-if (modalPdfBtn) {
-    // Limpiamos CUALQUIER listener anterior para este botón
-    modalPdfBtn.onclick = null; 
-    modalPdfBtn.removeEventListener('click', handleModalPdfClick);
-    // Añadimos el listener UNA SOLA VEZ
-    modalPdfBtn.addEventListener('click', handleModalPdfClick);
+if (modalPdfBtn) { 
+    modalPdfBtn.onclick = handleModalPdfClick; 
 }
-
 if (modalShareBtn) { 
-    modalShareBtn.onclick = null;
-    modalShareBtn.removeEventListener('click', handleModalShareClick);
-    modalShareBtn.addEventListener('click', handleModalShareClick);
+    modalShareBtn.onclick = handleModalShareClick;
 }
-
 if (modalWhatsAppBtn) { 
-    modalWhatsAppBtn.onclick = null;
-    modalWhatsAppBtn.removeEventListener('click', handleModalWhatsAppClick);
-    modalWhatsAppBtn.addEventListener('click', handleModalWhatsAppClick);
+    modalWhatsAppBtn.onclick = handleModalWhatsAppClick;
 }
-
 if (modalImageBtn) { 
-    modalImageBtn.onclick = null;
-    modalImageBtn.removeEventListener('click', handleModalImageClick);
-    modalImageBtn.addEventListener('click', handleModalImageClick);
+    modalImageBtn.onclick = handleModalImageClick;
 }
-
 if (modalEmailBtn) { 
-    modalEmailBtn.onclick = null;
-    modalEmailBtn.removeEventListener('click', handleModalEmailClick);
-    modalEmailBtn.addEventListener('click', handleModalEmailClick);
+    modalEmailBtn.onclick = handleModalEmailClick;
 }
 
 // --- Event Listeners para el Modal de Selección de Plantilla (#templateSelectionModal) ---
