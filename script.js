@@ -520,9 +520,9 @@ function populateWhatsappImageTemplate(invoiceData) {
 
     // --- Poblar Encabezado ---
     const logoImgWA = template.querySelector("#wa-logo-image");
-    if (logoImgWA) {
-        // Asegúrate de que la ruta a tu Isologo.svg sea correcta desde index.html
-        logoImgWA.src = "img/Isologo.svg"; 
+    
+    if (logoImgWA) { // logoImgWA es template.querySelector("#wa-logo-image")
+        logoImgWA.src = "img/Isologo_img.png"; 
     }
 
     const emitterNameWA = template.querySelector("#wa-emitter-name");
@@ -686,7 +686,9 @@ function populateReminderImageTemplate(invoiceData, reminderStatus) {
     }
 
     const logoImgRem = template.querySelector("#reminder-logo-image");
-    if (logoImgRem) logoImgRem.src = "img/Isologo.svg"; // Asegura la ruta
+    if (logoImgRem) {
+        logoImgRem.src = "img/Isologo_img.png";
+    }
 
     const emitterNameRem = template.querySelector("#reminder-emitter-name");
     if (emitterNameRem) emitterNameRem.textContent = invoiceData.emitter?.name || "OSCAR 07D Studios";
