@@ -1637,3 +1637,18 @@ textarea.input-error {
 .text-right { text-align: right !important; }
 .text-center { text-align: center !important; }
 .text-left { text-align: left !important; }
+
+#templateSelectionModal.modal-overlay.active {
+    display: flex !important; 
+    opacity: 1 !important;    
+    visibility: visible !important; 
+    z-index: 1070 !important; 
+    border: 5px solid limegreen; 
+}
+
+#templateSelectionModal.modal-overlay.active .modal-content {
+    transform: scale(1) !important; 
+    border: 3px solid deeppink; 
+    min-height: 100px; 
+    min-width: 100px;  
+}
