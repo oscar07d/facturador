@@ -211,6 +211,8 @@ function updatePaymentStatusDisplay() {
 }
 
 function collectInvoiceDataFromForm() {
+    alert("¡Usando la función CORREGIDA para leer los totales!"); // Alerta de verificación
+
     // Validaciones básicas
     if (!clientNameInput.value || !clientPhoneInput.value || !clientEmailInput.value) {
         alert("Por favor, completa todos los datos del cliente.");
@@ -227,20 +229,13 @@ function collectInvoiceDataFromForm() {
 
     recalculateTotals();
 
-    // --- FUNCIÓN CORREGIDA PARA LEER NÚMEROS CON PUNTOS Y COMAS ---
+    // --- FUNCIÓN AUXILIAR PARA LEER NÚMEROS DE MONEDA ---
     const parseCurrencyString = (str) => {
         if (typeof str !== 'string') return 0;
-        // 1. Quita todo lo que no sea un dígito o una coma (ej. $, COP, espacios)
-        // 2. Quita los puntos de mil
-        // 3. Reemplaza la coma decimal por un punto para que parseFloat funcione
-        // Ejemplo: "$ 12.000,50" -> "12000,50" -> "12000.50"
-        const cleanNumberStr = str
-            .replace(/[^\d,]/g, '')   // Solo deja dígitos y comas
-            .replace(/\./g, '')       // Esta línea ya no es necesaria si el anterior quita los puntos
-            .replace(',', '.');       // Reemplaza la coma por un punto
+        // Quita todo lo que no sea dígito o coma, luego reemplaza la coma
+        const cleanNumberStr = str.replace(/[^\d,]/g, '').replace(',', '.');
         return parseFloat(cleanNumberStr) || 0;
     };
-    // --- FIN DE LA FUNCIÓN AUXILIAR ---
 
     const invoiceData = {
         invoiceNumberFormatted: `FCT-${invoiceNumberText.textContent || 'PENDIENTE'}`,
