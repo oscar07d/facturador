@@ -2054,55 +2054,95 @@ if (closeInvoiceDetailModalBtn) {
 }
 
 if (invoiceDetailModal) {
-    // Cerrar el modal si se hace clic en el overlay (fondo)
     invoiceDetailModal.addEventListener('click', (event) => {
-        if (event.target === invoiceDetailModal) { // Si el clic fue directamente en el overlay
+        if (event.target === invoiceDetailModal) {
             closeInvoiceDetailModal();
         }
     });
 }
 
-// Opcional: Cerrar el modal con la tecla Escape
 document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape' && invoiceDetailModal && invoiceDetailModal.classList.contains('active')) {
         closeInvoiceDetailModal();
     }
 });
 
-if (modalShareBtn) {
-    modalShareBtn.addEventListener('click', () => {
-        console.log("Clic en modalShareBtn"); // LOG
-        if (currentInvoiceDataForModalActions) {
-            openTemplateSelectionModal('share');
-        } else {
-            alert("No hay datos de factura para compartir.");
+if (closeInvoiceDetailModalBtn) {
+    closeInvoiceDetailModalBtn.addEventListener('click', closeInvoiceDetailModal);
+}
+if (invoiceDetailModal) {
+    invoiceDetailModal.addEventListener('click', (event) => {
+        if (event.target === invoiceDetailModal) {
+            closeInvoiceDetailModal();
         }
     });
 }
-if (modalWhatsAppBtn) {
-    modalWhatsAppBtn.addEventListener('click', () => {
-        if (currentInvoiceDataForModalActions) { openTemplateSelectionModal('whatsapp'); } 
-        else { alert("No hay datos de factura para enviar a WhatsApp."); }
-    });
+document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && invoiceDetailModal && invoiceDetailModal.classList.contains('active')) {
+        closeInvoiceDetailModal();
+    }
+});
+
+
+// === INICIO: CÓDIGO CORREGIDO PARA LOS LISTENERS DE LOS BOTONES DEL MODAL ===
+
+// 1. Definimos las funciones que manejarán los clics
+const handleModalPdfClick = async () => {
+    if (currentInvoiceDataForModalActions) {
+        await generateInvoicePDF(currentInvoiceDataForModalActions);
+    } else {
+        alert("No hay datos de factura para generar el PDF.");
+    }
+};
+
+const handleModalShareClick = () => {
+    if (currentInvoiceDataForModalActions) {
+        openTemplateSelectionModal('share');
+    } else {
+        alert("No hay datos de factura para compartir.");
+    }
+};
+
+const handleModalWhatsAppClick = () => {
+    if (currentInvoiceDataForModalActions) {
+        openTemplateSelectionModal('whatsapp');
+    } else {
+        alert("No hay datos de factura para enviar a WhatsApp.");
+    }
+};
+
+const handleModalImageClick = () => {
+    if (currentInvoiceDataForModalActions) {
+        openTemplateSelectionModal('image');
+    } else {
+        alert("No hay datos de factura para generar imagen.");
+    }
+};
+
+const handleModalEmailClick = () => {
+    if (currentInvoiceDataForModalActions) {
+        alert(`ACCIÓN PENDIENTE: Enviar por Email la factura PDF para ${currentInvoiceDataForModalActions.client?.name}.`);
+    } else {
+        alert("No hay datos de factura para enviar por email.");
+    }
+};
+
+
+// 2. Asignamos esas funciones a los botones
+if (modalPdfBtn) { 
+    modalPdfBtn.onclick = handleModalPdfClick; // Usamos .onclick para asegurar que solo haya UNA acción
 }
-if (modalImageBtn) {
-    modalImageBtn.addEventListener('click', () => {
-        if (currentInvoiceDataForModalActions) { openTemplateSelectionModal('image'); } 
-        else { alert("No hay datos de factura para generar imagen."); }
-    });
+if (modalShareBtn) { 
+    modalShareBtn.onclick = handleModalShareClick;
 }
-if (modalEmailBtn) {
-    modalEmailBtn.addEventListener('click', async () => {
-        if (currentInvoiceDataForModalActions) {
-            alert(`ACCIÓN PENDIENTE: Enviar por Email la factura PDF para ${currentInvoiceDataForModalActions.client?.name}. Destinatario: ${currentInvoiceDataForModalActions.client?.email}`);
-        } else { alert("No hay datos de factura para enviar por email."); }
-    });
+if (modalWhatsAppBtn) { 
+    modalWhatsAppBtn.onclick = handleModalWhatsAppClick;
 }
-if (modalPdfBtn) {
-    modalPdfBtn.addEventListener('click', async () => {
-        if (currentInvoiceDataForModalActions) { await generateInvoicePDF(currentInvoiceDataForModalActions); } 
-        else { alert("No hay datos de factura cargados en el modal para generar el PDF."); }
-    });
+if (modalImageBtn) { 
+    modalImageBtn.onclick = handleModalImageClick;
+}
+if (modalEmailBtn) { 
+    modalEmailBtn.onclick = handleModalEmailClick;
 }
 
 // --- Event Listeners para el Modal de Selección de Plantilla (#templateSelectionModal) ---
