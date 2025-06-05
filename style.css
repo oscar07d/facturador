@@ -1,4 +1,4 @@
-/* === FUENTE E IMPORTACIONES === */
+/* === FUENTE E IMPORTACIONES === */More actions
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Lato:wght@400;700&family=Open+Sans:wght@400;600&display=swap');
 
@@ -1504,30 +1504,29 @@ textarea.input-error {
 
 /* === ESTILOS PARA MODAL DETALLE DE FACTURA === */
 /* (Los estilos del modal de detalle que ya tenías y los de los botones con iconos) */
-.modal-overlay { /* Aplica a #invoiceDetailModal y #templateSelectionModal */
+.modal-overlay {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.60); /* Fondo oscuro */
+    background-color: rgba(0, 0, 0, 0.65);
     display: flex;
     justify-content: center;
     align-items: center;
     opacity: 0;
     visibility: hidden;
-    pointer-events: none; 
-    transition: opacity 0.25s ease-in-out, visibility 0s linear 0.25s;
+    pointer-events: none;
+    transition: opacity 0.3s ease, visibility 0s linear 0.3s;
+    z-index: 1050; /* Asegúrate de que este z-index sea suficiente */
 }
 
 .modal-overlay.active {
     opacity: 1;
     visibility: visible;
     pointer-events: auto;
-    transition: opacity 0.25s ease-in-out, visibility 0s linear 0s;
+    transition: opacity 0.3s ease, visibility 0s linear 0s;
 }
-
-
 
 .modal-overlay .modal-content {
     background-color: var(--container-background, #fff);
@@ -1543,74 +1542,10 @@ textarea.input-error {
     max-height: 85vh;
 }
 
-#invoiceDetailModal.modal-overlay {
-    z-index: 1050;
-}
-
-#invoiceDetailModal .modal-content { /* Para ajustar el tamaño del modal de detalles */
-    max-width: 750px; 
-}
-
-#invoiceDetailModal .modal-header { 
-    display: flex; 
-    justify-content: space-between; 
-    align-items: center; 
-    padding-bottom: 15px; 
-    border-bottom: 1px solid var(--border-color); 
-    margin-bottom: 15px; 
-    flex-shrink: 0; 
-}
-
-#invoiceDetailModal .modal-header h2 { 
-    margin: 0; 
-    font-size: 1.4rem; 
-    color: var(--primary-color); 
-    font-weight: 600; 
-}
-#invoiceDetailModal .modal-close-btn { 
-    background: none; 
-    border: none; 
-    font-size: 2rem; 
-    font-weight: 400; 
-    color: var(--text-muted-color); 
-    cursor: pointer; 
-    padding: 0; 
-    line-height: 1; 
-    transition: color var(--transition-speed) ease; 
-}
-#invoiceDetailModal .modal-close-btn:hover { 
-    color: var(--danger-color); 
-}
-#invoiceDetailModal .modal-body { 
-    overflow-y: auto; 
-    flex-grow: 1; 
-    min-height: 100px; 
-    padding-right: 10px; 
-    margin-right: -10px; 
-    margin-bottom: 15px; 
-}
-
-.modal-content { /* Esta regla se aplica al hijo de .modal-overlay */
-    background-color: var(--container-background, #fff);
-    padding: 20px 25px;
-    border-radius: var(--border-radius-m, 15px);
-    box-shadow: var(--box-shadow-medium, 0 8px 25px rgba(0,0,0,0.1));
-    display: flex;
-    flex-direction: column;
-    position: relative;
-    transform: translateY(-30px) scale(0.95); /* Estado inicial para animación */
-    opacity: 0; /* Inicia transparente para animación */
-    transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-    max-height: 90vh; /* Para evitar que sea demasiado alto */
-    width: 90%; /* Por defecto, será ajustado por max-width */
-    overflow: hidden; /* El scroll lo maneja .modal-body */
-    pointer-events: none; /* Inicialmente no interactuable el contenido */
-}
+.modal-content { background-color: var(--container-background); padding: 25px 30px; border-radius: var(--border-radius-m); box-shadow: var(--box-shadow-medium); width: 90%; max-width: 750px; max-height: 85vh; display: flex; flex-direction: column; position: relative; transform: scale(0.95); transition: transform 0.3s ease; }
 
 .modal-overlay.active .modal-content {
-    transform: translateY(0) scale(1); /* Vuelve a su posición y escala normal */
-    opacity: 1;                       /* ¡ESTO ES CRUCIAL PARA HACERLO VISIBLE! */
-    pointer-events: auto; /* Hacer el contenido interactuable */
+    transform: scale(1);
 }
 
 .modal-header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 15px; border-bottom: 1px solid var(--border-color); margin-bottom: 15px; flex-shrink: 0; }
@@ -1634,21 +1569,6 @@ textarea.input-error {
 #modalInvoiceDetailsContent .modal-totals-summary p span:first-child { color: var(--text-muted-color); font-weight: normal; text-align: left; }
 #modalInvoiceDetailsContent .modal-totals-summary p span:last-child { font-weight: 600; text-align: right; }
 #modalInvoiceDetailsContent .modal-totals-summary .modal-grand-total span { font-size: 1.2rem; font-weight: bold; color: var(--primary-color); }
-
-#invoiceDetailModal .modal-footer { 
-    padding-top: 15px; 
-    margin-top: auto; 
-    border-top: 1px solid var(--border-color); 
-    flex-shrink: 0; 
-    display: flex; 
-    justify-content: flex-end; 
-    gap: 10px; 
-    flex-wrap: wrap; 
-}
-#invoiceDetailModal .modal-footer .btn { margin-left: 0; } 
-#invoiceDetailModal .btn-icon { padding: 8px 12px; font-size: 0.85rem; }
-#invoiceDetailModal .btn-icon .icon-svg { width: 16px; height: 16px; margin-right: 6px; vertical-align: middle; }
-
 .modal-footer { padding-top: 15px; margin-top: 15px; border-top: 1px solid var(--border-color); flex-shrink: 0; display: flex; justify-content: flex-end; gap: 10px; flex-wrap: wrap; }
 .modal-footer .btn { margin-left: 0; /* El gap se encarga del espaciado */ } 
 .btn-icon { padding: 8px 12px; font-size: 0.85rem; }
@@ -1665,7 +1585,6 @@ textarea.input-error {
 .btn-danger-outline:hover:not(:disabled) { background-color: var(--danger-color, #dc3545); color: white; }
 
 /* Estilos para el Modal de Selección de Plantilla */
-
 #templateSelectionModal .modal-content { 
     max-width: 480px;
 }
@@ -1689,7 +1608,6 @@ textarea.input-error {
 #templateSelectionModal #imageFormatSelect.form-control { width: 100%; padding: 10px 12px; border: 1px solid var(--border-color); border-radius: var(--border-radius-s); font-size: 0.95rem; min-height: 42px; background-color: var(--container-background); color: var(--text-color); font-family: 'Poppins', sans-serif; transition: border-color var(--transition-speed) ease, box-shadow var(--transition-speed) ease; }
 #templateSelectionModal #imageFormatSelect.form-control:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25); }
 #templateSelectionModal .modal-footer { display: flex; justify-content: flex-end; gap: 10px; padding-top: 20px; margin-top: 10px; border-top: 1px solid var(--border-color); }
-
 #templateSelectionModal.modal-overlay { /* Sé más específico si es necesario */
     z-index: 1060; /* Un valor mayor que el de invoiceDetailModal */
 }
@@ -1706,7 +1624,7 @@ textarea.input-error {
 @keyframes moveGradient {
     0% { background-position: 0% 50%; }
     50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }More actions
+    100% { background-position: 0% 50%; }
 }
 
 /* Clases de utilidad de alineación */
@@ -1715,16 +1633,16 @@ textarea.input-error {
 .text-left { text-align: left !important; }
 
 #templateSelectionModal.modal-overlay.active {
-    display: flex !important; 
-    opacity: 1 !important;    
-    visibility: visible !important; 
-    z-index: 1070 !important; 
+    display: flex !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    z-index: 1070 !important;
     /* border: 5px solid limegreen; */
 }
 
 #templateSelectionModal.modal-overlay.active .modal-content {
-    transform: scale(1) !important; 
+    transform: scale(1) !important;
     /* border: 3px solid deeppink; */
-    min-height: 100px; 
-    min-width: 100px;  
+    min-height: 100px;
+    min-width: 100px;
 }
