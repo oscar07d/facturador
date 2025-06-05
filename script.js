@@ -135,6 +135,8 @@ const imageFormatSelectionDiv = document.getElementById('imageFormatSelection');
 const imageFormatSelect = document.getElementById('imageFormatSelect'); // Para leer el formato
 
 console.log("templateSelectionModal al cargar:", templateSelectionModal);
+console.log("closeTemplateSelectionModalBtn al cargar:", closeTemplateSelectionModalBtn);
+console.log("cancelTemplateSelectionBtn al cargar:", cancelTemplateSelectionBtn);
 console.log("isReminderCheckbox al cargar:", isReminderCheckbox);
 console.log("proceedWithTemplateSelectionBtn al cargar:", proceedWithTemplateSelectionBtn);
 
