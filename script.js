@@ -2127,10 +2127,11 @@ const handleModalEmailClick = () => {
     }
 };
 
+// 2. Ahora, asignamos estas funciones a la propiedad .onclick de cada botón.
+//    Esto asegura que solo haya UNA acción por botón, evitando duplicados.
 
-// 2. Asignamos esas funciones a los botones
 if (modalPdfBtn) { 
-    modalPdfBtn.onclick = handleModalPdfClick; // Usamos .onclick para asegurar que solo haya UNA acción
+    modalPdfBtn.onclick = handleModalPdfClick; 
 }
 if (modalShareBtn) { 
     modalShareBtn.onclick = handleModalShareClick;
