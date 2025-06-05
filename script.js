@@ -211,7 +211,7 @@ function updatePaymentStatusDisplay() {
 }
 
 function collectInvoiceDataFromForm() {
-    // Validaciones básicas (puedes expandirlas)
+    // Validaciones básicas
     if (!clientNameInput.value || !clientPhoneInput.value || !clientEmailInput.value) {
         alert("Por favor, completa todos los datos del cliente.");
         return null;
@@ -225,19 +225,18 @@ function collectInvoiceDataFromForm() {
         return null;
     }
 
-    // Asegurarse de que los totales estén actualizados en el DOM
-    if (typeof recalculateTotals === 'function') {
-        recalculateTotals();
-    }
+    recalculateTotals();
 
+    // --- FUNCIÓN CORREGIDA PARA LEER NÚMEROS DE MONEDA ---
     const parseCurrencyString = (str) => {
         if (typeof str !== 'string') return 0;
-        const cleanNumberStr = str
-            .replace(/[^\d,.]/g, '') 
-            .replace(/\./g, '')      
-            .replace(',', '.');      
+        // 1. Quitar todo lo que no sea dígito o coma (ej. $, COP, espacios, puntos de mil)
+        // 2. Reemplazar la coma decimal por un punto
+        // Ejemplo: "$ 12.000,50" -> "12000,50" -> "12000.50"
+        const cleanNumberStr = str.replace(/[^\d,]/g, '').replace(',', '.');
         return parseFloat(cleanNumberStr) || 0;
     };
+    // --- FIN DE LA FUNCIÓN AUXILIAR ---
 
     const invoiceData = {
         invoiceNumberFormatted: `FCT-${invoiceNumberText.textContent || 'PENDIENTE'}`,
@@ -273,8 +272,6 @@ function collectInvoiceDataFromForm() {
         paymentStatus: paymentStatusSelect.value,
         generatedAt: new Date().toISOString()
     };
-
-    console.log("Datos de factura recolectados:", invoiceData.totals); // Descomenta para depurar
     return invoiceData;
 }
 
