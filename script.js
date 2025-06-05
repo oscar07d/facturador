@@ -2074,8 +2074,9 @@ if (modalPdfBtn) {
 
 // --- Event Listeners para el Modal de Selección de Plantilla (#templateSelectionModal) ---
 if (closeTemplateSelectionModalBtn) {
+    console.log("Intentando añadir listener a closeTemplateSelectionModalBtn:", closeTemplateSelectionModalBtn);
     closeTemplateSelectionModalBtn.addEventListener('click', () => {
-        console.log("Botón X (cerrar) del modal de selección clickeado."); // LOG DE DEPURACIÓN
+        console.log("Botón X (cerrar) del modal de selección FUE CLICKEADO."); // LOG DE DEPURACIÓN
         closeTemplateSelectionModal();
     });
 } else {
@@ -2083,45 +2084,93 @@ if (closeTemplateSelectionModalBtn) {
 }
 
 if (cancelTemplateSelectionBtn) {
+    console.log("Intentando añadir listener a cancelTemplateSelectionBtn:", cancelTemplateSelectionBtn);
     cancelTemplateSelectionBtn.addEventListener('click', () => {
-        console.log("Botón Cancelar del modal de selección clickeado."); // LOG DE DEPURACIÓN
+        console.log("Botón Cancelar del modal de selección FUE CLICKEADO."); // LOG DE DEPURACIÓN
         closeTemplateSelectionModal();
     });
 } else {
-    console.warn("Botón #cancelTemplateSelectionBtn no encontrado en el DOM. No se pudo añadir listener.");
+    console.warn("Botón #cancelTemplateSelectionBtn no encontrado. No se añadió listener.");
 }
 
 if (isReminderCheckbox) {
+    console.log("Intentando añadir listener a isReminderCheckbox:", isReminderCheckbox);
     isReminderCheckbox.addEventListener('change', () => {
-        console.log("Checkbox 'Es Recordatorio' cambió a:", isReminderCheckbox.checked);
+        console.log("Checkbox 'Es Recordatorio' CAMBIÓ. Nuevo estado:", isReminderCheckbox.checked);
     });
 } else {
-    console.warn("Checkbox #isReminderCheckbox no encontrado en el DOM. No se pudo añadir listener.");
+    console.warn("Checkbox #isReminderCheckbox no encontrado. No se añadió listener.");
 }
 
 if (proceedWithTemplateSelectionBtn) {
+    console.log("Intentando añadir listener a proceedWithTemplateSelectionBtn:", proceedWithTemplateSelectionBtn);
     proceedWithTemplateSelectionBtn.addEventListener('click', async () => {
-        console.log("Botón 'Continuar' del modal de selección PRESIONADO."); // LOG CLAVE
-        // ... (resto de la lógica para proceedWithTemplateSelectionBtn como te la di antes,
-        //      con la llamada a generateInvoiceImage, navigator.share, downloadBlob, etc.) ...
-        if (!currentInvoiceDataForModalActions) { /* ... */ return; }
+        console.log("Botón 'Continuar' del modal de selección FUE CLICKEADO.");
+        if (!currentInvoiceDataForModalActions) {
+            alert("Error: No hay datos de factura seleccionados.");
+            closeTemplateSelectionModal();
+            return;
+        }
+
         const useReminderTemplate = isReminderCheckbox ? isReminderCheckbox.checked : false;
         let templateIdToUse;
-        let reminderStatus = null; 
+        let reminderStatus = null;
         let baseFileName = `Factura_${currentInvoiceDataForModalActions.invoiceNumberFormatted?.replace(/[^a-zA-Z0-9]/g, '_') || 'INV'}`;
-        if (useReminderTemplate) { /* ... */ } else { /* ... */ }
+
+        if (useReminderTemplate) {
+            templateIdToUse = 'payment-reminder-export-template';
+            const paymentStatus = currentInvoiceDataForModalActions.paymentStatus;
+            if (paymentStatus === 'pending' || paymentStatus === 'in_process') { reminderStatus = 'pending'; } 
+            else if (paymentStatus === 'overdue') { reminderStatus = 'overdue'; } 
+            else if (paymentStatus === 'paid') { reminderStatus = 'paid'; } // Para un recordatorio de "Gracias"
+            else if (paymentStatus === 'cancelled') { reminderStatus = 'cancelled';}
+            else { 
+                reminderStatus = 'default'; // O un estado más genérico
+                // console.warn(`Estado de factura '${paymentStatus}' usando tema de recordatorio por defecto.`);
+            }
+            baseFileName = `Recordatorio_${currentInvoiceDataForModalActions.invoiceNumberFormatted?.replace(/[^a-zA-Z0-9]/g, '_') || 'REM'}`;
+        } else {
+            templateIdToUse = 'whatsapp-image-export-template';
+        }
+        
         const imageFormat = (currentActionForTemplateSelection === 'image' && imageFormatSelect) ? imageFormatSelect.value : 'png';
         const fullFileName = `${baseFileName}.${imageFormat}`;
+
         closeTemplateSelectionModal(); 
+
         const imageBlob = await generateInvoiceImage(templateIdToUse, currentInvoiceDataForModalActions, imageFormat, reminderStatus);
-        if (!imageBlob) { return; }
+        
+        if (!imageBlob) {
+            return; // generateInvoiceImage ya debería haber mostrado una alerta.
+        }
+
         const imageFile = new File([imageBlob], fullFileName, { type: `image/${imageFormat}` });
-        if (currentActionForTemplateSelection === 'image') { downloadBlob(imageBlob, imageFile.name); } 
-        else if (currentActionForTemplateSelection === 'whatsapp' || currentActionForTemplateSelection === 'share') { /* ... navigator.share ... */ }
+
+        if (currentActionForTemplateSelection === 'image') {
+            downloadBlob(imageBlob, imageFile.name);
+        } else if (currentActionForTemplateSelection === 'whatsapp' || currentActionForTemplateSelection === 'share') {
+            if (navigator.share && navigator.canShare && navigator.canShare({ files: [imageFile] })) {
+                try {
+                    await navigator.share({
+                        files: [imageFile],
+                        title: useReminderTemplate ? `Recordatorio ${currentInvoiceDataForModalActions.invoiceNumberFormatted}` : `Factura ${currentInvoiceDataForModalActions.invoiceNumberFormatted}`,
+                        text: `Aquí está tu ${useReminderTemplate ? 'recordatorio de pago' : 'factura'} de OSCAR 07D Studios.`
+                    });
+                } catch (error) {
+                    if (error.name !== 'AbortError') {
+                        alert('No se pudo compartir. Descargando imagen para que la compartas manualmente.');
+                    }
+                    downloadBlob(imageBlob, imageFile.name); 
+                }
+            } else {
+                alert('Tu navegador no soporta compartir archivos directamente. Descargando la imagen para que la puedas compartir manualmente.');
+                downloadBlob(imageBlob, imageFile.name);
+            }
+        }
         currentActionForTemplateSelection = null; 
     });
 } else {
-    console.warn("Botón #proceedWithTemplateSelectionBtn no encontrado en el DOM. No se pudo añadir listener.");
+    console.warn("Botón #proceedWithTemplateSelectionBtn no encontrado.");
 }
 
 // Cerrar el modal de selección si se hace clic en el overlay
