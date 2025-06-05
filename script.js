@@ -227,13 +227,17 @@ function collectInvoiceDataFromForm() {
 
     recalculateTotals();
 
-    // --- FUNCIÓN CORREGIDA PARA LEER NÚMEROS DE MONEDA ---
+    // --- FUNCIÓN CORREGIDA PARA LEER NÚMEROS CON PUNTOS Y COMAS ---
     const parseCurrencyString = (str) => {
         if (typeof str !== 'string') return 0;
-        // 1. Quitar todo lo que no sea dígito o coma (ej. $, COP, espacios, puntos de mil)
-        // 2. Reemplazar la coma decimal por un punto
+        // 1. Quita todo lo que no sea un dígito o una coma (ej. $, COP, espacios)
+        // 2. Quita los puntos de mil
+        // 3. Reemplaza la coma decimal por un punto para que parseFloat funcione
         // Ejemplo: "$ 12.000,50" -> "12000,50" -> "12000.50"
-        const cleanNumberStr = str.replace(/[^\d,]/g, '').replace(',', '.');
+        const cleanNumberStr = str
+            .replace(/[^\d,]/g, '')   // Solo deja dígitos y comas
+            .replace(/\./g, '')       // Esta línea ya no es necesaria si el anterior quita los puntos
+            .replace(',', '.');       // Reemplaza la coma por un punto
         return parseFloat(cleanNumberStr) || 0;
     };
     // --- FIN DE LA FUNCIÓN AUXILIAR ---
@@ -750,7 +754,14 @@ function populateReminderImageTemplate(invoiceData, reminderStatus) {
     }
 
     const amountDueRem = template.querySelector("#reminder-amount-due");
-    if(amountDueRem) amountDueRem.textContent = (invoiceData.totals?.grandTotal || 0).toLocaleString('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0, maximumFractionDigits: 0 });
+    if(amountDueRem) {
+        amountDueRem.textContent = (invoiceData.totals?.grandTotal || 0).toLocaleString('es-CO', { 
+            style: 'currency', 
+            currency: 'COP', 
+            minimumFractionDigits: 0, // <-- Asegura que no haya decimales
+            maximumFractionDigits: 0  // <-- Asegura que no haya decimales
+        });
+    }
 
     const paymentDetailsEl = template.querySelector("#reminder-payment-method-details");
     if(paymentDetailsEl) { // Ejemplo de cómo podrías hacerlo más dinámico si tuvieras los datos en el objeto invoiceData.emitter o similar
