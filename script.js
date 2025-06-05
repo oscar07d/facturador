@@ -1691,20 +1691,34 @@ if (modalPdfBtn) {
 
 // --- Event Listeners para el Modal de Selección de Plantilla (#templateSelectionModal) ---
 if (closeTemplateSelectionModalBtn) {
-    closeTemplateSelectionModalBtn.addEventListener('click', closeTemplateSelectionModal);
+    closeTemplateSelectionModalBtn.addEventListener('click', () => {
+        console.log("Botón X (cerrar) del modal de selección clickeado."); // LOG DE DEPURACIÓN
+        closeTemplateSelectionModal();
+    });
 } else {
-    console.warn("Botón #closeTemplateSelectionModalBtn no encontrado en el DOM.");
+    console.warn("Botón #closeTemplateSelectionModalBtn (X) no encontrado en el DOM. No se pudo añadir listener.");
 }
 
 if (cancelTemplateSelectionBtn) {
-    cancelTemplateSelectionBtn.addEventListener('click', closeTemplateSelectionModal);
+    cancelTemplateSelectionBtn.addEventListener('click', () => {
+        console.log("Botón Cancelar del modal de selección clickeado."); // LOG DE DEPURACIÓN
+        closeTemplateSelectionModal();
+    });
 } else {
-    console.warn("Botón #cancelTemplateSelectionBtn no encontrado en el DOM.");
+    console.warn("Botón #cancelTemplateSelectionBtn no encontrado en el DOM. No se pudo añadir listener.");
+}
+
+if (isReminderCheckbox) {
+    isReminderCheckbox.addEventListener('change', () => {
+        console.log("Checkbox 'Es Recordatorio' cambió a:", isReminderCheckbox.checked);
+    });
+} else {
+    console.warn("Checkbox #isReminderCheckbox no encontrado en el DOM. No se pudo añadir listener.");
 }
 
 if (proceedWithTemplateSelectionBtn) {
     proceedWithTemplateSelectionBtn.addEventListener('click', async () => {
-        // console.log("Botón 'Continuar' del modal de selección presionado.");
+        console.log("Botón 'Continuar' del modal de selección PRESIONADO.");
         if (!currentInvoiceDataForModalActions) {
             alert("Error: No hay datos de factura seleccionados.");
             closeTemplateSelectionModal();
