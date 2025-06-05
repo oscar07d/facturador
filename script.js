@@ -140,6 +140,12 @@ console.log("cancelTemplateSelectionBtn al cargar:", cancelTemplateSelectionBtn)
 console.log("isReminderCheckbox al cargar:", isReminderCheckbox);
 console.log("proceedWithTemplateSelectionBtn al cargar:", proceedWithTemplateSelectionBtn);
 
+console.log("templateSelectionModal (al cargar):", templateSelectionModal);
+console.log("closeTemplateSelectionModalBtn (al cargar):", closeTemplateSelectionModalBtn);
+console.log("cancelTemplateSelectionBtn (al cargar):", cancelTemplateSelectionBtn);
+console.log("proceedWithTemplateSelectionBtn (al cargar):", proceedWithTemplateSelectionBtn);
+console.log("isReminderCheckbox (al cargar):", isReminderCheckbox);
+
 const saveInvoiceBtn = document.getElementById('saveInvoiceBtn');
 // const generateInvoiceFileBtn = document.getElementById('generateInvoiceFileBtn');
 
@@ -2070,7 +2076,7 @@ if (modalPdfBtn) {
 // Botón 'X' para cerrar el modal de selección
 if (closeTemplateSelectionModalBtn) {
     closeTemplateSelectionModalBtn.addEventListener('click', () => {
-        console.log("Clic en Botón X del Modal de Selección"); // LOG DE DEPURACIÓN
+        console.log("Botón X (cerrar) del modal de selección clickeado."); // LOG DE DEPURACIÓN
         closeTemplateSelectionModal();
     });
 } else {
@@ -2080,7 +2086,7 @@ if (closeTemplateSelectionModalBtn) {
 // Botón 'Cancelar' del modal de selección
 if (cancelTemplateSelectionBtn) {
     cancelTemplateSelectionBtn.addEventListener('click', () => {
-        console.log("Clic en Botón Cancelar del Modal de Selección"); // LOG DE DEPURACIÓN
+        console.log("Botón Cancelar del modal de selección clickeado."); // LOG DE DEPURACIÓN
         closeTemplateSelectionModal();
     });
 } else {
@@ -2099,7 +2105,7 @@ if (isReminderCheckbox) {
 // Botón 'Continuar' del modal de selección
 if (proceedWithTemplateSelectionBtn) {
     proceedWithTemplateSelectionBtn.addEventListener('click', async () => {
-        console.log("Clic en Botón 'Continuar' del modal de selección."); // LOG DE DEPURACIÓN
+        console.log("Botón 'Continuar' del modal de selección PRESIONADO."); // LOG DE DEPURACIÓN
         if (!currentInvoiceDataForModalActions) {
             alert("Error: No hay datos de factura seleccionados para esta acción.");
             closeTemplateSelectionModal();
