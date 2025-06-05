@@ -951,50 +951,34 @@ function downloadBlob(blob, filename) {
 }
 
 async function generateInvoicePDF(invoiceDataSource) {
-    let invoiceDataToUse;
-
-    // Determinar la fuente de los datos de la factura
-    if (typeof invoiceDataSource === 'string' && invoiceDataSource === 'form') {
-        invoiceDataToUse = collectInvoiceDataFromForm();
-    } else if (typeof invoiceDataSource === 'object' && invoiceDataSource !== null) {
-        invoiceDataToUse = invoiceDataSource; // Usar datos pasados (ej. desde el modal)
-    } else {
-        alert("Fuente de datos para PDF no válida o no proporcionada.");
-        console.error("generateInvoicePDF: invoiceDataSource no es válido:", invoiceDataSource);
+    if (isGeneratingPdf) {
+        console.warn("PDF ya en proceso de generación. Se ha ignorado la segunda llamada.");
         return;
     }
+    isGeneratingPdf = true; // Levantar la bandera
 
-    if (!invoiceDataToUse) {
-        // Si invoiceDataToUse sigue siendo null o undefined (ej. collectInvoiceDataFromForm devolvió null)
-        console.log("generateInvoicePDF: No se pudieron obtener los datos de la factura.");
-        return;
-    }
-
-    // Asegurar que 'generatedAt' exista en invoiceDataToUse para la plantilla PDF
-    if (!invoiceDataToUse.generatedAt) {
-        if (invoiceDataToUse.createdAt && invoiceDataToUse.createdAt.toDate) {
-            invoiceDataToUse.generatedAt = invoiceDataToUse.createdAt.toDate().toISOString();
+    try {
+        let invoiceDataToUse;
+        if (typeof invoiceDataSource === 'string' && invoiceDataSource === 'form') {
+            invoiceDataToUse = collectInvoiceDataFromForm();
+        } else if (typeof invoiceDataSource === 'object' && invoiceDataSource !== null) {
+            invoiceDataToUse = invoiceDataSource;
         } else {
-            invoiceDataToUse.generatedAt = new Date().toISOString();
+            alert("Fuente de datos para PDF no válida.");
+            isGeneratingPdf = false; // Bajar bandera en caso de error temprano
+            return;
         }
-    }
-
-    const invoiceElement = document.getElementById('invoice-export-template');
-    if (!invoiceElement) { 
-        alert("Error: Plantilla de factura (#invoice-export-template) no encontrada en el DOM.");
-        return;
-    }
-    // Verifica 'originalInvoiceExportTemplate' si populateExportTemplate depende de ella globalmente
-    if (typeof originalInvoiceExportTemplate === 'undefined' || !originalInvoiceExportTemplate) { 
-        console.error("La variable global originalInvoiceExportTemplate (usada por populateExportTemplate) no está definida o es null.");
-        alert("Error de configuración: Plantilla base (originalInvoiceExportTemplate) no encontrada para poblar los datos.");
-        return;
-    }
-
-    if (!populateExportTemplate(invoiceDataToUse)) {
-        alert("Error al preparar los datos de la factura para la exportación.");
-        return;
-    }
+        if (!invoiceDataToUse) {
+            isGeneratingPdf = false; // Bajar bandera si no hay datos
+            return;
+        }
+        
+        const invoiceElement = document.getElementById('invoice-export-template');
+        if (!invoiceElement || !populateExportTemplate(invoiceDataToUse)) {
+            alert("Error al preparar la plantilla para la exportación.");
+            isGeneratingPdf = false; // Bajar bandera
+            return;
+        }
 
     showLoading(true);
 
@@ -1126,6 +1110,10 @@ async function generateInvoicePDF(invoiceDataSource) {
 
     } finally {
         showLoading(false);
+        // Bajar la bandera después de un momento para permitir un nuevo intento si fuera necesario
+        setTimeout(() => {
+            isGeneratingPdf = false;
+        }, 1000); // 1000 milisegundos = 1 segundo
     }
 }
 
