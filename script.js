@@ -139,7 +139,7 @@ console.log("isReminderCheckbox al cargar:", isReminderCheckbox);
 console.log("proceedWithTemplateSelectionBtn al cargar:", proceedWithTemplateSelectionBtn);
 
 const saveInvoiceBtn = document.getElementById('saveInvoiceBtn');
-// const generateInvoiceFileBtn = document.getElementById('generateInvoiceFileBtn');
+const generateInvoiceFileBtn = document.getElementById('generateInvoiceFileBtn');
 
 // --- Variables Globales ---
 const paymentStatusDetails = {
