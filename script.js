@@ -725,7 +725,11 @@ function populateReminderImageTemplate(invoiceData, reminderStatus) {
     }
 
     const clientNameRem = template.querySelector("#reminder-client-name");
-    if (clientNameRem) clientNameRem.textContent = invoiceData.client?.name || 'Cliente Valioso';
+    if (clientNameRem) {
+        const fullName = invoiceData.client?.name || 'Cliente';
+        const firstName = fullName.split(' ')[0]; // Divide el nombre por espacios y toma la primera palabra
+        clientNameRem.textContent = firstName;
+    }
 
     const invNumRem = template.querySelector("#reminder-invoice-number");
     if(invNumRem) invNumRem.textContent = invoiceData.invoiceNumberFormatted || 'N/A';
