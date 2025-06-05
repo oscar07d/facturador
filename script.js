@@ -2067,106 +2067,87 @@ if (modalPdfBtn) {
 // --- Event Listeners para el Modal de Selección de Plantilla (#templateSelectionModal) ---
 if (closeTemplateSelectionModalBtn) {
     closeTemplateSelectionModalBtn.addEventListener('click', closeTemplateSelectionModal);
+} else {
+    console.warn("Botón #closeTemplateSelectionModalBtn no encontrado en el DOM.");
 }
+
 if (cancelTemplateSelectionBtn) {
     cancelTemplateSelectionBtn.addEventListener('click', closeTemplateSelectionModal);
+} else {
+    console.warn("Botón #cancelTemplateSelectionBtn no encontrado en el DOM.");
 }
+
 if (proceedWithTemplateSelectionBtn) {
     proceedWithTemplateSelectionBtn.addEventListener('click', async () => {
-        console.log("Botón 'Continuar' del modal de selección presionado.");
-        console.log("currentActionForTemplateSelection:", currentActionForTemplateSelection); // Para saber qué botón original lo llamó
-        console.log("currentInvoiceDataForModalActions:", currentInvoiceDataForModalActions); // Para ver los datos de la factura
-
+        // console.log("Botón 'Continuar' del modal de selección presionado.");
         if (!currentInvoiceDataForModalActions) {
             alert("Error: No hay datos de factura seleccionados.");
             closeTemplateSelectionModal();
             return;
         }
 
-        const useReminderTemplate = isReminderCheckbox.checked;
-        console.log("Usar plantilla de recordatorio:", useReminderTemplate);
-
+        const useReminderTemplate = isReminderCheckbox ? isReminderCheckbox.checked : false;
         let templateIdToUse;
-        let reminderStatus = null;
-        let baseFileName = `Factura_${currentInvoiceDataForModalActions.invoiceNumberFormatted?.replace(/[^a-zA-Z0-9]/g, '_') || 'INV'}`; // Nombre de archivo base
+        let reminderStatus = null; // 'pending', 'overdue', 'paid', 'cancelled', 'default'
+        let baseFileName = `Factura_${currentInvoiceDataForModalActions.invoiceNumberFormatted?.replace(/[^a-zA-Z0-9]/g, '_') || 'INV'}`;
 
         if (useReminderTemplate) {
             templateIdToUse = 'payment-reminder-export-template';
             const paymentStatus = currentInvoiceDataForModalActions.paymentStatus;
-            if (paymentStatus === 'pending' || paymentStatus === 'in_process') { reminderStatus = 'pending'; } 
-            else if (paymentStatus === 'overdue') { reminderStatus = 'overdue'; } 
-            else { 
-                reminderStatus = 'pending'; 
-                console.warn(`Estado de factura '${paymentStatus}' no ideal para recordatorio, usando '${reminderStatus}'.`);
+            switch (paymentStatus) {
+                case 'paid': reminderStatus = 'paid'; break;
+                case 'overdue': reminderStatus = 'overdue'; break;
+                case 'pending': case 'in_process': case 'partial_payment': reminderStatus = 'pending'; break;
+                case 'cancelled': reminderStatus = 'cancelled'; break;
+                default: reminderStatus = 'default';
             }
             baseFileName = `Recordatorio_${currentInvoiceDataForModalActions.invoiceNumberFormatted?.replace(/[^a-zA-Z0-9]/g, '_') || 'REM'}`;
-            // console.log(`Acción: ${currentActionForTemplateSelection}, Usando Plantilla de Recordatorio (estado: ${reminderStatus})`);
         } else {
             templateIdToUse = 'whatsapp-image-export-template';
-            // console.log(`Acción: ${currentActionForTemplateSelection}, Usando Plantilla de WhatsApp`);
         }
-        console.log("Plantilla a usar (ID):", templateIdToUse, "Estado recordatorio (si aplica):", reminderStatus);
 
-        const imageFormat = (currentActionForTemplateSelection === 'image') ? imageFormatSelect.value : 'png'; // PNG para compartir, configurable para descarga
-        const fullFileName = `${baseFileName}.${imageFormat}`;
-        console.log("Formato de imagen:", imageFormat, "Nombre de archivo:", fullFileName);
+        const imageFormat = (currentActionForTemplateSelection === 'image' && imageFormatSelect) ? imageFormatSelect.value : 'png';
+        const fullFileName = `<span class="math-inline">\{baseFileName\}\.</span>{imageFormat}`;
 
-        closeTemplateSelectionModal(); // Cerrar el modal de selección antes de procesar
+        closeTemplateSelectionModal(); 
 
-        console.log("Llamando a generateInvoiceImage...");
         const imageBlob = await generateInvoiceImage(templateIdToUse, currentInvoiceDataForModalActions, imageFormat, reminderStatus);
 
-        console.log("Resultado de generateInvoiceImage (imageBlob):", imageBlob); // MUY IMPORTANTE VER ESTO
-
-        if (!imageBlob) {
-            console.error("generateInvoiceImage devolvió null o undefined. No se puede continuar.");
-            // generateInvoiceImage ya muestra una alerta en caso de error,
-            // pero podrías añadir un mensaje más específico aquí si quieres.
-            // alert("No se pudo generar la imagen para la acción seleccionada.");
-            return;
+        if (!imageBlob) { 
+            // generateInvoiceImage ya debería haber mostrado una alerta si falló.
+            return; 
         }
 
-        // Convertir el Blob a un File object para la Web Share API
         const imageFile = new File([imageBlob], fullFileName, { type: `image/${imageFormat}` });
-        console.log("Archivo de imagen creado:", imageFile);
 
         if (currentActionForTemplateSelection === 'image') {
-            console.log("Acción: Descargar imagen.");
-            // Acción: Descargar la imagen
             downloadBlob(imageBlob, imageFile.name);
-            console.log(`Imagen ${imageFile.name} debería haber sido descargada.`);
         } else if (currentActionForTemplateSelection === 'whatsapp' || currentActionForTemplateSelection === 'share') {
-            console.log("Acción: Compartir (WhatsApp/General). Intentando navigator.share...");
-            // Acción: Intentar compartir con Web Share API
             if (navigator.share && navigator.canShare && navigator.canShare({ files: [imageFile] })) {
                 try {
                     await navigator.share({
                         files: [imageFile],
                         title: useReminderTemplate ? `Recordatorio ${currentInvoiceDataForModalActions.invoiceNumberFormatted}` : `Factura ${currentInvoiceDataForModalActions.invoiceNumberFormatted}`,
                         text: `Aquí está tu ${useReminderTemplate ? 'recordatorio de pago' : 'factura'} de OSCAR 07D Studios.`
-                        // No se puede pre-seleccionar WhatsApp con navigator.share, el usuario elige.
                     });
-                    console.log('Contenido compartido exitosamente vía Web Share API.');
                 } catch (error) {
-                    console.error('Error al usar Web Share API:', error);
-                    // Fallback si el usuario cancela el share o hay un error
-                    if (error.name !== 'AbortError') { // No mostrar alerta si solo canceló
+                    if (error.name !== 'AbortError') { // No alertar si el usuario simplemente canceló el diálogo de compartir
                         alert('No se pudo compartir. Descargando imagen para que la compartas manualmente.');
                     }
-                    downloadBlob(imageBlob, imageFile.name); // Descargar como fallback
+                    downloadBlob(imageBlob, imageFile.name); 
                 }
             } else {
-                console.warn('navigator.share no disponible o no puede compartir archivos. Descargando como fallback.');
-                // Fallback para navegadores que no soportan Web Share API con archivos
                 alert('Tu navegador no soporta compartir archivos directamente. Descargando la imagen para que la puedas compartir manualmente.');
                 downloadBlob(imageBlob, imageFile.name);
             }
         }
-        // Limpiar la acción actual después de procesarla
         currentActionForTemplateSelection = null; 
     });
+} else {
+    console.warn("Botón #proceedWithTemplateSelectionBtn no encontrado en el DOM.");
 }
 
+// Cerrar el modal de selección si se hace clic en el overlay
 if (templateSelectionModal) {
     templateSelectionModal.addEventListener('click', (event) => {
         if (event.target === templateSelectionModal) {
@@ -2174,6 +2155,7 @@ if (templateSelectionModal) {
         }
     });
 }
+// Cerrar el modal de selección con la tecla Escape
 document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape' && templateSelectionModal && templateSelectionModal.classList.contains('active')) {
         closeTemplateSelectionModal();
