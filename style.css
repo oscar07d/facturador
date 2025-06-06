@@ -1587,7 +1587,14 @@ textarea.input-error {
 .modal-footer { padding-top: 15px; margin-top: 15px; border-top: 1px solid var(--border-color); flex-shrink: 0; display: flex; justify-content: flex-end; gap: 10px; flex-wrap: wrap; }
 .modal-footer .btn { margin-left: 0; /* El gap se encarga del espaciado */ } 
 .btn-icon { padding: 8px 12px; font-size: 0.85rem; }
-.btn-icon .icon-svg { width: 16px; height: 16px; margin-right: 6px; vertical-align: middle; }
+.btn-icon .icon-svg {
+    width: 16px;
+    height: 16px;
+    margin-right: 6px;
+    vertical-align: middle;
+    filter: brightness(0) invert(0); 
+    transition: filter 0.2s ease-in-out;
+}
 #invoiceDetailModal .btn-icon { 
     padding: 8px 12px; 
     font-size: 0.85rem; 
@@ -1601,6 +1608,9 @@ textarea.input-error {
     transition: filter 0.2s ease-in-out; /* <-- AÑADE ESTA LÍNEA para un cambio suave */
 }
 
+.btn-icon:hover .icon-svg {
+    filter: brightness(0) invert(1);
+}
 /* ===> AÑADE ESTA NUEVA REGLA COMPLETA <=== */
 /* Cuando pasas el cursor sobre un botón (.btn-icon),
    el icono (.icon-svg) que está dentro cambia a blanco. */
