@@ -1701,6 +1701,33 @@ async function softDeleteClient(clientId) {
     }
 }
 
+/**
+ * Navega a la sección del formulario y carga los datos de un cliente para editarlo.
+ * @param {string} clientId - El ID del cliente a editar.
+ */
+async function loadClientForEditing(clientId) {
+    if (!clientId) return;
+
+    // 1. Navegar a la sección de creación de factura y esperar a que termine.
+    //    Esto es importante para que el formulario se resetee primero.
+    await handleNavigation('createInvoiceSection');
+
+    // 2. Encontrar los datos completos del cliente en el array que ya tenemos cargado.
+    const clientToEdit = loadedClients.find(client => client.id === clientId);
+
+    if (clientToEdit) {
+        // 3. Usar la función que ya tenemos para seleccionar y rellenar el formulario.
+        handleClientSelection(clientId, clientToEdit.name, clientToEdit);
+
+        // 4. Simular un clic en el botón "Editar Cliente" del formulario para desbloquear los campos.
+        if (editClientBtn) {
+            editClientBtn.click();
+        }
+    } else {
+        alert("No se pudieron encontrar los datos del cliente para editar.");
+    }
+}
+
 async function handleNavigation(sectionToShowId) {
     // ... (Código de handleNavigation existente, asegurándose de que llame a loadClientsIntoDropdown) ...
     const sections = [createInvoiceSection, viewInvoicesSection, clientsSection];
@@ -1902,8 +1929,7 @@ async function displayActiveClients() {
                 `;
                 // Placeholder para botones de editar/eliminar en esta lista
                 clientElement.querySelector('.edit-client-list-btn').addEventListener('click', () => {
-                    alert(`Funcionalidad "Editar" para cliente ${client.name} (ID: ${clientId}) pendiente desde esta lista.`);
-                    // Aquí podríamos navegar a la sección de crear factura y cargar este cliente para edición.
+                    loadClientForEditing(clientId);
                 });
                 clientElement.querySelector('.delete-client-list-btn').addEventListener('click', async () => {
                     if (confirm(`¿Seguro que deseas marcar como inactivo a "${client.name}"?`)) {
