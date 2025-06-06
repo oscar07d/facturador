@@ -1600,73 +1600,59 @@ function handleClientSelection(clientId, clientNameText, clientData = null) {
 
 async function loadClientsIntoDropdown() {
     if (!customClientOptions || !customClientSelectDisplay) { 
-        console.error("Elementos del desplegable personalizado no encontrados en loadClientsIntoDropdown."); 
+        console.error("Elementos del desplegable personalizado no encontrados."); 
         return; 
     }
     const user = auth.currentUser;
 
+    // 1. Limpiar completamente las opciones anteriores
     customClientOptions.innerHTML = ''; 
-    handleClientSelection("", "-- Nuevo Cliente --"); 
+    loadedClients = []; // También limpiar el array de clientes cargados
+
+    // 2. Crear y añadir la opción "-- Nuevo Cliente --" al principio de la lista
+    const newClientOptionElement = document.createElement('div');
+    newClientOptionElement.classList.add('custom-option', 'new-client-option');
+    newClientOptionElement.setAttribute('data-value', '');
+    newClientOptionElement.textContent = '-- Nuevo Cliente --';
+    newClientOptionElement.addEventListener('click', () => handleClientSelection("", "-- Nuevo Cliente --"));
+    customClientOptions.appendChild(newClientOptionElement);
+    
+    // Dejar seleccionado por defecto "-- Nuevo Cliente --"
+    handleClientSelection("", "-- Nuevo Cliente --");
 
     if (!user) {
-        console.log("loadClientsIntoDropdown: No hay usuario.");
-        return;
+        return; // Si no hay usuario, solo mostramos la opción de nuevo cliente.
     }
 
     try {
-        const q = query(
-            collection(db, "clientes"), 
-            where("userId", "==", user.uid), 
-            where("isDeleted", "!=", true), 
-            orderBy("name", "asc")
-        );
+        // 3. Cargar y añadir el resto de los clientes desde Firestore
+        const q = query(collection(db, "clientes"), where("userId", "==", user.uid), where("isDeleted", "!=", true), orderBy("name", "asc"));
         const querySnapshot = await getDocs(q);
 
-        if (!querySnapshot.empty) {
-            querySnapshot.forEach((docSnap) => {
-                const client = docSnap.data();
-                const clientOption = document.createElement('div');
-                clientOption.classList.add('custom-option');
-                clientOption.setAttribute('data-value', docSnap.id);
+        querySnapshot.forEach((docSnap) => {
+            const client = docSnap.data();
+            const clientOption = document.createElement('div');
+            clientOption.classList.add('custom-option');
+            clientOption.setAttribute('data-value', docSnap.id);
 
-                let clientDisplayName = client.name;
+            let estadoGeneral = client.estadoGeneralCliente || "Activo";
+            let claseCssEstadoGeneral = `status-client-${estadoGeneral.toLowerCase().replace(/ /g, '_').replace(/[^a-z0-9_]/gi, '')}`;
+            
+            let estadoFacturaCliente = client.estadoUltimaFacturaCliente || "N/A";
+            let textoPildoraFactura = paymentStatusDetails[estadoFacturaCliente.toLowerCase().replace(/ /g, '_')]?.text || estadoFacturaCliente;
+            let claseCssPildoraFactura = `invoice-status-${estadoFacturaCliente.toLowerCase().replace(/ /g, '_').replace(/[^a-z0-9_]/gi, '')}`;
 
-                // --- Lógica para la Píldora 1: Estado General del Cliente ---
-                let estadoGeneral = client.estadoGeneralCliente || "Activo"; // Valor por defecto si no existe
-                let claseCssEstadoGeneral = "status-client-default"; 
-                if (estadoGeneral === "Nuevo") claseCssEstadoGeneral = "status-client-nuevo";
-                else if (estadoGeneral === "Activo" || estadoGeneral === "Al día") claseCssEstadoGeneral = "status-client-al-dia";
-                else if (estadoGeneral === "Con Pendientes") claseCssEstadoGeneral = "status-client-con-pendientes";
-                else if (estadoGeneral === "Moroso") claseCssEstadoGeneral = "status-client-moroso";
-                else if (estadoGeneral === "Inactivo") claseCssEstadoGeneral = "status-client-inactivo";
-
-
-                // --- Lógica para la Píldora 2: Estado de Última Factura del Cliente ---
-                let estadoFacturaCliente = client.estadoUltimaFacturaCliente || "N/A";
-                let textoPildoraFactura = "N/A";
-                let claseCssPildoraFactura = "invoice-status-na"; 
-
-                if (estadoFacturaCliente !== "N/A") {
-                    const statusKey = estadoFacturaCliente.toLowerCase().replace(/ /g, '_');
-                    textoPildoraFactura = paymentStatusDetails[statusKey]?.text || estadoFacturaCliente;
-                    claseCssPildoraFactura = `invoice-status-${statusKey}`;
-                }
-
-                // --- Construir el HTML para la opción con AMBAS píldoras ---
-                clientOption.innerHTML = `
-                    <span class="option-client-name">${clientDisplayName}</span>
-                    <span class="pills-container">
-                        <span class="option-status-pill ${claseCssEstadoGeneral}">${estadoGeneral}</span>
-                        <span class="option-status-pill ${claseCssPildoraFactura}">${textoPildoraFactura}</span>
-                    </span>
-                `;
-                // --- Fin de la construcción del HTML ---
-
-                clientOption.addEventListener('click', () => handleClientSelection(docSnap.id, client.name, client));
-                customClientOptions.appendChild(clientOption);
-                loadedClients.push({ id: docSnap.id, ...client });
-            });
-        }
+            clientOption.innerHTML = `
+                <span class="option-client-name">${client.name}</span>
+                <span class="pills-container">
+                    <span class="option-status-pill ${claseCssEstadoGeneral}">${estadoGeneral}</span>
+                    <span class="option-status-pill ${claseCssPildoraFactura}">${textoPildoraFactura}</span>
+                </span>
+            `;
+            clientOption.addEventListener('click', () => handleClientSelection(docSnap.id, client.name, client));
+            customClientOptions.appendChild(clientOption);
+            loadedClients.push({ id: docSnap.id, ...client });
+        });
     } catch (error) {
         console.error("Error al cargar clientes para el desplegable:", error);
         customClientOptions.insertAdjacentHTML('beforeend', '<div class="custom-option-error">Error al cargar clientes</div>');
