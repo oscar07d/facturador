@@ -94,9 +94,18 @@
                                 <input type="hidden" id="selectedClientId" name="selectedClientId">
                             </div>
                             <div class="client-actions">
-                                <button type="button" id="editClientBtn" class="btn btn-secondary" disabled>Editar Cliente</button>
-                                <button type="button" id="deleteClientBtn" class="btn btn-danger" disabled>Eliminar Cliente</button>
-                                <button type="button" id="updateClientBtn" class="btn btn-success" style="display: none;">Guardar Cambios</button>
+                                <button type="button" id="editClientBtn" class="btn btn-secondary btn-icon" disabled>
+                                    <img src="img/Editar_icon.svg" alt="Editar" class="icon-svg">
+                                    <span>Editar Cliente</span>
+                                </button>
+                                <button type="button" id="deleteClientBtn" class="btn btn-danger btn-icon" disabled>
+                                    <img src="img/Basura_icon.svg" alt="Eliminar" class="icon-svg">
+                                    <span>Eliminar Cliente</span>
+                                </button>
+                                <button type="button" id="updateClientBtn" class="btn btn-success btn-icon" style="display: none;">
+                                    <img src="img/Guardar_Cambios_icon.svg" alt="Guardar" class="icon-svg">
+                                    <span>Guardar Cambios</span>
+                                </button>
                             </div>
                             <div class="form-grid two-columns">
                                 <div class="form-group"><label for="clientName">Nombres y Apellidos:</label><input type="text" id="clientName" name="clientName" required></div>
