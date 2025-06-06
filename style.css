@@ -1885,6 +1885,18 @@ textarea.input-error {
         justify-content: center; /* Centra los botones */
         gap: 8px; /* Reduce un poco el espacio entre botones */
     }
+    #logoutButton span {
+        display: none;
+    }
+    #logoutButton.btn-icon {
+        padding: 8px;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+    }
+    #logoutButton.btn-icon .icon-svg {
+        margin-right: 0;
+    }
 }
 
 
