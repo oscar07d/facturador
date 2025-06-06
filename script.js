@@ -951,50 +951,52 @@ function downloadBlob(blob, filename) {
 }
 
 async function generateInvoicePDF(invoiceDataSource) {
-    if (isGeneratingPdf) {
-        console.warn("PDF ya en proceso de generación. Se ha ignorado la segunda llamada.");
+    let invoiceDataToUse;
+
+    // Determinar la fuente de los datos de la factura
+    if (typeof invoiceDataSource === 'string' && invoiceDataSource === 'form') {
+        invoiceDataToUse = collectInvoiceDataFromForm();
+    } else if (typeof invoiceDataSource === 'object' && invoiceDataSource !== null) {
+        invoiceDataToUse = invoiceDataSource; // Usar datos pasados (ej. desde el modal)
+    } else {
+        alert("Fuente de datos para PDF no válida o no proporcionada.");
+        console.error("generateInvoicePDF: invoiceDataSource no es válido:", invoiceDataSource);
         return;
     }
-    isGeneratingPdf = true;
-    showLoading(true);
-    
-    
-        let invoiceDataToUse;
-        if (typeof invoiceDataSource === 'string' && invoiceDataSource === 'form') {
-            invoiceDataToUse = collectInvoiceDataFromForm();
-        } else if (typeof invoiceDataSource === 'object' && invoiceDataSource !== null) {
-            invoiceDataToUse = invoiceDataSource;
+
+    if (!invoiceDataToUse) {
+        // Si invoiceDataToUse sigue siendo null o undefined (ej. collectInvoiceDataFromForm devolvió null)
+        console.log("generateInvoicePDF: No se pudieron obtener los datos de la factura.");
+        return;
+    }
+
+    // Asegurar que 'generatedAt' exista en invoiceDataToUse para la plantilla PDF
+    if (!invoiceDataToUse.generatedAt) {
+        if (invoiceDataToUse.createdAt && invoiceDataToUse.createdAt.toDate) {
+            invoiceDataToUse.generatedAt = invoiceDataToUse.createdAt.toDate().toISOString();
         } else {
-            alert("Fuente de datos para PDF no válida.");
-            isGeneratingPdf = false; // Bajar bandera en caso de error temprano
-            return;
+            invoiceDataToUse.generatedAt = new Date().toISOString();
         }
-        if (!invoiceDataToUse) {
-            isGeneratingPdf = false; // Bajar bandera si no hay datos
-            return;
-        }
-        
-        const invoiceElement = document.getElementById('invoice-export-template');
-        if (!invoiceElement || !populateExportTemplate(invoiceDataToUse)) {
-            alert("Error al preparar la plantilla para la exportación.");
-            isGeneratingPdf = false; // Bajar bandera
-            return;
-        }
-        
-        const images = invoiceElement.getElementsByTagName('img');
-        const imagePromises = [];
-        for (let img of images) {
-            if (!img.complete) {
-                const promise = new Promise((resolve, reject) => {
-                    img.onload = resolve;
-                    img.onerror = () => reject(new Error(`No se pudo cargar la imagen: ${img.src}`));
-                });
-                imagePromises.push(promise);
-            }
-        }
-        
-    await Promise.all(imagePromises);
-    
+    }
+
+    const invoiceElement = document.getElementById('invoice-export-template');
+    if (!invoiceElement) { 
+        alert("Error: Plantilla de factura (#invoice-export-template) no encontrada en el DOM.");
+        return;
+    }
+    // Verifica 'originalInvoiceExportTemplate' si populateExportTemplate depende de ella globalmente
+    if (typeof originalInvoiceExportTemplate === 'undefined' || !originalInvoiceExportTemplate) { 
+        console.error("La variable global originalInvoiceExportTemplate (usada por populateExportTemplate) no está definida o es null.");
+        alert("Error de configuración: Plantilla base (originalInvoiceExportTemplate) no encontrada para poblar los datos.");
+        return;
+    }
+
+    if (!populateExportTemplate(invoiceDataToUse)) {
+        alert("Error al preparar los datos de la factura para la exportación.");
+        return;
+    }
+
+    showLoading(true);
 
     // Guardar los estilos originales del elemento de la plantilla para restaurarlos después
     const originalStyles = {
