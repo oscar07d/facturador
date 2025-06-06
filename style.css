@@ -1614,6 +1614,14 @@ textarea.input-error {
 .btn-icon:hover .icon-svg {
     filter: brightness(0) invert(1);
 }
+
+.btn-primary.btn-icon .icon-svg,
+.btn-success.btn-icon .icon-svg,
+.btn-danger.btn-icon .icon-svg,
+.btn-info.btn-icon .icon-svg {
+    filter: brightness(0) invert(1);
+}
+
 /* ===> AÑADE ESTA NUEVA REGLA COMPLETA <=== */
 /* Cuando pasas el cursor sobre un botón (.btn-icon),
    el icono (.icon-svg) que está dentro cambia a blanco. */
