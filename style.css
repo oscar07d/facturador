@@ -1588,6 +1588,25 @@ textarea.input-error {
 .modal-footer .btn { margin-left: 0; /* El gap se encarga del espaciado */ } 
 .btn-icon { padding: 8px 12px; font-size: 0.85rem; }
 .btn-icon .icon-svg { width: 16px; height: 16px; margin-right: 6px; vertical-align: middle; }
+#invoiceDetailModal .btn-icon { 
+    padding: 8px 12px; 
+    font-size: 0.85rem; 
+}
+
+#invoiceDetailModal .btn-icon .icon-svg { 
+    width: 16px; 
+    height: 16px; 
+    margin-right: 6px; 
+    vertical-align: middle; 
+    transition: filter 0.2s ease-in-out; /* <-- AÑADE ESTA LÍNEA para un cambio suave */
+}
+
+/* ===> AÑADE ESTA NUEVA REGLA COMPLETA <=== */
+/* Cuando pasas el cursor sobre un botón (.btn-icon),
+   el icono (.icon-svg) que está dentro cambia a blanco. */
+#invoiceDetailModal .btn-icon:hover .icon-svg {
+    filter: brightness(0) invert(1);
+}
 .btn-secondary-outline { background-color: transparent; color: var(--secondary-color, #6c757d); border: 1px solid var(--secondary-color, #6c757d); }
 .btn-secondary-outline:hover:not(:disabled) { background-color: var(--secondary-color, #6c757d); color: white; }
 .btn-success-outline { background-color: transparent; color: var(--success-color, #28a745); border: 1px solid var(--success-color, #28a745); }
@@ -1598,6 +1617,8 @@ textarea.input-error {
 .btn-warning-outline:hover:not(:disabled) { background-color: var(--warning-color, #ffc107); color: var(--text-color, #212529); }
 .btn-danger-outline { background-color: transparent; color: var(--danger-color, #dc3545); border: 1px solid var(--danger-color, #dc3545); }
 .btn-danger-outline:hover:not(:disabled) { background-color: var(--danger-color, #dc3545); color: white; }
+
+
 
 /* Estilos para el Modal de Selección de Plantilla */
 #templateSelectionModal .modal-content { 
