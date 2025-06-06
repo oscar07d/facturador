@@ -1612,27 +1612,32 @@ async function loadClientsIntoDropdown() {
     }
     const user = auth.currentUser;
 
-    // 1. Limpiar completamente las opciones anteriores
     customClientOptions.innerHTML = ''; 
-    loadedClients = []; // También limpiar el array de clientes cargados
+    loadedClients = [];
 
-    // 2. Crear y añadir la opción "-- Nuevo Cliente --" al principio de la lista
+    // 1. Crear y añadir la opción "-- Nuevo Cliente --"
     const newClientOptionElement = document.createElement('div');
     newClientOptionElement.classList.add('custom-option', 'new-client-option');
     newClientOptionElement.setAttribute('data-value', '');
     newClientOptionElement.textContent = '-- Nuevo Cliente --';
-    newClientOptionElement.addEventListener('click', () => handleClientSelection("", "-- Nuevo Cliente --"));
+    
+    // --- CAMBIO AQUÍ ---
+    // Se añade event.stopPropagation() para detener el burbujeo del clic
+    newClientOptionElement.addEventListener('click', (event) => {
+        event.stopPropagation(); 
+        handleClientSelection("", "-- Nuevo Cliente --");
+    });
     customClientOptions.appendChild(newClientOptionElement);
     
     // Dejar seleccionado por defecto "-- Nuevo Cliente --"
     handleClientSelection("", "-- Nuevo Cliente --");
 
     if (!user) {
-        return; // Si no hay usuario, solo mostramos la opción de nuevo cliente.
+        return; 
     }
 
     try {
-        // 3. Cargar y añadir el resto de los clientes desde Firestore
+        // 2. Cargar y añadir el resto de los clientes desde Firestore
         const q = query(collection(db, "clientes"), where("userId", "==", user.uid), where("isDeleted", "!=", true), orderBy("name", "asc"));
         const querySnapshot = await getDocs(q);
 
@@ -1656,7 +1661,14 @@ async function loadClientsIntoDropdown() {
                     <span class="option-status-pill ${claseCssPildoraFactura}">${textoPildoraFactura}</span>
                 </span>
             `;
-            clientOption.addEventListener('click', () => handleClientSelection(docSnap.id, client.name, client));
+            
+            // --- CAMBIO AQUÍ ---
+            // Se añade event.stopPropagation() también para los clientes existentes
+            clientOption.addEventListener('click', (event) => {
+                event.stopPropagation(); 
+                handleClientSelection(docSnap.id, client.name, client);
+            });
+            
             customClientOptions.appendChild(clientOption);
             loadedClients.push({ id: docSnap.id, ...client });
         });
