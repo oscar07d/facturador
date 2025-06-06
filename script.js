@@ -955,8 +955,8 @@ async function generateInvoicePDF(invoiceDataSource) {
         console.warn("PDF ya en proceso de generación. Se ha ignorado la segunda llamada.");
         return;
     }
-    isGeneratingPdf = true; // Levantar la bandera
-
+    isGeneratingPdf = true;
+    
         let invoiceDataToUse;
         if (typeof invoiceDataSource === 'string' && invoiceDataSource === 'form') {
             invoiceDataToUse = collectInvoiceDataFromForm();
@@ -1109,10 +1109,9 @@ async function generateInvoicePDF(invoiceDataSource) {
 
     } finally {
         showLoading(false);
-        // Bajar la bandera después de un momento para permitir un nuevo intento si fuera necesario
         setTimeout(() => {
             isGeneratingPdf = false;
-        }, 1000); // 1000 milisegundos = 1 segundo
+        }, 1500); // Resetear la bandera después de 1.5 segundos
     }
 }
 
