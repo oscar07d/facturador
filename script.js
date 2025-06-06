@@ -1565,6 +1565,13 @@ function handleClientSelection(clientId, clientNameText, clientData = null) {
             pillsContainer.appendChild(pillFactura);
 
             selectedClientNameDisplay.appendChild(pillsContainer);
+
+            if (customClientOptions) {
+                customClientOptions.style.display = 'none'; // Oculta la lista de opciones
+            }
+            if (customClientSelect) {
+                customClientSelect.classList.remove('open'); // Quita el estilo 'open' para que la flecha vuelva a la normalidad
+            }
         }
     }
 
