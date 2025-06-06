@@ -1758,9 +1758,13 @@ textarea.input-error {
         padding: 25px;
     }
 
-    .app-header {
-        gap: 10px;
-    }
+    .app-header { 
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px; 
+        padding: 10px 15px;
+    } 
 
     .logo-app-container .app-logo-completo {
         display: none;
@@ -1771,9 +1775,9 @@ textarea.input-error {
         background-repeat: no-repeat;
         background-position: center;
         background-size: contain;
-        width: 45px;
-        height: 45px;
-        max-width: 45px;
+        width: 40px;
+        height: 40px;
+        max-width: 40px;
     }
     
     .logo-app-container {
@@ -1781,7 +1785,7 @@ textarea.input-error {
     }
 
     .app-title-container h1 {
-        font-size: 1.4rem;
+        font-size: 1.2rem;
     }
 
     .app-nav ul li a {
