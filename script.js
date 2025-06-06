@@ -99,6 +99,7 @@ const clientPhoneInput = document.getElementById('clientPhone');
 const clientEmailInput = document.getElementById('clientEmail');
 const editClientBtn = document.getElementById('editClientBtn');
 const deleteClientBtn = document.getElementById('deleteClientBtn');
+const updateClientBtn = document.getElementById('updateClientBtn');
 
 const invoiceDateInput = document.getElementById('invoiceDate');
 const invoiceNumberText = document.getElementById('invoiceNumberText');
@@ -2452,12 +2453,73 @@ document.addEventListener('click', (event) => {
 if (editClientBtn) {
     editClientBtn.addEventListener('click', () => {
         if (!hiddenSelectedClientIdInput || hiddenSelectedClientIdInput.value === "") return;
+        
+        // Habilitar campos para edición
         if (clientNameInput) clientNameInput.disabled = false; 
         if (clientPhoneInput) clientPhoneInput.disabled = false; 
         if (clientEmailInput) clientEmailInput.disabled = false;
         if (clientNameInput) clientNameInput.focus();
+
+        // Poner la app en modo "edición de cliente"
         isEditingClient = true; 
-        alert("Ahora puedes editar los datos del cliente. Los cambios se guardarán al guardar la factura.");
+
+        // Ocultar el botón "Editar" y mostrar el de "Guardar Cambios"
+        editClientBtn.style.display = 'none';
+        if (updateClientBtn) updateClientBtn.style.display = 'inline-flex';
+
+        alert("Ahora puedes editar los datos del cliente. Usa el botón 'Guardar Cambios' para finalizar.");
+    });
+}
+
+if (updateClientBtn) {
+    updateClientBtn.addEventListener('click', async () => {
+        if (!isEditingClient || !hiddenSelectedClientIdInput || hiddenSelectedClientIdInput.value === "") {
+            alert("No hay un cliente seleccionado para actualizar.");
+            return;
+        }
+
+        const clientId = hiddenSelectedClientIdInput.value;
+        const clientRef = doc(db, "clientes", clientId);
+
+        const clientUpdates = {
+            name: clientNameInput.value.trim(),
+            phone: clientPhoneInput.value.trim(),
+            email: clientEmailInput.value.trim(),
+            updatedAt: serverTimestamp()
+        };
+
+        if (!clientUpdates.name || !clientUpdates.phone || !clientUpdates.email) {
+            alert("Por favor, asegúrate de que todos los campos del cliente estén completos.");
+            return;
+        }
+        
+        showLoading(true);
+
+        try {
+            // Actualizar el documento en Firestore
+            await updateDoc(clientRef, clientUpdates);
+            
+            // Actualizar la vista en la página
+            isEditingClient = false;
+            clientNameInput.disabled = true;
+            clientPhoneInput.disabled = true;
+            clientEmailInput.disabled = true;
+            updateClientBtn.style.display = 'none'; // Ocultar "Guardar Cambios"
+            editClientBtn.style.display = 'inline-flex'; // Mostrar "Editar" de nuevo
+
+            // Refrescar el desplegable de clientes para que muestre los datos actualizados
+            await loadClientsIntoDropdown();
+            // Reseleccionar el cliente recién editado en el desplegable
+            handleClientSelection(clientId, clientUpdates.name, { id: clientId, ...clientUpdates });
+
+            alert("¡Datos del cliente actualizados con éxito!");
+
+        } catch (error) {
+            console.error("Error al actualizar cliente:", error);
+            alert("Hubo un error al guardar los cambios.");
+        } finally {
+            showLoading(false);
+        }
     });
 }
 
