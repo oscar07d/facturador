@@ -956,7 +956,9 @@ async function generateInvoicePDF(invoiceDataSource) {
         return;
     }
     isGeneratingPdf = true;
+    showLoading(true);
     
+    try {
         let invoiceDataToUse;
         if (typeof invoiceDataSource === 'string' && invoiceDataSource === 'form') {
             invoiceDataToUse = collectInvoiceDataFromForm();
@@ -978,8 +980,21 @@ async function generateInvoicePDF(invoiceDataSource) {
             isGeneratingPdf = false; // Bajar bandera
             return;
         }
-
-    showLoading(true);
+        
+        const images = invoiceElement.getElementsByTagName('img');
+        const imagePromises = [];
+        for (let img of images) {
+            if (!img.complete) {
+                const promise = new Promise((resolve, reject) => {
+                    img.onload = resolve;
+                    img.onerror = () => reject(new Error(`No se pudo cargar la imagen: ${img.src}`));
+                });
+                imagePromises.push(promise);
+            }
+        }
+        
+    await Promise.all(imagePromises);
+    
 
     // Guardar los estilos originales del elemento de la plantilla para restaurarlos después
     const originalStyles = {
