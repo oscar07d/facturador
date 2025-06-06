@@ -958,7 +958,7 @@ async function generateInvoicePDF(invoiceDataSource) {
     isGeneratingPdf = true;
     showLoading(true);
     
-    try {
+    
         let invoiceDataToUse;
         if (typeof invoiceDataSource === 'string' && invoiceDataSource === 'form') {
             invoiceDataToUse = collectInvoiceDataFromForm();
