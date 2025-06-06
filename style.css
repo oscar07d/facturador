@@ -1660,11 +1660,332 @@ textarea.input-error {
 
 /* === MEDIA QUERIES PARA ADAPTABILIDAD (Generales de la app) === */
 /* ... (tus media queries existentes) ... */
-@media (min-width: 769px) { .form-grid.two-columns { grid-template-columns: repeat(2, 1fr); } .form-grid.three-columns { grid-template-columns: repeat(3, 1fr); } .add-item-form > .form-grid.three-columns.item-details-grid { grid-template-columns: 1fr 1fr auto; } .totals-grid { grid-template-columns: 0.8fr 1.2fr; align-items: flex-start; } .share-actions .button-group { flex-direction: row; } #invoiceListContainer { grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); } .client-list { grid-template-columns: repeat(auto-fit, minmax(450px, 1fr)); } }
-@media (max-width: 992px) { .app-header { padding: 15px 20px; flex-direction: column; gap: 15px; } .logo-app-container { max-width: 220px; } .app-title-container h1 { font-size: 1.5rem; } .app-nav ul { justify-content: center; } .invoice-app-container { padding: 25px; } .form-section { padding: 20px; } .form-section legend { font-size: 1.15rem; } #invoiceListContainer { grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); } .client-list { grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); } }
-@media (max-width: 768px) { body { padding: 15px; } .login-container { max-width: 90%; padding: 25px;} .app-header { gap: 10px; } .logo-app-container { max-width: 200px; } .app-title-container h1 { font-size: 1.4rem; } .app-nav ul li a { padding: 12px 15px; font-size: 0.9rem; } .invoice-app-container { padding: 20px; } .form-grid.two-columns, .form-grid.three-columns, .add-item-form > .form-grid.three-columns.item-details-grid, #streamingProfileFields .form-grid.two-columns, .totals-grid, #invoiceListContainer, .client-list { grid-template-columns: 1fr; } .form-actions { flex-direction: column; } .form-actions .btn { width: 100%; } .client-actions { flex-direction: column; gap: 8px; } .client-actions .btn { width: 100%; } .share-actions .button-group { flex-direction: column; } .share-actions .btn-share { width: 100%; margin-right: 0; } .invoice-list-item { padding: 15px; } .invoice-list-details { flex-direction: column; align-items: flex-start; gap: 5px; margin-bottom: 10px; } .invoice-list-date, .invoice-list-total { text-align: left; flex-basis: auto;} .invoice-list-actions { text-align: left; } .client-list-item { flex-direction: column; align-items: flex-start; } .client-list-item .client-pills { margin-top: 5px; margin-bottom: 5px; } .client-list-item .client-actions-list { width: 100%; justify-content: flex-start; margin-top: 5px; } .modal-content { width: 95%; padding: 20px 15px; max-height: 90vh; } .modal-header h2 { font-size: 1.3rem; } #modalInvoiceDetailsContent .modal-section-grid { grid-template-columns: 1fr; } #modalInvoiceDetailsContent .modal-items-table th, #modalInvoiceDetailsContent .modal-items-table td { padding: 6px 8px; } }
-@media (max-width: 480px) { body { padding: 10px; } .login-container { padding: 20px 18px; max-width: 95%; } .app-header { padding: 10px 15px; } .app-title-container h1 { font-size: 1.2rem; } .user-actions #logoutButton { padding: 8px 15px; font-size: 0.85rem; } .app-nav ul { gap: 5px; flex-wrap: wrap; justify-content: space-around; } .app-nav ul li a { padding: 10px 8px; font-size: 0.8rem; } .invoice-app-container { padding: 15px; } .form-section { padding: 15px; } .form-section legend { font-size: 1.1rem; } .form-group input[type="text"], .form-group input[type="email"], .form-group input[type="tel"], .form-group input[type="date"], .form-group input[type="number"], .form-group select, .form-group textarea { padding: 10px 12px; font-size: 0.95rem; } .btn { padding: 10px 15px; font-size: 0.9rem; } .totals-summary-box { padding: 15px; } .totals-summary-box h3 { font-size: 1.15rem; } .loading-content { padding: 25px; max-width: 80%;} .loading-logo-spinner { width: 60px;} .loading-overlay p { font-size: 1rem;} .invoice-list-item { padding: 12px; } .invoice-list-header, .invoice-list-client, .invoice-list-details { font-size: 0.9rem; } .invoice-list-number { font-size: 1rem; } .status-badge { padding: 3px 8px; font-size: 0.75rem; } #selectedClientNameDisplay { flex-wrap: wrap; gap: 5px; } .selected-client-name-text { white-space: normal; } #selectedClientNameDisplay .pills-container { margin-left: 0; flex-basis: 100%; justify-content: flex-start; } }
+@media (min-width: 769px) {
+    .form-grid.two-columns {
+        grid-template-columns: repeat(2, 1fr);
+    }
 
+    .form-grid.three-columns {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .add-item-form > .form-grid.three-columns.item-details-grid {
+        grid-template-columns: 1fr 1fr auto;
+    }
+
+    .totals-grid {
+        grid-template-columns: 0.8fr 1.2fr;
+        align-items: flex-start;
+    }
+
+    .share-actions .button-group {
+        flex-direction: row;
+    }
+
+    #invoiceListContainer {
+        grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+    }
+
+    .client-list {
+        grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+    }
+}
+
+
+@media (max-width: 992px) {
+    .app-header {
+        padding: 15px 20px;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .logo-app-container {
+        max-width: 220px;
+    }
+
+    .app-title-container h1 {
+        font-size: 1.5rem;
+    }
+
+    .app-nav ul {
+        justify-content: center;
+    }
+
+    .invoice-app-container {
+        padding: 25px;
+    }
+
+    .form-section {
+        padding: 20px;
+    }
+
+    .form-section legend {
+        font-size: 1.15rem;
+    }
+
+    #invoiceListContainer {
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    }
+
+    .client-list {
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    }
+}
+
+
+@media (max-width: 768px) {
+    body {
+        padding: 15px;
+    }
+
+    .login-container {
+        max-width: 90%;
+        padding: 25px;
+    }
+
+    .app-header {
+        gap: 10px;
+    }
+
+    .logo-app-container {
+        max-width: 200px;
+    }
+
+    .app-title-container h1 {
+        font-size: 1.4rem;
+    }
+
+    .app-nav ul li a {
+        padding: 12px 15px;
+        font-size: 0.9rem;
+    }
+
+    .invoice-app-container {
+        padding: 20px;
+    }
+
+    .form-grid.two-columns,
+    .form-grid.three-columns,
+    .add-item-form > .form-grid.three-columns.item-details-grid,
+    #streamingProfileFields .form-grid.two-columns,
+    .totals-grid,
+    #invoiceListContainer,
+    .client-list {
+        grid-template-columns: 1fr;
+    }
+
+    .form-actions {
+        flex-direction: column;
+    }
+
+    .form-actions .btn {
+        width: 100%;
+    }
+
+    .client-actions {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .client-actions .btn {
+        width: 100%;
+    }
+
+    .share-actions .button-group {
+        flex-direction: column;
+    }
+
+    .share-actions .btn-share {
+        width: 100%;
+        margin-right: 0;
+    }
+
+    .invoice-list-item {
+        padding: 15px;
+    }
+
+    .invoice-list-details {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+        margin-bottom: 10px;
+    }
+
+    .invoice-list-date,
+    .invoice-list-total {
+        text-align: left;
+        flex-basis: auto;
+    }
+
+    .invoice-list-actions {
+        text-align: left;
+    }
+
+    .client-list-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .client-list-item .client-pills {
+        margin-top: 5px;
+        margin-bottom: 5px;
+    }
+
+    .client-list-item .client-actions-list {
+        width: 100%;
+        justify-content: flex-start;
+        margin-top: 5px;
+    }
+
+    .modal-content {
+        width: 95%;
+        padding: 20px 15px;
+        max-height: 90vh;
+    }
+
+    .modal-header h2 {
+        font-size: 1.3rem;
+    }
+
+    #modalInvoiceDetailsContent .modal-section-grid {
+        grid-template-columns: 1fr;
+    }
+
+    #modalInvoiceDetailsContent .modal-items-table th,
+    #modalInvoiceDetailsContent .modal-items-table td {
+        padding: 6px 8px;
+    }
+    #invoiceDetailModal .btn-icon span {
+        display: none;
+    }
+    #invoiceDetailModal .btn-icon {
+        padding: 8px;
+        width: 38px;
+        height: 38px;
+    }
+    #invoiceDetailModal .btn-icon .icon-svg {
+        margin-right: 0;
+    }
+}
+
+
+@media (max-width: 480px) {
+    body {
+        padding: 10px;
+    }
+
+    .login-container {
+        padding: 20px 18px;
+        max-width: 95%;
+    }
+
+    .app-header {
+        padding: 10px 15px;
+    }
+
+    .app-title-container h1 {
+        font-size: 1.2rem;
+    }
+
+    .user-actions #logoutButton {
+        padding: 8px 15px;
+        font-size: 0.85rem;
+    }
+
+    .app-nav ul {
+        gap: 5px;
+        flex-wrap: wrap;
+        justify-content: space-around;
+    }
+
+    .app-nav ul li a {
+        padding: 10px 8px;
+        font-size: 0.8rem;
+    }
+
+    .invoice-app-container {
+        padding: 15px;
+    }
+
+    .form-section {
+        padding: 15px;
+    }
+
+    .form-section legend {
+        font-size: 1.1rem;
+    }
+
+    .form-group input[type="text"],
+    .form-group input[type="email"],
+    .form-group input[type="tel"],
+    .form-group input[type="date"],
+    .form-group input[type="number"],
+    .form-group select,
+    .form-group textarea {
+        padding: 10px 12px;
+        font-size: 0.95rem;
+    }
+
+    .btn {
+        padding: 10px 15px;
+        font-size: 0.9rem;
+    }
+
+    .totals-summary-box {
+        padding: 15px;
+    }
+
+    .totals-summary-box h3 {
+        font-size: 1.15rem;
+    }
+
+    .loading-content {
+        padding: 25px;
+        max-width: 80%;
+    }
+
+    .loading-logo-spinner {
+        width: 60px;
+    }
+
+    .loading-overlay p {
+        font-size: 1rem;
+    }
+
+    .invoice-list-item {
+        padding: 12px;
+    }
+
+    .invoice-list-header,
+    .invoice-list-client,
+    .invoice-list-details {
+        font-size: 0.9rem;
+    }
+
+    .invoice-list-number {
+        font-size: 1rem;
+    }
+
+    .status-badge {
+        padding: 3px 8px;
+        font-size: 0.75rem;
+    }
+
+    #selectedClientNameDisplay {
+        flex-wrap: wrap;
+        gap: 5px;
+    }
+
+    .selected-client-name-text {
+        white-space: normal;
+    }
+
+    #selectedClientNameDisplay .pills-container {
+        margin-left: 0;
+        flex-basis: 100%;
+        justify-content: flex-start;
+    }
+}
 
 /* === ANIMACIÓN PARA EL GRADIENTE DEL APP-NAV === */
 @keyframes moveGradient {
