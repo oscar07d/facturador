@@ -1406,6 +1406,10 @@ textarea.input-error {
     filter: brightness(0) invert(1);
 }
 
+#logoutButton.btn-icon .icon-svg {
+    filter: brightness(0) invert(1);
+}
+
 /* =================================================== */
 /* === ESTILOS PARA PLANTILLA IMAGEN WHATSAPP === */
 /* =================================================== */
