@@ -2146,35 +2146,36 @@ const handleModalImageClick = () => {
 };
 
 const handleModalEmailClick = async () => {
-    // Usamos la misma bandera que para el PDF para evitar acciones dobles
+    // Reutilizamos la bandera del PDF para evitar acciones dobles
     if (isGeneratingPdf) {
-        console.warn("Acción de PDF ya en progreso. Se ha ignorado el clic en Email.");
+        console.warn("Acción de PDF ya en proceso. Se ha ignorado el clic en Email.");
         return; 
     }
 
     if (currentInvoiceDataForModalActions) {
-        // 1. Informar al usuario del proceso que va a ocurrir
+        // 1. Informar al usuario del proceso
         alert("Se generará y descargará el PDF. Luego, se abrirá tu programa de correo para que puedas adjuntarlo y enviarlo.");
-
-        // 2. Generar y descargar el PDF llamando a la función que ya funciona
+        
+        // 2. Generar y descargar el PDF para que el usuario lo tenga listo
         await generateInvoicePDF(currentInvoiceDataForModalActions);
-
-        // Esperar un momento para que el usuario perciba la descarga antes de abrir el correo
+        
+        // Pequeña pausa para que el usuario note la descarga
         await new Promise(resolve => setTimeout(resolve, 500));
 
-        // 3. Preparar y abrir el enlace mailto:
+        // 3. Preparar la información para el correo
         const clientEmail = currentInvoiceDataForModalActions.client?.email || '';
         const subject = `Factura N° ${currentInvoiceDataForModalActions.invoiceNumberFormatted || 'N/A'} de OSCAR 07D Studios`;
-
-        // Cuerpo del correo con instrucciones claras
+        
         const body = `Estimado/a ${currentInvoiceDataForModalActions.client?.name || 'Cliente'},\n\n` +
                    `Espero que te encuentres bien.\n\n` +
                    `Por favor, busca en tu carpeta de descargas el archivo PDF llamado "Factura-${currentInvoiceDataForModalActions.invoiceNumberFormatted || 'NroFactura'}.pdf" y adjúntalo a este correo antes de enviarlo.\n\n` +
-                   `¡Gracias!\n\n` +
+                   `¡Gracias por tu confianza!\n\n` +
                    `Saludos cordiales,\nOSCAR 07D Studios`;
-
-        // Construir y abrir el cliente de correo del usuario
-        window.location.href = `mailto:<span class="math-inline">\{clientEmail\}?subject\=</span>{encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+        
+        // --- LÍNEA CORREGIDA ---
+        // Se usan comillas invertidas (`) para crear una plantilla de texto
+        // y la sintaxis ${variable} para insertar los valores correctamente.
+        window.location.href = `mailto:${clientEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 
     } else {
         alert("No hay datos de factura para enviar por email.");
