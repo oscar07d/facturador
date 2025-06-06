@@ -1388,6 +1388,21 @@ textarea.input-error {
 #invoice-export-template .export-final-message { text-align: center; margin-top: 8mm; padding-top: 3mm; border-top: 1px dotted var(--pdf-border-color-medium); font-size: 8pt; color: var(--pdf-text-secondary); font-style: italic; }
 #invoice-export-template .export-final-message p { margin-bottom: 1mm; }
 
+/* === ESTILOS PARA LA SECCIÓN CLIENTES === */More actions
+.client-list-subsection { margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid var(--border-color); }
+.client-list-subsection:last-child { border-bottom: none; margin-bottom: 0; }
+.client-list-subsection h3 { font-size: 1.3rem; color: var(--secondary-color); margin-bottom: 15px; }
+.client-list { display: grid; grid-template-columns: 1fr; gap: 15px; }
+.client-list-item { background-color: #fff; border: 1px solid var(--border-color); border-radius: var(--border-radius-m); padding: 15px; box-shadow: var(--box-shadow-light); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+.client-list-item.client-inactive { background-color: #f8f9fa; opacity: 0.7; }
+.client-list-item .client-info { display: flex; flex-direction: column; flex-grow: 1; margin-right: 10px; }
+.client-list-item .client-name { font-weight: 600; font-size: 1.1rem; color: var(--text-color); }
+.client-list-item .client-contact { font-size: 0.9rem; color: var(--text-muted-color); }
+.client-list-item .client-deleted-date { font-size: 0.8rem; color: var(--danger-color); font-style: italic; margin-top: 4px; }
+.client-list-item .client-pills { display: flex; gap: 5px; flex-shrink: 0; }
+.client-list-item .client-actions-list { display: flex; gap: 10px; flex-shrink: 0; }
+.client-list-item .client-actions-list .btn-sm { padding: 5px 10px; font-size: 0.8rem; }
+
 /* =================================================== */
 /* === ESTILOS PARA PLANTILLA IMAGEN WHATSAPP === */
 /* =================================================== */
