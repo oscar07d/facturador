@@ -1402,6 +1402,9 @@ textarea.input-error {
 .client-list-item .client-pills { display: flex; gap: 5px; flex-shrink: 0; }
 .client-list-item .client-actions-list { display: flex; gap: 10px; flex-shrink: 0; }
 .client-list-item .client-actions-list .btn-sm { padding: 5px 10px; font-size: 0.8rem; }
+.client-actions .btn-icon .icon-svg {
+    filter: brightness(0) invert(1);
+}
 
 /* =================================================== */
 /* === ESTILOS PARA PLANTILLA IMAGEN WHATSAPP === */
