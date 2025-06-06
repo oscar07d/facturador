@@ -1762,6 +1762,20 @@ textarea.input-error {
         gap: 10px;
     }
 
+    .logo-app-container .app-logo-completo {
+        display: none;
+    }
+    
+    .logo-app-container {
+        background-image: url('img/Isologo.svg');
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: contain;
+        width: 45px;
+        height: 45px;
+        max-width: 45px;
+    }
+    
     .logo-app-container {
         max-width: 200px;
     }
