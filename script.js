@@ -2287,18 +2287,18 @@ document.addEventListener('keydown', (event) => {
     }
 });
 
-if (modalPdfBtn) {
-    modalPdfBtn.addEventListener('click', async () => {
-        if (currentInvoiceDataForModalActions) {
-            // La variable currentInvoiceDataForModalActions se llena cuando abres el modal
-            console.log("Generando PDF desde modal con datos:", currentInvoiceDataForModalActions); // Log para depurar
-            await generateInvoicePDF(currentInvoiceDataForModalActions); // Pasa el objeto de datos
-        } else {
-            alert("No hay datos de factura cargados en el modal para generar el PDF.");
-            console.error("currentInvoiceDataForModalActions es null o undefined al intentar generar PDF desde modal.");
-        }
-    });
-}
+// if (modalPdfBtn) {
+//     modalPdfBtn.addEventListener('click', async () => {
+//         if (currentInvoiceDataForModalActions) {
+//             // La variable currentInvoiceDataForModalActions se llena cuando abres el modal
+//             console.log("Generando PDF desde modal con datos:", currentInvoiceDataForModalActions); // Log para depurar
+//             await generateInvoicePDF(currentInvoiceDataForModalActions); // Pasa el objeto de datos
+//         } else {
+//             alert("No hay datos de factura cargados en el modal para generar el PDF.");
+//             console.error("currentInvoiceDataForModalActions es null o undefined al intentar generar PDF desde modal.");
+//         }
+//     });
+// }
 
 // Placeholder para el botón de imprimir/descargar en el modal ELIMINADO ya que se retiro del index.html
 // if (printInvoiceFromModalBtn) {
