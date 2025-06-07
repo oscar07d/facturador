@@ -214,6 +214,7 @@ body.modal-active {
 }
 
 /* === ESTILOS PARA BÚSQUEDA Y FILTROS === */
+/* === ESTILOS PARA BÚSQUEDA Y FILTROS (REVISADO) === */
 .invoice-search-controls {
     display: flex;
     flex-wrap: wrap;
@@ -226,46 +227,73 @@ body.modal-active {
 }
 
 .search-input-group {
-    position: relative; /* Necesario para posicionar el icono adentro */
     flex-grow: 1; 
     min-width: 250px;
+    display: flex; /* Para alinear el input y el botón */
 }
 
-.search-input-group::before {
-    content: '🔍'; /* Icono de lupa simple */
-    position: absolute;
-    left: 18px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--text-muted-color);
-    font-size: 1.1rem;
-    pointer-events: none; /* Para que no interfiera con el clic en el input */
-}
-
+/* Estilo para el campo de búsqueda */
 #invoiceSearchInput {
-    padding-left: 45px; 
+    width: 100%;
+    padding: 10px 18px; 
+    border: 1px solid var(--border-color);
+    /* Bordes redondeados solo a la izquierda */
+    border-radius: var(--border-radius-pill) 0 0 var(--border-radius-pill);
+    font-size: 0.95rem;
+    min-height: 44px;
+    border-right: none; /* Quitar el borde derecho para que se una con el botón */
+    flex-grow: 1; /* Para que ocupe el espacio */
+}
+#invoiceSearchInput:focus { /* Mantenemos el efecto de foco */
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+    z-index: 2; /* Para que el borde de foco se vea por encima del botón */
+    position: relative;
 }
 
+/* Estilo para el nuevo botón de búsqueda */
+.search-btn {
+    background-color: var(--primary-color);
+    border: 1px solid var(--primary-color);
+    padding: 0 15px;
+    cursor: pointer;
+    /* Bordes redondeados solo a la derecha */
+    border-radius: 0 var(--border-radius-pill) var(--border-radius-pill) 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s ease;
+}
+.search-btn:hover {
+    background-color: var(--primary-hover-color);
+}
+
+/* Estilo para el icono dentro del botón de búsqueda (para hacerlo blanco) */
+.search-btn .icon-svg {
+    filter: brightness(0) invert(1);
+    width: 20px;
+    height: 20px;
+    margin: 0; /* Sin margen */
+}
+
+/* Estilo para el filtro de estado */
 .filter-input-group {
     display: flex;
     align-items: center;
     gap: 10px;
-    flex-shrink: 0; /* Para que el filtro no se encoja */
+    flex-shrink: 0;
 }
 
-#invoiceSearchInput, #statusFilterSelect {
-    width: 100%;
-    padding: 10px 18px; /* Un poco más de padding horizontal */
+#statusFilterSelect {
+    padding: 10px 18px; 
     border: 1px solid var(--border-color);
-    border-radius: var(--border-radius-pill); /* <-- CAMBIO CLAVE: Usamos la variable para píldoras */
-    font-size: 0.95rem; /* Un poco más pequeño para un look más refinado */
-    font-family: 'Poppins', sans-serif;
+    border-radius: var(--border-radius-pill); /* Bordes redondeados */
+    font-size: 0.95rem;
     min-height: 44px;
-    transition: all 0.2s ease-in-out; /* Transición para todos los cambios */
-    background-color: #fff; /* Asegurar fondo blanco */
+    background-color: #fff;
 }
-
-#invoiceSearchInput:focus, #statusFilterSelect:focus {
+#statusFilterSelect:focus {
     outline: none;
     border-color: var(--primary-color);
     box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
