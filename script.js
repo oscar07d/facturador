@@ -2000,26 +2000,31 @@ async function displayActiveClients() {
             querySnapshot.forEach((docSnap) => {
                 const client = docSnap.data();
                 const clientId = docSnap.id;
-                const clientElement = document.createElement('div');
-                clientElement.classList.add('client-list-item', `status-theme-${claseCssEstadoGeneral}`); // Reusaremos un estilo similar a invoice-list-item
-                clientElement.setAttribute('data-client-id', clientId);
-
-                // Píldoras de estado (similar a como lo hicimos para el desplegable)
+            
+                // --- CORRECCIÓN AQUÍ: Definimos las variables ANTES de usarlas ---
+                // 1. Píldora de Estado General del Cliente
                 let estadoGeneral = client.estadoGeneralCliente || "Activo";
                 let claseCssEstadoGeneral = "status-client-default";
                 if (estadoGeneral === "Nuevo") claseCssEstadoGeneral = "status-client-nuevo";
                 else if (estadoGeneral === "Activo" || estadoGeneral === "Al día") claseCssEstadoGeneral = "status-client-al-dia";
                 else if (estadoGeneral === "Con Pendientes") claseCssEstadoGeneral = "status-client-con-pendientes";
                 else if (estadoGeneral === "Moroso") claseCssEstadoGeneral = "status-client-moroso";
-
+            
+                // 2. Píldora de Estado de Última Factura
                 let estadoFactura = client.estadoUltimaFacturaCliente || "N/A";
                 let claseCssEstadoFactura = `invoice-status-${estadoFactura.toLowerCase().replace(/ /g, '_')}`;
                 if (estadoFactura === "N/A") claseCssEstadoFactura = "invoice-status-na";
                 let textoPildoraFactura = paymentStatusDetails[estadoFactura.toLowerCase().replace(/ /g, '_')]?.text || estadoFactura;
-                 if(estadoFactura === "N/A" && !paymentStatusDetails[estadoFactura.toLowerCase().replace(/ /g, '_')]) {
+                if(estadoFactura === "N/A" && !paymentStatusDetails[estadoFactura.toLowerCase().replace(/ /g, '_')]) {
                     textoPildoraFactura = "N/A";
                 }
-
+                // --- FIN DE LA CORRECCIÓN ---
+            
+                const clientElement = document.createElement('div');
+                clientElement.classList.add('client-list-item'); 
+                clientElement.setAttribute('data-client-id', clientId);
+            
+                // Ahora el innerHTML puede usar las variables sin problemas
                 clientElement.innerHTML = `
                     <div class="client-info">
                         <strong class="client-name">${client.name}</strong>
@@ -2034,17 +2039,18 @@ async function displayActiveClients() {
                         <button type="button" class="btn btn-sm btn-danger delete-client-list-btn">Eliminar</button>
                     </div>
                 `;
-                // Placeholder para botones de editar/eliminar en esta lista
+            
+                // Listeners para los botones de la tarjeta
                 clientElement.querySelector('.edit-client-list-btn').addEventListener('click', () => {
-                    loadClientForEditing(clientId);
+                    alert(`Funcionalidad "Editar" para cliente ${client.name} (ID: ${clientId}) pendiente desde esta lista.`);
                 });
                 clientElement.querySelector('.delete-client-list-btn').addEventListener('click', async () => {
                     if (confirm(`¿Seguro que deseas marcar como inactivo a "${client.name}"?`)) {
                         showLoading(true);
-                        await softDeleteClient(clientId); // Reutilizamos la función de borrado suave
-                        await displayActiveClients();    // Recargar lista de activos
-                        await displayDeletedClients();   // Recargar lista de inactivos
-                        await loadClientsIntoDropdown(); // Actualizar el desplegable del formulario
+                        await softDeleteClient(clientId);
+                        await displayActiveClients();
+                        await displayDeletedClients();
+                        await loadClientsIntoDropdown();
                         showLoading(false);
                     }
                 });
