@@ -226,8 +226,24 @@ body.modal-active {
 }
 
 .search-input-group {
-    flex-grow: 1; /* Para que la barra de búsqueda ocupe el espacio disponible */
+    position: relative; /* Necesario para posicionar el icono adentro */
+    flex-grow: 1; 
     min-width: 250px;
+}
+
+.search-input-group::before {
+    content: '🔍'; /* Icono de lupa simple */
+    position: absolute;
+    left: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted-color);
+    font-size: 1.1rem;
+    pointer-events: none; /* Para que no interfiera con el clic en el input */
+}
+
+#invoiceSearchInput {
+    padding-left: 45px; 
 }
 
 .filter-input-group {
@@ -238,15 +254,17 @@ body.modal-active {
 }
 
 #invoiceSearchInput, #statusFilterSelect {
-    /* Reutilizamos los estilos de los inputs del formulario */
     width: 100%;
-    padding: 10px 15px;
+    padding: 10px 18px; /* Un poco más de padding horizontal */
     border: 1px solid var(--border-color);
-    border-radius: var(--border-radius-s);
-    font-size: 1rem;
+    border-radius: var(--border-radius-pill); /* <-- CAMBIO CLAVE: Usamos la variable para píldoras */
+    font-size: 0.95rem; /* Un poco más pequeño para un look más refinado */
     font-family: 'Poppins', sans-serif;
     min-height: 44px;
+    transition: all 0.2s ease-in-out; /* Transición para todos los cambios */
+    background-color: #fff; /* Asegurar fondo blanco */
 }
+
 #invoiceSearchInput:focus, #statusFilterSelect:focus {
     outline: none;
     border-color: var(--primary-color);
