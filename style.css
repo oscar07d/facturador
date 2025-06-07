@@ -264,6 +264,14 @@ body.modal-active {
     background-color: #c82333;
 }
 
+.nav-icon {
+    display: none;
+}
+
+.nav-text {
+    display: inline;
+}
+
 .app-nav {
     padding: 0px 30px;
     width: 100%;
@@ -1751,8 +1759,44 @@ textarea.input-error {
 @media (max-width: 768px) {
     body {
         padding: 15px;
+        padding-bottom: 80px;
+    }
+    
+    .app-nav {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        max-width: 100%; /* Ocupar todo el ancho en móvil */
+        border-radius: 0; /* Quitar bordes redondeados */
+        border-top: 1px solid rgba(255, 255, 255, 0.2); /* Borde superior sutil */
+        z-index: 1000; /* Asegurar que esté por encima del contenido */
     }
 
+    .app-nav ul {
+        justify-content: space-around;
+    }
+
+    .app-nav ul li a {
+        display: flex;
+        flex-direction: column; /* Apilar icono y texto (si estuviera visible) */
+        align-items: center;
+        gap: 4px; /* Espacio entre icono y texto */
+        padding: 8px 5px; /* Padding más compacto */
+        font-size: 0.7rem; /* Texto más pequeño si decides mostrarlo */
+        border-bottom-width: 3px; /* Mantener el indicador activo */
+    }
+
+    .app-nav .nav-text {
+        display: none;
+    }
+    .app-nav .nav-icon {
+        display: block; /* Hacemos visible el icono */
+        width: 24px;
+        height: 24px;
+        filter: brightness(0) invert(1); /* Poner el icono blanco para que se vea sobre el fondo azul */
+    }
+    
     .login-container {
         max-width: 90%;
         padding: 25px;
