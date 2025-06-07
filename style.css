@@ -1519,19 +1519,107 @@ textarea.input-error {
 #invoice-export-template .export-final-message p { margin-bottom: 1mm; }
 
 /* === ESTILOS PARA LA SECCIÓN CLIENTES === */More actions
-.client-list-subsection { margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid var(--border-color); }
-.client-list-subsection:last-child { border-bottom: none; margin-bottom: 0; }
-.client-list-subsection h3 { font-size: 1.3rem; color: var(--secondary-color); margin-bottom: 15px; }
-.client-list { display: grid; grid-template-columns: 1fr; gap: 15px; }
-.client-list-item { background-color: #fff; border: 1px solid var(--border-color); border-radius: var(--border-radius-m); padding: 15px; box-shadow: var(--box-shadow-light); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
-.client-list-item.client-inactive { background-color: #f8f9fa; opacity: 0.7; }
-.client-list-item .client-info { display: flex; flex-direction: column; flex-grow: 1; margin-right: 10px; }
-.client-list-item .client-name { font-weight: 600; font-size: 1.1rem; color: var(--text-color); }
-.client-list-item .client-contact { font-size: 0.9rem; color: var(--text-muted-color); }
-.client-list-item .client-deleted-date { font-size: 0.8rem; color: var(--danger-color); font-style: italic; margin-top: 4px; }
-.client-list-item .client-pills { display: flex; gap: 5px; flex-shrink: 0; }
-.client-list-item .client-actions-list { display: flex; gap: 10px; flex-shrink: 0; }
-.client-list-item .client-actions-list .btn-sm { padding: 5px 10px; font-size: 0.8rem; }
+.client-list-subsection {
+    margin-bottom: 35px;
+}
+.client-list-subsection:last-child {
+    border-bottom: none; 
+    margin-bottom: 0; 
+}
+.client-list-subsection h3 {
+    font-size: 1.4rem;
+    color: var(--secondary-color);
+    margin-bottom: 18px;
+    font-weight: 600;
+    padding-bottom: 8px;
+    border-bottom: 1px dashed var(--border-color);
+}
+
+.client-list {
+    display: grid;
+    gap: 22px; /* Un poco más de espacio */
+    grid-template-columns: 1fr; /* Móvil primero: 1 columna */
+}
+.client-list-item {
+    background-color: var(--container-background);
+    border: 1px solid var(--border-color);
+    border-left-width: 5px; /* Prepara el espacio para el borde de color */
+    border-radius: var(--border-radius-s);
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06); /* Sombra más sutil */
+    transition: box-shadow 0.25s ease, transform 0.25s ease;
+    display: flex;
+    flex-direction: column; /* Apilado vertical para móvil */
+    gap: 12px;
+}
+.client-list-item:hover {
+    box-shadow: var(--box-shadow-medium);
+    transform: translateY(-4px); /* Efecto de flotación al pasar el cursor */
+}
+.client-list-item.status-theme-status-client-nuevo { border-left-color: var(--info-color); }
+.client-list-item.status-theme-status-client-al-dia,
+.client-list-item.status-theme-status-client-activo { border-left-color: var(--success-color); }
+.client-list-item.status-theme-status-client-con-pendientes { border-left-color: var(--warning-color); }
+.client-list-item.status-theme-status-client-moroso { border-left-color: var(--danger-color); }
+.client-list-item.status-theme-status-client-inactivo,
+.client-list-item.status-theme-status-client-default { border-left-color: var(--secondary-color); }
+
+.client-list-item .client-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex-grow: 1;
+    min-width: 0; 
+}
+.client-list-item .client-name {
+    font-weight: 600;
+    font-size: 1.2rem; /* Nombre más grande */
+    color: var(--text-color);
+}
+.client-list-item .client-contact {
+    font-size: 0.9rem;
+    color: var(--text-muted-color);
+    word-break: break-all;
+}
+.client-list-item .client-deleted-date {
+    font-size: 0.8rem;
+    color: var(--danger-color);
+    font-style: italic;
+    margin-top: 5px;
+}
+.client-list-item .client-pills {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center; 
+}
+.client-list-item .client-actions-list {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 8px; 
+    padding-top: 12px;
+    border-top: 1px solid var(--border-color);
+    width: 100%;
+}
+.client-list-item .client-actions-list .btn-sm {
+    padding: 6px 12px;
+    font-size: 0.8rem;
+    /* Estilo sutil por defecto */
+    background-color: var(--light-gray-color);
+    color: var(--text-muted-color);
+    border-color: var(--light-gray-color);
+}
+.client-list-item:hover .client-actions-list .btn-sm.btn-warning {
+    background-color: var(--warning-color);
+    border-color: var(--warning-color);
+    color: #333;
+}
+.client-list-item:hover .client-actions-list .btn-sm.btn-danger {
+    background-color: var(--danger-color);
+    border-color: var(--danger-color);
+    color: white;
+}
 .client-actions .btn-icon .icon-svg {
     filter: brightness(0) invert(1);
 }
@@ -1980,7 +2068,7 @@ textarea.input-error {
     .totals-grid,
     #invoiceListContainer,
     .client-list {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
     }
 
     .form-actions {
@@ -2031,19 +2119,23 @@ textarea.input-error {
     }
 
     .client-list-item {
-        flex-direction: column;
-        align-items: flex-start;
+        flex-direction: row;
+        align-items: center;
+        gap: 15px; 
     }
 
     .client-list-item .client-pills {
-        margin-top: 5px;
-        margin-bottom: 5px;
+        margin-top: 0;
+        margin-left: auto; /* Empuja las píldoras antes de las acciones */
+        order: 1; 
     }
 
     .client-list-item .client-actions-list {
-        width: 100%;
-        justify-content: flex-start;
-        margin-top: 5px;
+        margin-top: 0;
+        padding-top: 0;
+        border-top: none; 
+        width: auto; /* Ancho automático para los botones */
+        order: 2; 
     }
 
     .modal-content {
