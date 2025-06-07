@@ -21,7 +21,8 @@ import {
     getDocs,
     orderBy,
     updateDoc,
-    deleteDoc
+    deleteDoc,
+    writeBatch
 } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
 
 // Configuración de Firebase
@@ -1826,83 +1827,113 @@ async function handleNavigation(sectionToShowId) {
 }
 
 async function loadAndDisplayInvoices() {
-    // ... (Código de loadAndDisplayInvoices existente) ...
-    const currentInvoiceListContainer = document.getElementById('invoiceListContainer');
-    if (!currentInvoiceListContainer) {
-        if(viewInvoicesSection) viewInvoicesSection.innerHTML = `<h2>Mis Facturas</h2><p>Error: Contenedor no encontrado.</p>`;
+    const invoiceListContainer = document.getElementById('invoiceListContainer');
+    if (!invoiceListContainer) { return; }
+
+    const user = auth.currentUser;
+    if (!user) { 
+        invoiceListContainer.innerHTML = '<p>Debes iniciar sesión para ver tus facturas.</p>';
         return; 
     }
-    const user = auth.currentUser;
-    if (!user) { currentInvoiceListContainer.innerHTML = '<p>Debes iniciar sesión.</p>'; return; }
-    currentInvoiceListContainer.innerHTML = '<p>Cargando facturas...</p>';
+
+    invoiceListContainer.innerHTML = '<div class="loading-dots"><span>.</span><span>.</span><span>.</span></div>';
+
     try {
         const q = query(collection(db, "facturas"), where("userId", "==", user.uid), orderBy("createdAt", "desc"));
         const querySnapshot = await getDocs(q);
-        currentInvoiceListContainer.innerHTML = '';
+
         if (querySnapshot.empty) {
-            currentInvoiceListContainer.innerHTML = '<p>No tienes facturas guardadas.</p>';
-        } else {
-            querySnapshot.forEach((docSnap) => {
-                const invoice = docSnap.data();
-                const invoiceId = docSnap.id;
-                const itemElement = document.createElement('div');
-                itemElement.classList.add('invoice-list-item');
-                itemElement.setAttribute('data-invoice-id', invoiceId);
-                let statusClassName = invoice.paymentStatus || 'pending';
-                let statusText = paymentStatusDetails[statusClassName]?.text || statusClassName.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-
-                itemElement.innerHTML = `
-                    <div class="invoice-list-header">
-                        <span class="invoice-list-number">${invoice.invoiceNumberFormatted || 'N/A'}</span>
-                        <span class="status-badge status-${statusClassName.toLowerCase()}">${statusText}</span>
-                    </div>
-                    <div class="invoice-list-client">${invoice.client?.name || 'N/A'}</div>
-
-                    ${invoice.uniqueQueryCode ? 
-                        `<div class="invoice-list-query-code">Cód. Consulta: <strong>${invoice.uniqueQueryCode}</strong></div>` 
-                        : ''
-                    }
-                    
-                    <div class="invoice-list-details">
-                        <span class="invoice-list-date">Fecha: ${invoice.invoiceDate || 'N/A'}</span>
-                        <span class="invoice-list-total">${(invoice.totals?.grandTotal || 0).toLocaleString('es-CO', { style: 'currency', currency: 'COP' })}</span>
-                    </div>
-                    <div class="invoice-list-actions">
-                        ${(invoice.paymentStatus === 'pending' || invoice.paymentStatus === 'overdue') ?
-                            `<button type="button" class="btn btn-sm btn-success confirm-payment-btn">Confirmar Pago</button>` :
-                            ''
-                        }
-                        <button type="button" class="btn btn-sm btn-info view-details-btn">Ver Detalles</button>
-                    </div>
-                `;
-
-                const confirmPaymentBtn = itemElement.querySelector('.confirm-payment-btn');
-                if (confirmPaymentBtn) {
-                    confirmPaymentBtn.addEventListener('click', (e) => {
-                        e.stopPropagation(); // Evitar que se disparen otros clics
-                        openPaymentUpdateModal(invoice, invoiceId);
-                    });
-                }
-                
-                const viewDetailsBtn = itemElement.querySelector('.view-details-btn');
-                if (viewDetailsBtn) {
-                    // **NUEVO CONSOLE LOG**
-                    console.log(`Botón 'Ver Detalles' ENCONTRADO para factura ID: ${invoiceId}. Botón:`, viewDetailsBtn);
-                    viewDetailsBtn.addEventListener('click', () => {
-                        // **NUEVO CONSOLE LOG**
-                        console.log(`Clic detectado en 'Ver Detalles' para factura ID: ${invoiceId}. Datos de factura:`, invoice);
-                        openInvoiceDetailModal(invoice, invoiceId); 
-                    });
-                } else {
-                    // **NUEVO CONSOLE LOG**
-                    console.error(`Botón 'Ver Detalles' NO FUE ENCONTRADO para factura ID: ${invoiceId}`);
-                }
-                currentInvoiceListContainer.appendChild(itemElement);
-            });
+            invoiceListContainer.innerHTML = '<p class="empty-list-message">No tienes facturas guardadas. ¡Crea la primera!</p>';
+            return;
         }
+
+        // --- LÓGICA DE ACTUALIZACIÓN SEMI-AUTOMÁTICA ---
+        const batch = writeBatch(db); // Prepara un lote para agrupar todas las actualizaciones
+        let updatesMade = false;
+        const today = new Date();
+        today.setHours(0, 0, 0, 0); // Poner la hora a cero para comparar solo fechas
+
+        const invoicesToDisplay = []; // Un array temporal para guardar las facturas a mostrar
+
+        querySnapshot.forEach(docSnap => {
+            let invoice = docSnap.data();
+            invoice.id = docSnap.id; // Añadir el ID al objeto para fácil acceso
+
+            // Revisa si una factura pagada ya se venció para el siguiente ciclo
+            if (invoice.paymentStatus === 'paid' && invoice.serviceStartDate) {
+                const dueDate = new Date(invoice.serviceStartDate + 'T00:00:00');
+
+                if (today > dueDate) {
+                    console.log(`Factura ${invoice.invoiceNumberFormatted} ha vencido, actualizando a "Vencido".`);
+                    // 1. Actualizar el objeto localmente para que se muestre bien inmediatamente
+                    invoice.paymentStatus = 'overdue'; 
+                    // 2. Añadir la actualización al batch para enviarla a la base de datos
+                    const invoiceRef = doc(db, "facturas", invoice.id);
+                    batch.update(invoiceRef, { paymentStatus: "overdue" });
+                    updatesMade = true; // Marcamos que hay cambios para enviar
+                }
+            }
+            invoicesToDisplay.push(invoice);
+        });
+
+        // Si se realizaron actualizaciones, enviarlas a Firestore
+        if (updatesMade) {
+            await batch.commit();
+            console.log("Estados de facturas vencidas actualizados en la base de datos.");
+        }
+        // --- FIN DE LA LÓGICA DE ACTUALIZACIÓN ---
+
+        // Ahora, renderizamos la lista con los datos actualizados
+        invoiceListContainer.innerHTML = '';
+        invoicesToDisplay.forEach((invoice) => {
+            const invoiceId = invoice.id;
+            const itemElement = document.createElement('div');
+            itemElement.classList.add('invoice-list-item');
+            itemElement.setAttribute('data-invoice-id', invoiceId);
+            let statusClassName = invoice.paymentStatus || 'pending';
+            let statusText = paymentStatusDetails[statusClassName]?.text || statusClassName.replace(/_/g, ' ');
+
+            itemElement.innerHTML = `
+                <div class="invoice-list-header">
+                    <span class="invoice-list-number">${invoice.invoiceNumberFormatted || 'N/A'}</span>
+                    <span class="status-badge status-${statusClassName.toLowerCase()}">${statusText}</span>
+                </div>
+                <div class="invoice-list-client">${invoice.client?.name || 'N/A'}</div>
+                ${invoice.uniqueQueryCode ? `<div class="invoice-list-query-code">Cód. Consulta: <strong>${invoice.uniqueQueryCode}</strong></div>` : ''}
+                <div class="invoice-list-details">
+                    <span class="invoice-list-date">Fecha: ${invoice.invoiceDate ? new Date(invoice.invoiceDate + 'T00:00:00').toLocaleDateString('es-CO') : 'N/A'}</span>
+                    <span class="invoice-list-total">${(invoice.totals?.grandTotal || 0).toLocaleString('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 })}</span>
+                </div>
+                <div class="invoice-list-actions">
+                    ${(invoice.paymentStatus === 'pending' || invoice.paymentStatus === 'overdue') ?
+                        `<button type="button" class="btn btn-sm btn-success confirm-payment-btn">Confirmar Pago</button>` :
+                        ''
+                    }
+                    <button type="button" class="btn btn-sm btn-info view-details-btn">Ver Detalles</button>
+                </div>
+            `;
+
+            // Listeners para los botones de la tarjeta
+            const confirmPaymentBtn = itemElement.querySelector('.confirm-payment-btn');
+            if (confirmPaymentBtn) {
+                confirmPaymentBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    openPaymentUpdateModal(invoice, invoiceId);
+                });
+            }
+            
+            const viewDetailsBtn = itemElement.querySelector('.view-details-btn');
+            if (viewDetailsBtn) {
+                viewDetailsBtn.addEventListener('click', () => {
+                    openInvoiceDetailModal(invoice, invoiceId); 
+                });
+            }
+            invoiceListContainer.appendChild(itemElement);
+        });
+
     } catch (error) {
-        console.error("Error al cargar facturas: ", error);
-        if (currentInvoiceListContainer) currentInvoiceListContainer.innerHTML = '<p>Error al cargar facturas.</p>';
+        console.error("Error al cargar y actualizar facturas: ", error);
+        if (invoiceListContainer) invoiceListContainer.innerHTML = '<p class="error-message">Error al cargar facturas. Intenta de nuevo.</p>';
     }
 }
 
