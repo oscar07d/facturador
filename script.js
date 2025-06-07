@@ -1910,7 +1910,7 @@ async function loadAndDisplayInvoices() {
             filteredInvoices.forEach((invoice) => {
                 const invoiceId = invoice.id;
                 const itemElement = document.createElement('div');
-                itemElement.classList.add('invoice-list-item');
+                itemElement.classList.add('invoice-list-item', `status-theme-${statusClassName.toLowerCase()}`);
                 let statusClassName = invoice.paymentStatus || 'pending';
                 let statusText = paymentStatusDetails[statusClassName]?.text || statusClassName.replace(/_/g, ' ');
 
