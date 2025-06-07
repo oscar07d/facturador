@@ -422,36 +422,48 @@ body.modal-active {
     display: block;
 }
 
+/* === ESTILOS GENERALES DEL FORMULARIO (REDISEÑADO) === */
 .invoice-form {
     display: flex;
     flex-direction: column;
-    gap: 30px;
+    gap: 35px; /* Más espacio entre secciones */
 }
 
 .form-section {
-    border: 1px solid var(--border-color);
-    padding: 25px;
+    background-color: var(--container-background); /* Fondo blanco */
+    padding: 25px 30px;
     border-radius: var(--border-radius-m);
-    background-color: #fdfdfd;
+    border: none; /* Quitamos el borde sólido */
+    box-shadow: var(--box-shadow-light); /* Usamos una sombra sutil */
+    transition: box-shadow 0.2s ease;
+}
+
+.form-section:hover {
+    box-shadow: var(--box-shadow-medium); /* Sombra más pronunciada al pasar el cursor */
 }
 
 .form-section legend {
-    font-size: 1.25rem;
+    font-size: 1.3rem; /* Título de sección más grande */
     font-weight: 600;
     color: var(--primary-color);
-    padding: 0 10px;
-    margin-left: 10px;
+    padding: 0;
+    margin-left: 0;
+    margin-bottom: 20px; /* Espacio debajo de la leyenda */
+    width: 100%;
+    border-bottom: 1px solid var(--border-color); /* Línea separadora sutil */
+    padding-bottom: 10px;
 }
 
 .optional-tag {
     font-size: 0.8rem;
     font-weight: 400;
     color: var(--text-muted-color);
+    margin-left: 8px;
 }
 
 .form-grid {
     display: grid;
-    gap: 20px;
+    gap: 22px 28px; /* Espacio entre filas y columnas */
 }
 
 .form-grid.two-columns,
@@ -460,7 +472,7 @@ body.modal-active {
 }
 
 .form-group.full-width {
-    grid-column: 1 / -1;
+    grid-column: 1 / -1; /* Ocupar todo el ancho en grids de múltiples columnas */
 }
 
 .form-group {
@@ -468,12 +480,10 @@ body.modal-active {
     flex-direction: column;
     gap: 8px;
 }
-
 .form-group label {
     font-weight: 500;
-    color: var(--text-color);
-    font-size: 0.95rem;
-    text-align: left;
+    font-size: 0.9rem;
+    color: var(--text-muted-color); /* Color más suave para las etiquetas */
 }
 
 .form-group input[type="text"],
@@ -482,17 +492,18 @@ body.modal-active {
 .form-group input[type="date"],
 .form-group input[type="number"],
 .form-group select,
-.form-group textarea {
+.form-group textarea,
+.custom-select-container {
     width: 100%;
-    padding: 12px 15px;
+    padding: 10px 14px;
     border: 1px solid var(--border-color);
     border-radius: var(--border-radius-s);
     font-size: 1rem;
     font-family: 'Poppins', sans-serif;
     transition: border-color var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
-    background-color: var(--container-background);
+    background-color: var(--background-color); /* Un fondo ligeramente gris para el input */
     color: var(--text-color);
-    min-height: 46px;
+    min-height: 44px;
 }
 
 .form-group input:focus,
@@ -502,14 +513,14 @@ body.modal-active {
 .custom-select-container.open {
     outline: none;
     border-color: var(--primary-color);
-    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.15);
+    background-color: #fff;
 }
-
 .invoice-number-display {
-    font-size: 1.1rem;
+    font-size: 1.2rem; /* Más grande */
     font-weight: 600;
     color: var(--text-color);
-    padding: 10px 0;
+    padding: 8px 0;
     text-align: left;
 }
 
@@ -1904,22 +1915,19 @@ textarea.input-error {
 /* === MEDIA QUERIES PARA ADAPTABILIDAD (Generales de la app) === */
 /* ... (tus media queries existentes) ... */
 @media (min-width: 769px) {
-    .form-grid.two-columns {
+    .form-grid.two-columns { 
         grid-template-columns: repeat(2, 1fr);
     }
-
     .form-grid.three-columns {
         grid-template-columns: repeat(3, 1fr);
     }
-
     .add-item-form > .form-grid.three-columns.item-details-grid {
-        grid-template-columns: 1fr 1fr auto;
-    }
-
-    .totals-grid {
-        grid-template-columns: 0.8fr 1.2fr;
-        align-items: flex-start;
-    }
+        grid-template-columns: 2fr 1fr 1fr auto;
+    } /* Más espacio para la descripción */
+    .totals-grid { 
+        grid-template-columns: 1fr 1fr;
+        align-items: flex-start; 
+    } /* Alineación mejorada */
 
     .share-actions .button-group {
         flex-direction: row;
