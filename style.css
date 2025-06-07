@@ -1240,20 +1240,21 @@ textarea.input-error {
     100% { transform: rotate(360deg); }
 }
 
-#invoiceListContainer {
-    margin-top: 20px;
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 20px;
+#invoiceListContainer { 
+    margin-top: 20px; 
+    display: grid; 
+    grid-template-columns: 1fr; 
+    gap: 20px; 
 }
 
 .invoice-list-item {
     background-color: #fff;
     border: 1px solid var(--border-color);
-    border-radius: var(--border-radius-m);
+    border-left-width: 5px; /* Prepara el espacio para el borde de color */
+    border-radius: var(--border-radius-s); /* Bordes más sutiles */
     padding: 20px;
-    box-shadow: var(--box-shadow-light);
-    transition: box-shadow var(--transition-speed) ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05); /* Sombra más suave */
+    transition: box-shadow var(--transition-speed) ease, transform var(--transition-speed) ease;
     display: flex;
     flex-direction: column;
     gap: 12px;
@@ -1261,63 +1262,78 @@ textarea.input-error {
 
 .invoice-list-item:hover {
     box-shadow: var(--box-shadow-medium);
+    transform: translateY(-4px); /* Efecto de flotación más notorio */
 }
 
-.invoice-list-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding-bottom: 10px;
-    border-bottom: 1px dashed var(--border-color);
+.invoice-list-item.status-theme-paid { border-left-color: var(--success-color); }
+.invoice-list-item.status-theme-pending { border-left-color: var(--warning-color); }
+.invoice-list-item.status-theme-overdue { border-left-color: var(--danger-color); }
+.invoice-list-item.status-theme-in_process { border-left-color: var(--info-color); }
+.invoice-list-item.status-theme-partial_payment { border-left-color: #fd7e14; }
+.invoice-list-item.status-theme-cancelled { border-left-color: var(--secondary-color); }
+
+.invoice-list-header { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: flex-start;
+    padding-bottom: 10px; 
+    border-bottom: 1px dashed var(--border-color); 
 }
 
-.invoice-list-number {
-    font-weight: 600;
-    font-size: 1.1rem;
-    color: var(--primary-color);
+.invoice-list-number { 
+    font-weight: 600; 
+    font-size: 1.2rem; /* Más grande */
+    color: var(--primary-color); 
 }
 
-.invoice-list-client {
-    font-size: 1.05rem;
-    color: var(--text-color);
-    font-weight: 500;
+.invoice-list-client { 
+    font-size: 1.1rem; /* Más grande */
+    color: var(--text-color); 
+    font-weight: 500; 
 }
 
 .invoice-list-query-code {
     font-size: 0.8em;
-    color: var(--text-muted-color, #6c757d);
-    margin-top: 4px;
-    margin-bottom: 4px;
+    color: var(--text-muted-color);
+    background-color: var(--background-color);
+    padding: 3px 8px;
+    border-radius: var(--border-radius-s);
+    align-self: flex-start; /* Para que no ocupe todo el ancho */
+    display: inline-block;
 }
 
-.invoice-list-query-code strong {
+/* .invoice-list-query-code strong {
     color: var(--text-color, #212529);
     font-weight: 600;
-}
+} */
 
-.invoice-list-details {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.9rem;
-    color: var(--text-muted-color);
-    flex-wrap: wrap;
+.invoice-list-details { 
+    display: flex; 
+    justify-content: space-between; 
+    font-size: 0.95rem; /* Ligeramente más grande */
+    color: var(--text-muted-color); 
+    flex-wrap: wrap; 
     gap: 10px;
+    padding-top: 10px;
+    margin-top: auto; /* Empuja esta sección hacia abajo */
 }
 
-.invoice-list-date,
+/*  .invoice-list-date,
 .invoice-list-total {
     flex-basis: calc(50% - 5px);
     min-width: 120px;
+} */
+
+.invoice-list-total { 
+    font-weight: 700; /* Más peso para el total */
+    font-size: 1.1rem;
+    color: var(--text-color); 
+    text-align: right; 
 }
 
-.invoice-list-total {
-    font-weight: 600;
-    color: var(--text-color);
-    text-align: right;
-}
-
-.invoice-list-date {
-    text-align: left;
+.invoice-list-date { 
+    text-align: left; 
+    align-self: flex-end; /* Alinear con el total */
 }
 
 .status-badge {
@@ -1330,9 +1346,14 @@ textarea.input-error {
     line-height: 1;
 }
 
-.status-pending {
-    background-color: var(--warning-color);
-    color: #333;
+.status-badge { 
+    padding: 5px 12px; 
+    border-radius: var(--border-radius-pill); 
+    font-size: 0.75rem; /* Un poco más pequeño */
+    font-weight: 700;
+    color: white; 
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .status-paid {
@@ -1363,15 +1384,15 @@ textarea.input-error {
     background-color: var(--dark-color);
 }
 
-.invoice-list-actions {
-    text-align: right;
-    margin-top: auto;
-    padding-top:10px;
+.invoice-list-actions { 
+    text-align: right; 
+    padding-top: 10px;
+    border-top: 1px solid var(--border-color); /* Separador para los botones */
 }
 
-.invoice-list-actions .btn-sm {
-    padding: 6px 12px;
-    font-size: 0.85rem;
+.invoice-list-actions .btn-sm { 
+    padding: 8px 14px; /* Botones ligeramente más grandes */
+    font-size: 0.85rem; 
 }
 
 /* ================================================ */
