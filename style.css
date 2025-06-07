@@ -114,7 +114,7 @@ html {
 body {
     font-family: 'Poppins', sans-serif;
     /* Nuevo fondo con gradiente radial sutil */
-    background: radial-gradient(circle, #ffffff 0%, #f0f2f5 100%);
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
     color: var(--text-color);
     display: flex;
     flex-direction: column;
@@ -140,26 +140,21 @@ body.modal-active {
 
 /* === ESTILOS PARA LA PANTALLA DE LOGIN === */
 .login-container {
-    /* Efecto "Glassmorphism" */
-    background-color: rgba(255, 255, 255, 0.7); /* Fondo semi-transparente */
-    backdrop-filter: blur(10px); /* El desenfoque del fondo */
-    border: 1px solid rgba(255, 255, 255, 0.3); /* Borde sutil */
-
-    padding: 40px 50px; /* Un poco más de padding */
-    border-radius: var(--border-radius-l); /* Radio de borde más suave */
-    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1); /* Sombra más pronunciada */
-
+    background-color: rgba(255, 255, 255, 0.9); /* Fondo ligeramente traslúcido */
+    backdrop-filter: blur(5px); /* Efecto cristal sutil (si el navegador lo soporta) */
+    padding: 40px 50px;
+    border-radius: var(--border-radius-m); /* Un radio más estándar */
+    border-top: 5px solid var(--primary-color); /* Borde de acento de tu marca */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); /* Sombra más suave y extendida */
     text-align: center;
     width: 100%;
-    max-width: 480px;
-    display: flex; 
+    max-width: 450px; /* Un poco más angosto */
+    display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 20px; /* Espacio entre elementos internos */
-    margin-top: 10vh; /* Ajuste del margen superior */
-
-    /* Animación de entrada */
-    animation: fadeInAndFloat 0.8s ease-out forwards;
+    gap: 15px; /* Espacio entre logo, títulos y botón */
+    margin-top: 10vh;
+    animation: fadeInAndFloat 0.7s ease-out forwards; /* Aplicar animación */
 }
 
 .login-container .logo-container {
@@ -173,16 +168,18 @@ body.modal-active {
 }
 
 .login-container h1 {
-    font-size: 1.75rem;
+    font-size: 1.6rem; /* Ligeramente más pequeño */
     font-weight: 600;
     color: var(--text-color);
-    margin-bottom: 5px;
+    margin-top: 10px; /* Espacio sobre el título */
+    margin-bottom: 0;
 }
 
 .login-container p {
     font-size: 1rem;
     color: var(--text-muted-color);
-    margin-bottom: 20px;
+    margin-top: 0;
+    margin-bottom: 15px; /* Más espacio antes del botón */
 }
 
 .google-btn {
@@ -206,10 +203,9 @@ body.modal-active {
 }
 
 .google-btn:hover {
-    background-color: #fdfdfd;
-    border-color: #c6c6c6;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12); /* Sombra más pronunciada al pasar el cursor */
-    transform: translateY(-3px); /* Levantar un poco más */
+    border-color: var(--primary-color); /* Borde azul al pasar el cursor */
+    box-shadow: 0 6px 20px rgba(0, 123, 255, 0.15); /* Sombra azulada */
+    transform: translateY(-3px);
 }
 
 .google-icon {
@@ -1185,7 +1181,7 @@ textarea.input-error {
 @keyframes fadeInAndFloat {
     from {
         opacity: 0;
-        transform: translateY(20px);
+        transform: translateY(15px);
     }
     to {
         opacity: 1;
