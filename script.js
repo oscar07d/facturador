@@ -1834,10 +1834,22 @@ async function loadAndDisplayInvoices() {
                         <span class="invoice-list-total">${(invoice.totals?.grandTotal || 0).toLocaleString('es-CO', { style: 'currency', currency: 'COP' })}</span>
                     </div>
                     <div class="invoice-list-actions">
+                        ${(invoice.paymentStatus === 'pending' || invoice.paymentStatus === 'overdue') ?
+                            `<button type="button" class="btn btn-sm btn-success confirm-payment-btn">Confirmar Pago</button>` :
+                            ''
+                        }
                         <button type="button" class="btn btn-sm btn-info view-details-btn">Ver Detalles</button>
                     </div>
                 `;
 
+                const confirmPaymentBtn = itemElement.querySelector('.confirm-payment-btn');
+                if (confirmPaymentBtn) {
+                    confirmPaymentBtn.addEventListener('click', (e) => {
+                        e.stopPropagation(); // Evitar que se disparen otros clics
+                        openPaymentUpdateModal(invoice, invoiceId);
+                    });
+                }
+                
                 const viewDetailsBtn = itemElement.querySelector('.view-details-btn');
                 if (viewDetailsBtn) {
                     // **NUEVO CONSOLE LOG**
