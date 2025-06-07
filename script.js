@@ -2001,7 +2001,7 @@ async function displayActiveClients() {
                 const client = docSnap.data();
                 const clientId = docSnap.id;
                 const clientElement = document.createElement('div');
-                clientElement.classList.add('client-list-item'); // Reusaremos un estilo similar a invoice-list-item
+                clientElement.classList.add('client-list-item', `status-theme-${claseCssEstadoGeneral}`); // Reusaremos un estilo similar a invoice-list-item
                 clientElement.setAttribute('data-client-id', clientId);
 
                 // Píldoras de estado (similar a como lo hicimos para el desplegable)
