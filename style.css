@@ -209,6 +209,46 @@ body.modal-active {
     height: 22px;
 }
 
+/* === ESTILOS PARA BÚSQUEDA Y FILTROS === */
+.invoice-search-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-bottom: 25px;
+    padding: 15px;
+    background-color: #fdfdfd;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-m);
+}
+
+.search-input-group {
+    flex-grow: 1; /* Para que la barra de búsqueda ocupe el espacio disponible */
+    min-width: 250px;
+}
+
+.filter-input-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0; /* Para que el filtro no se encoja */
+}
+
+#invoiceSearchInput, #statusFilterSelect {
+    /* Reutilizamos los estilos de los inputs del formulario */
+    width: 100%;
+    padding: 10px 15px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-s);
+    font-size: 1rem;
+    font-family: 'Poppins', sans-serif;
+    min-height: 44px;
+}
+#invoiceSearchInput:focus, #statusFilterSelect:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
 /* === ESTILOS PARA EL CONTENIDO PRINCIPAL DE LA APP === */
 .main-content {
     width: 100%;
