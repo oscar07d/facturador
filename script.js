@@ -135,6 +135,15 @@ const isReminderCheckbox = document.getElementById('isReminderCheckbox');
 const imageFormatSelectionDiv = document.getElementById('imageFormatSelection'); // Para mostrar/ocultar
 const imageFormatSelect = document.getElementById('imageFormatSelect'); // Para leer el formato
 
+const paymentUpdateModal = document.getElementById('paymentUpdateModal');
+const paymentUpdateModalTitle = document.getElementById('paymentUpdateModalTitle');
+const paymentUpdateInvoiceNumber = document.getElementById('paymentUpdateInvoiceNumber');
+const nextDueDateInput = document.getElementById('nextDueDateInput');
+const closePaymentUpdateModalBtn = document.getElementById('closePaymentUpdateModalBtn');
+const cancelSubscriptionBtn = document.getElementById('cancelSubscriptionBtn');
+const confirmAndSetNextBtn = document.getElementById('confirmAndSetNextBtn');
+const closeUpdateModalBtn = document.getElementById('closeUpdateModalBtn');
+
 console.log("templateSelectionModal al cargar:", templateSelectionModal);
 console.log("isReminderCheckbox al cargar:", isReminderCheckbox);
 console.log("proceedWithTemplateSelectionBtn al cargar:", proceedWithTemplateSelectionBtn);
@@ -1362,6 +1371,31 @@ function closeTemplateSelectionModal() {
     }
 }
 
+function openPaymentUpdateModal(invoiceData, invoiceId) {
+    currentInvoiceDataForModalActions = invoiceData;
+    currentInvoiceIdForModalActions = invoiceId;
+    if (!paymentUpdateModal) return;
+
+    if (paymentUpdateInvoiceNumber) {
+        paymentUpdateInvoiceNumber.textContent = invoiceData.invoiceNumberFormatted || 'N/A';
+    }
+
+    if (nextDueDateInput) {
+        const currentDueDate = new Date(invoiceData.serviceStartDate + 'T00:00:00');
+        // Calcular el próximo mes
+        currentDueDate.setMonth(currentDueDate.getMonth() + 1);
+        nextDueDateInput.value = currentDueDate.toISOString().split('T')[0];
+    }
+    
+    paymentUpdateModal.classList.add('active');
+    if (bodyElement) bodyElement.classList.add('modal-active');
+}
+
+function closePaymentUpdateModal() {
+    if (paymentUpdateModal) paymentUpdateModal.classList.remove('active');
+    if (bodyElement) bodyElement.classList.remove('modal-active');
+}
+
 function formatInvoiceNumber(number) {
     return String(number).padStart(3, '0');
 }
@@ -2426,6 +2460,84 @@ onAuthStateChanged(auth, (user) => {
         if (mainContent) mainContent.style.display = 'none';
     }
 });
+
+// --- Event Listeners para el Modal de Actualizar Pago ---
+if (closePaymentUpdateModalBtn) {
+    closePaymentUpdateModalBtn.addEventListener('click', closePaymentUpdateModal);
+}
+if (closeUpdateModalBtn) { // Botón "Cerrar" del footer
+    closeUpdateModalBtn.addEventListener('click', closePaymentUpdateModal);
+}
+if (paymentUpdateModal) {
+    paymentUpdateModal.addEventListener('click', (event) => {
+        if (event.target === paymentUpdateModal) {
+            closePaymentUpdateModal();
+        }
+    });
+}
+document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && paymentUpdateModal?.classList.contains('active')) {
+        closePaymentUpdateModal();
+    }
+});
+
+// Listener para el botón "Marcar como Pagado"
+if (confirmAndSetNextBtn) {
+    confirmAndSetNextBtn.addEventListener('click', async () => {
+        const newDueDate = nextDueDateInput.value;
+        if (!newDueDate) {
+            alert("Por favor, establece la próxima fecha de pago.");
+            return;
+        }
+        if (!confirm("¿Confirmas que has recibido el pago y quieres actualizar la fecha de vencimiento?")) {
+            return;
+        }
+        
+        showLoading(true);
+        const invoiceRef = doc(db, "facturas", currentInvoiceIdForModalActions);
+        try {
+            await updateDoc(invoiceRef, {
+                paymentStatus: "paid",
+                serviceStartDate: newDueDate // Actualizamos la fecha para el siguiente ciclo
+            });
+            alert("¡Factura actualizada con éxito!");
+            closePaymentUpdateModal();
+            await loadAndDisplayInvoices(); // Refrescar la lista
+        } catch (error) {
+            console.error("Error al actualizar la factura:", error);
+            alert("Hubo un error al actualizar la factura.");
+        } finally {
+            showLoading(false);
+        }
+    });
+}
+
+// Listener para el botón "Cancelar Suscripción"
+if (cancelSubscriptionBtn) {
+    cancelSubscriptionBtn.addEventListener('click', async () => {
+        if (!confirm("¿Estás seguro de que deseas cancelar la suscripción/pago recurrente para esta factura? El estado cambiará a 'Cancelado'.")) {
+            return;
+        }
+
+        showLoading(true);
+        const invoiceRef = doc(db, "facturas", currentInvoiceIdForModalActions);
+        try {
+            await updateDoc(invoiceRef, {
+                paymentStatus: "cancelled"
+                // Opcionalmente, también podrías poner serviceStartDate a null
+                // serviceStartDate: null 
+            });
+            alert("La suscripción ha sido marcada como cancelada.");
+            closePaymentUpdateModal();
+            await loadAndDisplayInvoices(); // Refrescar la lista
+        } catch (error) {
+            console.error("Error al cancelar la suscripción:", error);
+            alert("Hubo un error al cancelar la suscripción.");
+        } finally {
+            showLoading(false);
+        }
+    });
+}
 
 // --- Event Listeners para la Interfaz de Facturación ---
 if (navCreateInvoice) navCreateInvoice.addEventListener('click', (e) => { e.preventDefault(); handleNavigation('createInvoiceSection'); });
