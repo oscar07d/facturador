@@ -152,6 +152,7 @@ console.log("proceedWithTemplateSelectionBtn al cargar:", proceedWithTemplateSel
 const saveInvoiceBtn = document.getElementById('saveInvoiceBtn');
 const invoiceSearchInput = document.getElementById('invoiceSearchInput');
 const statusFilterSelect = document.getElementById('statusFilterSelect');
+const invoiceSearchBtn = document.getElementById('invoiceSearchBtn');
 
 const generateInvoiceFileBtn = document.getElementById('generateInvoiceFileBtn');
 
@@ -2902,6 +2903,14 @@ if (invoiceForm) {
             if (saveInvoiceBtn) saveInvoiceBtn.disabled = false;
             showLoading(false);
         }
+    });
+}
+
+if (invoiceSearchBtn) {
+    invoiceSearchBtn.addEventListener('click', () => {
+        // La función loadAndDisplayInvoices ya lee el valor del input,
+        // así que solo necesitamos llamarla para que filtre.
+        loadAndDisplayInvoices();
     });
 }
 
