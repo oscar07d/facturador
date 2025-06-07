@@ -1681,6 +1681,16 @@ textarea.input-error {
     z-index: 1060; /* Un valor mayor que el de invoiceDetailModal */
 }
 
+#paymentUpdateModal.modal-overlay {
+    z-index: 1055; /* Entre el modal de detalles y el de selección */
+}
+#paymentUpdateModal .modal-content {
+    max-width: 500px;
+}
+#paymentUpdateModal .modal-footer {
+    justify-content: space-between; /* Para distribuir los botones */
+}
+
 /* === MEDIA QUERIES PARA ADAPTABILIDAD (Generales de la app) === */
 /* ... (tus media queries existentes) ... */
 @media (min-width: 769px) {
