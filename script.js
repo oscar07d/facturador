@@ -1909,11 +1909,18 @@ async function loadAndDisplayInvoices() {
         } else {
             filteredInvoices.forEach((invoice) => {
                 const invoiceId = invoice.id;
-                const itemElement = document.createElement('div');
-                itemElement.classList.add('invoice-list-item', `status-theme-${statusClassName.toLowerCase()}`);
+
+                // --- CORRECCIÓN AQUÍ: Definimos las variables ANTES de usarlas ---
                 let statusClassName = invoice.paymentStatus || 'pending';
                 let statusText = paymentStatusDetails[statusClassName]?.text || statusClassName.replace(/_/g, ' ');
+                // --- FIN DE LA CORRECCIÓN ---
 
+                const itemElement = document.createElement('div');
+                // Añadimos la clase del tema para el borde de color que hicimos antes
+                itemElement.classList.add('invoice-list-item', `status-theme-${statusClassName.toLowerCase()}`);
+                itemElement.setAttribute('data-invoice-id', invoiceId);
+                
+                // Ahora el innerHTML puede usar las variables sin problemas
                 itemElement.innerHTML = `
                     <div class="invoice-list-header">
                         <span class="invoice-list-number">${invoice.invoiceNumberFormatted || 'N/A'}</span>
@@ -1934,6 +1941,7 @@ async function loadAndDisplayInvoices() {
                     </div>
                 `;
 
+                // Listeners para los botones de la tarjeta
                 const confirmPaymentBtn = itemElement.querySelector('.confirm-payment-btn');
                 if (confirmPaymentBtn) {
                     confirmPaymentBtn.addEventListener('click', (e) => {
