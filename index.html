@@ -228,6 +228,23 @@
 
                 <section id="viewInvoicesSection" class="invoice-section" style="display: none;">
                     <h2>Mis Facturas</h2>
+                    <div class="invoice-search-controls">
+                        <div class="search-input-group">
+                            <input type="search" id="invoiceSearchInput" placeholder="Buscar por cliente, N° factura, Cód. consulta...">
+                        </div>
+                        <div class="filter-input-group">
+                            <label for="statusFilterSelect">Filtrar por estado:</label>
+                            <select id="statusFilterSelect">
+                                <option value="all">Todos los estados</option>
+                                <option value="paid">Pagado</option>
+                                <option value="pending">Pendiente</option>
+                                <option value="overdue">Vencido</option>
+                                <option value="in_process">En Proceso</option>
+                                <option value="partial_payment">Pago Parcial</option>
+                                <option value="cancelled">Cancelado</option>
+                            </select>
+                        </div>
+                    </div>
                     <div id="invoiceListContainer">
                         {/* Las facturas se cargarán aquí con JS */}
                     </div>
