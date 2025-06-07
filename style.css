@@ -2070,6 +2070,18 @@ textarea.input-error {
     #logoutButton.btn-icon .icon-svg {
         margin-right: 0;
     }
+    .invoice-search-controls {
+        flex-direction: column;
+        padding: 15px;
+    }
+    .filter-input-group {
+        flex-direction: column;
+        align-items: flex-start;
+        width: 100%;
+    }
+    #statusFilterSelect {
+        width: 100%;
+    }  
 }
 
 
