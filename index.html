@@ -404,6 +404,30 @@
             </div>
         </div>
 
+        <div id="paymentUpdateModal" class="modal-overlay">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 id="paymentUpdateModalTitle">Actualizar Pago Recurrente</h2>
+                    <button id="closePaymentUpdateModalBtn" class="modal-close-btn">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p>Factura: <strong id="paymentUpdateInvoiceNumber">FCT-XXX</strong></p>
+                    <div class="form-group">
+                        <label for="nextDueDateInput">Establecer Próxima Fecha de Pago/Vencimiento:</label>
+                        <input type="date" id="nextDueDateInput" name="nextDueDateInput" class="form-control">
+                        <small class="form-text text-muted">
+                            Al marcar como "Pagado", esta será la nueva fecha de vencimiento para el siguiente ciclo.
+                        </small>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="cancelSubscriptionBtn" class="btn btn-outline-danger">Cancelar Suscripción</button>
+                    <button type="button" id="confirmAndSetNextBtn" class="btn btn-success">Marcar como Pagado</button>
+                    <button type="button" id="closeUpdateModalBtn" class="btn btn-secondary">Cerrar</button>
+                </div>
+            </div>
+        </div>
+        
         <div id="loadingOverlay" class="loading-overlay" style="display: none;">
         <div class="loading-content">
             <svg id="Capa_2_loading_logo_overlay" data-name="Capa 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 306.53 264.67" class="loading-logo-spinner">
