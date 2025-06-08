@@ -1994,9 +1994,9 @@ textarea.input-error {
         padding: 25px;
     }
     .invoice-app-container { 
-        padding: 20px; 
+        /* Arriba, Lados, Abajo, Lados */
+        padding: 20px 20px 100px 20px; 
     }
-
     /* --- Cabecera y Navegación en Móvil --- */
     .app-header { 
         flex-direction: row;
