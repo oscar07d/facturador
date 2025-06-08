@@ -1986,7 +1986,8 @@ textarea.input-error {
 
 @media (max-width: 768px) {
     body { 
-        padding: 15px; 
+        /* Arriba, Derecha, Abajo, Izquierda */
+        padding: 15px 15px 80px 15px; 
     }
     .login-container { 
         max-width: 90%; 
