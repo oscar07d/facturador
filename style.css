@@ -1985,63 +1985,28 @@ textarea.input-error {
 
 
 @media (max-width: 768px) {
-    body {
-        padding: 15px;
-        padding-bottom: 80px;
+    body { 
+        padding: 15px; 
     }
-    
-    .app-nav {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        max-width: 100%; /* Ocupar todo el ancho en móvil */
-        border-radius: 0; /* Quitar bordes redondeados */
-        border-top: 1px solid rgba(255, 255, 255, 0.2); /* Borde superior sutil */
-        z-index: 1000; /* Asegurar que esté por encima del contenido */
-    }
-
-    .app-nav ul {
-        justify-content: space-around;
-    }
-
-    .app-nav ul li a {
-        display: flex;
-        flex-direction: column; /* Apilar icono y texto (si estuviera visible) */
-        align-items: center;
-        gap: 4px; /* Espacio entre icono y texto */
-        padding: 8px 5px; /* Padding más compacto */
-        font-size: 0.7rem; /* Texto más pequeño si decides mostrarlo */
-        border-bottom-width: 3px; /* Mantener el indicador activo */
-    }
-
-    .app-nav .nav-text {
-        display: none;
-    }
-    .app-nav .nav-icon {
-        display: block; /* Hacemos visible el icono */
-        width: 24px;
-        height: 24px;
-        filter: brightness(0) invert(1); /* Poner el icono blanco para que se vea sobre el fondo azul */
-    }
-    
-    .login-container {
-        max-width: 90%;
+    .login-container { 
+        max-width: 90%; 
         padding: 25px;
     }
+    .invoice-app-container { 
+        padding: 20px; 
+    }
 
+    /* --- Cabecera y Navegación en Móvil --- */
     .app-header { 
         flex-direction: row;
         justify-content: space-between;
         align-items: center;
-        gap: 10px; 
+        gap: 10px;
         padding: 10px 15px;
-    } 
-
-    .logo-app-container .app-logo-completo {
-        display: none;
     }
-    
+    .logo-app-container .app-logo-completo {
+        display: none; /* Ocultar logo completo */
+    }
     .logo-app-container {
         background-image: url('img/Isologo.svg');
         background-repeat: no-repeat;
@@ -2051,178 +2016,77 @@ textarea.input-error {
         height: 40px;
         max-width: 40px;
     }
-    
-    .logo-app-container {
-        max-width: 200px;
-    }
-
-    .app-title-container h1 {
-        font-size: 1.2rem;
-    }
-
-    .app-nav ul li a {
-        padding: 12px 15px;
-        font-size: 0.9rem;
-    }
-
-    .invoice-app-container {
-        padding: 20px;
-    }
-
-        /* Forzar todos los grids del formulario a una sola columna */
-    .form-grid.two-columns, 
-    .form-grid.three-columns, 
-    .add-item-form > .form-grid.three-columns.item-details-grid, 
-    #streamingProfileFields .form-grid.two-columns, 
-    .totals-grid {
-        grid-template-columns: 1fr;
-    }
-
-    /* Apilar los botones de acción del formulario verticalmente */
-    .form-actions,
-    .client-actions {
-        flex-direction: column;
-        gap: 10px;
-    }
-
-    /* Hacer que los botones de acción ocupen todo el ancho */
-    .form-actions .btn,
-    .client-actions .btn {
-        width: 100%;
-    }
-
-    /* Apilar los botones de compartir también */
-    .share-actions .button-group {
-        flex-direction: column;
-        width: 100%;
-    }
-    .share-actions .btn-share {
-        width: 100%;
-        margin-right: 0;
-    }
-    
-    .form-grid.two-columns,
-    .form-grid.three-columns,
-    .add-item-form > .form-grid.three-columns.item-details-grid,
-    #streamingProfileFields .form-grid.two-columns,
-    .totals-grid,
-    #invoiceListContainer,
-    .client-list {
-        grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
-    }
-
-    .form-actions {
-        flex-direction: column;
-    }
-
-    .form-actions .btn {
-        width: 100%;
-    }
-
-    .client-actions {
-        flex-direction: column;
-        gap: 8px;
-    }
-
-    .client-actions .btn {
-        width: 100%;
-    }
-
-    .share-actions .button-group {
-        flex-direction: column;
-    }
-
-    .share-actions .btn-share {
-        width: 100%;
-        margin-right: 0;
-    }
-
-    .invoice-list-item {
-        padding: 15px;
-    }
-
-    .invoice-list-details {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 5px;
-        margin-bottom: 10px;
-    }
-
-    .invoice-list-date,
-    .invoice-list-total {
-        text-align: left;
-        flex-basis: auto;
-    }
-
-    .invoice-list-actions {
-        text-align: left;
-    }
-
-    .client-list-item {
-        flex-direction: row;
-        align-items: center;
-        gap: 15px; 
-    }
-
-    .client-list-item .client-pills {
-        margin-top: 0;
-        margin-left: auto; /* Empuja las píldoras antes de las acciones */
-        order: 1; 
-    }
-
-    .client-list-item .client-actions-list {
-        margin-top: 0;
-        padding-top: 0;
-        border-top: none; 
-        width: auto; /* Ancho automático para los botones */
-        order: 2; 
-    }
-
-    .modal-content {
-        width: 95%;
-        padding: 20px 15px;
-        max-height: 90vh;
-    }
-
-    .modal-header h2 {
-        font-size: 1.3rem;
-    }
-
-    #modalInvoiceDetailsContent .modal-section-grid {
-        grid-template-columns: 1fr;
-    }
-
-    #modalInvoiceDetailsContent .modal-items-table th,
-    #modalInvoiceDetailsContent .modal-items-table td {
-        padding: 6px 8px;
-    }
-    #invoiceDetailModal .btn-icon span {
-        display: none;
-    }
-    #invoiceDetailModal .btn-icon {
-        padding: 8px;
-        width: 40px;
-        height: 40px;
-    }
-    #invoiceDetailModal .btn-icon .icon-svg {
-        margin-right: 0;
-    }
-    #invoiceDetailModal .modal-footer {
-        justify-content: center; /* Centra los botones */
-        gap: 8px; /* Reduce un poco el espacio entre botones */
+    .app-title-container h1 { 
+        font-size: 1.2rem; 
     }
     #logoutButton span {
-        display: none;
+        display: none; /* Ocultar texto del botón de logout */
     }
     #logoutButton.btn-icon {
         padding: 8px;
-        width: 40px;
-        height: 40px;
+        width: 38px;
+        height: 38px;
         border-radius: 50%;
     }
     #logoutButton.btn-icon .icon-svg {
         margin-right: 0;
     }
+    
+    /* Barra de Navegación Fija en la Parte Inferior */
+    .app-nav {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        max-width: 100%;
+        border-radius: 0;
+        border-top: 1px solid rgba(255, 255, 255, 0.2);
+        z-index: 1000;
+    }
+    .app-nav ul {
+        justify-content: space-around;
+    }
+    .app-nav ul li a {
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+        padding: 8px 5px;
+        font-size: 0.7rem;
+    }
+    .app-nav .nav-text {
+        display: none; /* Ocultar texto de la navegación */
+    }
+    .app-nav .nav-icon {
+        display: block; /* Mostrar icono */
+        width: 24px;
+        height: 24px;
+        filter: brightness(0) invert(1); /* Poner icono blanco */
+    }
+    body {
+        padding-bottom: 80px; /* Dejar espacio para que la barra inferior no tape el contenido */
+    }
+
+    /* === FORMULARIO EN MÓVIL === */
+    .form-grid.two-columns, 
+    .form-grid.three-columns, 
+    .add-item-form > .form-grid.three-columns.item-details-grid, 
+    #streamingProfileFields .form-grid.two-columns, 
+    .totals-grid, 
+    #invoiceListContainer, 
+    .client-list {
+        grid-template-columns: 1fr; /* Forzar todo a 1 columna */
+    }
+    .form-actions,
+    .client-actions {
+        flex-direction: column; /* Apilar botones */
+        gap: 10px;
+    }
+    .form-actions .btn,
+    .client-actions .btn {
+        width: 100%; /* Botones a ancho completo */
+    }
+    
+    /* === BÚSQUEDA EN MÓVIL === */
     .invoice-search-controls {
         flex-direction: column;
         padding: 15px;
@@ -2234,9 +2098,34 @@ textarea.input-error {
     }
     #statusFilterSelect {
         width: 100%;
-    }  
-}
+    }
 
+    /* === MODAL EN MÓVIL === */
+    .modal-content { 
+        width: 95%; 
+        padding: 20px 15px; 
+    }
+    .modal-header h2 { 
+        font-size: 1.3rem; 
+    }
+    #modalInvoiceDetailsContent .modal-section-grid { 
+        grid-template-columns: 1fr; 
+    }
+    #invoiceDetailModal .modal-footer {
+        justify-content: center; /* Centrar botones del modal de detalles */
+    }
+    #invoiceDetailModal .btn-icon span {
+        display: none; /* Ocultar texto de los botones del modal */
+    }
+    #invoiceDetailModal .btn-icon {
+        padding: 8px;
+        width: 40px;
+        height: 40px;
+    }
+    #invoiceDetailModal .btn-icon .icon-svg {
+        margin-right: 0;
+    }
+}
 
 @media (max-width: 480px) {
     body {
