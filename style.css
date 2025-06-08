@@ -2069,6 +2069,38 @@ textarea.input-error {
         padding: 20px;
     }
 
+        /* Forzar todos los grids del formulario a una sola columna */
+    .form-grid.two-columns, 
+    .form-grid.three-columns, 
+    .add-item-form > .form-grid.three-columns.item-details-grid, 
+    #streamingProfileFields .form-grid.two-columns, 
+    .totals-grid {
+        grid-template-columns: 1fr;
+    }
+
+    /* Apilar los botones de acción del formulario verticalmente */
+    .form-actions,
+    .client-actions {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    /* Hacer que los botones de acción ocupen todo el ancho */
+    .form-actions .btn,
+    .client-actions .btn {
+        width: 100%;
+    }
+
+    /* Apilar los botones de compartir también */
+    .share-actions .button-group {
+        flex-direction: column;
+        width: 100%;
+    }
+    .share-actions .btn-share {
+        width: 100%;
+        margin-right: 0;
+    }
+    
     .form-grid.two-columns,
     .form-grid.three-columns,
     .add-item-form > .form-grid.three-columns.item-details-grid,
