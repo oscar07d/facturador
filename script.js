@@ -1900,8 +1900,7 @@ async function handleNavigation(sectionToShowId) {
     // ... (Código de handleNavigation existente, asegurándose de que llame a loadClientsIntoDropdown) ...
     const sections = [homeSection, createInvoiceSection, viewInvoicesSection, clientsSection];
     const navLinks = [navHome, navCreateInvoice, navViewInvoices, navClients];
-    const sections = [createInvoiceSection, viewInvoicesSection, clientsSection];
-    const navLinks = [navCreateInvoice, navViewInvoices, navClients];
+    
     let targetTitle = "Sistema de Facturación";
 
     sections.forEach(section => { if (section) section.style.display = 'none'; });
