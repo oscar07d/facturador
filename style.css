@@ -282,7 +282,7 @@ body.modal-active {
 /* Y mantén la regla específica para la altura de la gráfica */
 .dashboard-card.chart-container {
     height: 400px;
-    position: relative; 
+    position: 80px; 
 }
 
 /* Contenedor para la lista de ítems */
