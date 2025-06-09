@@ -213,6 +213,62 @@ body.modal-active {
     height: 22px;
 }
 
+/* === ESTILOS PARA LA SECCIÓN DE DASHBOARD === */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+}
+
+.dashboard-card {
+    background-color: var(--container-background);
+    padding: 20px;
+    border-radius: var(--border-radius-m);
+    box-shadow: var(--box-shadow-light);
+}
+
+.dashboard-card h4 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    color: var(--text-muted-color);
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+.dashboard-card p {
+    margin: 0;
+    font-size: 2rem;
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+/* Estilos específicos para las tarjetas de la gráfica y los ítems */
+.dashboard-card.chart-container {
+    grid-column: 1 / -1; /* Ocupar todo el ancho */
+    height: 350px;
+}
+
+.top-items-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.top-items-list li {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border-color);
+    font-weight: 500;
+}
+.top-items-list li:last-child {
+    border-bottom: none;
+}
+.top-items-list li span {
+    color: var(--text-muted-color);
+    font-weight: 400;
+}
+
 /* === ESTILOS PARA BÚSQUEDA Y FILTROS === */
 /* === ESTILOS PARA BÚSQUEDA Y FILTROS (REVISADO) === */
 .invoice-search-controls {
