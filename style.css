@@ -2297,11 +2297,23 @@ textarea.input-error {
     }
     
     .top-items-list li {
-        padding: 10px 0;
-        font-size: 0.9rem;
+        flex-direction: column; /* Apilar el nombre y el contador */
+        align-items: flex-start; /* Alinear todo a la izquierda */
+        gap: 8px; /* Espacio entre el nombre y la píldora de conteo */
+        padding: 12px 0; /* Más espacio vertical */
     }
-    .top-items-list li span {
-        font-size: 0.75rem;
+    
+    .top-items-list li .pill-count {
+        margin-left: 0; /* Quitar el margen izquierdo que tenía en PC */
+        align-self: flex-start; /* Alinear la píldora a la izquierda */
+    }
+    
+    .top-items-list .item-name-container {
+        gap: 8px; /* Reducir el espacio entre el logo y el nombre */
+    }
+    
+    .top-items-list .item-name-container span {
+        white-space: normal; /* Permitir que los nombres largos se partan en varias líneas */
     }
 }
 
