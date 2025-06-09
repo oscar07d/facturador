@@ -232,55 +232,62 @@ body.modal-active {
 }
 
 .dashboard-card {
-    background-color: var(--container-background);
+    background: #ffffff; /* Fondo blanco sólido como base */
     padding: 20px;
     border-radius: var(--border-radius-m);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.07);
-    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-    display: flex; /* <-- CAMBIO CLAVE: Usar Flexbox */
-    flex-direction: column; /* Apilar título y contenido verticalmente */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05); /* Sombra muy suave */
+    border-top: 4px solid var(--primary-color); /* Borde superior de acento */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Distribuye el espacio */
+    transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
 }
 .dashboard-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
 }
 
 .dashboard-card h4 {
     margin-top: 0;
-    margin-bottom: 15px;
-    font-size: 1rem;
+    margin-bottom: 20px; /* Más espacio debajo del título */
+    font-size: 0.95rem;
     font-weight: 500;
     color: var(--text-muted-color);
-    flex-shrink: 0; /* Evitar que el título se encoja */
+    border-bottom: none; /* Quitamos el borde inferior anterior */
+    padding-bottom: 0;
 }
 
-/* Contenido de las tarjetas de métricas */
 .dashboard-card p {
     margin: 0;
-    font-size: 2.2rem;
+    font-size: 2.4rem;
     font-weight: 700;
-    line-height: 1.2;
-    flex-grow: 1; /* Ocupar el espacio vertical disponible */
-    display: flex; /* Para centrar el número */
-    align-items: center;
-    justify-content: center;
+    line-height: 1.1;
+    text-align: right; /* Alineamos los números a la derecha */
 }
 
-/* Colores específicos para las tarjetas de métricas */
+/* Colores dinámicos para el BORDE SUPERIOR de cada tarjeta */
+.dashboard-card.total-revenue { border-top-color: var(--success-color); }
+.dashboard-card.total-discounts { border-top-color: var(--warning-color); }
+.dashboard-card.active-clients { border-top-color: var(--primary-color); }
+.dashboard-card.inactive-clients { border-top-color: var(--danger-color); }
+
+/* Colores para los NÚMEROS dentro de las tarjetas */
 #dashboardTotalRevenue { color: var(--success-color); }
 #dashboardTotalDiscounts { color: var(--warning-color); }
 #dashboardActiveClients { color: var(--primary-color); }
 #dashboardInactiveClients { color: var(--danger-color); }
 
-/* Contenedor para la gráfica */
+/* El resto de los estilos para .chart-container y .top-items-list pueden
+   quedarse como estaban, ya que se aplican a tarjetas específicas */
 .dashboard-card.chart-container {
-    grid-column: 1 / -1; 
-    height: 400px;
-    position: relative; 
+    border-top-color: var(--secondary-color); /* Borde gris para la gráfica */
+}
+.dashboard-card.top-items-list-container { /* Asegúrate de tener esta clase en el HTML */
+    border-top-color: var(--secondary-color);
 }
 #monthlyRevenueChart {
     width: 100% !important;
-    height: 100% !important;
+    height: 80% !important;
 }
 
 /* Lista de ítems más vendidos */
