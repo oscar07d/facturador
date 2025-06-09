@@ -281,8 +281,12 @@ body.modal-active {
 
 /* Y mantén la regla específica para la altura de la gráfica */
 .dashboard-card.chart-container {
-    height: 400px;
-    position: 80px; 
+    grid-column: 1 / -1; /* Ocupa todo el ancho en la cuadrícula */
+    height: 400px;       /* Le damos una ALTURA FIJA */
+    position: relative;  /* ¡MUY IMPORTANTE! Para contener a la gráfica */
+    padding: 20px;       /* Aseguramos un padding interno */
+    display: flex;       /* Usamos flex para organizar el título y la gráfica */
+    flex-direction: column;
 }
 
 /* Contenedor para la lista de ítems */
