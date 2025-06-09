@@ -266,12 +266,11 @@ body.modal-active {
 
 /* Contenedor para la gráfica */
 .dashboard-card.chart-container {
-    /* En pantallas grandes, ocupa todo el ancho */
     grid-column: 1 / -1; 
-    min-height: 350px;
-    display: flex;
-    flex-direction: column;
+    height: 400px; /* Le damos una ALTURA FIJA en lugar de min-height */
+    position: relative; /* ¡MUY IMPORTANTE! Para contener a la gráfica */
 }
+
 #monthlyRevenueChart {
     width: 100% !important; /* Forzar a ocupar el ancho del contenedor */
     height: auto !important;
