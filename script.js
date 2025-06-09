@@ -2794,7 +2794,10 @@ if (invoiceForm) {
         let clientName = clientNameInput?.value.trim();
         let clientPhone = clientPhoneInput?.value.trim();
         let clientEmail = clientEmailInput?.value.trim();
-        if (!clientName || !clientPhone || !clientEmail) { alert("Por favor, completa los datos del cliente."); return; }
+        if (!clientName || !clientPhone) { 
+            alert("Por favor, completa al menos el nombre y el celular del cliente."); 
+            return; 
+        }
         if (!invoiceDateInput.value) { alert("Por favor, selecciona una fecha para la factura."); return; }
         
         if (saveInvoiceBtn) saveInvoiceBtn.disabled = true;
