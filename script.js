@@ -260,25 +260,25 @@ async function loadDashboardData() {
         topItemsList.innerHTML = '';
         if (sortedItems.length > 0) {
             sortedItems.forEach(([name, count]) => {
-                    const li = document.createElement('li');
-                    const logoSrc = getIconForItem(name); // <-- Llama a la función que busca el logo
-                
-                    let logoHtml = '';
-                    if (logoSrc) {
-                        // Si se encuentra un logo, se crea la etiqueta <img>
-                        logoHtml = `<img src="<span class="math-inline">\{logoSrc\}" alt\="</span>{name}" class="item-logo">`;
-                    }
-                
-                    // Se construye el HTML para el elemento de la lista, incluyendo el logo si existe
-                    li.innerHTML = `
-                        <div class="item-name-container">
-                            <span class="math-inline">\{logoHtml\}
-                            <span>{name}</span>
-                        </div>
-                        <span>(Vendido ${count} veces)</span>
-                        `;
+                const li = document.createElement('li');
+                const logoSrc = getIconForItem(name); // Llama a la función que busca el logo
+            
+                let logoHtml = '';
+                if (logoSrc) {
+                    // Si se encuentra un logo, se crea la etiqueta <img>
+                    logoHtml = `<img src="${logoSrc}" alt="${name}" class="item-logo">`;
+                }
+            
+                // Asegúrate de que las siguientes líneas usen COMILLAS INVERTIDAS (`)
+                li.innerHTML = `
+                    <div class="item-name-container">
+                        ${logoHtml}
+                        <span>${name}</span>
+                    </div>
+                    <span class="pill-count">(Vendido ${count} veces)</span>
+                `;
                 topItemsList.appendChild(li);
-                });
+            });
         } else {
             topItemsList.innerHTML = '<li>No hay datos de ítems.</li>';
         }
