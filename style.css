@@ -256,7 +256,7 @@ body.modal-active {
     font-size: 2.5rem;
     font-weight: 700;
     line-height: 1.2;
-    text-align: right; /* Alinea los números a la derecha */
+    text-align: left; /* Alinea los números a la derecha */
     margin-top: auto; /* Empuja el número hacia abajo, ocupando el espacio */
 }
 
