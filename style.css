@@ -329,8 +329,8 @@ body.modal-active {
 
 /* Estilo para los logos de los ítems */
 .top-items-list .item-logo {
-    width: 24px;
-    height: 24px;
+    width: 40px;
+    height: 40px;
     object-fit: contain; /* Asegura que el logo no se deforme */
     border-radius: 4px;
     flex-shrink: 0; /* Evita que el logo se encoja */
@@ -2262,22 +2262,46 @@ textarea.input-error {
         margin-right: 0;
     }
     #homeSection h2 {
-        font-size: 1.5rem;
+        font-size: 1.6rem;
     }
+    
     .dashboard-grid {
-        /* En móvil, las tarjetas de métricas se verán en 2 columnas */
+        /* Mantenemos las 2 columnas para las tarjetas de métricas */
         grid-template-columns: 1fr 1fr;
+        gap: 15px; /* Reducimos el espacio en móvil */
     }
+    
+    .dashboard-card {
+        padding: 15px;
+    }
+    
+    .dashboard-card h4 {
+        font-size: 0.8rem; /* Títulos de tarjeta más pequeños */
+        margin-bottom: 8px;
+    }
+    
     .dashboard-card p {
-        font-size: 1.8rem;
+        font-size: 1.6rem; /* Números de métricas más pequeños */
     }
-    /* La gráfica y la lista de ítems deben ocupar todo el ancho */
+    
+    /* --- CORRECCIÓN CLAVE --- */
+    /* Forzamos a que la gráfica y la lista de ítems ocupen todo el ancho */
     .dashboard-card.chart-container,
     .dashboard-card.top-items-list-container {
         grid-column: 1 / -1;
     }
+    /* ------------------------- */
+    
     .dashboard-card.chart-container {
-        height: 300px; /* Altura ajustada para móvil */
+        height: 300px; 
+    }
+    
+    .top-items-list li {
+        padding: 10px 0;
+        font-size: 0.9rem;
+    }
+    .top-items-list li span {
+        font-size: 0.75rem;
     }
 }
 
