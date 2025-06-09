@@ -2309,11 +2309,20 @@ textarea.input-error {
     }
     
     .top-items-list .item-name-container {
-        gap: 8px; /* Reducir el espacio entre el logo y el nombre */
+        display: flex;
+        align-items: center;
+        gap: 12px; /* Un poco más de espacio entre logo y texto */
+        flex-grow: 1; /* Para que ocupe el espacio disponible a la izquierda */
+        min-width: 0; /* MUY IMPORTANTE para que el flexbox permita que el hijo se encoja */
     }
     
+    /* Span que contiene el nombre del producto */
     .top-items-list .item-name-container span {
-        white-space: normal; /* Permitir que los nombres largos se partan en varias líneas */
+        background-color: transparent;
+        padding: 0;
+        white-space: normal; /* <-- CAMBIO CLAVE: Permite que el texto se parta en varias líneas */
+        overflow: hidden; 
+        text-overflow: ellipsis; /* Corta el texto con "..." si aún así es muy largo */
     }
 }
 
