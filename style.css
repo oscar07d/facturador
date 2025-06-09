@@ -213,34 +213,25 @@ body.modal-active {
     height: 22px;
 }
 
-/* =================================================== */
-/* === ESTILOS PARA LA SECCIÓN DE INICIO (DASHBOARD) === */
-/* =================================================== */
+/* === ESTILOS PARA LA SECCIÓN DE INICIO (DASHBOARD) (REDISEÑADO) === */
 #homeSection h2 {
     margin-bottom: 25px;
     font-size: 1.8rem;
     color: var(--primary-color);
     text-align: center;
-    width: 100%;
-}
-
-.dashboard-grid {
-    display: grid;
-    /* Crea columnas que se adaptan, cada una con un mínimo de 240px */
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 25px;
 }
 
 .dashboard-card {
-    background: #ffffff; /* Fondo blanco sólido como base */
+    background: var(--container-background);
     padding: 20px;
     border-radius: var(--border-radius-m);
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05); /* Sombra muy suave */
-    border-top: 4px solid var(--primary-color); /* Borde superior de acento */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    border-top: 4px solid var(--primary-color); /* Borde de acento */
     display: flex;
     flex-direction: column;
-    justify-content: space-between; /* Distribuye el espacio */
+    justify-content: space-between;
     transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+    margin-bottom: 20px; /* Espacio entre tarjetas */
 }
 .dashboard-card:hover {
     transform: translateY(-5px);
@@ -249,45 +240,41 @@ body.modal-active {
 
 .dashboard-card h4 {
     margin-top: 0;
-    margin-bottom: 20px; /* Más espacio debajo del título */
-    font-size: 0.95rem;
+    margin-bottom: 20px;
+    font-size: 1rem;
     font-weight: 500;
     color: var(--text-muted-color);
-    border-bottom: none; /* Quitamos el borde inferior anterior */
-    padding-bottom: 0;
 }
 
 .dashboard-card p {
     margin: 0;
-    font-size: 2.4rem;
+    font-size: 2.2rem;
     font-weight: 700;
     line-height: 1.1;
-    text-align: right; /* Alineamos los números a la derecha */
+    text-align: right;
 }
 
-/* Colores dinámicos para el BORDE SUPERIOR de cada tarjeta */
+/* Colores para el borde y el texto de cada tarjeta */
 .dashboard-card.total-revenue { border-top-color: var(--success-color); }
-.dashboard-card.total-discounts { border-top-color: var(--warning-color); }
-.dashboard-card.active-clients { border-top-color: var(--primary-color); }
-.dashboard-card.inactive-clients { border-top-color: var(--danger-color); }
-
-/* Colores para los NÚMEROS dentro de las tarjetas */
 #dashboardTotalRevenue { color: var(--success-color); }
+
+.dashboard-card.total-discounts { border-top-color: var(--warning-color); }
 #dashboardTotalDiscounts { color: var(--warning-color); }
+
+.dashboard-card.active-clients { border-top-color: var(--primary-color); }
 #dashboardActiveClients { color: var(--primary-color); }
+
+.dashboard-card.inactive-clients { border-top-color: var(--danger-color); }
 #dashboardInactiveClients { color: var(--danger-color); }
 
-/* El resto de los estilos para .chart-container y .top-items-list pueden
-   quedarse como estaban, ya que se aplican a tarjetas específicas */
 .dashboard-card.chart-container {
-    border-top-color: var(--secondary-color); /* Borde gris para la gráfica */
-}
-.dashboard-card.top-items-list-container { /* Asegúrate de tener esta clase en el HTML */
+    height: 400px;
+    position: relative;
     border-top-color: var(--secondary-color);
 }
 #monthlyRevenueChart {
     width: 100% !important;
-    height: 80% !important;
+    height: 100% !important;
 }
 
 /* Lista de ítems más vendidos */
@@ -295,26 +282,16 @@ body.modal-active {
     list-style: none;
     padding: 0;
     margin: 0;
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1; /* Para que la lista ocupe el espacio */
-    justify-content: center; /* Centrar verticalmente si hay pocos ítems */
 }
 .top-items-list li {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 12px 5px; /* Más padding vertical */
+    padding: 10px 0;
     border-bottom: 1px solid var(--border-color);
-    font-weight: 500;
-    font-size: 0.9rem;
-}
-.top-items-list li:first-of-type {
-    padding-top: 5px;
 }
 .top-items-list li:last-child {
     border-bottom: none;
-    padding-bottom: 5px;
 }
 .top-items-list li span {
     color: var(--text-muted-color);
@@ -322,8 +299,6 @@ body.modal-active {
     padding: 3px 10px;
     border-radius: var(--border-radius-pill);
     font-size: 0.8rem;
-    flex-shrink: 0;
-    margin-left: 10px;
 }
 
 /* === ESTILOS PARA BÚSQUEDA Y FILTROS === */
@@ -2243,29 +2218,30 @@ textarea.input-error {
     }
     #homeSection h2 {
         font-size: 1.6rem;
+        margin-bottom: 20px;
     }
     
     .dashboard-grid {
-        /* Forzamos a que siempre haya 2 columnas en móvil para las tarjetas de métricas */
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: 1fr; /* <-- CAMBIO CLAVE: Todo a una sola columna */
+        gap: 20px;
     }
     
     .dashboard-card {
         padding: 15px;
     }
     
+    /* La tarjeta de la gráfica ocupa todo el ancho, lo cual es correcto en una sola columna */
+    .dashboard-card.chart-container {
+        min-height: 300px; /* Usar min-height para flexibilidad */
+        height: 300px;     /* Y height para asegurar el tamaño para Chart.js */
+    }
+    
     .dashboard-card h4 {
-        font-size: 0.85rem; /* Títulos de tarjeta más pequeños */
+        font-size: 0.9rem;
     }
     
     .dashboard-card p {
-        font-size: 1.8rem; /* Números de métricas más pequeños */
-    }
-    
-    /* La gráfica y los ítems ocupan todo el ancho, ya lo hacen por defecto */
-    .dashboard-card.chart-container,
-    .dashboard-card.top-items-list-container { /* Asumiendo que tienes un contenedor para la lista de ítems */
-        grid-column: 1 / -1;
+        font-size: 2rem;
     }
 }
 
