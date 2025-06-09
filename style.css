@@ -213,9 +213,9 @@ body.modal-active {
     height: 22px;
 }
 
-/* ============================================= */
+/* =================================================== */
 /* === ESTILOS PARA LA SECCIÓN DE INICIO (DASHBOARD) === */
-/* ============================================= */
+/* =================================================== */
 #homeSection h2 {
     margin-bottom: 25px;
     font-size: 1.8rem;
@@ -233,10 +233,12 @@ body.modal-active {
 
 .dashboard-card {
     background-color: var(--container-background);
-    padding: 20px 25px;
+    padding: 20px;
     border-radius: var(--border-radius-m);
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.07);
     transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    display: flex; /* <-- CAMBIO CLAVE: Usar Flexbox */
+    flex-direction: column; /* Apilar título y contenido verticalmente */
 }
 .dashboard-card:hover {
     transform: translateY(-5px);
@@ -245,17 +247,23 @@ body.modal-active {
 
 .dashboard-card h4 {
     margin-top: 0;
-    margin-bottom: 12px;
+    margin-bottom: 15px;
     font-size: 1rem;
     font-weight: 500;
     color: var(--text-muted-color);
+    flex-shrink: 0; /* Evitar que el título se encoja */
 }
 
+/* Contenido de las tarjetas de métricas */
 .dashboard-card p {
     margin: 0;
     font-size: 2.2rem;
     font-weight: 700;
     line-height: 1.2;
+    flex-grow: 1; /* Ocupar el espacio vertical disponible */
+    display: flex; /* Para centrar el número */
+    align-items: center;
+    justify-content: center;
 }
 
 /* Colores específicos para las tarjetas de métricas */
@@ -267,14 +275,12 @@ body.modal-active {
 /* Contenedor para la gráfica */
 .dashboard-card.chart-container {
     grid-column: 1 / -1; 
-    height: 400px; /* Le damos una ALTURA FIJA en lugar de min-height */
-    position: relative; /* ¡MUY IMPORTANTE! Para contener a la gráfica */
+    height: 400px;
+    position: relative; 
 }
-
 #monthlyRevenueChart {
-    width: 100% !important; /* Forzar a ocupar el ancho del contenedor */
-    height: auto !important;
-    flex-grow: 1;
+    width: 100% !important;
+    height: 100% !important;
 }
 
 /* Lista de ítems más vendidos */
@@ -282,27 +288,35 @@ body.modal-active {
     list-style: none;
     padding: 0;
     margin: 0;
-    max-height: 250px; /* Para que no sea demasiado larga */
-    overflow-y: auto; /* Scroll si hay muchos ítems */
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1; /* Para que la lista ocupe el espacio */
+    justify-content: center; /* Centrar verticalmente si hay pocos ítems */
 }
 .top-items-list li {
     display: flex;
     justify-content: space-between;
-    padding: 10px 5px;
+    align-items: center;
+    padding: 12px 5px; /* Más padding vertical */
     border-bottom: 1px solid var(--border-color);
     font-weight: 500;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
+}
+.top-items-list li:first-of-type {
+    padding-top: 5px;
 }
 .top-items-list li:last-child {
     border-bottom: none;
+    padding-bottom: 5px;
 }
 .top-items-list li span {
     color: var(--text-muted-color);
-    font-weight: 400;
     background-color: var(--light-gray-color);
-    padding: 2px 8px;
+    padding: 3px 10px;
     border-radius: var(--border-radius-pill);
-    font-size: 0.85rem;
+    font-size: 0.8rem;
+    flex-shrink: 0;
+    margin-left: 10px;
 }
 
 /* === ESTILOS PARA BÚSQUEDA Y FILTROS === */
