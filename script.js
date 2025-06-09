@@ -418,6 +418,34 @@ function collectInvoiceDataFromForm() {
     return invoiceData;
 }
 
+/**
+ * Devuelve la ruta del icono de un producto basándose en su nombre.
+ * @param {string} itemName - El nombre del ítem/producto.
+ * @returns {string|null} - La ruta a la imagen del logo o null si no hay coincidencia.
+ */
+function getIconForItem(itemName) {
+    const name = itemName.toLowerCase(); // Convertimos a minúsculas para una comparación más fácil
+
+    if (name.includes('prime video')) {
+        return 'img/logos/prime_video.png'; // Asegúrate de que el nombre del archivo coincida
+    }
+    if (name.includes('max') || name.includes('hbo')) {
+        return 'img/logos/max.png';
+    }
+    if (name.includes('netflix')) {
+        return 'img/logos/netflix.png';
+    }
+    if (name.includes('disney')) {
+        return 'img/logos/disney_plus.png';
+    }
+    if (name.includes('spotify')) {
+        return 'img/logos/spotify.png';
+    }
+    // ...puedes añadir más 'if' para otros servicios aquí...
+
+    return null; // Devuelve null si no se encuentra un logo conocido
+}
+
 function generateRandomAlphanumericCode(length = 7) { // Longitud por defecto de 7 caracteres
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
     let resultCode = '';
