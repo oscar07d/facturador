@@ -335,7 +335,16 @@ body.modal-active {
     border-radius: 4px;
     flex-shrink: 0; /* Evita que el logo se encoja */
 }
-
+.top-items-list li .pill-count {
+    color: var(--text-muted-color);
+    background-color: var(--light-gray-color);
+    padding: 3px 10px;
+    border-radius: var(--border-radius-pill);
+    font-size: 0.8rem;
+    font-weight: 400;
+    flex-shrink: 0;
+    margin-left: 10px;
+}
 
 /* === ESTILOS PARA BÚSQUEDA Y FILTROS === */
 /* === ESTILOS PARA BÚSQUEDA Y FILTROS (REVISADO) === */
