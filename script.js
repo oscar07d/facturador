@@ -1897,21 +1897,36 @@ async function loadClientForEditing(clientId) {
 }
 
 async function handleNavigation(sectionToShowId) {
-    // ... (Código de handleNavigation existente, asegurándose de que llame a loadClientsIntoDropdown) ...
+    // Se declaran UNA SOLA VEZ aquí al principio
     const sections = [homeSection, createInvoiceSection, viewInvoicesSection, clientsSection];
     const navLinks = [navHome, navCreateInvoice, navViewInvoices, navClients];
-    
     let targetTitle = "Sistema de Facturación";
 
-    sections.forEach(section => { if (section) section.style.display = 'none'; });
-    navLinks.forEach(link => { if (link) link.classList.remove('active-nav'); });
+    sections.forEach(section => { 
+        if (section) section.style.display = 'none'; 
+    });
+    navLinks.forEach(link => { 
+        if (link) link.classList.remove('active-nav'); 
+    });
 
     const currentSection = sections.find(s => s && s.id === sectionToShowId);
     if (currentSection) currentSection.style.display = 'block';
-
-    const currentLink = navLinks.find(l => l && (l.id.replace('nav', '').charAt(0).toLowerCase() + l.id.replace('nav', '').slice(1) + 'Section') === sectionToShowId);
+    
+    // Determinar qué enlace de navegación activar
+    let currentNavLinkId = '';
+    if (sectionToShowId === 'homeSection') {
+        currentNavLinkId = 'navHome';
+    } else if (sectionToShowId === 'createInvoiceSection') {
+        currentNavLinkId = 'navCreateInvoice';
+    } else if (sectionToShowId === 'viewInvoicesSection') {
+        currentNavLinkId = 'navViewInvoices';
+    } else if (sectionToShowId === 'clientsSection') {
+        currentNavLinkId = 'navClients';
+    }
+    const currentLink = navLinks.find(l => l && l.id === currentNavLinkId);
     if (currentLink) currentLink.classList.add('active-nav');
 
+    // Lógica específica para cada sección
     if (sectionToShowId === 'createInvoiceSection') {
         targetTitle = "Crear Nueva Factura";
         if (typeof setDefaultInvoiceDate === 'function') setDefaultInvoiceDate();
@@ -1922,45 +1937,38 @@ async function handleNavigation(sectionToShowId) {
         if (typeof loadClientsIntoDropdown === 'function') await loadClientsIntoDropdown();
     } else if (sectionToShowId === 'viewInvoicesSection') {
         targetTitle = "Mis Facturas";
-        const currentInvoiceListContainer = document.getElementById('invoiceListContainer');
-        if (viewInvoicesSection && !currentInvoiceListContainer) {
-            viewInvoicesSection.innerHTML = `<h2>Mis Facturas</h2><div id="invoiceListContainer"><p>Cargando facturas...</p></div>`;
-        } else if (currentInvoiceListContainer) {
-            currentInvoiceListContainer.innerHTML = `<p>Cargando facturas...</p>`;
-        }
         if (typeof loadAndDisplayInvoices === 'function') await loadAndDisplayInvoices();
     } else if (sectionToShowId === 'clientsSection') {
-        targetTitle = "Clientes";
+        targetTitle = "Mis Clientes";
         if (clientsSection) {
-            clientsSection.style.display = 'block'; // Mostrar la sección principal de clientes
-            clientsSection.classList.add('active-section');
             clientsSection.innerHTML = `
                 <h2>Clientes</h2>
                 <div class="client-list-subsection">
                     <h3>Clientes Activos</h3>
                     <div id="activeClientsListContainer" class="client-list">
-                        <p>Cargando clientes activos...</p>
+                        <p>Cargando clientes...</p>
                     </div>
                 </div>
                 <div class="client-list-subsection">
                     <h3>Clientes Inactivos</h3>
                     <div id="deletedClientsListContainer" class="client-list">
-                        <p>Cargando clientes inactivos...</p>
+                        <p>Cargando clientes...</p>
                     </div>
                 </div>
             `;
         }
-        if (navClients) navClients.classList.add('active-nav');
-
-        // Llamar a las funciones para poblar ambas listas
         if (typeof displayActiveClients === 'function') await displayActiveClients();
         if (typeof displayDeletedClients === 'function') await displayDeletedClients();
-    }
-    if (appPageTitle) appPageTitle.textContent = targetTitle;
-    } else if (sectionToShowId === 'homeSection') {
+    } else if (sectionToShowId === 'homeSection') { // <-- ESTE ES TU NUEVO BLOQUE
         targetTitle = "Inicio y Estadísticas";
-        await loadDashboardData(); // Llamamos a la nueva función que crearemos
+        if (typeof loadDashboardData === 'function') {
+            await loadDashboardData(); 
+        } else {
+            console.error("La función loadDashboardData no está definida.");
+        }
     }
+
+    if (appPageTitle) appPageTitle.textContent = targetTitle;
 }
 
 async function loadAndDisplayInvoices() {
