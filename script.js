@@ -44,6 +44,10 @@ const db = getFirestore(app);
 
 // --- Selección de Elementos del DOM ---
 const bodyElement = document.body;
+
+const navHome = document.getElementById('navHome');
+const homeSection = document.getElementById('homeSection');
+
 const invoiceDetailModal = document.getElementById('invoiceDetailModal');
 const modalInvoiceTitle = document.getElementById('modalInvoiceTitle');
 const modalInvoiceDetailsContent = document.getElementById('modalInvoiceDetailsContent');
@@ -174,6 +178,9 @@ const paymentStatusDetails = {
     inactivo: { text: "Inactivo", description: "Cliente marcado como inactivo o eliminado.", action: "Archivar o revisar." }, // Para estadoGeneralCliente
     'n/a': { text: "N/A", description: "No aplica o sin información.", action: "Verificar datos."} // Para estadoUltimaFacturaCliente
 };
+
+
+
 let currentInvoiceItems = [];
 let nextItemId = 0;
 let loadedClients = [];
@@ -182,6 +189,127 @@ let isGeneratingPdf = false;
 let currentActionForTemplateSelection = null;
 let currentInvoiceDataForModalActions = null;
 let currentInvoiceIdForModalActions = null;
+
+// Variable global para guardar la instancia de la gráfica
+let revenueChartInstance = null;
+
+async function loadDashboardData() {
+    showLoading(true);
+    const user = auth.currentUser;
+    if (!user) {
+        showLoading(false);
+        return;
+    }
+
+    try {
+        // 1. Obtener todos los datos necesarios (facturas y clientes)
+        const invoicesQuery = query(collection(db, "facturas"), where("userId", "==", user.uid));
+        const clientsQuery = query(collection(db, "clientes"), where("userId", "==", user.uid));
+        
+        const [invoicesSnapshot, clientsSnapshot] = await Promise.all([
+            getDocs(invoicesQuery),
+            getDocs(clientsQuery)
+        ]);
+
+        // 2. Procesar los datos
+        let totalRevenue = 0;
+        let totalDiscounts = 0;
+        const monthlyRevenue = {}; // Objeto para { 'YYYY-MM': total }
+        const itemCounts = {}; // Objeto para { 'nombre_item': cantidad }
+
+        invoicesSnapshot.forEach(doc => {
+            const invoice = doc.data();
+            
+            // Solo contar facturas que no estén canceladas
+            if (invoice.paymentStatus !== 'cancelled') {
+                totalRevenue += invoice.totals?.grandTotal || 0;
+                totalDiscounts += invoice.totals?.discountApplied || 0;
+
+                // Agrupar ingresos por mes
+                if (invoice.invoiceDate) {
+                    const monthKey = invoice.invoiceDate.substring(0, 7); // 'YYYY-MM'
+                    if (!monthlyRevenue[monthKey]) {
+                        monthlyRevenue[monthKey] = 0;
+                    }
+                    monthlyRevenue[monthKey] += invoice.totals?.grandTotal || 0;
+                }
+
+                // Contar ítems vendidos
+                invoice.items?.forEach(item => {
+                    const itemName = item.description.trim();
+                    if (!itemCounts[itemName]) {
+                        itemCounts[itemName] = 0;
+                    }
+                    itemCounts[itemName] += item.quantity;
+                });
+            }
+        });
+
+        const activeClients = clientsSnapshot.docs.filter(doc => !doc.data().isDeleted).length;
+        const inactiveClients = clientsSnapshot.docs.length - activeClients;
+
+        // 3. Actualizar el HTML con las métricas
+        document.getElementById('dashboardTotalRevenue').textContent = totalRevenue.toLocaleString('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 });
+        document.getElementById('dashboardTotalDiscounts').textContent = totalDiscounts.toLocaleString('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 });
+        document.getElementById('dashboardActiveClients').textContent = activeClients;
+        document.getElementById('dashboardInactiveClients').textContent = inactiveClients;
+
+        // 4. Preparar datos para los ítems más vendidos
+        const sortedItems = Object.entries(itemCounts).sort((a, b) => b[1] - a[1]).slice(0, 5); // Top 5
+        const topItemsList = document.getElementById('dashboardTopItems');
+        topItemsList.innerHTML = '';
+        if (sortedItems.length > 0) {
+            sortedItems.forEach(([name, count]) => {
+                const li = document.createElement('li');
+                li.innerHTML = `${name} <span>(Vendido ${count} veces)</span>`;
+                topItemsList.appendChild(li);
+            });
+        } else {
+            topItemsList.innerHTML = '<li>No hay datos de ítems.</li>';
+        }
+
+        // 5. Preparar y dibujar la gráfica
+        const chartLabels = [];
+        const chartData = [];
+        const today = new Date();
+        for (let i = 11; i >= 0; i--) {
+            const date = new Date(today.getFullYear(), today.getMonth() - i, 1);
+            const monthKey = date.toISOString().substring(0, 7);
+            const monthName = date.toLocaleString('es-CO', { month: 'short', year: 'numeric' });
+            chartLabels.push(monthName);
+            chartData.push(monthlyRevenue[monthKey] || 0);
+        }
+        
+        const ctx = document.getElementById('monthlyRevenueChart').getContext('2d');
+        if (revenueChartInstance) {
+            revenueChartInstance.destroy(); // Destruir gráfica anterior para evitar duplicados
+        }
+        revenueChartInstance = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: chartLabels,
+                datasets: [{
+                    label: 'Ingresos Mensuales',
+                    data: chartData,
+                    borderColor: 'rgba(0, 123, 255, 1)',
+                    backgroundColor: 'rgba(0, 123, 255, 0.1)',
+                    fill: true,
+                    tension: 0.3
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+
+    } catch (error) {
+        console.error("Error al cargar datos del dashboard:", error);
+        // Manejar el error en la UI si es necesario
+    } finally {
+        showLoading(false);
+    }
+}
 
 // --- Funciones Auxiliares y de UI ---
 const showLoading = (show) => {
@@ -1770,6 +1898,8 @@ async function loadClientForEditing(clientId) {
 
 async function handleNavigation(sectionToShowId) {
     // ... (Código de handleNavigation existente, asegurándose de que llame a loadClientsIntoDropdown) ...
+    const sections = [homeSection, createInvoiceSection, viewInvoicesSection, clientsSection];
+    const navLinks = [navHome, navCreateInvoice, navViewInvoices, navClients];
     const sections = [createInvoiceSection, viewInvoicesSection, clientsSection];
     const navLinks = [navCreateInvoice, navViewInvoices, navClients];
     let targetTitle = "Sistema de Facturación";
@@ -1828,6 +1958,10 @@ async function handleNavigation(sectionToShowId) {
         if (typeof displayDeletedClients === 'function') await displayDeletedClients();
     }
     if (appPageTitle) appPageTitle.textContent = targetTitle;
+    } else if (sectionToShowId === 'homeSection') {
+        targetTitle = "Inicio y Estadísticas";
+        await loadDashboardData(); // Llamamos a la nueva función que crearemos
+    }
 }
 
 async function loadAndDisplayInvoices() {
@@ -2930,6 +3064,8 @@ if (invoiceSearchBtn) {
         loadAndDisplayInvoices();
     });
 }
+
+if (navHome) navHome.addEventListener('click', (e) => { e.preventDefault(); handleNavigation('homeSection'); });
 
 // if (generateInvoiceFileBtn) { 
 //    generateInvoiceFileBtn.addEventListener('click', () => {
