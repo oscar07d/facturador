@@ -321,6 +321,21 @@ body.modal-active {
     flex-shrink: 0;
     margin-left: 10px;
 }
+.top-items-list .item-name-container {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Espacio entre el logo y el texto */
+}
+
+/* Estilo para los logos de los ítems */
+.top-items-list .item-logo {
+    width: 24px;
+    height: 24px;
+    object-fit: contain; /* Asegura que el logo no se deforme */
+    border-radius: 4px;
+    flex-shrink: 0; /* Evita que el logo se encoja */
+}
+
 
 /* === ESTILOS PARA BÚSQUEDA Y FILTROS === */
 /* === ESTILOS PARA BÚSQUEDA Y FILTROS (REVISADO) === */
