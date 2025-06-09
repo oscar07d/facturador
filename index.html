@@ -61,6 +61,12 @@
             <nav class="app-nav">
                 <ul>
                     <li>
+                        <a href="#" id="navHome">
+                            <img src="img/Home_icon.svg" alt="Inicio" class="nav-icon">
+                            <span class="nav-text">Inicio</span>
+                        </a>
+                    </li>
+                    <li>
                         <a href="#" id="navCreateInvoice" class="active-nav">
                             <img src="img/New_invoce_icon.svg" alt="Crear Factura" class="nav-icon">
                             <span class="nav-text">Crear Factura</span>
@@ -257,6 +263,38 @@
                     <h2>Clientes</h2>
                     <div id="clientListContainer">
                         {/* Los clientes se cargarán aquí con JS */}
+                    </div>
+                </section>
+                <section id="homeSection" class="invoice-section" style="display: none;">
+                    <h2>Dashboard de Productividad</h2>
+                    <div class="dashboard-grid">
+                        <div class="dashboard-card">
+                            <h4>Ingresos Totales</h4>
+                            <p id="dashboardTotalRevenue">$0</p>
+                        </div>
+                        <div class="dashboard-card">
+                            <h4>Descuentos Aplicados</h4>
+                            <p id="dashboardTotalDiscounts">$0</p>
+                        </div>
+                        <div class="dashboard-card">
+                            <h4>Clientes Activos</h4>
+                            <p id="dashboardActiveClients">0</p>
+                        </div>
+                        <div class="dashboard-card">
+                            <h4>Clientes Inactivos</h4>
+                            <p id="dashboardInactiveClients">0</p>
+                        </div>
+                
+                        <div class="dashboard-card chart-container">
+                            <h4>Ingresos por Mes (Últimos 12 meses)</h4>
+                            <canvas id="monthlyRevenueChart"></canvas>
+                        </div>
+                
+                        <div class="dashboard-card">
+                            <h4>Ítems Más Vendidos</h4>
+                            <ul id="dashboardTopItems" class="top-items-list">
+                                </ul>
+                        </div>
                     </div>
                 </section>
             </main>
@@ -519,6 +557,7 @@
         </div>
 </div> <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" integrity="sha512-BNaRQnYJYiPSqHHDb58B0yaPfCu+Wgds8Gp/gU33kqBtgNS4tSPHuGibyoeqMV/TJlSKda6FXzoEyYGjTe+vXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" integrity="sha512-qZvrmS2ekKPF2mSznTQsxqPgnpkI4DNTlrdUmTzrDgektczlKNRRhy5X5AAOnx5S09ydFYWWNSfcEqDTTHgtNA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script type="module" src="script.js"></script>
 </body>
 </html>
