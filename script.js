@@ -3081,22 +3081,18 @@ if (invoiceForm) {
         if (!user) { alert("Debes iniciar sesión para guardar."); return; }
         
         // --- VALIDACIÓN CORREGIDA ---
+        // Se leen los valores del formulario
         let clientName = clientNameInput?.value.trim();
         let clientPhone = clientPhoneInput?.value.trim();
-        let clientEmail = clientEmailInput?.value.trim();
-        
+
         // La validación ahora solo comprueba nombre y teléfono
-        if (!clientName || !clientPhone) { 
-            alert("Por favor, completa al menos el nombre y el celular del cliente."); 
-            return; 
+        if (!clientName || !clientPhone) {
+            alert("Por favor, completa al menos el nombre y el celular del cliente.");
+            return;
         }
-        if (currentInvoiceItems.length === 0) { 
-            alert("Por favor, agrega al menos un ítem a la factura."); 
-            return; 
-        }
-        if (!invoiceDateInput.value) { 
-            alert("Por favor, selecciona una fecha para la factura."); 
-            return; 
+        if (currentInvoiceItems.length === 0) {
+            alert("Por favor, agrega al menos un ítem a la factura.");
+            return;
         }
         // --- FIN DE LA VALIDACIÓN CORREGIDA ---
         
