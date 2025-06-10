@@ -407,10 +407,18 @@ function updatePaymentStatusDisplay() {
 }
 
 function collectInvoiceDataFromForm() {
-    // La validación principal ahora está en el listener del formulario,
-    // aquí solo recolectamos los datos.
-
-    // Llamar a recalculateTotals para asegurar que los datos del DOM estén actualizados.
+    if (!clientNameInput.value || !clientPhoneInput.value) {
+        alert("Por favor, completa al menos el nombre y el celular del cliente.");
+        return null; // Detiene la ejecución si faltan datos
+    }
+    if (currentInvoiceItems.length === 0) {
+        alert("Por favor, agrega al menos un ítem a la factura.");
+        return null;
+    }
+    if (!invoiceDateInput.value) {
+        alert("Por favor, selecciona una fecha para la factura.");
+        return null;
+    }
     recalculateTotals();
 
     // Función auxiliar para leer números de moneda correctamente.
