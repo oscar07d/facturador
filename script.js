@@ -213,80 +213,59 @@ async function loadDashboardData() {
     }
 
     try {
-        // --- 1. OBTENER TODOS LOS DATOS UNA SOLA VEZ ---
         const invoicesQuery = query(collection(db, "facturas"), where("userId", "==", user.uid));
         const clientsQuery = query(collection(db, "clientes"), where("userId", "==", user.uid));
-        
-        const [invoicesSnapshot, clientsSnapshot] = await Promise.all([
-            getDocs(invoicesQuery),
-            getDocs(clientsQuery)
-        ]);
+        const [invoicesSnapshot, clientsSnapshot] = await Promise.all([getDocs(invoicesQuery), getDocs(clientsQuery)]);
 
         const allInvoicesData = [];
         invoicesSnapshot.forEach(doc => {
             allInvoicesData.push(doc.data());
         });
 
-        // --- 2. PROCESAR DATOS PARA LAS TARJETAS DE MÉTRICAS Y LA LISTA DE ÍTEMS ---
-        let totalRevenue = 0;
-        let totalDiscounts = 0;
-        const itemCounts = {};
-
+        // --- Procesar datos para las tarjetas de métricas y la lista de ítems ---
+        let totalRevenue = 0, totalDiscounts = 0, itemCounts = {};
         allInvoicesData.forEach(invoice => {
             if (invoice.paymentStatus !== 'cancelled') {
                 totalRevenue += invoice.totals?.grandTotal || 0;
                 totalDiscounts += invoice.totals?.discountApplied || 0;
                 invoice.items?.forEach(item => {
                     const itemName = item.description?.trim();
-                    if(itemName) {
-                       itemCounts[itemName] = (itemCounts[itemName] || 0) + item.quantity;
+                    if (itemName) {
+                        itemCounts[itemName] = (itemCounts[itemName] || 0) + item.quantity;
                     }
                 });
             }
         });
-
         const activeClients = clientsSnapshot.docs.filter(doc => !doc.data().isDeleted).length;
-        const inactiveClients = clientsSnapshot.docs.length - activeClients;
-
         document.getElementById('dashboardTotalRevenue').textContent = totalRevenue.toLocaleString('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 });
         document.getElementById('dashboardTotalDiscounts').textContent = totalDiscounts.toLocaleString('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 });
         document.getElementById('dashboardActiveClients').textContent = activeClients;
-        document.getElementById('dashboardInactiveClients').textContent = inactiveClients;
-
-        // --- CÓDIGO RESTAURADO PARA ÍTEMS MÁS VENDIDOS ---
-        const sortedItems = Object.entries(itemCounts).sort((a, b) => b[1] - a[1]).slice(0, 5); // Top 5
+        document.getElementById('dashboardInactiveClients').textContent = clientsSnapshot.docs.length - activeClients;
+        const sortedItems = Object.entries(itemCounts).sort((a, b) => b[1] - a[1]).slice(0, 5);
         const topItemsList = document.getElementById('dashboardTopItems');
         topItemsList.innerHTML = '';
         if (sortedItems.length > 0) {
             sortedItems.forEach(([name, count]) => {
                 const li = document.createElement('li');
-                const logoSrc = getIconForItem(name); // Asegúrate de tener esta función auxiliar
+                const logoSrc = getIconForItem(name);
                 let logoHtml = logoSrc ? `<img src="${logoSrc}" alt="${name}" class="item-logo">` : '<div class="item-logo-placeholder"></div>';
-                
-                li.innerHTML = `
-                    <div class="item-name-container">
-                        ${logoHtml}
-                        <span>${name}</span>
-                    </div>
-                    <span class="pill-count">${count}</span>
-                `;
+                li.innerHTML = `<div class="item-name-container">${logoHtml}<span>${name}</span></div><span class="pill-count">${count}</span>`;
                 topItemsList.appendChild(li);
             });
         } else {
             topItemsList.innerHTML = '<li>No hay datos de ítems vendidos.</li>';
         }
-        // --- FIN DEL CÓDIGO RESTAURADO ---
 
-        // --- 3. LÓGICA DE FILTRADO Y DIBUJO DE LA GRÁFICA (CORREGIDA) ---
+        // --- LÓGICA DE FILTRADO Y DIBUJO DE LA GRÁFICA (CORREGIDA) ---
         const timeRange = chartTimeRange.value;
         const selectedYear = parseInt(selectYear.value);
         const selectedMonth = parseInt(selectMonth.value);
         const selectedDay = selectDay.value;
-        const flatpickrInstance = document.querySelector("#selectWeek")._flatpickr;
+        const flatpickrInstance = document.querySelector("#selectWeek")?._flatpickr;
         
         let filteredInvoicesForChart = [];
         const now = new Date();
-
+        
         switch (timeRange) {
             case 'year':
                 filteredInvoicesForChart = allInvoicesData.filter(inv => inv.invoiceDate && new Date(inv.invoiceDate + 'T00:00:00').getFullYear() === selectedYear);
@@ -297,7 +276,9 @@ async function loadDashboardData() {
             case 'week':
                 if (flatpickrInstance?.selectedDates.length > 0) {
                     const selectedDate = flatpickrInstance.selectedDates[0];
-                    const weekDates = getWeekDates(getWeekNumber(selectedDate), selectedDate.getFullYear());
+                    const weekNumber = getWeekNumber(selectedDate);
+                    const year = selectedDate.getFullYear();
+                    const weekDates = getWeekDates(weekNumber, year);
                     filteredInvoicesForChart = allInvoicesData.filter(inv => inv.invoiceDate && new Date(inv.invoiceDate) >= weekDates.start && new Date(inv.invoiceDate) <= weekDates.end);
                 }
                 break;
@@ -312,21 +293,26 @@ async function loadDashboardData() {
         
         const chartDataPoints = {};
         let chartType = 'line';
-        let titleSuffix = "Últimos 12 Meses";
+        let titleSuffix = "de los Últimos 12 Meses";
         
         if (timeRange === 'last12months' || timeRange === 'year') {
             chartType = 'line';
             const yearForLabels = (timeRange === 'year') ? selectedYear : new Date().getFullYear();
-            // Lógica para inicializar y poblar los últimos 12 meses o los meses de un año específico
-            // ... (Esta parte es compleja, la simplificaremos para asegurar que funcione)
+            for (let i = 0; i < 12; i++) {
+                const monthDate = new Date(yearForLabels, i, 2);
+                const monthKey = monthDate.toISOString().substring(0, 7);
+                chartDataPoints[monthKey] = 0;
+            }
             filteredInvoicesForChart.forEach(inv => {
                 if (inv.paymentStatus !== 'cancelled' && inv.invoiceDate) {
                     const monthKey = inv.invoiceDate.substring(0, 7);
-                    chartDataPoints[monthKey] = (chartDataPoints[monthKey] || 0) + (inv.totals?.grandTotal || 0);
+                    if (chartDataPoints.hasOwnProperty(monthKey)) {
+                        chartDataPoints[monthKey] += inv.totals?.grandTotal || 0;
+                    }
                 }
             });
             titleSuffix = (timeRange === 'year') ? `del Año ${selectedYear}` : "de los Últimos 12 Meses";
-        } else { 
+        } else {
             chartType = 'bar';
             filteredInvoicesForChart.forEach(inv => {
                 if (inv.paymentStatus !== 'cancelled' && inv.invoiceDate) {
@@ -342,27 +328,41 @@ async function loadDashboardData() {
         const sortedKeys = Object.keys(chartDataPoints).sort();
         const chartLabels = sortedKeys.map(key => {
             const date = new Date(key + 'T12:00:00Z');
-            return (timeRange === 'year' || timeRange === 'last12months') ? date.toLocaleString('es-CO', {month:'short'}) : date.toLocaleDateString('es-CO', {day: '2-digit', month: 'short'});
+            if (timeRange === 'year') return date.toLocaleString('es-CO', { month: 'short' });
+            if (timeRange === 'last12months') return date.toLocaleString('es-CO', { month: 'short', year: '2-digit' });
+            return date.toLocaleDateString('es-CO', { day: '2-digit', month: 'short' });
         });
         const chartDataset = sortedKeys.map(key => chartDataPoints[key]);
         
-        document.querySelector('.chart-container h4').textContent = `Ingresos ${titleSuffix}`;
+        const chartCardTitle = document.querySelector('.chart-container h4');
+        if (chartCardTitle) chartCardTitle.textContent = `Ingresos ${titleSuffix}`;
         
         const ctx = document.getElementById('monthlyRevenueChart').getContext('2d');
         if (revenueChartInstance) revenueChartInstance.destroy();
         
         revenueChartInstance = new Chart(ctx, {
             type: chartType,
-            data: { labels: chartLabels, datasets: [{
-                    label: 'Ingresos', data: chartDataset,
-                    borderColor: 'rgba(0, 123, 255, 1)', backgroundColor: 'rgba(0, 123, 255, 0.2)',
-                    fill: chartType === 'line', tension: 0.3 }] },
+            data: {
+                labels: chartLabels,
+                datasets: [{
+                    label: 'Ingresos',
+                    data: chartDataset,
+                    borderColor: 'rgba(0, 123, 255, 1)',
+                    backgroundColor: 'rgba(0, 123, 255, 0.2)',
+                    fill: chartType === 'line',
+                    tension: 0.3
+                }]
+            },
             options: { responsive: true, maintainAspectRatio: false }
         });
-
-    } catch (error) { console.error("Error al cargar datos del dashboard:", error); } 
-    finally { showLoading(false); }
+    } catch (error) {
+        console.error("Error al cargar datos del dashboard:", error);
+    } finally {
+        showLoading(false);
+    }
 }
+
+
 // --- Funciones Auxiliares y de UI ---
 const showLoading = (show) => {
     if (loadingOverlay) {
@@ -1861,12 +1861,13 @@ function handleClientSelection(clientId, clientNameText, clientData = null) {
 function getWeekNumber(d) {
     d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
     d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
-    const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
-    const weekNo = Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+    var yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+    var weekNo = Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
     return weekNo;
 }
 
 function setupDashboardFilters() {
+    // Poblar el selector de años
     if (selectYear) {
         const currentYear = new Date().getFullYear();
         selectYear.innerHTML = '';
@@ -1874,6 +1875,7 @@ function setupDashboardFilters() {
             selectYear.add(new Option(currentYear - i, currentYear - i));
         }
     }
+    // Establecer valores por defecto
     if (selectMonth) selectMonth.value = new Date().getMonth();
     if (selectDay) selectDay.value = new Date().toISOString().split('T')[0];
 
@@ -1882,34 +1884,39 @@ function setupDashboardFilters() {
     if (weekSelector) {
         flatpickr(weekSelector, {
             plugins: [ new weekSelect({}) ], // Activar el plugin de selección de semana
-            dateFormat: "Y-m-d",
+            weekNumbers: true,
             altInput: true,
-            altFormat: "'Semana' W, Y", // Formato que ve el usuario
-            onChange: function(selectedDates) {
-                if (selectedDates.length > 0) loadDashboardData();
+            altFormat: "'Semana' W, Y", // Formato para el usuario
+            onChange: function(selectedDates, dateStr, instance) {
+                if (selectedDates.length > 0) {
+                    // Llamar a loadDashboardData solo cuando se selecciona una fecha
+                    loadDashboardData();
+                }
             }
         });
     }
 
-    // Listener para el filtro principal que muestra/oculta los otros
+    // Listener para el filtro principal
     if (chartTimeRange) {
         chartTimeRange.addEventListener('change', () => {
             const value = chartTimeRange.value;
+            // Mostrar u ocultar los filtros secundarios
             if(yearFilter) yearFilter.style.display = (value === 'year' || value === 'month' || value === 'week') ? 'flex' : 'none';
-            if(monthFilter) monthFilter.style.display = (value === 'month' || value === 'week') ? 'flex' : 'none';
+            if(monthFilter) monthFilter.style.display = (value === 'month') ? 'flex' : 'none';
             if(weekFilter) weekFilter.style.display = (value === 'week') ? 'flex' : 'none';
             if(dayFilter) dayFilter.style.display = (value === 'day') ? 'flex' : 'none';
+            
             loadDashboardData();
         });
-        // Disparar un 'change' inicial para establecer la visibilidad correcta al cargar
+        // Disparar un 'change' al inicio para establecer la visibilidad correcta
         chartTimeRange.dispatchEvent(new Event('change'));
     }
 
-    // Listeners para los filtros secundarios
+    // Listeners para los filtros secundarios que también recargan la data
     if (selectYear) selectYear.addEventListener('change', loadDashboardData);
     if (selectMonth) selectMonth.addEventListener('change', loadDashboardData);
-    // El listener para selectWeek ahora es manejado por el 'onChange' de Flatpickr
     if (selectDay) selectDay.addEventListener('change', loadDashboardData);
+    // El listener para selectWeek es manejado por el 'onChange' de Flatpickr
 }
 
 /**
@@ -1927,8 +1934,10 @@ function getWeekDates(w, y) {
     } else {
         ISOweekStart.setDate(simple.getDate() + 8 - simple.getDay());
     }
+    ISOweekStart.setHours(0,0,0,0);
     const ISOweekEnd = new Date(ISOweekStart);
     ISOweekEnd.setDate(ISOweekEnd.getDate() + 6);
+    ISOweekEnd.setHours(23,59,59,999);
     return { start: ISOweekStart, end: ISOweekEnd };
 }
 
