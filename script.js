@@ -1887,12 +1887,16 @@ function setupDashboardFilters() {
     // Inicializar Flatpickr para el selector de semana
     if (document.getElementById('selectWeek')) {
         flatpickr("#selectWeek", {
-            dateFormat: "Y-m-d", // El formato que guarda internamente
-            weekNumbers: true,   // Muestra los números de semana en el calendario
-            altInput: true,      // Muestra una fecha más legible al usuario
-            altFormat: "'Semana' W, Y", // Formato que ve el usuario, ej: "Semana 24, 2025"
+            // Activar el plugin de selección de semana
+            plugins: [
+                new weekSelect({})
+            ],
+            // Opciones de formato y comportamiento
+            dateFormat: "Y-m-d", // Formato interno que usa la lógica
+            altInput: true,      // Muestra una fecha más legible
+            altFormat: "'Semana' W, Y", // Formato que ve el usuario: "Semana 24, 2025"
             onChange: function(selectedDates, dateStr, instance) {
-                // Cuando el usuario elige una fecha, recargamos los datos del dashboard
+                // Se dispara cuando se selecciona una semana
                 if (selectedDates.length > 0) {
                     loadDashboardData();
                 }
