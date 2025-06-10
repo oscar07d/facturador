@@ -407,32 +407,20 @@ function updatePaymentStatusDisplay() {
 }
 
 function collectInvoiceDataFromForm() {
-    alert("¡Usando la función CORREGIDA para leer los totales!"); // Alerta de verificación
+    // La validación principal ahora está en el listener del formulario,
+    // aquí solo recolectamos los datos.
 
-    // Validaciones básicas
-    if (!clientNameInput.value || !clientPhoneInput.value || !clientEmailInput.value) {
-        alert("Por favor, completa todos los datos del cliente.");
-        return null;
-    }
-    if (currentInvoiceItems.length === 0) {
-        alert("Por favor, agrega al menos un ítem a la factura.");
-        return null;
-    }
-    if (!invoiceDateInput.value) {
-        alert("Por favor, selecciona una fecha para la factura.");
-        return null;
-    }
-
+    // Llamar a recalculateTotals para asegurar que los datos del DOM estén actualizados.
     recalculateTotals();
 
-    // --- FUNCIÓN AUXILIAR PARA LEER NÚMEROS DE MONEDA ---
+    // Función auxiliar para leer números de moneda correctamente.
     const parseCurrencyString = (str) => {
         if (typeof str !== 'string') return 0;
-        // Quita todo lo que no sea dígito o coma, luego reemplaza la coma
         const cleanNumberStr = str.replace(/[^\d,]/g, '').replace(',', '.');
         return parseFloat(cleanNumberStr) || 0;
     };
 
+    // Construir el objeto con los datos de la factura.
     const invoiceData = {
         invoiceNumberFormatted: `FCT-${invoiceNumberText.textContent || 'PENDIENTE'}`,
         invoiceNumberNumeric: parseInt(invoiceNumberText.textContent) || 0,
@@ -448,7 +436,7 @@ function collectInvoiceDataFromForm() {
         client: {
             name: clientNameInput.value.trim(),
             phone: clientPhoneInput.value.trim(),
-            email: clientEmailInput.value.trim(),
+            email: clientEmailInput.value.trim(), // Se guarda aunque esté vacío
             id: hiddenSelectedClientIdInput.value || null
         },
         items: currentInvoiceItems.map(item => ({ ...item })),
@@ -457,7 +445,6 @@ function collectInvoiceDataFromForm() {
             value: parseFloat(discountValueInput.value) || 0
         },
         totals: {
-            // Usar la nueva función para leer los totales correctamente
             subtotal: parseCurrencyString(subtotalAmountSpan.textContent),
             discountApplied: parseCurrencyString(discountAmountAppliedSpan.textContent),
             taxableBase: parseCurrencyString(taxableBaseAmountSpan.textContent),
