@@ -2478,6 +2478,20 @@ textarea.input-error {
     .chart-wrapper {
         height: 300px; /* Altura ajustada para móvil */
     }
+
+    .chart-filters {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .filter-group {
+        justify-content: space-between;
+    }
+    .chart-filters select,
+    .chart-filters input[type="date"],
+    .chart-filters input[type="text"] { /* Añadido para el input de Flatpickr */
+        flex-grow: 1;
+        min-width: 150px;
+    }
 }
 
 @media (max-width: 480px) {
