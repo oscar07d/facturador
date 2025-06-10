@@ -275,7 +275,7 @@ async function loadDashboardData() {
                         ${logoHtml}
                         <span>${name}</span>
                     </div>
-                    <span class="pill-count">(Vendido ${count} veces)</span>
+                    <span class="pill-count">${count}</span>
                 `;
                 topItemsList.appendChild(li);
             });
