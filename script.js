@@ -3080,8 +3080,12 @@ if (invoiceForm) {
         const user = auth.currentUser;
         if (!user) { alert("Debes iniciar sesión para guardar."); return; }
         
-        // --- VALIDACIÓN ---
-        if (!clientNameInput.value.trim() || !clientPhoneInput.value.trim()) {
+        let clientName = clientNameInput?.value.trim();
+        let clientPhone = clientPhoneInput?.value.trim();
+        let clientEmail = clientEmailInput?.value.trim();
+
+        // --- VALIDACIÓN CORREGIDA ---
+        if (!clientName || !clientPhone) {
             alert("Por favor, completa al menos el nombre y el celular del cliente.");
             return;
         }
@@ -3090,76 +3094,66 @@ if (invoiceForm) {
             return;
         }
         // --- FIN DE LA VALIDACIÓN ---
-        
+
         if (saveInvoiceBtn) saveInvoiceBtn.disabled = true;
         showLoading(true);
 
         const selectedClientId = hiddenSelectedClientIdInput.value;
-        
-        // Se leen los valores de los inputs en este momento
-        let currentClientName = clientNameInput.value.trim();
-        let currentClientPhone = clientPhoneInput.value.trim();
-        let currentClientEmail = clientEmailInput.value.trim();
-
         if (selectedClientId && isEditingClient) {
             const clientRef = doc(db, "clientes", selectedClientId);
-            const clientUpdates = { name: currentClientName, phone: currentClientPhone, email: currentClientEmail, updatedAt: serverTimestamp() };
+            const clientUpdates = { name: clientName, phone: clientPhone, email: clientEmail, updatedAt: serverTimestamp() };
             try {
                 await updateDoc(clientRef, clientUpdates);
-                // ... (lógica para actualizar el cliente en el array local `loadedClients`) ...
-                isEditingClient = false;
-                clientNameInput.disabled = true;
-                clientPhoneInput.disabled = true;
-                clientEmailInput.disabled = true;
+                const clientIndex = loadedClients.findIndex(c => c.id === selectedClientId);
+                if (clientIndex > -1) { loadedClients[clientIndex] = { ...loadedClients[clientIndex], ...clientUpdates }; }
+                handleClientSelection(selectedClientId, clientName, loadedClients.find(c => c.id === selectedClientId));
             } catch (error) {
                 console.error("Error al actualizar cliente:", error);
                 alert("Error al actualizar datos del cliente.");
-                showLoading(false);
-                if (saveInvoiceBtn) saveInvoiceBtn.disabled = false;
-                return;
             }
+            isEditingClient = false;
+            if (clientNameInput) clientNameInput.disabled = true;
+            if (clientPhoneInput) clientPhoneInput.disabled = true;
+            if (clientEmailInput) clientEmailInput.disabled = true;
         }
 
-        // Se llama a la función para recolectar todos los datos del formulario
-        const invoiceToSave = collectInvoiceDataFromForm();
-
-        // --- CORRECCIÓN CLAVE ---
-        // Nos aseguramos de que los datos del cliente en el objeto a guardar
-        // sean los valores de los inputs, no los elementos mismos.
-        invoiceToSave.client.name = currentClientName;
-        invoiceToSave.client.phone = currentClientPhone;
-        invoiceToSave.client.email = currentClientEmail;
-        // --- FIN DE LA CORRECCIÓN ---
-        
-        if (!invoiceToSave) {
+        const invoiceData = collectInvoiceDataFromForm();
+        if (!invoiceData) {
             showLoading(false);
             if(saveInvoiceBtn) saveInvoiceBtn.disabled = false;
             return;
         }
 
+        // --- CORRECCIÓN CLAVE PARA PERMISOS ---
+        // Nos aseguramos de que el userId esté en el objeto que se va a guardar
+        invoiceData.userId = user.uid;
+
         try {
-            const docRef = await addDoc(collection(db, "facturas"), invoiceToSave);
-            alert(`¡Factura ${invoiceToSave.invoiceNumberFormatted} guardada con éxito!`);
+            const docRef = await addDoc(collection(db, "facturas"), invoiceData);
+            alert(`¡Factura ${invoiceData.invoiceNumberFormatted} guardada exitosamente!`);
             
-            if (!selectedClientId) { // Cliente nuevo
+            if (!selectedClientId) {
                 const newClientData = { 
-                    userId: user.uid, name: currentClientName, phone: currentClientPhone, email: currentClientEmail, 
-                    createdAt: serverTimestamp(), isDeleted: false, 
+                    userId: user.uid, // Añadir userId también al crear cliente
+                    name: clientName, 
+                    phone: clientPhone, 
+                    email: clientEmail, 
+                    createdAt: serverTimestamp(), 
+                    isDeleted: false, 
                     estadoGeneralCliente: "Nuevo", 
-                    estadoUltimaFacturaCliente: invoiceToSave.paymentStatus 
+                    estadoUltimaFacturaCliente: invoiceData.paymentStatus 
                 };
                 await addDoc(collection(db, "clientes"), newClientData);
-            } else { // Cliente existente
+            } else {
                 const clientRef = doc(db, "clientes", selectedClientId);
                 await updateDoc(clientRef, {
-                    estadoUltimaFacturaCliente: invoiceToSave.paymentStatus,
+                    estadoUltimaFacturaCliente: invoiceData.paymentStatus,
                     updatedAt: serverTimestamp() 
                 });
             }
             
-            // Limpiar y reiniciar el formulario
             invoiceForm.reset();
-            currentInvoiceItems = []; 
+            currentInvoiceItems = [];
             nextItemId = 0;
             renderItems();
             setDefaultInvoiceDate();
@@ -3168,10 +3162,10 @@ if (invoiceForm) {
             await loadClientsIntoDropdown();
             await displayNextPotentialInvoiceNumber();
 
-        } catch (error) { 
+        } catch (error) {
             console.error("Error al guardar en Firestore o procesar:", error);
             alert(`Error durante el guardado: ${error.message}`);
-        } finally { 
+        } finally {
             if (saveInvoiceBtn) saveInvoiceBtn.disabled = false;
             showLoading(false);
         }
