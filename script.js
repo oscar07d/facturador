@@ -213,7 +213,14 @@ async function loadDashboardData() {
     }
 
     try {
-        // --- 1. OBTENER TODOS LOS DATOS UNA SOLA VEZ ---
+        // --- 1. LEER LOS VALORES DE LOS FILTROS PRIMERO ---
+        const timeRange = chartTimeRange.value;
+        const selectedYear = parseInt(selectYear.value);
+        const selectedMonth = parseInt(selectMonth.value);
+        const selectedWeekValue = selectWeek.value; 
+        const selectedDay = selectDay.value;
+
+        // --- 2. OBTENER TODOS LOS DATOS DE FIRESTORE ---
         const invoicesQuery = query(collection(db, "facturas"), where("userId", "==", user.uid));
         const clientsQuery = query(collection(db, "clientes"), where("userId", "==", user.uid));
         
@@ -286,35 +293,23 @@ async function loadDashboardData() {
                     return invDate.getFullYear() === selectedYear && invDate.getMonth() === selectedMonth;
                 });
                 break;
-            case 'week': // <-- LÓGICA ACTUALIZADA PARA SEMANA
+            case 'week':
                 if (selectedWeekValue) {
-                    // El valor es "YYYY-Www", ej: "2025-W23"
                     const year = parseInt(selectedWeekValue.substring(0, 4));
                     const week = parseInt(selectedWeekValue.substring(6));
-                    
-                    // Calcular el primer día de esa semana
-                    const firstDayOfWeek = new Date(year, 0, 1 + (week - 1) * 7);
-                    if (firstDayOfWeek.getDay() > 1) { // Ajustar al Lunes si es necesario
-                        firstDayOfWeek.setDate(firstDayOfWeek.getDate() - (firstDayOfWeek.getDay() - 1));
-                    }
-                    const lastDayOfWeek = new Date(firstDayOfWeek);
-                    lastDayOfWeek.setDate(lastDayOfWeek.getDate() + 6);
+                    const weekDates = getWeekDates(week, year);
+                    weekDates.start.setHours(0,0,0,0);
+                    weekDates.end.setHours(23,59,59,999);
 
                     filteredInvoicesForChart = allInvoicesData.filter(inv => {
                         if (!inv.invoiceDate) return false;
                         const invDate = new Date(inv.invoiceDate + 'T00:00:00');
-                        return invDate >= firstDayOfWeek && invDate <= lastDayOfWeek;
+                        return invDate >= weekDates.start && invDate <= weekDates.end;
                     });
                 }
                 break;
             case 'day':
                 filteredInvoicesForChart = allInvoicesData.filter(inv => inv.invoiceDate === selectedDay);
-                break;
-            case 'week':
-                alert("El filtro por semana aún está en desarrollo.");
-                // Como fallback, mostramos los últimos 12 meses si se selecciona semana
-                const last12MonthsFallback = new Date(now.getFullYear() - 1, now.getMonth() + 1, 1);
-                filteredInvoicesForChart = allInvoicesData.filter(inv => inv.invoiceDate && new Date(inv.invoiceDate) >= last12MonthsFallback);
                 break;
             case 'last12months':
             default:
