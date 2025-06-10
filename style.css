@@ -375,7 +375,7 @@ body.modal-active {
 .chart-filters input[type="date"] {
     padding: 6px 10px;
     border: 1px solid var(--border-color);
-    border-radius: var(--border-radius-s);
+    border-radius: 50px;
     background-color: #fff;
     font-family: 'Poppins', sans-serif;
 }
