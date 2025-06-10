@@ -2306,12 +2306,9 @@ textarea.input-error {
     
     /* Cada elemento (fila) de la lista */
     .top-items-list li {
-        display: flex;
-        justify-content: space-between;
-        align-items: center; 
-        padding: 12px 5px;
-        border-bottom: 1px solid var(--border-color);
-        gap: 15px; 
+        flex-direction: column;  /* Apila el nombre del producto y el contador */
+        align-items: flex-start; /* Alinea todo a la izquierda */
+        gap: 8px;                /* Espacio entre el nombre y el contador */
     }
     .top-items-list li:last-child {
         border-bottom: none;
@@ -2319,20 +2316,14 @@ textarea.input-error {
     
     /* Contenedor para el logo y el nombre */
     .top-items-list .item-name-container {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        flex-grow: 1;   /* Ocupa el espacio disponible a la izquierda */
-        min-width: 0;   /* ¡MUY IMPORTANTE! Permite que el contenedor se encoja */
+        width: 100%; /* Asegura que el contenedor ocupe todo el ancho de la tarjeta */
     }
     
     /* El texto del nombre del producto */
     .top-items-list .item-name-container span {
-        background-color: transparent;
-        padding: 0;
-        /* --- CORRECCIÓN CLAVE --- */
-        white-space: normal;  /* Permite que el texto se parta en varias líneas */
-        word-break: break-word; /* Ayuda a romper palabras largas si es necesario */
+        white-space: normal !important;   /* ¡CLAVE! Permite que el texto se parta en varias líneas */
+        word-break: break-word !important; /* Rompe la palabra si es muy larga para caber */
+        flex-shrink: 1 !important;         /* Permite que este elemento se encoja si es necesario */
     }
     
     /* El logo del producto */
@@ -2345,14 +2336,8 @@ textarea.input-error {
     }
     
     /* La píldora de conteo */
-    .top-items-list .pill-count { /* Asegúrate de tener esta clase en tu JS */
-        color: var(--text-muted-color);
-        background-color: var(--light-gray-color);
-        padding: 3px 10px;
-        border-radius: var(--border-radius-pill);
-        font-size: 0.8rem;
-        font-weight: 400;
-        flex-shrink: 0; /* Evita que la píldora se encoja */
+    .top-items-list li .pill-count {
+        margin-left: 0; /* Quita el margen que no es necesario en esta vista */
     }
 }
 
