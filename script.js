@@ -286,15 +286,26 @@ async function loadDashboardData() {
                     return invDate.getFullYear() === selectedYear && invDate.getMonth() === selectedMonth;
                 });
                 break;
-            case 'week': // <-- NUEVA LÓGICA PARA SEMANA
-                const weekDates = getWeekDates(selectedWeek, selectedYear);
-                weekDates.start.setHours(0,0,0,0);
-                weekDates.end.setHours(23,59,59,999);
-                filteredInvoicesForChart = allInvoicesData.filter(inv => {
-                    if (!inv.invoiceDate) return false;
-                    const invDate = new Date(inv.invoiceDate + 'T00:00:00');
-                    return invDate >= weekDates.start && invDate <= weekDates.end;
-                });
+            case 'week': // <-- LÓGICA ACTUALIZADA PARA SEMANA
+                if (selectedWeekValue) {
+                    // El valor es "YYYY-Www", ej: "2025-W23"
+                    const year = parseInt(selectedWeekValue.substring(0, 4));
+                    const week = parseInt(selectedWeekValue.substring(6));
+                    
+                    // Calcular el primer día de esa semana
+                    const firstDayOfWeek = new Date(year, 0, 1 + (week - 1) * 7);
+                    if (firstDayOfWeek.getDay() > 1) { // Ajustar al Lunes si es necesario
+                        firstDayOfWeek.setDate(firstDayOfWeek.getDate() - (firstDayOfWeek.getDay() - 1));
+                    }
+                    const lastDayOfWeek = new Date(firstDayOfWeek);
+                    lastDayOfWeek.setDate(lastDayOfWeek.getDate() + 6);
+
+                    filteredInvoicesForChart = allInvoicesData.filter(inv => {
+                        if (!inv.invoiceDate) return false;
+                        const invDate = new Date(inv.invoiceDate + 'T00:00:00');
+                        return invDate >= firstDayOfWeek && invDate <= lastDayOfWeek;
+                    });
+                }
                 break;
             case 'day':
                 filteredInvoicesForChart = allInvoicesData.filter(inv => inv.invoiceDate === selectedDay);
@@ -1887,27 +1898,33 @@ function setupDashboardFilters() {
     }
     if (selectMonth) selectMonth.value = new Date().getMonth();
     if (selectDay) selectDay.value = new Date().toISOString().split('T')[0];
-    if (selectWeek) { // Poner la semana actual por defecto
+    
+    // Establecer la semana actual por defecto en el input type="week"
+    if (selectWeek) {
         const today = new Date();
-        const firstDayOfYear = new Date(today.getFullYear(), 0, 1);
+        const year = today.getFullYear();
+        const firstDayOfYear = new Date(year, 0, 1);
         const pastDaysOfYear = (today - firstDayOfYear) / 86400000;
-        selectWeek.value = Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
+        const weekNumber = Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
+        selectWeek.value = `${year}-W${String(weekNumber).padStart(2, '0')}`;
     }
 
     if (chartTimeRange) {
         chartTimeRange.addEventListener('change', () => {
             const value = chartTimeRange.value;
-            yearFilter.style.display = (value === 'year' || value === 'month' || value === 'week') ? 'flex' : 'none';
-            monthFilter.style.display = (value === 'month' || value === 'week') ? 'flex' : 'none';
-            weekFilter.style.display = (value === 'week') ? 'flex' : 'none'; // <-- LÍNEA AÑADIDA
-            dayFilter.style.display = (value === 'day') ? 'flex' : 'none';
+            // Usamos .style.display para mostrar u ocultar
+            if (yearFilter) yearFilter.style.display = (value === 'year' || value === 'month' || value === 'week') ? 'flex' : 'none';
+            if (monthFilter) monthFilter.style.display = (value === 'month') ? 'flex' : 'none';
+            if (weekFilter) weekFilter.style.display = (value === 'week') ? 'flex' : 'none'; // <-- AÑADIDO
+            if (dayFilter) dayFilter.style.display = (value === 'day') ? 'flex' : 'none';
+            
             loadDashboardData();
         });
     }
 
     if (selectYear) selectYear.addEventListener('change', loadDashboardData);
     if (selectMonth) selectMonth.addEventListener('change', loadDashboardData);
-    if (selectWeek) selectWeek.addEventListener('change', loadDashboardData); // <-- LÍNEA AÑADIDA
+    if (selectWeek) selectWeek.addEventListener('change', loadDashboardData); // <-- AÑADIDO
     if (selectDay) selectDay.addEventListener('change', loadDashboardData);
 }
 
