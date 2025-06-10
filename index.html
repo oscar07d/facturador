@@ -287,6 +287,40 @@
                 
                         <div class="dashboard-card chart-container">
                             <h4>Ingresos por Mes (Últimos 12 meses)</h4>
+                            <div class="chart-filters">
+                                <div class="filter-group">
+                                    <label for="chartTimeRange">Ver por:</label>
+                                    <select id="chartTimeRange">
+                                        <option value="last12months" selected>Últimos 12 Meses</option>
+                                        <option value="year">Año</option>
+                                        <option value="month">Mes Específico</option>
+                                        <option value="week">Semana Específica</option>
+                                        <option value="day">Día Específico</option>
+                                    </select>
+                                </div>
+                            
+                                <div id="yearFilter" class="filter-group" style="display: none;">
+                                    <label for="selectYear">Año:</label>
+                                    <select id="selectYear"></select>
+                                </div>
+                            
+                                <div id="monthFilter" class="filter-group" style="display: none;">
+                                    <label for="selectMonth">Mes:</label>
+                                    <select id="selectMonth">
+                                        <option value="0">Enero</option> <option value="1">Febrero</option>
+                                        <option value="2">Marzo</option> <option value="3">Abril</option>
+                                        <option value="4">Mayo</option> <option value="5">Junio</option>
+                                        <option value="6">Julio</option> <option value="7">Agosto</option>
+                                        <option value="8">Septiembre</option> <option value="9">Octubre</option>
+                                        <option value="10">Noviembre</option> <option value="11">Diciembre</option>
+                                    </select>
+                                </div>
+                            
+                                <div id="dayFilter" class="filter-group" style="display: none;">
+                                    <label for="selectDay">Fecha:</label>
+                                    <input type="date" id="selectDay">
+                                </div>
+                            </div>
                             <div class="chart-wrapper">
                                 <canvas id="monthlyRevenueChart"></canvas>
                             </div>
