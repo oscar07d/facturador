@@ -1323,10 +1323,10 @@ label:has(input[type="checkbox"].inline-checkbox:disabled) {
 .totals-summary-box .grand-total {
     margin-bottom: 10px;
     font-size: 1rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    flex-wrap: wrap;
+    display: flex; /* <-- CAMBIO CLAVE: Usa Flexbox */
+    justify-content: space-between; /* Empuja la etiqueta y el valor a los extremos */
+    align-items: baseline; /* Alinea por la base del texto */
+    gap: 15px; /* Espacio entre etiqueta y valor */
 }
 
 .summary-label {
