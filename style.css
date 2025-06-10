@@ -427,6 +427,44 @@ body.modal-active {
     padding: 0;
 }
 
+/* ================================================= */
+/* === ESTILOS PERSONALIZADOS PARA CALENDARIO FLATPICKR === */
+/* ================================================= */
+
+/* Regla base para cualquier día seleccionado */
+.flatpickr-day.selected {
+    background: #e7f1ff; /* El mismo azul tenue que la píldora del input */
+    border-color: #b8d6ff;
+    color: #0056b3; /* Texto azul oscuro */
+}
+
+/* --- La Magia para el Efecto Píldora --- */
+
+/* Para el PRIMER día de la semana seleccionada (Lunes) */
+.flatpickr-day.selected.startRange {
+    border-radius: 50px 0 0 50px; /* Redondeado solo a la izquierda */
+}
+
+/* Para el ÚLTIMO día de la semana seleccionada (Domingo) */
+.flatpickr-day.selected.endRange {
+    border-radius: 0 50px 50px 0; /* Redondeado solo a la derecha */
+}
+
+/* Para TODOS los días que están EN MEDIO de la selección */
+.flatpickr-day.selected.inRange {
+    border-radius: 0; /* Sin bordes redondeados, para que formen un rectángulo */
+    box-shadow: -10px 0 0 #e7f1ff, 10px 0 0 #e7f1ff; /* Truco para rellenar el espacio entre días */
+}
+
+/* Opcional: Estilo para el día de hoy */
+.flatpickr-day.today {
+    border-color: var(--primary-color);
+}
+.flatpickr-day.today:hover {
+    background: var(--primary-color);
+    color: #fff;
+}
+
 /* === ESTILOS PARA BÚSQUEDA Y FILTROS === */
 /* === ESTILOS PARA BÚSQUEDA Y FILTROS (REVISADO) === */
 .invoice-search-controls {
