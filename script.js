@@ -2857,6 +2857,17 @@ if (confirmAndSetNextBtn) {
                 paymentStatus: "paid",
                 serviceStartDate: newDueDate // Actualizamos la fecha para el siguiente ciclo
             });
+            // 2. Buscar al cliente asociado a esta factura y actualizarlo
+            const clientToUpdate = loadedClients.find(client => client.id === currentInvoiceDataForModalActions.client.id);
+            
+            if (clientToUpdate) {
+                const clientRef = doc(db, "clientes", clientToUpdate.id);
+                await updateDoc(clientRef, {
+                    estadoUltimaFacturaCliente: "paid"
+                    // Opcional: podrías querer actualizar también el estadoGeneralCliente
+                    // estadoGeneralCliente: "Al día" 
+                });
+            }
             alert("¡Factura actualizada con éxito!");
             closePaymentUpdateModal();
             await loadAndDisplayInvoices(); // Refrescar la lista
