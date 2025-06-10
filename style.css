@@ -330,7 +330,7 @@ body.modal-active {
     width: 40px;
     height: 40px;
     object-fit: contain; /* Asegura que el logo no se deforme */
-    border-radius: 4px;
+    border-radius: 50px;
     flex-shrink: 0; /* Evita que el logo se encoja */
 }
 .top-items-list li .pill-count {
@@ -2335,7 +2335,7 @@ textarea.input-error {
         width: 28px;
         height: 28px;
         object-fit: contain;
-        border-radius: 5px;
+        border-radius: 50px;
         flex-shrink: 0; /* Evita que el logo se encoja */
     }
     
@@ -2345,10 +2345,10 @@ textarea.input-error {
         background-color: var(--primary-color); /* Color de fondo de la moneda */
         color: white; /* Color del número */
         font-weight: 600;
-        font-size: 0.8rem;
+        font-size: 0.6rem;
         border-radius: 50%; /* Esto crea el círculo */
-        width: 28px;        /* Ancho fijo para formar el círculo */
-        height: 28px;       /* Alto fijo para formar el círculo */
+        width: 20px;        /* Ancho fijo para formar el círculo */
+        height: 20px;       /* Alto fijo para formar el círculo */
         display: flex;
         align-items: center;
         justify-content: center;
