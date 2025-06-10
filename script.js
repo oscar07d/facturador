@@ -2875,7 +2875,13 @@ if (confirmAndSetNextBtn) {
             }
             alert("¡Factura actualizada con éxito!");
             closePaymentUpdateModal();
-            await loadAndDisplayInvoices(); // Refrescar la lista
+            if (viewInvoicesSection.style.display === 'block') {
+                await loadAndDisplayInvoices(); // Refrescar la lista de facturas si está visible
+            }
+            if (clientsSection.style.display === 'block') {
+                await displayActiveClients();   // Refrescar clientes activos si la sección está visible
+                await displayDeletedClients();  // Refrescar clientes inactivos
+            }
         } catch (error) {
             console.error("Error al actualizar la factura:", error);
             alert("Hubo un error al actualizar la factura.");
