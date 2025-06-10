@@ -210,7 +210,7 @@ async function loadDashboardData() {
     }
 
     try {
-        // 1. Obtener todos los datos necesarios (facturas y clientes)
+        // --- 1. OBTENER TODOS LOS DATOS UNA SOLA VEZ ---
         const invoicesQuery = query(collection(db, "facturas"), where("userId", "==", user.uid));
         const clientsQuery = query(collection(db, "clientes"), where("userId", "==", user.uid));
         
@@ -224,10 +224,10 @@ async function loadDashboardData() {
             allInvoicesData.push(doc.data());
         });
 
-        // 2. Procesar datos para las TARJETAS DE MÉTRICAS (esto se calcula siempre sobre el total)
+        // --- 2. PROCESAR DATOS PARA LAS TARJETAS DE MÉTRICAS (SIEMPRE SE MUESTRAN COMPLETOS) ---
         let totalRevenue = 0;
         let totalDiscounts = 0;
-        const itemCounts = {}; 
+        const itemCounts = {};
 
         allInvoicesData.forEach(invoice => {
             if (invoice.paymentStatus !== 'cancelled') {
@@ -243,32 +243,43 @@ async function loadDashboardData() {
         const activeClients = clientsSnapshot.docs.filter(doc => !doc.data().isDeleted).length;
         const inactiveClients = clientsSnapshot.docs.length - activeClients;
 
-        // 3. Actualizar el HTML con las métricas
         document.getElementById('dashboardTotalRevenue').textContent = totalRevenue.toLocaleString('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 });
         document.getElementById('dashboardTotalDiscounts').textContent = totalDiscounts.toLocaleString('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 });
         document.getElementById('dashboardActiveClients').textContent = activeClients;
         document.getElementById('dashboardInactiveClients').textContent = inactiveClients;
 
-        // 4. Preparar datos para los ítems más vendidos
+        // --- 3. PREPARAR DATOS PARA ÍTEMS MÁS VENDIDOS (CORREGIDO) ---
         const sortedItems = Object.entries(itemCounts).sort((a, b) => b[1] - a[1]).slice(0, 5);
         const topItemsList = document.getElementById('dashboardTopItems');
         topItemsList.innerHTML = '';
         if (sortedItems.length > 0) {
-            sortedItems.forEach(([name, count]) => { /* ... tu código para los ítems con logos ... */ });
+            sortedItems.forEach(([name, count]) => {
+                const li = document.createElement('li');
+                const logoSrc = getIconForItem(name);
+                let logoHtml = logoSrc ? `<img src="${logoSrc}" alt="${name}" class="item-logo">` : '';
+                
+                li.innerHTML = `
+                    <div class="item-name-container">
+                        ${logoHtml}
+                        <span>${name}</span>
+                    </div>
+                    <span class="pill-count">${count}</span>
+                `;
+                topItemsList.appendChild(li);
+            });
         } else {
-            topItemsList.innerHTML = '<li>No hay datos de ítems.</li>';
+            topItemsList.innerHTML = '<li>No hay datos de ítems vendidos.</li>';
         }
 
-        // ==========================================================
-        // === INICIO: LÓGICA DE FILTRADO PARA LA GRÁFICA ===
-        // ==========================================================
-        
+        // --- 4. LÓGICA DE FILTRADO Y DIBUJO DE LA GRÁFICA ---
         const timeRange = chartTimeRange.value;
-        let filteredInvoicesForChart = [];
-        const now = new Date();
         const selectedYear = parseInt(selectYear.value);
         const selectedMonth = parseInt(selectMonth.value);
+        const selectedDay = selectDay.value;
 
+        let filteredInvoicesForChart = [];
+        const now = new Date();
+        
         switch (timeRange) {
             case 'year':
                 filteredInvoicesForChart = allInvoicesData.filter(inv => inv.invoiceDate && new Date(inv.invoiceDate).getFullYear() === selectedYear);
@@ -281,62 +292,65 @@ async function loadDashboardData() {
                 });
                 break;
             case 'day':
-                const selectedDate = selectDay.value; // Formato 'YYYY-MM-DD'
-                filteredInvoicesForChart = allInvoicesData.filter(inv => inv.invoiceDate === selectedDate);
+                filteredInvoicesForChart = allInvoicesData.filter(inv => inv.invoiceDate === selectedDay);
                 break;
-            case 'week':
-                alert("El filtro por semana aún está en desarrollo.");
             case 'last12months':
             default:
-                const twelveMonthsAgo = new Date(now.getFullYear() - 1, now.getMonth() + 1, 1);
-                twelveMonthsAgo.setDate(twelveMonthsAgo.getDate() -1);
+                const twelveMonthsAgo = new Date(now.getFullYear() - 1, now.getMonth(), 1);
                 filteredInvoicesForChart = allInvoicesData.filter(inv => inv.invoiceDate && new Date(inv.invoiceDate) >= twelveMonthsAgo);
                 break;
         }
         
-        // --- 5. PREPARAR Y DIBUJAR LA GRÁFICA CON LOS DATOS FILTRADOS ---
-        const monthlyRevenue = {};
-        
-        filteredInvoicesForChart.forEach(inv => {
-            if (inv.paymentStatus !== 'cancelled') {
-                const monthKey = inv.invoiceDate.substring(0, 7); // 'YYYY-MM'
-                monthlyRevenue[monthKey] = (monthlyRevenue[monthKey] || 0) + (inv.totals?.grandTotal || 0);
-            }
-        });
+        const chartDataPoints = {};
+        let chartType = 'line';
+        let chartLabels = [];
+        let chartDataset = [];
 
-        // Preparar etiquetas y datos para la gráfica
-        const chartLabels = [];
-        const chartData = [];
-        const todayForChart = new Date();
-        for (let i = 11; i >= 0; i--) {
-            const date = new Date(todayForChart.getFullYear(), todayForChart.getMonth() - i, 1);
-            const monthKey = date.toISOString().substring(0, 7);
-            const monthName = date.toLocaleString('es-CO', { month: 'short', year: 'numeric' });
-            chartLabels.push(monthName);
-            chartData.push(monthlyRevenue[monthKey] || 0);
+        if (timeRange === 'last12months' || timeRange === 'year') {
+            for (let i = 0; i < 12; i++) {
+                const monthDate = new Date(selectedYear || now.getFullYear(), (timeRange === 'year' ? i : now.getMonth() - (11 - i)), 1);
+                const monthKey = monthDate.toISOString().substring(0, 7);
+                chartDataPoints[monthKey] = 0;
+            }
+            filteredInvoicesForChart.forEach(inv => {
+                if (inv.paymentStatus !== 'cancelled' && inv.invoiceDate) {
+                    const monthKey = inv.invoiceDate.substring(0, 7);
+                    chartDataPoints[monthKey] += inv.totals?.grandTotal || 0;
+                }
+            });
+            chartLabels = Object.keys(chartDataPoints).map(key => new Date(key + '-02').toLocaleString('es-CO', { month: 'short', year: 'numeric' }));
+            chartDataset = Object.values(chartDataPoints);
+
+        } else { // Para vistas de mes, semana o día
+            chartType = 'bar';
+            filteredInvoicesForChart.forEach(inv => {
+                if (inv.paymentStatus !== 'cancelled' && inv.invoiceDate) {
+                    const dateKey = inv.invoiceDate;
+                    chartDataPoints[dateKey] = (chartDataPoints[dateKey] || 0) + (inv.totals?.grandTotal || 0);
+                }
+            });
+            const sortedKeys = Object.keys(chartDataPoints).sort();
+            chartLabels = sortedKeys.map(key => new Date(key + 'T00:00:00').toLocaleDateString('es-CO', {day: '2-digit', month: 'short'}));
+            chartDataset = sortedKeys.map(key => chartDataPoints[key]);
         }
         
         const ctx = document.getElementById('monthlyRevenueChart').getContext('2d');
-        if (revenueChartInstance) {
-            revenueChartInstance.destroy(); // Destruir gráfica anterior para evitar duplicados
-        }
+        if (revenueChartInstance) revenueChartInstance.destroy();
+        
         revenueChartInstance = new Chart(ctx, {
-            type: 'line',
+            type: chartType,
             data: {
                 labels: chartLabels,
                 datasets: [{
-                    label: 'Ingresos Mensuales',
-                    data: chartData,
+                    label: 'Ingresos',
+                    data: chartDataset,
                     borderColor: 'rgba(0, 123, 255, 1)',
-                    backgroundColor: 'rgba(0, 123, 255, 0.1)',
-                    fill: true,
+                    backgroundColor: 'rgba(0, 123, 255, 0.2)',
+                    fill: chartType === 'line',
                     tension: 0.3
                 }]
             },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false
-            }
+            options: { responsive: true, maintainAspectRatio: false }
         });
 
     } catch (error) {
@@ -1838,29 +1852,36 @@ function handleClientSelection(clientId, clientNameText, clientData = null) {
 
 function setupDashboardFilters() {
     // Poblar el selector de años dinámicamente
-    const currentYear = new Date().getFullYear();
-    for (let i = 0; i < 5; i++) {
-        const year = currentYear - i;
-        const option = new Option(year, year);
-        selectYear.add(option);
+    if (selectYear) {
+        const currentYear = new Date().getFullYear();
+        selectYear.innerHTML = ''; // Limpiar opciones viejas
+        for (let i = 0; i < 5; i++) {
+            const year = currentYear - i;
+            const option = new Option(year, year);
+            selectYear.add(option);
+        }
     }
     // Establecer el mes y día actuales por defecto
-    selectMonth.value = new Date().getMonth();
-    selectDay.value = new Date().toISOString().split('T')[0];
+    if (selectMonth) selectMonth.value = new Date().getMonth();
+    if (selectDay) selectDay.value = new Date().toISOString().split('T')[0];
 
-    // Listener para el filtro principal
-    chartTimeRange.addEventListener('change', () => {
-        const value = chartTimeRange.value;
-        yearFilter.style.display = (value === 'year' || value === 'month' || value === 'week') ? 'flex' : 'none';
-        monthFilter.style.display = (value === 'month' || value === 'week') ? 'flex' : 'none';
-        dayFilter.style.display = (value === 'day') ? 'flex' : 'none';
-        loadDashboardData();
-    });
+    // Listener para el filtro principal que muestra/oculta los otros filtros
+    if (chartTimeRange) {
+        chartTimeRange.addEventListener('change', () => {
+            const value = chartTimeRange.value;
+            yearFilter.style.display = (value === 'year' || value === 'month' || value === 'week') ? 'flex' : 'none';
+            monthFilter.style.display = (value === 'month' || value === 'week') ? 'flex' : 'none';
+            dayFilter.style.display = (value === 'day') ? 'flex' : 'none';
+            
+            // Cuando cambia el filtro principal, se recarga la data
+            loadDashboardData();
+        });
+    }
 
-    // Listeners para los filtros secundarios
-    selectYear.addEventListener('change', loadDashboardData);
-    selectMonth.addEventListener('change', loadDashboardData);
-    selectDay.addEventListener('change', loadDashboardData);
+    // Listeners para los filtros secundarios que también recargan la data
+    if (selectYear) selectYear.addEventListener('change', loadDashboardData);
+    if (selectMonth) selectMonth.addEventListener('change', loadDashboardData);
+    if (selectDay) selectDay.addEventListener('change', loadDashboardData);
 }
 
 async function loadClientsIntoDropdown() {
