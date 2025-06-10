@@ -2857,16 +2857,21 @@ if (confirmAndSetNextBtn) {
                 paymentStatus: "paid",
                 serviceStartDate: newDueDate // Actualizamos la fecha para el siguiente ciclo
             });
-            // 2. Buscar al cliente asociado a esta factura y actualizarlo
-            const clientToUpdate = loadedClients.find(client => client.id === currentInvoiceDataForModalActions.client.id);
+            // 2. Buscar el ID del cliente desde los datos de la factura
+            const clientId = currentInvoiceDataForModalActions.client?.id;
             
-            if (clientToUpdate) {
-                const clientRef = doc(db, "clientes", clientToUpdate.id);
+            if (clientId) {
+                // Si la factura tiene guardado el ID del cliente...
+                const clientRef = doc(db, "clientes", clientId);
+                // ...actualizamos el documento del CLIENTE
                 await updateDoc(clientRef, {
                     estadoUltimaFacturaCliente: "paid"
-                    // Opcional: podrías querer actualizar también el estadoGeneralCliente
+                    // Opcional: También podrías querer cambiar el estado general
                     // estadoGeneralCliente: "Al día" 
                 });
+                console.log(`Estado del cliente ${clientId} actualizado a "Pagado".`);
+            } else {
+                console.warn("No se encontró un ID de cliente en esta factura, por lo que no se pudo actualizar el estado del cliente.");
             }
             alert("¡Factura actualizada con éxito!");
             closePaymentUpdateModal();
