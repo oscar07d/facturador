@@ -3078,13 +3078,14 @@ if (invoiceForm) {
     invoiceForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const user = auth.currentUser;
-        if (!user) { alert("Debes iniciar sesión para guardar."); return; }
-        
+        if (!user) {
+            alert("Debes iniciar sesión para guardar.");
+            return;
+        }
+
+        // --- VALIDACIÓN INICIAL ---
         let clientName = clientNameInput?.value.trim();
         let clientPhone = clientPhoneInput?.value.trim();
-        let clientEmail = clientEmailInput?.value.trim();
-
-        // --- VALIDACIÓN CORREGIDA ---
         if (!clientName || !clientPhone) {
             alert("Por favor, completa al menos el nombre y el celular del cliente.");
             return;
@@ -3093,68 +3094,79 @@ if (invoiceForm) {
             alert("Por favor, agrega al menos un ítem a la factura.");
             return;
         }
-        // --- FIN DE LA VALIDACIÓN ---
 
-        if (saveInvoiceBtn) saveInvoiceBtn.disabled = true;
         showLoading(true);
-
-        const selectedClientId = hiddenSelectedClientIdInput.value;
-        if (selectedClientId && isEditingClient) {
-            const clientRef = doc(db, "clientes", selectedClientId);
-            const clientUpdates = { name: clientName, phone: clientPhone, email: clientEmail, updatedAt: serverTimestamp() };
-            try {
-                await updateDoc(clientRef, clientUpdates);
-                const clientIndex = loadedClients.findIndex(c => c.id === selectedClientId);
-                if (clientIndex > -1) { loadedClients[clientIndex] = { ...loadedClients[clientIndex], ...clientUpdates }; }
-                handleClientSelection(selectedClientId, clientName, loadedClients.find(c => c.id === selectedClientId));
-            } catch (error) {
-                console.error("Error al actualizar cliente:", error);
-                alert("Error al actualizar datos del cliente.");
-            }
-            isEditingClient = false;
-            if (clientNameInput) clientNameInput.disabled = true;
-            if (clientPhoneInput) clientPhoneInput.disabled = true;
-            if (clientEmailInput) clientEmailInput.disabled = true;
-        }
-
-        const invoiceData = collectInvoiceDataFromForm();
-        if (!invoiceData) {
-            showLoading(false);
-            if(saveInvoiceBtn) saveInvoiceBtn.disabled = false;
-            return;
-        }
-
-        // --- CORRECCIÓN CLAVE PARA PERMISOS ---
-        // Nos aseguramos de que el userId esté en el objeto que se va a guardar
-        invoiceData.userId = user.uid;
+        if (saveInvoiceBtn) saveInvoiceBtn.disabled = true;
 
         try {
-            const docRef = await addDoc(collection(db, "facturas"), invoiceData);
-            alert(`¡Factura ${invoiceData.invoiceNumberFormatted} guardada exitosamente!`);
-            
-            if (!selectedClientId) {
+            // --- PASO 1: GENERAR NÚMERO Y CÓDIGO DE FACTURA ---
+            const actualNumericInvoiceNumber = await getNextInvoiceNumber(user.uid);
+            const formattedInvoiceNumberStr = formatInvoiceNumber(actualNumericInvoiceNumber);
+            const uniqueQueryCode = await getTrulyUniqueCode(user.uid);
+
+            if (!uniqueQueryCode) {
+                throw new Error("No se pudo generar un código único para la factura.");
+            }
+
+            // --- PASO 2: RECOLECTAR DATOS DEL FORMULARIO ---
+            const invoiceData = collectInvoiceDataFromForm();
+            if (!invoiceData) {
+                throw new Error("Faltan datos en el formulario.");
+            }
+
+            // --- PASO 3: CONSTRUIR EL OBJETO FINAL PARA GUARDAR ---
+            const invoiceToSave = {
+                ...invoiceData,
+                userId: user.uid,
+                invoiceNumberFormatted: `FCT-${formattedInvoiceNumberStr}`,
+                invoiceNumberNumeric: actualNumericInvoiceNumber,
+                uniqueQueryCode: uniqueQueryCode,
+                createdAt: serverTimestamp()
+            };
+
+            // --- PASO 4: GUARDAR EN FIRESTORE ---
+            await addDoc(collection(db, "facturas"), invoiceToSave);
+            alert(`¡Factura ${invoiceToSave.invoiceNumberFormatted} guardada con éxito!`);
+
+            // --- PASO 5: CREAR O ACTUALIZAR CLIENTE ---
+            const selectedClientId = hiddenSelectedClientIdInput.value;
+            let clientEmail = clientEmailInput.value.trim(); // Se lee aquí de nuevo
+
+            if (!selectedClientId) { // Cliente nuevo
                 const newClientData = { 
-                    userId: user.uid, // Añadir userId también al crear cliente
+                    userId: user.uid,
                     name: clientName, 
                     phone: clientPhone, 
                     email: clientEmail, 
                     createdAt: serverTimestamp(), 
                     isDeleted: false, 
                     estadoGeneralCliente: "Nuevo", 
-                    estadoUltimaFacturaCliente: invoiceData.paymentStatus 
+                    estadoUltimaFacturaCliente: invoiceToSave.paymentStatus 
                 };
                 await addDoc(collection(db, "clientes"), newClientData);
-            } else {
+            } else { // Cliente existente (actualizar o el que se estaba editando)
                 const clientRef = doc(db, "clientes", selectedClientId);
-                await updateDoc(clientRef, {
-                    estadoUltimaFacturaCliente: invoiceData.paymentStatus,
-                    updatedAt: serverTimestamp() 
-                });
+                const clientUpdates = {
+                    estadoUltimaFacturaCliente: invoiceToSave.paymentStatus,
+                    updatedAt: serverTimestamp()
+                };
+                // Si estaba en modo edición, también actualizamos sus datos
+                if(isEditingClient){
+                    clientUpdates.name = clientName;
+                    clientUpdates.phone = clientPhone;
+                    clientUpdates.email = clientEmail;
+                }
+                await updateDoc(clientRef, clientUpdates);
             }
-            
+
+            // --- PASO 6: REINICIAR FORMULARIO ---
             invoiceForm.reset();
             currentInvoiceItems = [];
             nextItemId = 0;
+            isEditingClient = false;
+            if (clientNameInput) clientNameInput.disabled = false;
+            if (clientPhoneInput) clientPhoneInput.disabled = false;
+            if (clientEmailInput) clientEmailInput.disabled = false;
             renderItems();
             setDefaultInvoiceDate();
             updateQuantityBasedOnStreaming();
