@@ -2297,21 +2297,19 @@ textarea.input-error {
     }
     
     .top-items-list li {
-        flex-direction: column; /* Apilar el nombre y el contador */
+        flex-direction: column; /* Apilar el nombre del producto y el contador */
         align-items: flex-start; /* Alinear todo a la izquierda */
         gap: 8px; /* Espacio entre el nombre y la píldora de conteo */
-        padding: 12px 0; /* Más espacio vertical */
     }
     
     .top-items-list li .pill-count {
-        margin-left: 0; /* Quitar el margen izquierdo que tenía en PC */
-        align-self: flex-start; /* Alinear la píldora a la izquierda */
+        margin-left: 0; /* Quitar el margen que tenía en la vista de PC */
     }
     
     .top-items-list .item-name-container {
         display: flex;
         align-items: center;
-        gap: 12px; /* Un poco más de espacio entre logo y texto */
+        gap: 8px; /* Un poco más de espacio entre logo y texto */
         flex-grow: 1; /* Para que ocupe el espacio disponible a la izquierda */
         min-width: 0; /* MUY IMPORTANTE para que el flexbox permita que el hijo se encoja */
     }
