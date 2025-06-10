@@ -1898,6 +1898,22 @@ function setupDashboardFilters() {
     }
     if (selectMonth) selectMonth.value = new Date().getMonth();
     if (selectDay) selectDay.value = new Date().toISOString().split('T')[0];
+
+    // Inicializar Flatpickr para el selector de semana
+    if (document.getElementById('selectWeek')) {
+        flatpickr("#selectWeek", {
+            dateFormat: "Y-m-d", // El formato que guarda internamente
+            weekNumbers: true,   // Muestra los números de semana en el calendario
+            altInput: true,      // Muestra una fecha más legible al usuario
+            altFormat: "'Semana' W, Y", // Formato que ve el usuario, ej: "Semana 24, 2025"
+            onChange: function(selectedDates, dateStr, instance) {
+                // Cuando el usuario elige una fecha, recargamos los datos del dashboard
+                if (selectedDates.length > 0) {
+                    loadDashboardData();
+                }
+            }
+        });
+    }
     
     // Establecer la semana actual por defecto en el input type="week"
     if (selectWeek) {
