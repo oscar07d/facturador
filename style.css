@@ -350,6 +350,36 @@ body.modal-active {
     height: 350px;      /* Altura base para el área de la gráfica */
 }
 
+.chart-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.filter-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.filter-group label {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-muted-color);
+}
+
+.chart-filters select,
+.chart-filters input[type="date"] {
+    padding: 6px 10px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-s);
+    background-color: #fff;
+    font-family: 'Poppins', sans-serif;
+}
+
 /* === ESTILOS PARA BÚSQUEDA Y FILTROS === */
 /* === ESTILOS PARA BÚSQUEDA Y FILTROS (REVISADO) === */
 .invoice-search-controls {
