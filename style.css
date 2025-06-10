@@ -380,6 +380,40 @@ body.modal-active {
     font-family: 'Poppins', sans-serif;
 }
 
+/* ===> AÑADE ESTAS NUEVAS REGLAS PARA EL SELECTOR DE SEMANA <=== */
+
+/* Contenedor que se convertirá en la píldora visual */
+.week-input-wrapper {
+    position: relative;
+    display: inline-block;
+    background-color: var(--light-gray-color);
+    border-radius: var(--border-radius-pill);
+    padding: 8px 15px;
+    transition: background-color 0.2s ease;
+}
+.week-input-wrapper:hover {
+    background-color: #dce1e6;
+}
+
+/* Estilos para el input de la semana */
+#weekFilter input[type="week"] {
+    position: relative;
+    z-index: 2; /* Poner el input por encima de la píldora */
+    background: transparent; /* Hacer el fondo del input transparente */
+    border: none;
+    padding: 0;
+    min-height: auto;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-color);
+}
+
+/* Ocultar el icono del calendario por defecto del navegador */
+#weekFilter input[type="week"]::-webkit-calendar-picker-indicator {
+    background: none;
+    cursor: pointer;
+}
+
 /* === ESTILOS PARA BÚSQUEDA Y FILTROS === */
 /* === ESTILOS PARA BÚSQUEDA Y FILTROS (REVISADO) === */
 .invoice-search-controls {
