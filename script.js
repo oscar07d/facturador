@@ -148,6 +148,9 @@ const selectMonth = document.getElementById('selectMonth');
 const dayFilter = document.getElementById('dayFilter');
 const selectDay = document.getElementById('selectDay');
 
+const weekFilter = document.getElementById('weekFilter');
+const selectWeek = document.getElementById('selectWeek');
+
 const paymentUpdateModal = document.getElementById('paymentUpdateModal');
 const paymentUpdateModalTitle = document.getElementById('paymentUpdateModalTitle');
 const paymentUpdateInvoiceNumber = document.getElementById('paymentUpdateInvoiceNumber');
@@ -281,6 +284,16 @@ async function loadDashboardData() {
                     if (!inv.invoiceDate) return false;
                     const invDate = new Date(inv.invoiceDate + 'T00:00:00');
                     return invDate.getFullYear() === selectedYear && invDate.getMonth() === selectedMonth;
+                });
+                break;
+            case 'week': // <-- NUEVA LÓGICA PARA SEMANA
+                const weekDates = getWeekDates(selectedWeek, selectedYear);
+                weekDates.start.setHours(0,0,0,0);
+                weekDates.end.setHours(23,59,59,999);
+                filteredInvoicesForChart = allInvoicesData.filter(inv => {
+                    if (!inv.invoiceDate) return false;
+                    const invDate = new Date(inv.invoiceDate + 'T00:00:00');
+                    return invDate >= weekDates.start && invDate <= weekDates.end;
                 });
                 break;
             case 'day':
@@ -1896,6 +1909,26 @@ function setupDashboardFilters() {
     if (selectYear) selectYear.addEventListener('change', loadDashboardData);
     if (selectMonth) selectMonth.addEventListener('change', loadDashboardData);
     if (selectDay) selectDay.addEventListener('change', loadDashboardData);
+}
+
+/**
+ * Calcula las fechas de inicio y fin para un número de semana y año dados.
+ * @param {number} w - El número de la semana.
+ * @param {number} y - El año.
+ * @returns {{start: Date, end: Date}}
+ */
+function getWeekDates(w, y) {
+    const simple = new Date(y, 0, 1 + (w - 1) * 7);
+    const dow = simple.getDay();
+    const ISOweekStart = simple;
+    if (dow <= 4) {
+        ISOweekStart.setDate(simple.getDate() - simple.getDay() + 1);
+    } else {
+        ISOweekStart.setDate(simple.getDate() + 8 - simple.getDay());
+    }
+    const ISOweekEnd = new Date(ISOweekStart);
+    ISOweekEnd.setDate(ISOweekEnd.getDate() + 6);
+    return { start: ISOweekStart, end: ISOweekEnd };
 }
 
 // Y al final del script, asegúrate de que se llame a esta función una vez
