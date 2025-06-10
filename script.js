@@ -407,28 +407,11 @@ function updatePaymentStatusDisplay() {
 }
 
 function collectInvoiceDataFromForm() {
-    if (!clientNameInput.value || !clientPhoneInput.value) {
-        alert("Por favor, completa al menos el nombre y el celular del cliente.");
-        return null; // Detiene la ejecución si faltan datos
-    }
-    if (currentInvoiceItems.length === 0) {
-        alert("Por favor, agrega al menos un ítem a la factura.");
-        return null;
-    }
-    if (!invoiceDateInput.value) {
-        alert("Por favor, selecciona una fecha para la factura.");
-        return null;
-    }
+    // Esta función ahora solo se encarga de recolectar los datos.
+    // La validación se hará en el listener del formulario.
+
     recalculateTotals();
 
-    // Función auxiliar para leer números de moneda correctamente.
-    const parseCurrencyString = (str) => {
-        if (typeof str !== 'string') return 0;
-        const cleanNumberStr = str.replace(/[^\d,]/g, '').replace(',', '.');
-        return parseFloat(cleanNumberStr) || 0;
-    };
-
-    // Construir el objeto con los datos de la factura.
     const invoiceData = {
         invoiceNumberFormatted: `FCT-${invoiceNumberText.textContent || 'PENDIENTE'}`,
         invoiceNumberNumeric: parseInt(invoiceNumberText.textContent) || 0,
@@ -453,11 +436,11 @@ function collectInvoiceDataFromForm() {
             value: parseFloat(discountValueInput.value) || 0
         },
         totals: {
-            subtotal: parseCurrencyString(subtotalAmountSpan.textContent),
-            discountApplied: parseCurrencyString(discountAmountAppliedSpan.textContent),
-            taxableBase: parseCurrencyString(taxableBaseAmountSpan.textContent),
-            iva: parseCurrencyString(ivaAmountSpan.textContent),
-            grandTotal: parseCurrencyString(totalAmountSpan.textContent)
+            subtotal: parseFloat(subtotalAmountSpan.textContent.replace(/[^\d,.-]/g, '').replace(',', '.')) || 0,
+            discountApplied: parseFloat(discountAmountAppliedSpan.textContent.replace(/[^\d,.-]/g, '').replace(',', '.')) || 0,
+            taxableBase: parseFloat(taxableBaseAmountSpan.textContent.replace(/[^\d,.-]/g, '').replace(',', '.')) || 0,
+            iva: parseFloat(ivaAmountSpan.textContent.replace(/[^\d,.-]/g, '').replace(',', '.')) || 0,
+            grandTotal: parseFloat(totalAmountSpan.textContent.replace(/[^\d,.-]/g, '').replace(',', '.')) || 0
         },
         paymentStatus: paymentStatusSelect.value,
         generatedAt: new Date().toISOString()
@@ -3097,21 +3080,29 @@ if (invoiceForm) {
         const user = auth.currentUser;
         if (!user) { alert("Debes iniciar sesión para guardar."); return; }
         
-        // --- VALIDACIONES INICIALES ---
-        if (currentInvoiceItems.length === 0) { alert("Por favor, agrega al menos un ítem a la factura."); return; }
+        // --- VALIDACIÓN CORREGIDA ---
         let clientName = clientNameInput?.value.trim();
         let clientPhone = clientPhoneInput?.value.trim();
         let clientEmail = clientEmailInput?.value.trim();
+        
+        // La validación ahora solo comprueba nombre y teléfono
         if (!clientName || !clientPhone) { 
             alert("Por favor, completa al menos el nombre y el celular del cliente."); 
             return; 
         }
-        if (!invoiceDateInput.value) { alert("Por favor, selecciona una fecha para la factura."); return; }
+        if (currentInvoiceItems.length === 0) { 
+            alert("Por favor, agrega al menos un ítem a la factura."); 
+            return; 
+        }
+        if (!invoiceDateInput.value) { 
+            alert("Por favor, selecciona una fecha para la factura."); 
+            return; 
+        }
+        // --- FIN DE LA VALIDACIÓN CORREGIDA ---
         
         if (saveInvoiceBtn) saveInvoiceBtn.disabled = true;
         showLoading(true);
 
-        // --- LÓGICA PARA CLIENTES (NUEVO O EDITADO) ---
         const selectedClientId = hiddenSelectedClientIdInput.value;
         if (selectedClientId && isEditingClient) {
             const clientRef = doc(db, "clientes", selectedClientId);
@@ -3135,12 +3126,10 @@ if (invoiceForm) {
             if (clientEmailInput) clientEmailInput.disabled = true;
         }
 
-        // --- RECOLECCIÓN DE DATOS CON PARSEO CORRECTO ---
         recalculateTotals();
 
         const parseCurrencyString = (str) => {
             if (typeof str !== 'string') return 0;
-            // Quita todo lo que no sea dígito o coma, luego reemplaza la coma
             const cleanNumberStr = str.replace(/[^\d,]/g, '').replace(',', '.');
             return parseFloat(cleanNumberStr) || 0;
         };
@@ -3178,7 +3167,7 @@ if (invoiceForm) {
             client: { name: clientName, phone: clientPhone, email: clientEmail }, 
             items: currentInvoiceItems,
             discount: { type: discountTypeSelect.value, value: (parseFloat(discountValueInput.value) || 0) },
-            totals: { // Usando la función de parseo correcta
+            totals: {
                 subtotal: parseCurrencyString(subtotalAmountSpan.textContent),
                 discountApplied: parseCurrencyString(discountAmountAppliedSpan.textContent),
                 taxableBase: parseCurrencyString(taxableBaseAmountSpan.textContent),
@@ -3189,12 +3178,11 @@ if (invoiceForm) {
             createdAt: serverTimestamp()
         };
 
-        // --- GUARDADO EN FIRESTORE ---
         try {
             const docRef = await addDoc(collection(db, "facturas"), invoiceToSave);
             alert(`¡Factura FCT-${formattedInvoiceNumberStr} guardada exitosamente!`);
 
-            if (!selectedClientId) { // Cliente nuevo
+            if (!selectedClientId) {
                 const newClientData = { 
                     userId: user.uid, name: clientName, phone: clientPhone, email: clientEmail, 
                     createdAt: serverTimestamp(), isDeleted: false, 
@@ -3202,7 +3190,7 @@ if (invoiceForm) {
                     estadoUltimaFacturaCliente: invoiceToSave.paymentStatus 
                 };
                 await addDoc(collection(db, "clientes"), newClientData);
-            } else { // Cliente existente
+            } else {
                 const clientRef = doc(db, "clientes", selectedClientId);
                 await updateDoc(clientRef, {
                     estadoUltimaFacturaCliente: invoiceToSave.paymentStatus,
@@ -3210,7 +3198,6 @@ if (invoiceForm) {
                 });
             }
             
-            // Limpiar y reiniciar formulario
             invoiceForm.reset();
             currentInvoiceItems = []; 
             nextItemId = 0;
