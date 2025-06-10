@@ -217,8 +217,8 @@ async function loadDashboardData() {
         const timeRange = chartTimeRange.value;
         const selectedYear = parseInt(selectYear.value);
         const selectedMonth = parseInt(selectMonth.value);
-        const selectedWeekValue = selectWeek.value; 
         const selectedDay = selectDay.value;
+        const selectedWeekValue = selectWeek.value;
 
         // --- 2. OBTENER TODOS LOS DATOS DE FIRESTORE ---
         const invoicesQuery = query(collection(db, "facturas"), where("userId", "==", user.uid));
@@ -234,7 +234,7 @@ async function loadDashboardData() {
             allInvoicesData.push(doc.data());
         });
 
-        // --- 2. PROCESAR DATOS PARA LAS TARJETAS (SIEMPRE SE MUESTRAN COMPLETOS) ---
+        // --- 3. PROCESAR DATOS PARA LAS TARJETAS DE MÉTRICAS ---
         let totalRevenue = 0;
         let totalDiscounts = 0;
         const itemCounts = {};
@@ -273,12 +273,7 @@ async function loadDashboardData() {
             topItemsList.innerHTML = '<li>No hay datos de ítems vendidos.</li>';
         }
 
-        // --- 3. LÓGICA DE FILTRADO Y DIBUJO DE LA GRÁFICA ---
-        const timeRange = chartTimeRange.value;
-        const selectedYear = parseInt(selectYear.value);
-        const selectedMonth = parseInt(selectMonth.value);
-        const selectedDay = selectDay.value;
-
+        // --- 4. LÓGICA DE FILTRADO Y DIBUJO DE LA GRÁFICA ---
         let filteredInvoicesForChart = [];
         const now = new Date();
         
@@ -300,7 +295,6 @@ async function loadDashboardData() {
                     const weekDates = getWeekDates(week, year);
                     weekDates.start.setHours(0,0,0,0);
                     weekDates.end.setHours(23,59,59,999);
-
                     filteredInvoicesForChart = allInvoicesData.filter(inv => {
                         if (!inv.invoiceDate) return false;
                         const invDate = new Date(inv.invoiceDate + 'T00:00:00');
@@ -324,16 +318,13 @@ async function loadDashboardData() {
         let chartDataset = [];
         let titleSuffix = "Últimos 12 Meses";
 
-        // Agrupar los datos filtrados según el tipo de vista
         if (timeRange === 'last12months' || timeRange === 'year') {
             const referenceYear = (timeRange === 'year') ? selectedYear : now.getFullYear();
-            // Inicializar los 12 meses del año de referencia
             for (let i = 0; i < 12; i++) {
                 const monthDate = new Date(referenceYear, i, 1);
                 const monthKey = monthDate.toISOString().substring(0, 7);
                 chartDataPoints[monthKey] = 0;
             }
-            // Llenar con los datos de las facturas filtradas
             filteredInvoicesForChart.forEach(inv => {
                 if (inv.paymentStatus !== 'cancelled' && inv.invoiceDate) {
                     const monthKey = inv.invoiceDate.substring(0, 7);
@@ -344,8 +335,8 @@ async function loadDashboardData() {
             });
             chartLabels = Object.keys(chartDataPoints).map(key => new Date(key + '-02').toLocaleString('es-CO', { month: 'short' }));
             chartDataset = Object.values(chartDataPoints);
-            titleSuffix = (timeRange === 'year') ? `Año ${selectedYear}` : "Últimos 12 Meses";
-        } else { // Para vistas de mes, semana o día
+            titleSuffix = (timeRange === 'year') ? `del Año ${selectedYear}` : "de los Últimos 12 Meses";
+        } else { 
             chartType = 'bar';
             filteredInvoicesForChart.forEach(inv => {
                 if (inv.paymentStatus !== 'cancelled' && inv.invoiceDate) {
@@ -357,15 +348,14 @@ async function loadDashboardData() {
             chartLabels = sortedKeys.map(key => new Date(key + 'T00:00:00').toLocaleDateString('es-CO', {day: '2-digit', month: 'short'}));
             chartDataset = sortedKeys.map(key => chartDataPoints[key]);
             
-            if(timeRange === 'month') titleSuffix = `${selectMonth.options[selectMonth.selectedIndex].text} ${selectedYear}`;
-            if(timeRange === 'day') titleSuffix = `${new Date(selectedDay + 'T00:00:00').toLocaleDateString('es-CO', {dateStyle: 'long'})}`;
+            if(timeRange === 'month') titleSuffix = `de ${selectMonth.options[selectMonth.selectedIndex].text} de ${selectedYear}`;
+            if(timeRange === 'week') titleSuffix = `de la Semana #${selectedWeekValue.substring(6)} de ${selectedWeekValue.substring(0,4)}`;
+            if(timeRange === 'day') titleSuffix = `del ${new Date(selectedDay + 'T00:00:00').toLocaleDateString('es-CO', {dateStyle: 'long'})}`;
         }
         
-        // Actualizar título de la gráfica
         const chartCardTitle = document.querySelector('.chart-container h4');
-        if(chartCardTitle) chartCardTitle.textContent = `Ingresos por ${titleSuffix}`;
+        if(chartCardTitle) chartCardTitle.textContent = `Ingresos ${titleSuffix}`;
 
-        // Dibujar la gráfica
         const ctx = document.getElementById('monthlyRevenueChart').getContext('2d');
         if (revenueChartInstance) revenueChartInstance.destroy();
         
