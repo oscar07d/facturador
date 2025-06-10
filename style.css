@@ -2306,9 +2306,9 @@ textarea.input-error {
     
     /* Cada elemento (fila) de la lista */
     .top-items-list li {
-        flex-direction: column;  /* Apila el nombre del producto y el contador */
-        align-items: flex-start; /* Alinea todo a la izquierda */
-        gap: 8px;                /* Espacio entre el nombre y el contador */
+        flex-direction: row;  /* Apila el nombre del producto y el contador */
+        align-items: center; /* Alinea todo a la izquierda */
+        gap: 10px;                /* Espacio entre el nombre y el contador */
     }
     .top-items-list li:last-child {
         border-bottom: none;
@@ -2337,6 +2337,7 @@ textarea.input-error {
     
     /* La píldora de conteo */
     .top-items-list li .pill-count {
+        order: 1;
         background-color: var(--primary-color); /* Color de fondo de la moneda */
         color: white; /* Color del número */
         font-weight: 600;
@@ -2349,6 +2350,11 @@ textarea.input-error {
         justify-content: center;
         margin-left: 0;
         padding: 0; /* Quitamos el padding para que el número se centre bien */
+    }
+
+    .top-items-list li .item-name-container {
+        order: 2;
+        gap: 8px;
     }
 }
 
