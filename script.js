@@ -292,9 +292,11 @@ async function loadDashboardData() {
                 if (selectedWeekValue) {
                     const year = parseInt(selectedWeekValue.substring(0, 4));
                     const week = parseInt(selectedWeekValue.substring(6));
+                    
                     const weekDates = getWeekDates(week, year);
-                    weekDates.start.setHours(0,0,0,0);
-                    weekDates.end.setHours(23,59,59,999);
+                    weekDates.start.setHours(0, 0, 0, 0);
+                    weekDates.end.setHours(23, 59, 59, 999);
+
                     filteredInvoicesForChart = allInvoicesData.filter(inv => {
                         if (!inv.invoiceDate) return false;
                         const invDate = new Date(inv.invoiceDate + 'T00:00:00');
@@ -316,26 +318,28 @@ async function loadDashboardData() {
         let chartType = 'line';
         let chartLabels = [];
         let chartDataset = [];
-        let titleSuffix = "Últimos 12 Meses";
+        let titleSuffix = "de la Semana"; // Título por defecto para semana
 
-        if (timeRange === 'last12months' || timeRange === 'year') {
-            const referenceYear = (timeRange === 'year') ? selectedYear : now.getFullYear();
-            for (let i = 0; i < 12; i++) {
-                const monthDate = new Date(referenceYear, i, 1);
-                const monthKey = monthDate.toISOString().substring(0, 7);
-                chartDataPoints[monthKey] = 0;
+        if (timeRange === 'week') {
+            chartType = 'bar';
+            // Para la semana, queremos mostrar cada día
+            const weekDates = getWeekDates(parseInt(selectedWeekValue.substring(6)), parseInt(selectedWeekValue.substring(0, 4)));
+            for (let i = 0; i < 7; i++) {
+                const day = new Date(weekDates.start);
+                day.setDate(day.getDate() + i);
+                const dayKey = day.toISOString().substring(0, 10);
+                chartDataPoints[dayKey] = 0; // Inicializar los 7 días de la semana
             }
+
             filteredInvoicesForChart.forEach(inv => {
                 if (inv.paymentStatus !== 'cancelled' && inv.invoiceDate) {
-                    const monthKey = inv.invoiceDate.substring(0, 7);
-                    if(chartDataPoints.hasOwnProperty(monthKey)) {
-                        chartDataPoints[monthKey] += inv.totals?.grandTotal || 0;
-                    }
+                    chartDataPoints[inv.invoiceDate] += inv.totals?.grandTotal || 0;
                 }
             });
-            chartLabels = Object.keys(chartDataPoints).map(key => new Date(key + '-02').toLocaleString('es-CO', { month: 'short' }));
+            
+            chartLabels = Object.keys(chartDataPoints).map(key => new Date(key + 'T00:00:00').toLocaleDateString('es-CO', { weekday: 'short', day: 'numeric' }));
             chartDataset = Object.values(chartDataPoints);
-            titleSuffix = (timeRange === 'year') ? `del Año ${selectedYear}` : "de los Últimos 12 Meses";
+            titleSuffix = `de la Semana #${selectedWeekValue.substring(6)} del ${selectedWeekValue.substring(0, 4)}`;
         } else { 
             chartType = 'bar';
             filteredInvoicesForChart.forEach(inv => {
@@ -1873,6 +1877,7 @@ function handleClientSelection(clientId, clientNameText, clientData = null) {
 } // Esta es la llave de cierre correcta para la función handleClientSelection
 
 function setupDashboardFilters() {
+    // Poblar el selector de años dinámicamente
     if (selectYear) {
         const currentYear = new Date().getFullYear();
         selectYear.innerHTML = '';
@@ -1881,28 +1886,9 @@ function setupDashboardFilters() {
             selectYear.add(new Option(year, year));
         }
     }
+    // Establecer el mes y día actuales por defecto
     if (selectMonth) selectMonth.value = new Date().getMonth();
     if (selectDay) selectDay.value = new Date().toISOString().split('T')[0];
-
-    // Inicializar Flatpickr para el selector de semana
-    if (document.getElementById('selectWeek')) {
-        flatpickr("#selectWeek", {
-            // Activar el plugin de selección de semana
-            plugins: [
-                new weekSelect({})
-            ],
-            // Opciones de formato y comportamiento
-            dateFormat: "Y-m-d", // Formato interno que usa la lógica
-            altInput: true,      // Muestra una fecha más legible
-            altFormat: "'Semana' W, Y", // Formato que ve el usuario: "Semana 24, 2025"
-            onChange: function(selectedDates, dateStr, instance) {
-                // Se dispara cuando se selecciona una semana
-                if (selectedDates.length > 0) {
-                    loadDashboardData();
-                }
-            }
-        });
-    }
     
     // Establecer la semana actual por defecto en el input type="week"
     if (selectWeek) {
@@ -1914,22 +1900,23 @@ function setupDashboardFilters() {
         selectWeek.value = `${year}-W${String(weekNumber).padStart(2, '0')}`;
     }
 
+    // Listener para el filtro principal que muestra/oculta los otros
     if (chartTimeRange) {
         chartTimeRange.addEventListener('change', () => {
             const value = chartTimeRange.value;
-            // Usamos .style.display para mostrar u ocultar
             if (yearFilter) yearFilter.style.display = (value === 'year' || value === 'month' || value === 'week') ? 'flex' : 'none';
-            if (monthFilter) monthFilter.style.display = (value === 'month') ? 'flex' : 'none';
-            if (weekFilter) weekFilter.style.display = (value === 'week') ? 'flex' : 'none'; // <-- AÑADIDO
+            if (monthFilter) monthFilter.style.display = (value === 'month' || value === 'week') ? 'flex' : 'none';
+            if (weekFilter) weekFilter.style.display = (value === 'week') ? 'flex' : 'none';
             if (dayFilter) dayFilter.style.display = (value === 'day') ? 'flex' : 'none';
             
             loadDashboardData();
         });
     }
 
+    // Listeners para los filtros secundarios
     if (selectYear) selectYear.addEventListener('change', loadDashboardData);
     if (selectMonth) selectMonth.addEventListener('change', loadDashboardData);
-    if (selectWeek) selectWeek.addEventListener('change', loadDashboardData); // <-- AÑADIDO
+    if (selectWeek) selectWeek.addEventListener('change', loadDashboardData);
     if (selectDay) selectDay.addEventListener('change', loadDashboardData);
 }
 
