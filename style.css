@@ -427,6 +427,32 @@ body.modal-active {
     padding: 0;
 }
 
+#weekFilter input[type="text"].form-control {
+    background-color: #e7f1ff; /* Azul muy tenue */
+    border: 1px solid #b8d6ff; /* Borde azul más oscuro */
+    border-radius: var(--border-radius-pill); /* Bordes totalmente redondeados */
+    padding: 6px 12px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--primary-hover-color); /* Color de texto azul oscuro */
+    cursor: pointer; /* Cambia el cursor a una manita para indicar que es clicable */
+    min-height: auto; /* Anulamos la altura mínima general para que sea más compacto */
+    text-align: center; /* Centramos el texto, ej: "Semana 24, 2025" */
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Efecto al pasar el cursor sobre el selector */
+#weekFilter input[type="text"].form-control:hover {
+    background-color: #dbe9ff;
+}
+
+/* Efecto de foco cuando el calendario está abierto */
+#weekFilter input[type="text"].form-control:focus,
+#weekFilter input[type="text"].form-control.active {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.15);
+}
+
 /* ================================================= */
 /* === ESTILOS PERSONALIZADOS PARA CALENDARIO FLATPICKR === */
 /* ================================================= */
