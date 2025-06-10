@@ -1877,37 +1877,37 @@ function handleClientSelection(clientId, clientNameText, clientData = null) {
 } // Esta es la llave de cierre correcta para la función handleClientSelection
 
 function setupDashboardFilters() {
-    // Poblar el selector de años dinámicamente
     if (selectYear) {
         const currentYear = new Date().getFullYear();
         selectYear.innerHTML = '';
         for (let i = 0; i < 5; i++) {
             const year = currentYear - i;
-            const option = new Option(year, year);
-            selectYear.add(option);
+            selectYear.add(new Option(year, year));
         }
     }
-    // Establecer el mes y día actuales por defecto
     if (selectMonth) selectMonth.value = new Date().getMonth();
     if (selectDay) selectDay.value = new Date().toISOString().split('T')[0];
+    if (selectWeek) { // Poner la semana actual por defecto
+        const today = new Date();
+        const firstDayOfYear = new Date(today.getFullYear(), 0, 1);
+        const pastDaysOfYear = (today - firstDayOfYear) / 86400000;
+        selectWeek.value = Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
+    }
 
-    // Listener para el filtro principal que muestra/oculta los otros
     if (chartTimeRange) {
         chartTimeRange.addEventListener('change', () => {
             const value = chartTimeRange.value;
-            // Usamos .style.display para mostrar u ocultar
-            if (yearFilter) yearFilter.style.display = (value === 'year' || value === 'month' || value === 'week') ? 'flex' : 'none';
-            if (monthFilter) monthFilter.style.display = (value === 'month' || value === 'week') ? 'flex' : 'none';
-            if (dayFilter) dayFilter.style.display = (value === 'day') ? 'flex' : 'none';
-            
-            // Cuando cambia el filtro principal, recargamos la data
+            yearFilter.style.display = (value === 'year' || value === 'month' || value === 'week') ? 'flex' : 'none';
+            monthFilter.style.display = (value === 'month' || value === 'week') ? 'flex' : 'none';
+            weekFilter.style.display = (value === 'week') ? 'flex' : 'none'; // <-- LÍNEA AÑADIDA
+            dayFilter.style.display = (value === 'day') ? 'flex' : 'none';
             loadDashboardData();
         });
     }
 
-    // Listeners para los filtros secundarios que también recargan la data
     if (selectYear) selectYear.addEventListener('change', loadDashboardData);
     if (selectMonth) selectMonth.addEventListener('change', loadDashboardData);
+    if (selectWeek) selectWeek.addEventListener('change', loadDashboardData); // <-- LÍNEA AÑADIDA
     if (selectDay) selectDay.addEventListener('change', loadDashboardData);
 }
 
