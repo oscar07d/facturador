@@ -2296,31 +2296,63 @@ textarea.input-error {
         height: 300px; 
     }
     
+    .top-items-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        max-height: 300px; 
+        overflow-y: auto;  
+    }
+    
+    /* Cada elemento (fila) de la lista */
     .top-items-list li {
-        flex-direction: column; /* Apilar el nombre del producto y el contador */
-        align-items: flex-start; /* Alinear todo a la izquierda */
-        gap: 8px; /* Espacio entre el nombre y la píldora de conteo */
+        display: flex;
+        justify-content: space-between;
+        align-items: center; 
+        padding: 12px 5px;
+        border-bottom: 1px solid var(--border-color);
+        gap: 15px; 
+    }
+    .top-items-list li:last-child {
+        border-bottom: none;
     }
     
-    .top-items-list li .pill-count {
-        margin-left: 0; /* Quitar el margen que tenía en la vista de PC */
-    }
-    
+    /* Contenedor para el logo y el nombre */
     .top-items-list .item-name-container {
         display: flex;
         align-items: center;
-        gap: 8px; /* Un poco más de espacio entre logo y texto */
-        flex-grow: 1; /* Para que ocupe el espacio disponible a la izquierda */
-        min-width: 0; /* MUY IMPORTANTE para que el flexbox permita que el hijo se encoja */
+        gap: 12px;
+        flex-grow: 1;   /* Ocupa el espacio disponible a la izquierda */
+        min-width: 0;   /* ¡MUY IMPORTANTE! Permite que el contenedor se encoja */
     }
     
-    /* Span que contiene el nombre del producto */
+    /* El texto del nombre del producto */
     .top-items-list .item-name-container span {
         background-color: transparent;
         padding: 0;
-        white-space: normal; /* <-- CAMBIO CLAVE: Permite que el texto se parta en varias líneas */
-        overflow: hidden; 
-        text-overflow: ellipsis; /* Corta el texto con "..." si aún así es muy largo */
+        /* --- CORRECCIÓN CLAVE --- */
+        white-space: normal;  /* Permite que el texto se parta en varias líneas */
+        word-break: break-word; /* Ayuda a romper palabras largas si es necesario */
+    }
+    
+    /* El logo del producto */
+    .top-items-list .item-logo {
+        width: 28px;
+        height: 28px;
+        object-fit: contain;
+        border-radius: 5px;
+        flex-shrink: 0; /* Evita que el logo se encoja */
+    }
+    
+    /* La píldora de conteo */
+    .top-items-list .pill-count { /* Asegúrate de tener esta clase en tu JS */
+        color: var(--text-muted-color);
+        background-color: var(--light-gray-color);
+        padding: 3px 10px;
+        border-radius: var(--border-radius-pill);
+        font-size: 0.8rem;
+        font-weight: 400;
+        flex-shrink: 0; /* Evita que la píldora se encoja */
     }
 }
 
