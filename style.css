@@ -213,6 +213,16 @@ body.modal-active {
     height: 22px;
 }
 
+/* Estilos para el calendario Flatpickr */
+.flatpickr-day.selected, .flatpickr-day.startRange, .flatpickr-day.endRange {
+    background: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
+}
+/* Para la píldora de la semana */
+.numInputWrapper:hover, .flatpickr-current-month .flatpickr-monthDropdown-months:hover {
+    background: rgba(0, 123, 255, 0.15) !important;
+}
+
 /* ============================================= */
 /* === ESTILOS PARA LA SECCIÓN DE INICIO (DASHBOARD) === */
 /* ============================================= */
