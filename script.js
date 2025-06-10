@@ -2703,7 +2703,7 @@ onAuthStateChanged(auth, (user) => {
         console.log("Paso 6: Usuario autenticado en onAuthStateChanged.");
         if (loginContainer) loginContainer.style.display = 'none';
         if (mainContent) mainContent.style.display = 'flex'; 
-        handleNavigation('createInvoiceSection');
+        handleNavigation('homeSection');
     } else {
         console.log("Paso 6B: Usuario NO autenticado en onAuthStateChanged.");
         if (loginContainer) loginContainer.style.display = 'flex';
