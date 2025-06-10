@@ -281,11 +281,9 @@ body.modal-active {
 
 /* Y mantén la regla específica para la altura de la gráfica */
 .dashboard-card.chart-container {
-    grid-column: 1 / -1; /* Ocupa todo el ancho en la cuadrícula */
-    height: 400px;       /* Le damos una ALTURA FIJA */
-    position: relative;  /* ¡MUY IMPORTANTE! Para contener a la gráfica */
-    padding: 20px;       /* Aseguramos un padding interno */
-    display: flex;       /* Usamos flex para organizar el título y la gráfica */
+    grid-column: 1 / -1; 
+    padding: 25px;       
+    display: flex;       
     flex-direction: column;
 }
 
@@ -344,6 +342,12 @@ body.modal-active {
     font-weight: 400;
     flex-shrink: 0;
     margin-left: 10px;
+}
+
+.chart-wrapper {
+    position: relative; /* Clave para que el canvas se posicione correctamente */
+    flex-grow: 1;       /* Ocupa todo el espacio vertical disponible */
+    height: 350px;      /* Altura base para el área de la gráfica */
 }
 
 /* === ESTILOS PARA BÚSQUEDA Y FILTROS === */
@@ -2355,6 +2359,9 @@ textarea.input-error {
     .top-items-list li .item-name-container {
         order: 2;
         gap: 8px;
+    }
+    .chart-wrapper {
+        height: 300px; /* Altura ajustada para móvil */
     }
 }
 
