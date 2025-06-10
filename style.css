@@ -396,28 +396,35 @@ body.modal-active {
 .week-input-wrapper {
     position: relative;
     display: inline-block;
+    background-color: #e7f1ff; /* Un azul muy tenue */
+    border: 1px solid #b8d6ff; /* Un borde azul un poco más oscuro */
+    border-radius: var(--border-radius-pill);
+    transition: background-color 0.2s ease;
+}
+.week-input-wrapper:hover {
+    background-color: #dbe9ff;
 }
 
-/* El input de la semana, al que daremos el estilo de píldora */
-#weekFilter input[type="week"] {
-    background-color: #e7f1ff; /* Un azul muy tenue (light blue) */
-    border: 1px solid #b8d6ff; /* Un borde azul un poco más oscuro */
-    border-radius: var(--border-radius-pill); /* Bordes totalmente redondeados */
-    padding: 6px 12px; /* Padding interno */
+/* El input de la semana, que se hace transparente */
+#weekFilter input[type="week"].form-control {
+    position: relative;
+    z-index: 2;
+    background: transparent !important; /* Forzar fondo transparente */
+    border: none !important; /* Quitar bordes del propio input */
+    box-shadow: none !important; /* Quitar sombras del foco */
+    padding: 6px 12px;
+    min-height: auto;
     font-size: 0.9rem;
     font-weight: 500;
-    color: var(--primary-hover-color); /* Color de texto azul oscuro */
-    min-height: auto;
-    -webkit-appearance: none; /* Quitar estilos por defecto en algunos navegadores */
-    -moz-appearance: none;
-    appearance: none;
-    transition: background-color 0.2s ease;
+    color: var(--primary-hover-color);
+    cursor: pointer;
 }
 
 /* Oculta el icono de calendario por defecto del navegador */
 #weekFilter input[type="week"]::-webkit-calendar-picker-indicator {
-    opacity: 0;
+    background: none;
     cursor: pointer;
+    padding: 0;
 }
 
 /* === ESTILOS PARA BÚSQUEDA Y FILTROS === */
