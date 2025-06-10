@@ -2337,7 +2337,18 @@ textarea.input-error {
     
     /* La píldora de conteo */
     .top-items-list li .pill-count {
-        margin-left: 0; /* Quita el margen que no es necesario en esta vista */
+        background-color: var(--primary-color); /* Color de fondo de la moneda */
+        color: white; /* Color del número */
+        font-weight: 600;
+        font-size: 0.8rem;
+        border-radius: 50%; /* Esto crea el círculo */
+        width: 28px;        /* Ancho fijo para formar el círculo */
+        height: 28px;       /* Alto fijo para formar el círculo */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-left: 0;
+        padding: 0; /* Quitamos el padding para que el número se centre bien */
     }
 }
 
