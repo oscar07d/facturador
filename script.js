@@ -213,14 +213,7 @@ async function loadDashboardData() {
     }
 
     try {
-        // --- 1. LEER LOS VALORES DE LOS FILTROS PRIMERO ---
-        const timeRange = chartTimeRange.value;
-        const selectedYear = parseInt(selectYear.value);
-        const selectedMonth = parseInt(selectMonth.value);
-        const selectedDay = selectDay.value;
-        const flatpickrInstance = document.querySelector("#selectWeek")?._flatpickr;
-
-        // --- 2. OBTENER TODOS LOS DATOS DE FIRESTORE ---
+        // --- 1. OBTENER TODOS LOS DATOS UNA SOLA VEZ ---
         const invoicesQuery = query(collection(db, "facturas"), where("userId", "==", user.uid));
         const clientsQuery = query(collection(db, "clientes"), where("userId", "==", user.uid));
         
@@ -231,10 +224,10 @@ async function loadDashboardData() {
 
         const allInvoicesData = [];
         invoicesSnapshot.forEach(doc => {
-            allInvoicesData.push({ id: doc.id, ...doc.data() });
+            allInvoicesData.push(doc.data());
         });
 
-        // --- 3. PROCESAR DATOS PARA LAS TARJETAS DE MÉTRICAS (SIEMPRE TOTALES) ---
+        // --- 2. PROCESAR DATOS PARA LAS TARJETAS DE MÉTRICAS Y LA LISTA DE ÍTEMS ---
         let totalRevenue = 0;
         let totalDiscounts = 0;
         const itemCounts = {};
@@ -244,7 +237,7 @@ async function loadDashboardData() {
                 totalRevenue += invoice.totals?.grandTotal || 0;
                 totalDiscounts += invoice.totals?.discountApplied || 0;
                 invoice.items?.forEach(item => {
-                    const itemName = item.description.trim();
+                    const itemName = item.description?.trim();
                     if(itemName) {
                        itemCounts[itemName] = (itemCounts[itemName] || 0) + item.quantity;
                     }
@@ -260,14 +253,16 @@ async function loadDashboardData() {
         document.getElementById('dashboardActiveClients').textContent = activeClients;
         document.getElementById('dashboardInactiveClients').textContent = inactiveClients;
 
+        // --- CÓDIGO RESTAURADO PARA ÍTEMS MÁS VENDIDOS ---
         const sortedItems = Object.entries(itemCounts).sort((a, b) => b[1] - a[1]).slice(0, 5); // Top 5
         const topItemsList = document.getElementById('dashboardTopItems');
         topItemsList.innerHTML = '';
         if (sortedItems.length > 0) {
             sortedItems.forEach(([name, count]) => {
                 const li = document.createElement('li');
-                const logoSrc = getIconForItem(name);
-                let logoHtml = logoSrc ? `<img src="${logoSrc}" alt="${name}" class="item-logo">` : '';
+                const logoSrc = getIconForItem(name); // Asegúrate de tener esta función auxiliar
+                let logoHtml = logoSrc ? `<img src="${logoSrc}" alt="${name}" class="item-logo">` : '<div class="item-logo-placeholder"></div>';
+                
                 li.innerHTML = `
                     <div class="item-name-container">
                         ${logoHtml}
@@ -280,66 +275,50 @@ async function loadDashboardData() {
         } else {
             topItemsList.innerHTML = '<li>No hay datos de ítems vendidos.</li>';
         }
+        // --- FIN DEL CÓDIGO RESTAURADO ---
 
-        // --- 4. LÓGICA DE FILTRADO PARA LA GRÁFICA ---
+        // --- 3. LÓGICA DE FILTRADO Y DIBUJO DE LA GRÁFICA (CORREGIDA) ---
+        const timeRange = chartTimeRange.value;
+        const selectedYear = parseInt(selectYear.value);
+        const selectedMonth = parseInt(selectMonth.value);
+        const selectedDay = selectDay.value;
+        const flatpickrInstance = document.querySelector("#selectWeek")._flatpickr;
+        
         let filteredInvoicesForChart = [];
         const now = new Date();
-        
+
         switch (timeRange) {
             case 'year':
                 filteredInvoicesForChart = allInvoicesData.filter(inv => inv.invoiceDate && new Date(inv.invoiceDate + 'T00:00:00').getFullYear() === selectedYear);
                 break;
             case 'month':
-                filteredInvoicesForChart = allInvoicesData.filter(inv => {
-                    if (!inv.invoiceDate) return false;
-                    const invDate = new Date(inv.invoiceDate + 'T00:00:00');
-                    return invDate.getFullYear() === selectedYear && invDate.getMonth() === selectedMonth;
-                });
+                filteredInvoicesForChart = allInvoicesData.filter(inv => inv.invoiceDate && new Date(inv.invoiceDate + 'T00:00:00').getFullYear() === selectedYear && new Date(inv.invoiceDate + 'T00:00:00').getMonth() === selectedMonth);
                 break;
             case 'week':
-                if (flatpickrInstance && flatpickrInstance.selectedDates.length > 0) {
+                if (flatpickrInstance?.selectedDates.length > 0) {
                     const selectedDate = flatpickrInstance.selectedDates[0];
-                    const weekNumber = getWeekNumber(selectedDate);
-                    const year = selectedDate.getFullYear();
-                    const weekDates = getWeekDates(weekNumber, year);
-                    
-                    filteredInvoicesForChart = allInvoicesData.filter(inv => {
-                        if (!inv.invoiceDate) return false;
-                        const invDate = new Date(inv.invoiceDate + 'T00:00:00');
-                        return invDate >= weekDates.start && invDate <= weekDates.end;
-                    });
+                    const weekDates = getWeekDates(getWeekNumber(selectedDate), selectedDate.getFullYear());
+                    filteredInvoicesForChart = allInvoicesData.filter(inv => inv.invoiceDate && new Date(inv.invoiceDate) >= weekDates.start && new Date(inv.invoiceDate) <= weekDates.end);
                 }
                 break;
             case 'day':
                 filteredInvoicesForChart = allInvoicesData.filter(inv => inv.invoiceDate === selectedDay);
                 break;
-            case 'last12months':
-            default:
+            default: // last12months
                 const twelveMonthsAgo = new Date(now.getFullYear() - 1, now.getMonth(), 1);
                 filteredInvoicesForChart = allInvoicesData.filter(inv => inv.invoiceDate && new Date(inv.invoiceDate) >= twelveMonthsAgo);
                 break;
         }
-
-        // --- 5. PREPARAR DATOS Y DIBUJAR LA GRÁFICA ---
+        
         const chartDataPoints = {};
         let chartType = 'line';
-        let titleSuffix = "de los Últimos 12 Meses";
-
-        // Agrupar datos y definir tipo de gráfica/título
-        if (timeRange === 'day' || timeRange === 'week' || timeRange === 'month') {
-            chartType = 'bar';
-            filteredInvoicesForChart.forEach(inv => {
-                if (inv.paymentStatus !== 'cancelled' && inv.invoiceDate) {
-                    const dateKey = inv.invoiceDate;
-                    chartDataPoints[dateKey] = (chartDataPoints[dateKey] || 0) + (inv.totals?.grandTotal || 0);
-                }
-            });
-             if(timeRange === 'month') titleSuffix = `de ${selectMonth.options[selectMonth.selectedIndex].text} de ${selectedYear}`;
-             if(timeRange === 'week') titleSuffix = flatpickrInstance.input.value;
-             if(timeRange === 'day') titleSuffix = `del ${new Date(selectedDay + 'T00:00:00').toLocaleDateString('es-CO', {dateStyle: 'long'})}`;
-
-        } else { // Para 'year' y 'last12months'
+        let titleSuffix = "Últimos 12 Meses";
+        
+        if (timeRange === 'last12months' || timeRange === 'year') {
             chartType = 'line';
+            const yearForLabels = (timeRange === 'year') ? selectedYear : new Date().getFullYear();
+            // Lógica para inicializar y poblar los últimos 12 meses o los meses de un año específico
+            // ... (Esta parte es compleja, la simplificaremos para asegurar que funcione)
             filteredInvoicesForChart.forEach(inv => {
                 if (inv.paymentStatus !== 'cancelled' && inv.invoiceDate) {
                     const monthKey = inv.invoiceDate.substring(0, 7);
@@ -347,17 +326,27 @@ async function loadDashboardData() {
                 }
             });
             titleSuffix = (timeRange === 'year') ? `del Año ${selectedYear}` : "de los Últimos 12 Meses";
+        } else { 
+            chartType = 'bar';
+            filteredInvoicesForChart.forEach(inv => {
+                if (inv.paymentStatus !== 'cancelled' && inv.invoiceDate) {
+                    const dateKey = inv.invoiceDate;
+                    chartDataPoints[dateKey] = (chartDataPoints[dateKey] || 0) + (inv.totals?.grandTotal || 0);
+                }
+            });
+            if (timeRange === 'month') titleSuffix = `de ${selectMonth.options[selectMonth.selectedIndex].text} de ${selectedYear}`;
+            if (timeRange === 'week' && flatpickrInstance) titleSuffix = `de la ${flatpickrInstance.input.value}`;
+            if (timeRange === 'day') titleSuffix = `del ${new Date(selectedDay + 'T00:00:00').toLocaleDateString('es-CO', {dateStyle: 'long'})}`;
         }
         
         const sortedKeys = Object.keys(chartDataPoints).sort();
         const chartLabels = sortedKeys.map(key => {
-            const date = new Date(key + 'T00:00:00');
-            return timeRange === 'year' ? date.toLocaleString('es-CO', {month:'short'}) : date.toLocaleDateString('es-CO', {day: '2-digit', month: 'short'});
+            const date = new Date(key + 'T12:00:00Z');
+            return (timeRange === 'year' || timeRange === 'last12months') ? date.toLocaleString('es-CO', {month:'short'}) : date.toLocaleDateString('es-CO', {day: '2-digit', month: 'short'});
         });
         const chartDataset = sortedKeys.map(key => chartDataPoints[key]);
         
-        const chartCardTitle = document.querySelector('.chart-container h4');
-        if(chartCardTitle) chartCardTitle.textContent = `Ingresos ${titleSuffix}`;
+        document.querySelector('.chart-container h4').textContent = `Ingresos ${titleSuffix}`;
         
         const ctx = document.getElementById('monthlyRevenueChart').getContext('2d');
         if (revenueChartInstance) revenueChartInstance.destroy();
@@ -366,20 +355,14 @@ async function loadDashboardData() {
             type: chartType,
             data: { labels: chartLabels, datasets: [{
                     label: 'Ingresos', data: chartDataset,
-                    borderColor: 'rgba(0, 123, 255, 1)',
-                    backgroundColor: 'rgba(0, 123, 255, 0.2)',
-                    fill: chartType === 'line',
-                    tension: 0.3 }] },
+                    borderColor: 'rgba(0, 123, 255, 1)', backgroundColor: 'rgba(0, 123, 255, 0.2)',
+                    fill: chartType === 'line', tension: 0.3 }] },
             options: { responsive: true, maintainAspectRatio: false }
         });
 
-    } catch (error) {
-        console.error("Error al cargar datos del dashboard:", error);
-    } finally {
-        showLoading(false);
-    }
+    } catch (error) { console.error("Error al cargar datos del dashboard:", error); } 
+    finally { showLoading(false); }
 }
-
 // --- Funciones Auxiliares y de UI ---
 const showLoading = (show) => {
     if (loadingOverlay) {
@@ -1870,45 +1853,45 @@ function handleClientSelection(clientId, clientNameText, clientData = null) {
     }
 } // Esta es la llave de cierre correcta para la función handleClientSelection
 
+/**
+ * Obtiene el número de la semana para una fecha dada.
+ * @param {Date} d - La fecha.
+ * @returns {number} - El número de la semana.
+ */
 function getWeekNumber(d) {
     d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
-    d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay()||7));
-    var yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
-    var weekNo = Math.ceil(( ( (d - yearStart) / 86400000) + 1)/7);
+    d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
+    const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+    const weekNo = Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
     return weekNo;
 }
 
 function setupDashboardFilters() {
-    // Poblar el selector de años dinámicamente
     if (selectYear) {
         const currentYear = new Date().getFullYear();
         selectYear.innerHTML = '';
         for (let i = 0; i < 5; i++) {
-            const year = currentYear - i;
-            selectYear.add(new Option(year, year));
+            selectYear.add(new Option(currentYear - i, currentYear - i));
         }
     }
-    // Establecer el mes y día actuales por defecto
     if (selectMonth) selectMonth.value = new Date().getMonth();
     if (selectDay) selectDay.value = new Date().toISOString().split('T')[0];
-    
-    // Inicializar Flatpickr para la selección de semanas
-    if (document.getElementById('selectWeek')) {
-        flatpickr("#selectWeek", {
-            dateFormat: "Y-m-d", // Formato interno que usa la lógica
-            weekNumbers: true,   // Muestra los números de semana en el calendario
-            altInput: true,      // Muestra una fecha más legible al usuario
-            altFormat: "'Semana' W, Y", // Formato que ve el usuario: "Semana 24, 2025"
+
+    // Inicializar Flatpickr para el selector de semana
+    const weekSelector = document.getElementById('selectWeek');
+    if (weekSelector) {
+        flatpickr(weekSelector, {
+            plugins: [ new weekSelect({}) ], // Activar el plugin de selección de semana
+            dateFormat: "Y-m-d",
+            altInput: true,
+            altFormat: "'Semana' W, Y", // Formato que ve el usuario
             onChange: function(selectedDates) {
-                // Cuando el usuario elige una fecha, recargamos los datos
-                if (selectedDates.length > 0) {
-                    loadDashboardData();
-                }
+                if (selectedDates.length > 0) loadDashboardData();
             }
         });
     }
 
-    // Listener para el filtro principal que muestra/oculta los otros filtros
+    // Listener para el filtro principal que muestra/oculta los otros
     if (chartTimeRange) {
         chartTimeRange.addEventListener('change', () => {
             const value = chartTimeRange.value;
@@ -1916,22 +1899,21 @@ function setupDashboardFilters() {
             if(monthFilter) monthFilter.style.display = (value === 'month' || value === 'week') ? 'flex' : 'none';
             if(weekFilter) weekFilter.style.display = (value === 'week') ? 'flex' : 'none';
             if(dayFilter) dayFilter.style.display = (value === 'day') ? 'flex' : 'none';
-            
-            // Cuando cambia el filtro principal, se recarga la data
             loadDashboardData();
         });
         // Disparar un 'change' inicial para establecer la visibilidad correcta al cargar
         chartTimeRange.dispatchEvent(new Event('change'));
     }
 
-    // Listeners para los filtros secundarios que también recargan la data
+    // Listeners para los filtros secundarios
     if (selectYear) selectYear.addEventListener('change', loadDashboardData);
     if (selectMonth) selectMonth.addEventListener('change', loadDashboardData);
+    // El listener para selectWeek ahora es manejado por el 'onChange' de Flatpickr
     if (selectDay) selectDay.addEventListener('change', loadDashboardData);
 }
 
 /**
- * Calcula las fechas de inicio y fin para un número de semana y año dados.
+ * Devuelve el primer y último día de una semana y año específicos.
  * @param {number} w - El número de la semana.
  * @param {number} y - El año.
  * @returns {{start: Date, end: Date}}
@@ -1939,7 +1921,7 @@ function setupDashboardFilters() {
 function getWeekDates(w, y) {
     const simple = new Date(y, 0, 1 + (w - 1) * 7);
     const dow = simple.getDay();
-    const ISOweekStart = simple;
+    const ISOweekStart = new Date(simple);
     if (dow <= 4) {
         ISOweekStart.setDate(simple.getDate() - simple.getDay() + 1);
     } else {
