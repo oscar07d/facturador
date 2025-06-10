@@ -2518,6 +2518,12 @@ textarea.input-error {
         flex-grow: 1;
         min-width: 150px;
     }
+    .summary-value {
+        font-size: small;
+    }
+    .totals-summary-box .grand-total {
+        font-size: 1.2rem;
+    }
 }
 
 @media (max-width: 480px) {
