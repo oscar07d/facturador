@@ -2364,32 +2364,6 @@ async function displayActiveClients() {
 }
 
 /**
- * Navega a la sección del formulario y carga los datos de un cliente para editarlo.
- * @param {string} clientId - El ID del cliente a editar.
- */
-async function loadClientForEditing(clientId) {
-    if (!clientId) return;
-
-    // 1. Navegar a la sección de creación de factura y esperar a que termine.
-    await handleNavigation('createInvoiceSection');
-
-    // 2. Encontrar los datos completos del cliente en el array que ya tenemos cargado.
-    const clientToEdit = loadedClients.find(client => client.id === clientId);
-
-    if (clientToEdit) {
-        // 3. Usar la función que ya tenemos para seleccionar y rellenar el formulario.
-        handleClientSelection(clientId, clientToEdit.name, clientToEdit);
-
-        // 4. Simular un clic en el botón "Editar Cliente" del formulario para desbloquear los campos.
-        if (editClientBtn) {
-            editClientBtn.click();
-        }
-    } else {
-        alert("No se pudieron encontrar los datos del cliente para editar.");
-    }
-}
-
-/**
  * Carga y muestra los clientes inactivos/eliminados (isDeleted == true).
  */
 async function displayDeletedClients() {
