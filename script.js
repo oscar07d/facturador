@@ -223,38 +223,32 @@ async function loadDashboardData() {
 
         const allInvoicesData = [];
         invoicesSnapshot.forEach(doc => {
-            allInvoicesData.push({ id: doc.id, ...doc.data() });
+            allInvoicesData.push(doc.data());
         });
 
-        // --- 1. PROCESAR DATOS PARA TARJETAS Y LISTA DE ÍTEMS ---
-        let totalRevenue = 0;
-        let totalDiscounts = 0;
+        // --- 1. Procesar datos para las tarjetas de métricas y lista de ítems ---
+        let totalRevenue = 0, totalDiscounts = 0;
         const itemCounts = {};
 
         allInvoicesData.forEach(invoice => {
             if (invoice.paymentStatus !== 'cancelled') {
                 totalRevenue += invoice.totals?.grandTotal || 0;
                 totalDiscounts += invoice.totals?.discountApplied || 0;
-                
                 invoice.items?.forEach(item => {
-                    // --- CORRECCIÓN AQUÍ ---
                     const itemName = item.description?.trim();
-                    if (itemName) { // Solo procesar si hay una descripción
-                        const normalizedName = normalizeItemName(itemName);
-                        itemCounts[normalizedName] = (itemCounts[normalizedName] || 0) + item.quantity;
+                    if(itemName) {
+                       const normalizedName = normalizeItemName(itemName);
+                       itemCounts[normalizedName] = (itemCounts[normalizedName] || 0) + item.quantity;
                     }
-                    // --- FIN DE LA CORRECCIÓN ---
                 });
             }
         });
         
         const activeClients = clientsSnapshot.docs.filter(doc => !doc.data().isDeleted).length;
-        const inactiveClients = clientsSnapshot.docs.length - activeClients;
-
         document.getElementById('dashboardTotalRevenue').textContent = totalRevenue.toLocaleString('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 });
         document.getElementById('dashboardTotalDiscounts').textContent = totalDiscounts.toLocaleString('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 });
         document.getElementById('dashboardActiveClients').textContent = activeClients;
-        document.getElementById('dashboardInactiveClients').textContent = inactiveClients;
+        document.getElementById('dashboardInactiveClients').textContent = clientsSnapshot.docs.length - activeClients;
 
         const sortedItems = Object.entries(itemCounts).sort((a, b) => b[1] - a[1]).slice(0, 5);
         const topItemsList = document.getElementById('dashboardTopItems');
@@ -265,22 +259,118 @@ async function loadDashboardData() {
                 const logoSrc = getIconForItem(name);
                 let logoHtml = logoSrc ? `<img src="${logoSrc}" alt="${name}" class="item-logo">` : '<div class="item-logo-placeholder"></div>';
                 const displayName = name.charAt(0).toUpperCase() + name.slice(1);
-                li.innerHTML = `
-                    <div class="item-name-container">
-                        ${logoHtml}
-                        <span>${displayName}</span>
-                    </div>
-                    <span class="pill-count">${count}</span>
-                `;
+                li.innerHTML = `<div class="item-name-container">${logoHtml}<span>${displayName}</span></div><span class="pill-count">${count}</span>`;
                 topItemsList.appendChild(li);
             });
         } else {
             topItemsList.innerHTML = '<li>No hay datos de ítems vendidos.</li>';
         }
 
-        // --- 2. LÓGICA DE LA GRÁFICA ---
-        // (El resto del código para filtrar y dibujar la gráfica se queda igual que en la versión anterior)
-        // ...
+        // --- 2. Lógica de filtrado para la gráfica ---
+        const timeRange = chartTimeRange.value;
+        const selectedYear = parseInt(selectYear.value);
+        const selectedMonth = parseInt(selectMonth.value);
+        const selectedDay = selectDay.value;
+        const flatpickrInstance = document.querySelector("#selectWeek")?._flatpickr;
+        
+        let filteredInvoicesForChart = [];
+        const now = new Date();
+        
+        switch (timeRange) {
+            case 'year':
+                filteredInvoicesForChart = allInvoicesData.filter(inv => inv.invoiceDate && new Date(inv.invoiceDate + 'T00:00:00').getFullYear() === selectedYear);
+                break;
+            case 'month':
+                filteredInvoicesForChart = allInvoicesData.filter(inv => inv.invoiceDate && new Date(inv.invoiceDate + 'T00:00:00').getFullYear() === selectedYear && new Date(inv.invoiceDate + 'T00:00:00').getMonth() === selectedMonth);
+                break;
+            case 'week':
+                if (flatpickrInstance?.selectedDates.length > 0) {
+                    const selectedDate = flatpickrInstance.selectedDates[0];
+                    const weekNumber = getWeekNumber(selectedDate);
+                    const year = selectedDate.getFullYear();
+                    const weekDates = getWeekDates(weekNumber, year);
+                    filteredInvoicesForChart = allInvoicesData.filter(inv => inv.invoiceDate && new Date(inv.invoiceDate) >= weekDates.start && new Date(inv.invoiceDate) <= weekDates.end);
+                }
+                break;
+            case 'day':
+                filteredInvoicesForChart = allInvoicesData.filter(inv => inv.invoiceDate === selectedDay);
+                break;
+            default: // last12months
+                const twelveMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 11, 1);
+                filteredInvoicesForChart = allInvoicesData.filter(inv => inv.invoiceDate && new Date(inv.invoiceDate) >= twelveMonthsAgo);
+                break;
+        }
+
+        // --- 3. Preparar y dibujar la gráfica con los datos filtrados ---
+        const chartDataPoints = {};
+        let chartType = 'line';
+        let titleSuffix = "de los Últimos 12 Meses";
+        
+        if (timeRange === 'last12months' || timeRange === 'year') {
+            chartType = 'line';
+            const yearForLabels = (timeRange === 'year') ? selectedYear : now.getFullYear();
+            for (let i = 0; i < 12; i++) {
+                const monthDate = new Date(yearForLabels, i, 2);
+                const monthKey = monthDate.toISOString().substring(0, 7);
+                chartDataPoints[monthKey] = 0;
+            }
+            filteredInvoicesForChart.forEach(inv => {
+                if (inv.paymentStatus !== 'cancelled' && inv.invoiceDate) {
+                    const monthKey = inv.invoiceDate.substring(0, 7);
+                    if (chartDataPoints.hasOwnProperty(monthKey)) {
+                        chartDataPoints[monthKey] += inv.totals?.grandTotal || 0;
+                    }
+                }
+            });
+            titleSuffix = (timeRange === 'year') ? `del Año ${selectedYear}` : "de los Últimos 12 Meses";
+        } else {
+            chartType = 'bar';
+            filteredInvoicesForChart.forEach(inv => {
+                if (inv.paymentStatus !== 'cancelled' && inv.invoiceDate) {
+                    const dateKey = inv.invoiceDate;
+                    chartDataPoints[dateKey] = (chartDataPoints[dateKey] || 0) + (inv.totals?.grandTotal || 0);
+                }
+            });
+            if (timeRange === 'month') titleSuffix = `de ${selectMonth.options[selectMonth.selectedIndex].text} de ${selectedYear}`;
+            if (timeRange === 'week' && flatpickrInstance) titleSuffix = `de la ${flatpickrInstance.input.value}`;
+            if (timeRange === 'day') titleSuffix = `del ${new Date(selectedDay + 'T00:00:00').toLocaleDateString('es-CO', {dateStyle: 'long'})}`;
+        }
+        
+        const sortedKeys = Object.keys(chartDataPoints).sort((a, b) => new Date(a) - new Date(b));
+        const chartLabels = sortedKeys.map(key => {
+            const date = new Date(key + 'T12:00:00Z');
+            if (timeRange === 'year' || timeRange === 'last12months') {
+                return date.toLocaleString('es-CO', { month: 'short' });
+            }
+            return date.toLocaleDateString('es-CO', { day: '2-digit', month: 'short' });
+        });
+        const chartDataset = sortedKeys.map(key => chartDataPoints[key]);
+        
+        document.querySelector('.chart-container h4').textContent = `Ingresos ${titleSuffix}`;
+        
+        const ctx = document.getElementById('monthlyRevenueChart').getContext('2d');
+        if (revenueChartInstance) {
+            revenueChartInstance.destroy();
+        }
+        
+        revenueChartInstance = new Chart(ctx, {
+            type: chartType,
+            data: {
+                labels: chartLabels,
+                datasets: [{
+                    label: 'Ingresos',
+                    data: chartDataset,
+                    borderColor: 'rgba(0, 123, 255, 1)',
+                    backgroundColor: 'rgba(0, 123, 255, 0.2)',
+                    fill: chartType === 'line',
+                    tension: 0.3
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
 
     } catch (error) {
         console.error("Error al cargar datos del dashboard:", error);
