@@ -1746,6 +1746,7 @@ function handleDiscountChange() {
 
 // Esta función COMPLETA reemplaza la que puedas tener actualmente con el mismo nombre
 function handleClientSelection(clientId, clientNameText, clientData = null) {
+    sessionStorage.setItem('lastSelectedClientId', clientId);
     if (selectedClientNameDisplay) {
         selectedClientNameDisplay.innerHTML = ''; // Limpiar contenido anterior del display
 
@@ -1930,66 +1931,75 @@ async function loadClientsIntoDropdown() {
     }
     const user = auth.currentUser;
 
+    // --- MEJORA 1: Recordar la última selección ---
+    // Leemos si había un cliente guardado en la sesión del navegador
+    const lastSelectedClientId = sessionStorage.getItem('lastSelectedClientId');
+
     customClientOptions.innerHTML = ''; 
     loadedClients = [];
 
-    // 1. Crear y añadir la opción "-- Nuevo Cliente --"
+    // Crear y añadir la opción "-- Nuevo Cliente --" (esto no cambia)
     const newClientOptionElement = document.createElement('div');
     newClientOptionElement.classList.add('custom-option', 'new-client-option');
     newClientOptionElement.setAttribute('data-value', '');
     newClientOptionElement.textContent = '-- Nuevo Cliente --';
-    
-    // --- CAMBIO AQUÍ ---
-    // Se añade event.stopPropagation() para detener el burbujeo del clic
     newClientOptionElement.addEventListener('click', (event) => {
         event.stopPropagation(); 
         handleClientSelection("", "-- Nuevo Cliente --");
     });
     customClientOptions.appendChild(newClientOptionElement);
     
-    // Dejar seleccionado por defecto "-- Nuevo Cliente --"
-    handleClientSelection("", "-- Nuevo Cliente --");
+    // Si no había nada guardado, se selecciona "-- Nuevo Cliente --" por defecto
+    if (!lastSelectedClientId) {
+        handleClientSelection("", "-- Nuevo Cliente --");
+    }
 
     if (!user) {
         return; 
     }
 
     try {
-        // 2. Cargar y añadir el resto de los clientes desde Firestore
         const q = query(collection(db, "clientes"), where("userId", "==", user.uid), where("isDeleted", "!=", true), orderBy("name", "asc"));
         const querySnapshot = await getDocs(q);
 
         querySnapshot.forEach((docSnap) => {
             const client = docSnap.data();
+            const clientId = docSnap.id;
             const clientOption = document.createElement('div');
             clientOption.classList.add('custom-option');
-            clientOption.setAttribute('data-value', docSnap.id);
+            clientOption.setAttribute('data-value', clientId);
 
             let estadoGeneral = client.estadoGeneralCliente || "Activo";
             let claseCssEstadoGeneral = `status-client-${estadoGeneral.toLowerCase().replace(/ /g, '_').replace(/[^a-z0-9_]/gi, '')}`;
             
-            let estadoFacturaCliente = client.estadoUltimaFacturaCliente || "N/A";
-            let textoPildoraFactura = paymentStatusDetails[estadoFacturaCliente.toLowerCase().replace(/ /g, '_')]?.text || estadoFacturaCliente;
-            let claseCssPildoraFactura = `invoice-status-${estadoFacturaCliente.toLowerCase().replace(/ /g, '_').replace(/[^a-z0-9_]/gi, '')}`;
-
+            // --- MEJORA 2: Se elimina la píldora de estado de pago ---
             clientOption.innerHTML = `
                 <span class="option-client-name">${client.name}</span>
                 <span class="pills-container">
                     <span class="option-status-pill ${claseCssEstadoGeneral}">${estadoGeneral}</span>
-                    <span class="option-status-pill ${claseCssPildoraFactura}">${textoPildoraFactura}</span>
                 </span>
             `;
             
-            // --- CAMBIO AQUÍ ---
-            // Se añade event.stopPropagation() también para los clientes existentes
             clientOption.addEventListener('click', (event) => {
                 event.stopPropagation(); 
-                handleClientSelection(docSnap.id, client.name, client);
+                handleClientSelection(clientId, client.name, client);
             });
             
             customClientOptions.appendChild(clientOption);
-            loadedClients.push({ id: docSnap.id, ...client });
+            loadedClients.push({ id: clientId, ...client });
         });
+
+        // Si había un cliente guardado en la sesión, lo volvemos a seleccionar
+        if (lastSelectedClientId) {
+            const clientToReselect = loadedClients.find(c => c.id === lastSelectedClientId);
+            if (clientToReselect) {
+                handleClientSelection(clientToReselect.id, clientToReselect.name, clientToReselect);
+            } else {
+                // Si el cliente guardado ya no existe, volvemos a "-- Nuevo Cliente --"
+                handleClientSelection("", "-- Nuevo Cliente --");
+            }
+        }
+
     } catch (error) {
         console.error("Error al cargar clientes para el desplegable:", error);
         customClientOptions.insertAdjacentHTML('beforeend', '<div class="custom-option-error">Error al cargar clientes</div>');
