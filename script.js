@@ -1761,7 +1761,7 @@ function handleDiscountChange() {
 }
 
 // Esta función COMPLETA reemplaza la que puedas tener actualmente con el mismo nombre
-function handleClientSelection(clientId, clientNameText, clientData = null) {Add commentMore actions
+function handleClientSelection(clientId, clientNameText, clientData = null) {
     sessionStorage.setItem('lastSelectedClientId', clientId);
     if (selectedClientNameDisplay) {
         selectedClientNameDisplay.innerHTML = ''; // Limpiar contenido anterior del display
