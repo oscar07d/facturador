@@ -230,8 +230,9 @@ async function loadDashboardData() {
                 totalDiscounts += invoice.totals?.discountApplied || 0;
                 invoice.items?.forEach(item => {
                     const itemName = item.description?.trim();
-                    if (itemName) {
-                        itemCounts[itemName] = (itemCounts[itemName] || 0) + item.quantity;
+                    if (originalName) {
+                        const normalizedName = normalizeItemName(originalName);
+                        itemCounts[normalizedName] = (itemCounts[normalizedName] || 0) + item.quantity;
                     }
                 });
             }
@@ -248,7 +249,8 @@ async function loadDashboardData() {
             sortedItems.forEach(([name, count]) => {
                 const li = document.createElement('li');
                 const logoSrc = getIconForItem(name);
-                let logoHtml = logoSrc ? `<img src="${logoSrc}" alt="${name}" class="item-logo">` : '<div class="item-logo-placeholder"></div>';
+                let logoHtml = logoSrc ? `<img src="<span class="math-inline">\{logoSrc\}" alt\="</span>{name}" class="item-logo">` : '<div class="item-logo-placeholder"></div>';
+                const displayName = name.charAt(0).toUpperCase() + name.slice(1);
                 li.innerHTML = `<div class="item-name-container">${logoHtml}<span>${name}</span></div><span class="pill-count">${count}</span>`;
                 topItemsList.appendChild(li);
             });
@@ -369,6 +371,20 @@ const showLoading = (show) => {
         loadingOverlay.style.display = show ? 'flex' : 'none';
     }
 };
+
+/**
+ * Normaliza el nombre de un ítem para agrupar productos similares.
+ * Convierte a minúsculas y quita texto entre paréntesis.
+ * @param {string} description - La descripción completa del ítem.
+ * @returns {string} - El nombre normalizado.
+ */
+function normalizeItemName(description) {
+    if (!description) return '';
+    return description
+        .toLowerCase() // Convertir a minúsculas
+        .split('(')[0]   // Tomar solo la parte antes del primer '('
+        .trim();         // Quitar espacios extra al inicio o final
+}
 
 function setDefaultInvoiceDate() {
     if (invoiceDateInput) {
