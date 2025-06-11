@@ -3177,10 +3177,15 @@ if (invoiceForm) {
                 phone: document.getElementById('emitterPhone')?.value.trim() || '',
                 email: document.getElementById('emitterEmail')?.value.trim() || ''
             },
-            client: { name: clientName, phone: clientPhone, email: clientEmail }, 
+            client: { 
+                id: selectedClientId || null, // Se asegura de guardar el ID del cliente seleccionado
+                name: clientName, 
+                phone: clientPhone, 
+                email: clientEmail 
+            }, 
             items: currentInvoiceItems,
             discount: { type: discountTypeSelect.value, value: (parseFloat(discountValueInput.value) || 0) },
-            totals: { // Usando la función de parseo correcta
+            totals: { 
                 subtotal: parseCurrencyString(subtotalAmountSpan.textContent),
                 discountApplied: parseCurrencyString(discountAmountAppliedSpan.textContent),
                 taxableBase: parseCurrencyString(taxableBaseAmountSpan.textContent),
@@ -3190,7 +3195,6 @@ if (invoiceForm) {
             paymentStatus: paymentStatusSelect.value,
             createdAt: serverTimestamp()
         };
-
         // --- GUARDADO EN FIRESTORE ---
         try {
             const docRef = await addDoc(collection(db, "facturas"), invoiceToSave);
