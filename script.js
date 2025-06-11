@@ -2323,7 +2323,6 @@ async function displayActiveClients() {
                     </div>
                     <div class="client-pills">
                         <span class="option-status-pill ${claseCssEstadoGeneral}">${estadoGeneral}</span>
-                        <span class="option-status-pill ${claseCssEstadoFactura}">${textoPildoraFactura}</span>
                     </div>
                     <div class="client-actions-list">
                         <button type="button" class="btn btn-sm btn-warning edit-client-list-btn">Editar</button>
