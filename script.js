@@ -2852,39 +2852,37 @@ if (confirmAndSetNextBtn) {
         
         showLoading(true);
         const invoiceRef = doc(db, "facturas", currentInvoiceIdForModalActions);
+        
         try {
             await updateDoc(invoiceRef, {
                 paymentStatus: "paid",
-                serviceStartDate: newDueDate // Actualizamos la fecha para el siguiente ciclo
+                serviceStartDate: newDueDate
             });
-            // 2. Buscar el ID del cliente desde los datos de la factura
+
             const clientId = currentInvoiceDataForModalActions.client?.id;
             
             if (clientId) {
-                // Si la factura tiene guardado el ID del cliente...
                 const clientRef = doc(db, "clientes", clientId);
-                // ...actualizamos el documento del CLIENTE
                 await updateDoc(clientRef, {
                     estadoUltimaFacturaCliente: "paid"
-                    // Opcional: También podrías querer cambiar el estado general
-                    // estadoGeneralCliente: "Al día" 
                 });
-                console.log(`Estado del cliente ${clientId} actualizado a "Pagado".`);
             } else {
                 console.warn("No se encontró un ID de cliente en esta factura, por lo que no se pudo actualizar el estado del cliente.");
             }
-            alert("¡Factura actualizada con éxito!");
+
+            alert("¡Factura y estado del cliente actualizados con éxito!");
             closePaymentUpdateModal();
             if (viewInvoicesSection.style.display === 'block') {
-                await loadAndDisplayInvoices(); // Refrescar la lista de facturas si está visible
+                await loadAndDisplayInvoices(); 
             }
             if (clientsSection.style.display === 'block') {
-                await displayActiveClients();   // Refrescar clientes activos si la sección está visible
-                await displayDeletedClients();  // Refrescar clientes inactivos
+                await displayActiveClients();
+                await displayDeletedClients();
             }
+
         } catch (error) {
-            console.error("Error al actualizar la factura:", error);
-            alert("Hubo un error al actualizar la factura.");
+            console.error("Error al actualizar la factura o el cliente:", error);
+            alert("Hubo un error al actualizar los datos.");
         } finally {
             showLoading(false);
         }
