@@ -89,6 +89,12 @@ const navClients = document.getElementById('navClients');
 const createInvoiceSection = document.getElementById('createInvoiceSection');
 const viewInvoicesSection = document.getElementById('viewInvoicesSection');
 const clientsSection = document.getElementById('clientsSection');
+
+const showNewClientFormBtn = document.getElementById('showNewClientFormBtn');
+const newClientFormContainer = document.getElementById('newClientFormContainer');
+const newClientForm = document.getElementById('newClientForm');
+const cancelNewClientBtn = document.getElementById('cancelNewClientBtn');
+
 const appPageTitle = document.getElementById('appPageTitle');
 
 const invoiceForm = document.getElementById('invoiceForm');
@@ -200,6 +206,44 @@ let isGeneratingPdf = false;
 let currentActionForTemplateSelection = null;
 let currentInvoiceDataForModalActions = null;
 let currentInvoiceIdForModalActions = null;
+
+
+async function saveNewClient(name, phone, email) {
+    const user = auth.currentUser;
+    if (!user) {
+        alert("Debes iniciar sesión para guardar un cliente.");
+        return false;
+    }
+
+    // Comprobar si un cliente con el mismo teléfono ya existe
+    const q = query(collection(db, "clientes"), where("userId", "==", user.uid), where("phone", "==", phone));
+    const querySnapshot = await getDocs(q);
+    if (!querySnapshot.empty) {
+        alert("Ya existe un cliente con este número de celular.");
+        return false;
+    }
+
+    const newClientData = { 
+        userId: user.uid,
+        name: name, 
+        phone: phone, 
+        email: email, 
+        createdAt: serverTimestamp(), 
+        isDeleted: false, 
+        estadoGeneralCliente: "Nuevo", 
+        estadoUltimaFacturaCliente: "N/A"
+    };
+
+    try {
+        await addDoc(collection(db, "clientes"), newClientData);
+        alert("¡Cliente guardado con éxito!");
+        return true;
+    } catch (error) {
+        console.error("Error al guardar nuevo cliente:", error);
+        alert("Hubo un error al guardar el cliente.");
+        return false;
+    }
+}
 
 // Variable global para guardar la instancia de la gráfica
 let revenueChartInstance = null;
