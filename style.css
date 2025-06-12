@@ -811,7 +811,7 @@ body.modal-active {
     padding: 10px 20px;
     font-size: 0.95rem;
     font-weight: 500;
-    border-radius: var(--border-radius-m);
+    border-radius: 50px;
     cursor: pointer;
     text-decoration: none;
     border: 1px solid transparent;
@@ -2432,7 +2432,7 @@ textarea.input-error {
         display: none; /* Ocultar texto de los botones del modal */
     }
     #invoiceDetailModal .btn-icon {
-        padding: 8px;
+        padding: 25px;
         width: 40px;
         height: 40px;
     }
@@ -2556,6 +2556,17 @@ textarea.input-error {
     }
     .totals-summary-box .grand-total {
         font-size: 1.2rem;
+    }
+    #showNewClientFormBtn span {
+        display: none;
+    }
+    #showNewClientFormBtn.btn-icon {
+        padding: 8px;
+        width: 40px;
+        height: 40px;
+    }
+    #showNewClientFormBtn.btn-icon .icon-svg {
+        margin-right: 0;
     }
 }
 
