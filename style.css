@@ -1809,145 +1809,106 @@ textarea.input-error {
 #invoice-export-template .export-final-message { text-align: center; margin-top: 8mm; padding-top: 3mm; border-top: 1px dotted var(--pdf-border-color-medium); font-size: 8pt; color: var(--pdf-text-secondary); font-style: italic; }
 #invoice-export-template .export-final-message p { margin-bottom: 1mm; }
 
-/* === ESTILOS PARA LA SECCIÓN CLIENTES === */
-/* === ESTILOS PARA EL BOTON NUEVO CLIENTE === */
+/* =================================================== */
+/* === ESTILOS PARA LA SECCIÓN CLIENTES (NUEVO DISEÑO) === */
+/* =================================================== */
+.section-header-actions { /* Esto ya lo tenías, asegúrate de que esté */ }
+#newClientFormContainer { /* Esto ya lo tenías */ }
 
-/* Regla general para los iconos en botones */
-.btn-icon .icon-svg {
-    width: 16px;
-    height: 16px;
-    margin-right: 8px;
-    vertical-align: middle;
-    transition: filter 0.2s ease;
+/* Estilos para las sub-pestañas */
+.sub-nav-container {
+    width: 100%;
+    margin-top: 20px;
 }
-
-/* Iconos blancos para botones con fondo de color */
-.btn-primary.btn-icon .icon-svg,
-.btn-success.btn-icon .icon-svg {
-    filter: brightness(0) invert(1);
-}
-.section-header-actions {
+.client-nav {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 15px;
-    margin-bottom: 25px;
+    border-bottom: 2px solid var(--border-color);
 }
-.section-header-actions h2 {
-    margin: 0;
+.sub-nav-link {
+    padding: 10px 20px;
+    cursor: pointer;
+    text-decoration: none;
+    color: var(--text-muted-color);
+    font-weight: 500;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px; /* Para que el borde activo se una con la línea */
+    transition: color 0.2s ease, border-color 0.2s ease;
 }
-#newClientFormContainer {
-    margin-bottom: 30px;
+.sub-nav-link:hover {
+    color: var(--primary-color);
 }
-/* === FIN ESTILOS PARA EL BOTON NUEVO CLIENTE === */
-.client-list-subsection {
-    margin-bottom: 35px;
-}
-.client-list-subsection:last-child {
-    border-bottom: none; 
-    margin-bottom: 0; 
-}
-.client-list-subsection h3 {
-    font-size: 1.4rem;
-    color: var(--secondary-color);
-    margin-bottom: 18px;
-    font-weight: 600;
-    padding-bottom: 8px;
-    border-bottom: 1px dashed var(--border-color);
+.sub-nav-link.active {
+    color: var(--primary-color);
+    border-bottom-color: var(--primary-color);
 }
 
-.client-list {
-    display: grid;
-    gap: 22px; /* Un poco más de espacio */
-    grid-template-columns: 1fr; /* Móvil primero: 1 columna */
+/* Contenedores para las listas */
+.sub-nav-pane {
+    display: none;
+    padding-top: 25px;
 }
-.client-list-item {
-    background-color: var(--container-background);
-    border: 1px solid var(--border-color);
-    border-left-width: 5px; /* Prepara el espacio para el borde de color */
-    border-radius: var(--border-radius-s);
-    padding: 20px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.06); /* Sombra más sutil */
-    transition: box-shadow 0.25s ease, transform 0.25s ease;
-    display: flex;
-    flex-direction: column; /* Apilado vertical para móvil */
-    gap: 12px;
+.sub-nav-pane.active {
+    display: block;
 }
-.client-list-item:hover {
-    box-shadow: var(--box-shadow-medium);
-    transform: translateY(-4px); /* Efecto de flotación al pasar el cursor */
-}
-.client-list-item.status-theme-status-client-nuevo { border-left-color: var(--info-color); }
-.client-list-item.status-theme-status-client-al-dia,
-.client-list-item.status-theme-status-client-activo { border-left-color: var(--success-color); }
-.client-list-item.status-theme-status-client-con-pendientes { border-left-color: var(--warning-color); }
-.client-list-item.status-theme-status-client-moroso { border-left-color: var(--danger-color); }
-.client-list-item.status-theme-status-client-inactivo,
-.client-list-item.status-theme-status-client-default { border-left-color: var(--secondary-color); }
 
-.client-list-item .client-info {
+/* --- Nuevo Estilo de Lista de Clientes --- */
+.client-list-redesigned {
     display: flex;
     flex-direction: column;
-    gap: 4px;
-    flex-grow: 1;
-    min-width: 0; 
-}
-.client-list-item .client-name {
-    font-weight: 600;
-    font-size: 1.2rem; /* Nombre más grande */
-    color: var(--text-color);
-}
-.client-list-item .client-contact {
-    font-size: 0.9rem;
-    color: var(--text-muted-color);
-    word-break: break-all;
-}
-.client-list-item .client-deleted-date {
-    font-size: 0.8rem;
-    color: var(--danger-color);
-    font-style: italic;
-    margin-top: 5px;
-}
-.client-list-item .client-pills {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-    align-items: center; 
-}
-.client-list-item .client-actions-list {
-    display: flex;
     gap: 10px;
-    flex-wrap: wrap;
-    margin-top: 8px; 
-    padding-top: 12px;
-    border-top: 1px solid var(--border-color);
-    width: 100%;
 }
-.client-list-item .client-actions-list .btn-sm {
-    padding: 6px 12px;
-    font-size: 0.8rem;
-    /* Estilo sutil por defecto */
-    background-color: var(--light-gray-color);
-    color: var(--text-muted-color);
-    border-color: var(--light-gray-color);
+.client-list-item-redesigned {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background-color: var(--container-background);
+    padding: 15px;
+    border-radius: var(--border-radius-s);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    transition: box-shadow 0.2s ease;
 }
-.client-list-item:hover .client-actions-list .btn-sm.btn-warning {
-    background-color: var(--warning-color);
-    border-color: var(--warning-color);
-    color: #333;
-}
-.client-list-item:hover .client-actions-list .btn-sm.btn-danger {
-    background-color: var(--danger-color);
-    border-color: var(--danger-color);
-    color: white;
-}
-.client-actions .btn-icon .icon-svg {
-    filter: brightness(0) invert(1);
+.client-list-item-redesigned:hover {
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
 
-#logoutButton.btn-icon .icon-svg {
-    filter: brightness(0) invert(1);
+/* Icono de perfil */
+.client-profile-icon {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.client-profile-icon .icon-svg {
+    width: 24px;
+    height: 24px;
+    filter: brightness(0) invert(1); /* Icono siempre blanco */
+}
+
+.client-info-main {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+.client-info-main .client-name {
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+.client-info-main .client-contact {
+    font-size: 0.85rem;
+    color: var(--text-muted-color);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.client-status-pills { /* Contenedor para la píldora de estado */
+    margin-left: auto;
+    padding-left: 15px;
+    flex-shrink: 0;
 }
 
 /* =================================================== */
@@ -2572,6 +2533,15 @@ textarea.input-error {
         width: 26px;  /* Cambia este valor para hacerlo más grande o más pequeño */
         height: 26px; /* Cambia este valor para hacerlo más grande o más pequeño */
         margin-right: 8px; /* Espacio entre el icono y el texto */
+    }
+    .client-list-item-redesigned {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .client-status-pills {
+        margin-left: 0;
+        padding-left: 0;
+        padding-top: 10px;
     }
 }
 
