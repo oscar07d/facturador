@@ -2568,6 +2568,11 @@ textarea.input-error {
     #showNewClientFormBtn.btn-icon .icon-svg {
         margin-right: 0;
     }
+    #showNewClientFormBtn .icon-svg {
+        width: 20px;  /* Cambia este valor para hacerlo más grande o más pequeño */
+        height: 20px; /* Cambia este valor para hacerlo más grande o más pequeño */
+        margin-right: 8px; /* Espacio entre el icono y el texto */
+    }
 }
 
 @media (max-width: 480px) {
