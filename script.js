@@ -2176,36 +2176,91 @@ async function handleNavigation(sectionToShowId) {
         targetTitle = "Mis Facturas";
         if (typeof loadAndDisplayInvoices === 'function') await loadAndDisplayInvoices();
     } else if (sectionToShowId === 'clientsSection') {
-        targetTitle = "Mis Clientes";
-        if (clientsSection) {
-            clientsSection.innerHTML = `
+    targetTitle = "Mis Clientes";
+    if (clientsSection) {
+        // --- CORRECCIÓN AQUÍ ---
+        // Ahora creamos el encabezado con el botón dinámicamente
+        clientsSection.innerHTML = `
+            <div class="section-header-actions">
                 <h2>Clientes</h2>
-                <div class="client-list-subsection">
-                    <h3>Clientes Activos</h3>
-                    <div id="activeClientsListContainer" class="client-list">
-                        <p>Cargando clientes...</p>
-                    </div>
-                </div>
-                <div class="client-list-subsection">
-                    <h3>Clientes Inactivos</h3>
-                    <div id="deletedClientsListContainer" class="client-list">
-                        <p>Cargando clientes...</p>
-                    </div>
-                </div>
-            `;
-        }
-        if (typeof displayActiveClients === 'function') await displayActiveClients();
-        if (typeof displayDeletedClients === 'function') await displayDeletedClients();
-    } else if (sectionToShowId === 'homeSection') { // <-- ESTE ES TU NUEVO BLOQUE
-        targetTitle = "Inicio y Estadísticas";
-        if (typeof loadDashboardData === 'function') {
-            await loadDashboardData(); 
-        } else {
-            console.error("La función loadDashboardData no está definida.");
-        }
-    }
+                <button type="button" id="showNewClientFormBtn" class="btn btn-primary btn-icon">
+                    <img src="img/Add_User_icon.svg" alt="Añadir" class="icon-svg">
+                    <span>Añadir Nuevo Cliente</span>
+                </button>
+            </div>
 
-    if (appPageTitle) appPageTitle.textContent = targetTitle;
+            <div id="newClientFormContainer" class="form-section" style="display: none;">
+                <form id="newClientForm">
+                    <legend>Datos del Nuevo Cliente</legend>
+                    <div class="form-grid two-columns">
+                        <div class="form-group">
+                            <label for="newClientName">Nombres y Apellidos:</label>
+                            <input type="text" id="newClientName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="newClientPhone">Celular:</label>
+                            <input type="tel" id="newClientPhone" required>
+                        </div>
+                        <div class="form-group full-width">
+                            <label for="newClientEmail">Correo Electrónico (Opcional):</label>
+                            <input type="email" id="newClientEmail">
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" id="cancelNewClientBtn" class="btn btn-secondary">Cancelar</button>
+                        <button type="submit" class="btn btn-success">Guardar Cliente</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="client-list-subsection">
+                <h3>Clientes Activos</h3>
+                <div id="activeClientsListContainer" class="client-list">
+                    <p>Cargando clientes...</p>
+                </div>
+            </div>
+            <div class="client-list-subsection">
+                <h3>Clientes Inactivos</h3>
+                <div id="deletedClientsListContainer" class="client-list">
+                    <p>Cargando clientes...</p>
+                </div>
+            </div>
+        `;
+
+        // Volvemos a asignar los listeners a los elementos que acabamos de crear
+        document.getElementById('showNewClientFormBtn').addEventListener('click', () => {
+            document.getElementById('newClientFormContainer').style.display = 'block';
+            document.getElementById('showNewClientFormBtn').style.display = 'none';
+        });
+        document.getElementById('cancelNewClientBtn').addEventListener('click', () => {
+            document.getElementById('newClientForm').reset();
+            document.getElementById('newClientFormContainer').style.display = 'none';
+            document.getElementById('showNewClientFormBtn').style.display = 'inline-flex';
+        });
+        document.getElementById('newClientForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('newClientName').value.trim();
+            const phone = document.getElementById('newClientPhone').value.trim();
+            const email = document.getElementById('newClientEmail').value.trim();
+            if (!name && !phone && !email) {
+                alert("Debes rellenar al menos un campo para guardar el cliente.");
+                return;
+            }
+            showLoading(true);
+            const success = await saveNewClient(name, phone, email);
+            showLoading(false);
+            if (success) {
+                document.getElementById('newClientForm').reset();
+                document.getElementById('newClientFormContainer').style.display = 'none';
+                document.getElementById('showNewClientFormBtn').style.display = 'inline-flex';
+                await displayActiveClients();
+                await displayDeletedClients();
+                await loadClientsIntoDropdown();
+            }
+        });
+    }
+    await displayActiveClients();
+    await displayDeletedClients();
 }
 
 async function loadAndDisplayInvoices() {
