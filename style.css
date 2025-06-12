@@ -1919,20 +1919,6 @@ textarea.input-error {
 
 /* Estilos para el boton Crear nuevo Cliente */
 
-.section-header-actions {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 15px;
-    margin-bottom: 25px;
-}
-.section-header-actions h2 {
-    margin: 0;
-}
-#newClientFormContainer {
-    margin-bottom: 30px;
-}
 
 /* =================================================== */
 /* === ESTILOS PARA PLANTILLA IMAGEN WHATSAPP === */
