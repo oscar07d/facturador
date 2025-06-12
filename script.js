@@ -2598,12 +2598,10 @@ if (newClientForm) {
         const phone = document.getElementById('newClientPhone').value.trim();
         const email = document.getElementById('newClientEmail').value.trim();
 
-        // --- ESTA ES LA VALIDACIÓN QUE DEBES QUITAR ---
-        if (!name || !phone) {
-            alert("Por favor, completa el nombre y el celular del nuevo cliente.");
+        if (!name && !phone && !email) {
+            alert("Debes rellenar al menos un campo para guardar el cliente.");
             return;
         }
-        // --- FIN DE LA VALIDACIÓN A QUITAR ---
 
         showLoading(true);
         const success = await saveNewClient(name, phone, email);
@@ -2613,7 +2611,9 @@ if (newClientForm) {
             newClientForm.reset();
             if (newClientFormContainer) newClientFormContainer.style.display = 'none';
             if (showNewClientFormBtn) showNewClientFormBtn.style.display = 'inline-flex';
+            // Refrescar las vistas
             await displayActiveClients();
+            await displayDeletedClients();
             await loadClientsIntoDropdown();
         }
     });
