@@ -1,4 +1,4 @@
-/* === FUENTE E IMPORTACIONES === */
+f/* === FUENTE E IMPORTACIONES === */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Lato:wght@400;700&family=Open+Sans:wght@400;600&display=swap');
 
@@ -1915,6 +1915,23 @@ textarea.input-error {
 
 #logoutButton.btn-icon .icon-svg {
     filter: brightness(0) invert(1);
+}
+
+/* Estilos para el boton Crear nuevo Cliente */
+
+.section-header-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+.section-header-actions h2 {
+    margin: 0;
+}
+#newClientFormContainer {
+    margin-bottom: 30px;
 }
 
 /* =================================================== */
