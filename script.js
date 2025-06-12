@@ -2574,6 +2574,50 @@ async function permanentlyDeleteClient(clientId) {
     }
 }
 
+if (showNewClientFormBtn) {
+    showNewClientFormBtn.addEventListener('click', () => {
+        if (newClientFormContainer) {
+            newClientFormContainer.style.display = 'block';
+            showNewClientFormBtn.style.display = 'none';
+        }
+    });
+}
+
+if (cancelNewClientBtn) {
+    cancelNewClientBtn.addEventListener('click', () => {
+        if (newClientForm) newClientForm.reset();
+        if (newClientFormContainer) newClientFormContainer.style.display = 'none';
+        if (showNewClientFormBtn) showNewClientFormBtn.style.display = 'inline-flex';
+    });
+}
+
+if (newClientForm) {
+    newClientForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const name = document.getElementById('newClientName').value.trim();
+        const phone = document.getElementById('newClientPhone').value.trim();
+        const email = document.getElementById('newClientEmail').value.trim();
+
+        if (!name || !phone) {
+            alert("Por favor, completa el nombre y el celular del nuevo cliente.");
+            return;
+        }
+
+        showLoading(true);
+        const success = await saveNewClient(name, phone, email);
+        showLoading(false);
+
+        if (success) {
+            newClientForm.reset();
+            if (newClientFormContainer) newClientFormContainer.style.display = 'none';
+            if (showNewClientFormBtn) showNewClientFormBtn.style.display = 'inline-flex';
+            // Refrescar las vistas para que aparezca el nuevo cliente
+            await displayActiveClients();
+            await loadClientsIntoDropdown();
+        }
+    });
+}
+
 if (closeInvoiceDetailModalBtn) {
     closeInvoiceDetailModalBtn.addEventListener('click', closeInvoiceDetailModal);
 }
