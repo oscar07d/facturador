@@ -430,6 +430,11 @@ const showLoading = (show) => {
     }
 };
 
+function getRandomColor() {
+    const colors = ['#007bff', '#6f42c1', '#28a745', '#fd7e14', '#dc3545', '#17a2b8', '#6c757d'];
+    return colors[Math.floor(Math.random() * colors.length)];
+}
+
 /**
  * Normaliza el nombre de un ítem para agrupar productos similares.
  * Convierte a minúsculas y quita texto entre paréntesis.
@@ -2422,37 +2427,23 @@ async function displayActiveClients() {
             querySnapshot.forEach((docSnap) => {
                 const client = docSnap.data();
                 const clientId = docSnap.id;
-            
-                // --- CORRECCIÓN AQUÍ: Definimos las variables ANTES de usarlas ---
-                // 1. Píldora de Estado General del Cliente
-                let estadoGeneral = client.estadoGeneralCliente || "Activo";
-                let claseCssEstadoGeneral = "status-client-default";
-                if (estadoGeneral === "Nuevo") claseCssEstadoGeneral = "status-client-nuevo";
-                else if (estadoGeneral === "Activo" || estadoGeneral === "Al día") claseCssEstadoGeneral = "status-client-al-dia";
-                else if (estadoGeneral === "Con Pendientes") claseCssEstadoGeneral = "status-client-con-pendientes";
-                else if (estadoGeneral === "Moroso") claseCssEstadoGeneral = "status-client-moroso";
-            
-                // 2. Píldora de Estado de Última Factura
-                let estadoFactura = client.estadoUltimaFacturaCliente || "N/A";
-                let claseCssEstadoFactura = `invoice-status-${estadoFactura.toLowerCase().replace(/ /g, '_')}`;
-                if (estadoFactura === "N/A") claseCssEstadoFactura = "invoice-status-na";
-                let textoPildoraFactura = paymentStatusDetails[estadoFactura.toLowerCase().replace(/ /g, '_')]?.text || estadoFactura;
-                if(estadoFactura === "N/A" && !paymentStatusDetails[estadoFactura.toLowerCase().replace(/ /g, '_')]) {
-                    textoPildoraFactura = "N/A";
-                }
-                // --- FIN DE LA CORRECCIÓN ---
-            
                 const clientElement = document.createElement('div');
-                clientElement.classList.add('client-list-item'); 
-                clientElement.setAttribute('data-client-id', clientId);
-            
-                // Ahora el innerHTML puede usar las variables sin problemas
+                clientElement.classList.add('client-list-item-redesigned');
+                
+                // --- Lógica para la Píldora de Estado General del Cliente ---
+                let estadoGeneral = client.estadoGeneralCliente || "Activo";
+                let claseCssEstadoGeneral = `status-client-${estadoGeneral.toLowerCase().replace(/ /g, '_').replace(/[^a-z0-9_]/gi, '')}`;
+
+                // --- Construir el HTML con el Nuevo Diseño de Lista ---
                 clientElement.innerHTML = `
-                    <div class="client-info">
-                        <strong class="client-name">${client.name}</strong>
-                        <span class="client-contact">${client.email || ''} ${client.email && client.phone ? '|' : ''} ${client.phone || ''}</span>
+                    <div class="client-profile-icon" style="background-color: ${getRandomColor()}">
+                        <img src="img/user_icon.svg" alt="Perfil" class="icon-svg">
                     </div>
-                    <div class="client-pills">
+                    <div class="client-info-main">
+                        <span class="client-name">${client.name}</span>
+                        <span class="client-contact">${client.phone || ''} ${client.phone && client.email ? '•' : ''} ${client.email || ''}</span>
+                    </div>
+                    <div class="client-status-pills">
                         <span class="option-status-pill ${claseCssEstadoGeneral}">${estadoGeneral}</span>
                     </div>
                     <div class="client-actions-list">
@@ -2463,7 +2454,7 @@ async function displayActiveClients() {
             
                 // Listeners para los botones de la tarjeta
                 clientElement.querySelector('.edit-client-list-btn').addEventListener('click', () => {
-                    loadClientForEditing(clientId);
+                    loadClientForEditing(clientId); // Llama a la función para editar
                 });
                 clientElement.querySelector('.delete-client-list-btn').addEventListener('click', async () => {
                     if (confirm(`¿Seguro que deseas marcar como inactivo a "${client.name}"?`)) {
@@ -3407,6 +3398,29 @@ if (invoiceSearchBtn) {
 }
 
 if (navHome) navHome.addEventListener('click', (e) => { e.preventDefault(); handleNavigation('homeSection'); });
+
+document.addEventListener('DOMContentLoaded', () => {
+    const clientNavLinks = document.querySelectorAll('.client-nav .sub-nav-link');
+    clientNavLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            
+            // Ocultar todos los paneles y quitar la clase activa de los enlaces
+            document.querySelectorAll('.sub-nav-pane').forEach(pane => pane.classList.remove('active'));
+            clientNavLinks.forEach(navLink => navLink.classList.remove('active'));
+
+            // Mostrar el panel correcto y activar el enlace
+            const targetId = link.getAttribute('data-target');
+            document.getElementById(targetId).classList.add('active');
+            link.classList.add('active');
+
+            // Ocultar o mostrar el botón "Añadir Cliente"
+            if (showNewClientFormBtn) {
+                showNewClientFormBtn.style.display = (targetId === 'activeClientsContent') ? 'inline-flex' : 'none';
+            }
+        });
+    });
+});
 
 // if (generateInvoiceFileBtn) { 
 //    generateInvoiceFileBtn.addEventListener('click', () => {
