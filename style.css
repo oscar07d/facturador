@@ -1811,6 +1811,21 @@ textarea.input-error {
 
 /* === ESTILOS PARA LA SECCIÓN CLIENTES === */
 /* === ESTILOS PARA EL BOTON NUEVO CLIENTE === */
+
+/* Regla general para los iconos en botones */
+.btn-icon .icon-svg {
+    width: 16px;
+    height: 16px;
+    margin-right: 8px;
+    vertical-align: middle;
+    transition: filter 0.2s ease;
+}
+
+/* Iconos blancos para botones con fondo de color */
+.btn-primary.btn-icon .icon-svg,
+.btn-success.btn-icon .icon-svg {
+    filter: brightness(0) invert(1);
+}
 .section-header-actions {
     display: flex;
     justify-content: space-between;
