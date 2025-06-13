@@ -2143,7 +2143,7 @@ async function handleNavigation(sectionToShowId) {
     const navLinks = [navHome, navCreateInvoice, navViewInvoices, navClients];
     let targetTitle = "Dashboard";
 
-    // Ocultar todas las secciones y desactivar todos los enlaces
+    // Ocultar todas las secciones y desactivar todos los enlaces de navegación principal
     sections.forEach(section => {
         if (section) section.style.display = 'none';
     });
@@ -2159,78 +2159,105 @@ async function handleNavigation(sectionToShowId) {
     const currentLink = navLinks.find(l => l && l.id === currentNavLinkId);
     if (currentLink) currentLink.classList.add('active-nav');
 
-    // Lógica específica para cada sección
+    // Lógica específica para cada sección al ser cargada
     if (sectionToShowId === 'createInvoiceSection') {
         targetTitle = "Crear Nueva Factura";
-        await displayNextPotentialInvoiceNumber();
-        await loadClientsIntoDropdown();
         if (invoiceForm) invoiceForm.reset();
         currentInvoiceItems = [];
         renderItems();
         setDefaultInvoiceDate();
         handleDiscountChange();
+        await displayNextPotentialInvoiceNumber();
+        await loadClientsIntoDropdown();
     } else if (sectionToShowId === 'viewInvoicesSection') {
         targetTitle = "Mis Facturas";
         await loadAndDisplayInvoices();
     } else if (sectionToShowId === 'clientsSection') {
         targetTitle = "Mis Clientes";
         
-        // --- LÓGICA CORREGIDA PARA LA SECCIÓN DE CLIENTES ---
-        // Asignamos los listeners para las sub-pestañas CADA VEZ que se navega aquí
-        // para asegurar que siempre funcionen.
-        const clientNavLinks = document.querySelectorAll('.client-nav .sub-nav-link');
-        const subNavPanes = document.querySelectorAll('.sub-nav-pane');
-        const showNewClientBtn = document.getElementById('showNewClientFormBtn');
-        const newClientFormContainer = document.getElementById('newClientFormContainer');
-        const newClientForm = document.getElementById('newClientForm');
-        const cancelNewClientBtn = document.getElementById('cancelNewClientBtn');
+        // --- LÓGICA CORREGIDA Y UNIFICADA PARA LA SECCIÓN DE CLIENTES ---
+        if (clientsSection) {
+            // Se re-dibuja la estructura base para asegurar que los contenedores existan
+            clientsSection.innerHTML = `
+                <div class="section-header-actions">
+                    <h2>Clientes</h2>
+                    <button type="button" id="showNewClientFormBtn" class="btn btn-primary btn-icon">
+                        <img src="img/Add_User_icon.svg" alt="Añadir" class="icon-svg">
+                        <span>Añadir Nuevo Cliente</span>
+                    </button>
+                </div>
 
-        clientNavLinks.forEach(link => {
-            // Se usa una función con nombre para poder quitarla si es necesario y evitar duplicados,
-            // pero para simplicidad, aquí la reasignamos.
-            link.onclick = (e) => {
+                <div id="newClientFormContainer" class="form-section" style="display: none;">
+                    <form id="newClientForm">
+                        <legend>Datos del Nuevo Cliente</legend>
+                        <div class="form-grid two-columns">
+                            <div class="form-group"><label for="newClientName">Nombres y Apellidos:</label><input type="text" id="newClientName" required></div>
+                            <div class="form-group"><label for="newClientPhone">Celular:</label><input type="tel" id="newClientPhone" required></div>
+                            <div class="form-group full-width"><label for="newClientEmail">Correo Electrónico (Opcional):</label><input type="email" id="newClientEmail"></div>
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" id="cancelNewClientBtn" class="btn btn-secondary">Cancelar</button>
+                            <button type="submit" class="btn btn-success">Guardar Cliente</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="client-list-subsection">
+                    <h3>Clientes Activos</h3>
+                    <div id="activeClientsListContainer" class="client-list"><p>Cargando...</p></div>
+                </div>
+                <div class="client-list-subsection">
+                    <h3>Clientes Inactivos</h3>
+                    <div id="deletedClientsListContainer" class="client-list"><p>Cargando...</p></div>
+                </div>
+            `;
+            
+            // Se vuelven a asignar los listeners a los elementos que acabamos de crear
+            document.getElementById('showNewClientFormBtn').addEventListener('click', () => {
+                const formContainer = document.getElementById('newClientFormContainer');
+                const showBtn = document.getElementById('showNewClientFormBtn');
+                if (formContainer) formContainer.style.display = 'block';
+                if (showBtn) showBtn.style.display = 'none';
+            });
+
+            document.getElementById('cancelNewClientBtn').addEventListener('click', () => {
+                const formContainer = document.getElementById('newClientFormContainer');
+                const clientForm = document.getElementById('newClientForm');
+                const showBtn = document.getElementById('showNewClientFormBtn');
+                if (clientForm) clientForm.reset();
+                if (formContainer) formContainer.style.display = 'none';
+                if (showBtn) showBtn.style.display = 'inline-flex';
+            });
+
+            document.getElementById('newClientForm').addEventListener('submit', async (e) => {
                 e.preventDefault();
-                clientNavLinks.forEach(l => l.classList.remove('active'));
-                subNavPanes.forEach(p => p.classList.remove('active'));
-
-                link.classList.add('active');
-                const targetPane = document.getElementById(link.dataset.target);
-                if (targetPane) targetPane.classList.add('active');
+                const name = document.getElementById('newClientName').value.trim();
+                const phone = document.getElementById('newClientPhone').value.trim();
+                const email = document.getElementById('newClientEmail').value.trim();
                 
-                if (showNewClientBtn) {
-                    showNewClientBtn.style.display = (link.dataset.target === 'activeClientsContent') ? 'inline-flex' : 'none';
+                // Se permite guardar si al menos un campo tiene información
+                if (!name && !phone && !email) {
+                    alert("Debes rellenar al menos un campo para guardar el cliente.");
+                    return;
                 }
-                if (newClientFormContainer) newClientFormContainer.style.display = 'none';
-            };
-        });
+                
+                showLoading(true);
+                const success = await saveNewClient(name, phone, email); // Asumiendo que saveNewClient ya existe
+                showLoading(false);
 
-        // Activar la primera pestaña por defecto al entrar
-        if (clientNavLinks.length > 0) {
-            clientNavLinks[0].click();
+                if (success) {
+                    document.getElementById('newClientForm').reset();
+                    document.getElementById('newClientFormContainer').style.display = 'none';
+                    document.getElementById('showNewClientFormBtn').style.display = 'inline-flex';
+                    await displayActiveClients();
+                    await displayDeletedClients();
+                    await loadClientsIntoDropdown();
+                }
+            });
         }
-        
-        if (showNewClientBtn) {
-            showNewClientBtn.onclick = () => {
-                if (newClientFormContainer) newClientFormContainer.style.display = 'block';
-                showNewClientBtn.style.display = 'none';
-            };
-        }
-        if (cancelNewClientBtn) {
-            cancelNewClientBtn.onclick = () => {
-                if (newClientForm) newClientForm.reset();
-                if (newClientFormContainer) newClientFormContainer.style.display = 'none';
-                if (showNewClientBtn) showNewClientBtn.style.display = 'inline-flex';
-            };
-        }
-        if (newClientForm) {
-            newClientForm.onsubmit = async (e) => {
-                e.preventDefault();
-                // ... (tu lógica de submit del formulario de nuevo cliente, que ya está bien) ...
-            };
-        }
-
         await displayActiveClients();
         await displayDeletedClients();
+        // --- FIN DE LA LÓGICA CORREGIDA ---
 
     } else if (sectionToShowId === 'homeSection') {
         targetTitle = "Inicio y Estadísticas";
