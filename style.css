@@ -1812,111 +1812,94 @@ textarea.input-error {
 /* =================================================== */
 /* === ESTILOS PARA LA SECCIÓN CLIENTES (NUEVO DISEÑO) === */
 /* =================================================== */
-.section-header-actions {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 15px;
-    margin-bottom: 25px;
-}
-.section-header-actions h2 { margin: 0; }
-#newClientFormContainer { margin-bottom: 30px; }
-
-/* Estilos para las sub-pestañas */
-.sub-nav-container {
-    width: 100%;
-    margin-top: 20px;
-}
-.client-nav {
-    display: flex;
-    border-bottom: 2px solid var(--border-color);
-}
-.sub-nav-link {
-    padding: 10px 20px;
-    cursor: pointer;
-    text-decoration: none;
-    color: var(--text-muted-color);
-    font-weight: 500;
-    border-bottom: 3px solid transparent;
-    margin-bottom: -2px;
-    transition: color 0.2s ease, border-color 0.2s ease;
-}
-.sub-nav-link:hover {
-    color: var(--primary-color);
-}
-.sub-nav-link.active {
-    color: var(--primary-color);
-    border-bottom-color: var(--primary-color);
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
 }
 
-/* Contenedores para las listas */
-.sub-nav-pane {
-    display: none;
-    padding-top: 25px;
-}
-.sub-nav-pane.active {
-    display: block;
+.clients-tabs {
+  display: flex;
+  margin-bottom: 1rem;
 }
 
-/* --- Nuevo Estilo de Lista de Clientes --- */
-.client-list-redesigned {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-.client-list-item-redesigned {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    background-color: var(--container-background);
-    padding: 15px;
-    border-radius: var(--border-radius-s);
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-    transition: box-shadow 0.2s ease;
-}
-.client-list-item-redesigned:hover {
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+.clients-tabs .tab {
+  flex: 1;
+  padding: 10px;
+  text-align: center;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: border-color var(--transition-speed);
 }
 
-/* Icono de perfil */
-.client-profile-icon {
-    width: 45px;
-    height: 45px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-}
-.client-profile-icon .icon-svg {
-    width: 24px;
-    height: 24px;
-    filter: brightness(0) invert(1); /* Icono siempre blanco */
+.clients-tabs .tab.active {
+  border-color: var(--primary-color);
+  font-weight: 600;
 }
 
-.client-info-main {
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    min-width: 0;
-}
-.client-info-main .client-name {
-    font-weight: 600;
-    font-size: 1.1rem;
-}
-.client-info-main .client-contact {
-    font-size: 0.85rem;
-    color: var(--text-muted-color);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+.clients-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
 
-.client-status-pills { /* Contenedor para la píldora de estado */
-    margin-left: auto;
-    padding-left: 15px;
-    flex-shrink: 0;
+.clients-list.hidden {
+  display: none;
+}
+
+.clients-list li {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 12px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-s);
+  margin-bottom: 0.75rem;
+  background: var(--container-background);
+}
+
+.clients-list li img.user-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.client-info {
+  flex: 1;
+}
+
+.client-info h4 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.client-info p {
+  margin: 2px 0;
+  font-size: 0.875rem;
+  color: var(--text-muted-color);
+}
+
+.client-status-pill {
+  padding: 4px 10px;
+  border-radius: var(--border-radius-pill);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: capitalize;
+  white-space: nowrap;
+}
+
+.client-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.client-actions .btn {
+  padding: 5px 10px;
+  font-size: 0.75rem;
 }
 
 /* =================================================== */
@@ -2545,28 +2528,13 @@ textarea.input-error {
         height: 26px; /* Cambia este valor para hacerlo más grande o más pequeño */
         margin-right: 8px; /* Espacio entre el icono y el texto */
     }
-    .section-header-actions {
-        flex-direction: row-reverse;
+    .clients-list li {
+        flex-direction: column;
+        align-items: flex-start;
     }
-    .section-header-actions h2 {
-        flex-grow: 1; /* El título ocupa el espacio sobrante */
-    }
-    .client-list-item-redesigned {
-        flex-direction: row;
-        align-items: center;
-    }
-    .client-info-main .client-name {
-        font-size: 1rem;
-    }
-    .client-info-main .client-contact {
-        font-size: 0.8rem;
-    }
-    .client-status-pills {
-        display: none;
-    } /* Ocultar píldoras en la vista de lista móvil */
-    .client-actions-list .btn-sm {
-        padding: 4px 8px; font-size: 0.75rem;
-    }
+  .client-actions {
+      margin-top: 0.5rem;
+  }
 }
 
 @media (max-width: 480px) {
