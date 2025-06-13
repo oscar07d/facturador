@@ -91,6 +91,10 @@ const viewInvoicesSection = document.getElementById('viewInvoicesSection');
 const clientsSection = document.getElementById('clientsSection');
 
 const showNewClientFormBtn = document.getElementById('showNewClientFormBtn');
+if (showNewClientFormBtn) {
+    showNewClientFormBtn.addEventListener('click', openNewClientModal);
+}
+
 const newClientFormContainer = document.getElementById('newClientFormContainer');
 const newClientForm = document.getElementById('newClientForm');
 const cancelNewClientBtn = document.getElementById('cancelNewClientBtn');
@@ -109,6 +113,13 @@ const clientNameInput = document.getElementById('clientName');
 const clientPhoneInput = document.getElementById('clientPhone');
 const clientEmailInput = document.getElementById('clientEmail');
 const editClientBtn = document.getElementById('editClientBtn');
+
+const addClientModal = document.getElementById('addClientModal');
+const closeAddClientModalBtn = document.getElementById('closeAddClientModalBtn');
+const cancelAddClientBtn = document.getElementById('cancelAddClientBtn');
+const saveNewClientFromModalBtn = document.getElementById('saveNewClientFromModalBtn');
+const newClientFormModal = document.getElementById('newClientFormModal');
+
 const deleteClientBtn = document.getElementById('deleteClientBtn');
 const updateClientBtn = document.getElementById('updateClientBtn');
 
@@ -211,29 +222,20 @@ let currentInvoiceIdForModalActions = null;
 async function saveNewClient(name, phone, email) {
     const user = auth.currentUser;
     if (!user) {
-        alert("Debes iniciar sesión para guardar un cliente.");
+        alert("Debes iniciar sesión.");
         return false;
     }
-
-    // Comprobar si un cliente con el mismo teléfono ya existe
     const q = query(collection(db, "clientes"), where("userId", "==", user.uid), where("phone", "==", phone));
     const querySnapshot = await getDocs(q);
-    if (!querySnapshot.empty) {
+    if (!querySnapshot.empty && phone) { // Solo si se proporcionó un teléfono
         alert("Ya existe un cliente con este número de celular.");
         return false;
     }
-
     const newClientData = { 
-        userId: user.uid,
-        name: name, 
-        phone: phone, 
-        email: email, 
-        createdAt: serverTimestamp(), 
-        isDeleted: false, 
-        estadoGeneralCliente: "Nuevo", 
-        estadoUltimaFacturaCliente: "N/A"
+        userId: user.uid, name, phone, email, 
+        createdAt: serverTimestamp(), isDeleted: false, 
+        estadoGeneralCliente: "Nuevo", estadoUltimaFacturaCliente: "N/A"
     };
-
     try {
         await addDoc(collection(db, "clientes"), newClientData);
         alert("¡Cliente guardado con éxito!");
@@ -1419,6 +1421,17 @@ async function generateInvoicePDF(invoiceDataSource) {
 //    console.error("Botón generateInvoiceFileBtn no encontrado en el DOM");
 //}
 
+function openNewClientModal() {
+    if (newClientFormModal) newClientFormModal.reset();
+    if (addClientModal) addClientModal.classList.add('active');
+    if (bodyElement) bodyElement.classList.add('modal-active');
+}
+
+function closeNewClientModal() {
+    if (addClientModal) addClientModal.classList.remove('active');
+    if (bodyElement) bodyElement.classList.remove('modal-active');
+}
+
 // --- Funciones para Modal de Detalle de Factura ---
 function openInvoiceDetailModal(invoiceData, invoiceId) {
     currentInvoiceDataForModalActions = invoiceData; // Guardar datos de la factura actual para los botones del modal
@@ -2174,91 +2187,15 @@ async function handleNavigation(sectionToShowId) {
         await loadAndDisplayInvoices();
     } else if (sectionToShowId === 'clientsSection') {
         targetTitle = "Mis Clientes";
-        
-        // --- LÓGICA CORREGIDA Y UNIFICADA PARA LA SECCIÓN DE CLIENTES ---
-        if (clientsSection) {
-            // Se re-dibuja la estructura base para asegurar que los contenedores existan
-            clientsSection.innerHTML = `
-                <div class="section-header-actions">
-                    <h2>Clientes</h2>
-                    <button type="button" id="showNewClientFormBtn" class="btn btn-primary btn-icon">
-                        <img src="img/Add_User_icon.svg" alt="Añadir" class="icon-svg">
-                        <span>Añadir Nuevo Cliente</span>
-                    </button>
-                </div>
-
-                <div id="newClientFormContainer" class="form-section" style="display: none;">
-                    <form id="newClientForm">
-                        <legend>Datos del Nuevo Cliente</legend>
-                        <div class="form-grid two-columns">
-                            <div class="form-group"><label for="newClientName">Nombres y Apellidos:</label><input type="text" id="newClientName" required></div>
-                            <div class="form-group"><label for="newClientPhone">Celular:</label><input type="tel" id="newClientPhone" required></div>
-                            <div class="form-group full-width"><label for="newClientEmail">Correo Electrónico (Opcional):</label><input type="email" id="newClientEmail"></div>
-                        </div>
-                        <div class="form-actions">
-                            <button type="button" id="cancelNewClientBtn" class="btn btn-secondary">Cancelar</button>
-                            <button type="submit" class="btn btn-success">Guardar Cliente</button>
-                        </div>
-                    </form>
-                </div>
-
-                <div class="client-list-subsection">
-                    <h3>Clientes Activos</h3>
-                    <div id="activeClientsListContainer" class="client-list"><p>Cargando...</p></div>
-                </div>
-                <div class="client-list-subsection">
-                    <h3>Clientes Inactivos</h3>
-                    <div id="deletedClientsListContainer" class="client-list"><p>Cargando...</p></div>
-                </div>
-            `;
-            
-            // Se vuelven a asignar los listeners a los elementos que acabamos de crear
-            document.getElementById('showNewClientFormBtn').addEventListener('click', () => {
-                const formContainer = document.getElementById('newClientFormContainer');
-                const showBtn = document.getElementById('showNewClientFormBtn');
-                if (formContainer) formContainer.style.display = 'block';
-                if (showBtn) showBtn.style.display = 'none';
-            });
-
-            document.getElementById('cancelNewClientBtn').addEventListener('click', () => {
-                const formContainer = document.getElementById('newClientFormContainer');
-                const clientForm = document.getElementById('newClientForm');
-                const showBtn = document.getElementById('showNewClientFormBtn');
-                if (clientForm) clientForm.reset();
-                if (formContainer) formContainer.style.display = 'none';
-                if (showBtn) showBtn.style.display = 'inline-flex';
-            });
-
-            document.getElementById('newClientForm').addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const name = document.getElementById('newClientName').value.trim();
-                const phone = document.getElementById('newClientPhone').value.trim();
-                const email = document.getElementById('newClientEmail').value.trim();
-                
-                // Se permite guardar si al menos un campo tiene información
-                if (!name && !phone && !email) {
-                    alert("Debes rellenar al menos un campo para guardar el cliente.");
-                    return;
-                }
-                
-                showLoading(true);
-                const success = await saveNewClient(name, phone, email); // Asumiendo que saveNewClient ya existe
-                showLoading(false);
-
-                if (success) {
-                    document.getElementById('newClientForm').reset();
-                    document.getElementById('newClientFormContainer').style.display = 'none';
-                    document.getElementById('showNewClientFormBtn').style.display = 'inline-flex';
-                    await displayActiveClients();
-                    await displayDeletedClients();
-                    await loadClientsIntoDropdown();
-                }
-            });
-        }
+        // Ya no se reescribe el HTML aquí
         await displayActiveClients();
         await displayDeletedClients();
-        // --- FIN DE LA LÓGICA CORREGIDA ---
-
+        
+        // Activar la primera sub-pestaña por defecto
+        const firstSubNavLink = document.querySelector('.client-nav .sub-nav-link[data-target="activeClientsContent"]');
+        if (firstSubNavLink) {
+            firstSubNavLink.click();
+        }
     } else if (sectionToShowId === 'homeSection') {
         targetTitle = "Inicio y Estadísticas";
         await loadDashboardData();
@@ -3466,6 +3403,33 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 });
+
+if (closeAddClientModalBtn) closeAddClientModalBtn.addEventListener('click', closeNewClientModal);
+if (cancelAddClientBtn) cancelAddClientBtn.addEventListener('click', closeNewClientModal);
+
+if (saveNewClientFromModalBtn) {
+    saveNewClientFromModalBtn.addEventListener('click', async () => {
+        const name = document.getElementById('newClientNameModal').value.trim();
+        const phone = document.getElementById('newClientPhoneModal').value.trim();
+        const email = document.getElementById('newClientEmailModal').value.trim();
+
+        if (!name && !phone && !email) {
+            alert("Debes rellenar al menos un campo para guardar el cliente.");
+            return;
+        }
+
+        showLoading(true);
+        const success = await saveNewClient(name, phone, email);
+        showLoading(false);
+
+        if (success) {
+            closeNewClientModal();
+            // Refrescar las vistas para que aparezca el nuevo cliente
+            await displayActiveClients();
+            await loadClientsIntoDropdown();
+        }
+    });
+}
 
 // if (generateInvoiceFileBtn) { 
 //    generateInvoiceFileBtn.addEventListener('click', () => {
