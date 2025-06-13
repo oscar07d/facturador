@@ -1812,8 +1812,16 @@ textarea.input-error {
 /* =================================================== */
 /* === ESTILOS PARA LA SECCIÓN CLIENTES (NUEVO DISEÑO) === */
 /* =================================================== */
-.section-header-actions { /* Esto ya lo tenías, asegúrate de que esté */ }
-#newClientFormContainer { /* Esto ya lo tenías */ }
+.section-header-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+.section-header-actions h2 { margin: 0; }
+#newClientFormContainer { margin-bottom: 30px; }
 
 /* Estilos para las sub-pestañas */
 .sub-nav-container {
@@ -1831,7 +1839,7 @@ textarea.input-error {
     color: var(--text-muted-color);
     font-weight: 500;
     border-bottom: 3px solid transparent;
-    margin-bottom: -2px; /* Para que el borde activo se una con la línea */
+    margin-bottom: -2px;
     transition: color 0.2s ease, border-color 0.2s ease;
 }
 .sub-nav-link:hover {
@@ -2304,7 +2312,7 @@ textarea.input-error {
         border-radius: 50%;
     }
     #logoutButton.btn-icon .icon-svg {
-        margin-right: 0;
+        filter: brightness(0) invert(1);
     }
     
     /* Barra de Navegación Fija en la Parte Inferior */
@@ -2534,14 +2542,27 @@ textarea.input-error {
         height: 26px; /* Cambia este valor para hacerlo más grande o más pequeño */
         margin-right: 8px; /* Espacio entre el icono y el texto */
     }
+    .section-header-actions {
+        flex-direction: row-reverse;
+    }
+    .section-header-actions h2 {
+        flex-grow: 1; /* El título ocupa el espacio sobrante */
+    }
     .client-list-item-redesigned {
-        flex-direction: column;
-        align-items: flex-start;
+        flex-direction: row;
+        align-items: center;
+    }
+    .client-info-main .client-name {
+        font-size: 1rem;
+    }
+    .client-info-main .client-contact {
+        font-size: 0.8rem;
     }
     .client-status-pills {
-        margin-left: 0;
-        padding-left: 0;
-        padding-top: 10px;
+        display: none;
+    } /* Ocultar píldoras en la vista de lista móvil */
+    .client-actions-list .btn-sm {
+        padding: 4px 8px; font-size: 0.75rem;
     }
 }
 
