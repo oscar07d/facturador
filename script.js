@@ -186,6 +186,24 @@ const invoiceSearchInput = document.getElementById('invoiceSearchInput');
 const statusFilterSelect = document.getElementById('statusFilterSelect');
 const invoiceSearchBtn = document.getElementById('invoiceSearchBtn');
 
+const tabActive   = document.getElementById('tabActive');
+const tabInactive = document.getElementById('tabInactive');
+const listActive  = document.getElementById('activeClientsList');
+const listInactive= document.getElementById('inactiveClientsList');
+
+tabActive.addEventListener('click', () => {
+  tabActive.classList.add('active');
+  tabInactive.classList.remove('active');
+  listActive.classList.remove('hidden');
+  listInactive.classList.add('hidden');
+});
+tabInactive.addEventListener('click', () => {
+  tabInactive.classList.add('active');
+  tabActive.classList.remove('active');
+  listInactive.classList.remove('hidden');
+  listActive.classList.add('hidden');
+});
+
 const generateInvoiceFileBtn = document.getElementById('generateInvoiceFileBtn');
 
 // --- Variables Globales ---
@@ -431,6 +449,68 @@ const showLoading = (show) => {
         loadingOverlay.style.display = show ? 'flex' : 'none';
     }
 };
+
+function renderClients(clientsArray) {
+  // limpia ambas listas
+  listActive.innerHTML   = '';
+  listInactive.innerHTML = '';
+
+  clientsArray.forEach(c => {
+    const li = document.createElement('li');
+
+    // icono con color aleatorio
+    const img = document.createElement('img');
+    img.src = 'img/user_icon.svg';
+    img.className = 'user-icon';
+    // tono pastel aleatorio
+    img.style.backgroundColor = 
+      `hsl(${Math.random()*360}, 60%, 85%)`;
+    img.style.padding = '4px';
+
+    // info
+    const info = document.createElement('div');
+    info.className = 'client-info';
+    info.innerHTML = `
+      <h4>${c.name}</h4>
+      <p>${c.email}</p>
+      <p>${c.phone}</p>
+    `;
+
+    // estado
+    const pill = document.createElement('span');
+    pill.className = 'client-status-pill';
+    pill.textContent = c.estadoGeneralCliente || 'N/A';
+    // color según estado
+    const state = c.estadoGeneralCliente?.toLowerCase();
+    if (state === 'activo' || state === 'al día') {
+      pill.style.backgroundColor = 'var(--success-color)';
+      pill.style.color = '#fff';
+    } else if (state === 'moroso' || state === 'con pendientes') {
+      pill.style.backgroundColor = 'var(--warning-color)';
+      pill.style.color = '#333';
+    } else {
+      pill.style.backgroundColor = 'var(--secondary-color)';
+      pill.style.color = '#fff';
+    }
+
+    // botones
+    const actions = document.createElement('div');
+    actions.className = 'client-actions';
+    actions.innerHTML = `
+      <button class="btn btn-sm btn-info" data-id="${c.id}" data-action="edit">Editar</button>
+      <button class="btn btn-sm btn-danger" data-id="${c.id}" data-action="delete">Eliminar</button>
+    `;
+
+    li.append(img, info, pill, actions);
+
+    // añade a lista correspondiente
+    if (c.isDeleted) {
+      listInactive.append(li);
+    } else {
+      listActive.append(li);
+    }
+  });
+}
 
 function getRandomColor() {
     const colors = ['#007bff', '#6f42c1', '#28a745', '#fd7e14', '#dc3545', '#17a2b8', '#6c757d'];
@@ -1056,6 +1136,13 @@ function populateReminderImageTemplate(invoiceData, reminderStatus) {
     }
 
     return true;
+}
+
+async function loadClients() {
+  const q = query(collection(db, "clientes"), where("userId", "==", auth.currentUser.uid));
+  const snapshot = await getDocs(q);
+  const arr = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+  renderClients(arr);
 }
 
 // ====> AQUÍ PUEDES PEGAR LA FUNCIÓN isCodeUniqueForUser <====
