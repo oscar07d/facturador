@@ -91,10 +91,6 @@ const viewInvoicesSection = document.getElementById('viewInvoicesSection');
 const clientsSection = document.getElementById('clientsSection');
 
 const showNewClientFormBtn = document.getElementById('showNewClientFormBtn');
-if (showNewClientFormBtn) {
-    showNewClientFormBtn.addEventListener('click', openNewClientModal);
-}
-
 const newClientFormContainer = document.getElementById('newClientFormContainer');
 const newClientForm = document.getElementById('newClientForm');
 const cancelNewClientBtn = document.getElementById('cancelNewClientBtn');
@@ -113,13 +109,6 @@ const clientNameInput = document.getElementById('clientName');
 const clientPhoneInput = document.getElementById('clientPhone');
 const clientEmailInput = document.getElementById('clientEmail');
 const editClientBtn = document.getElementById('editClientBtn');
-
-const addClientModal = document.getElementById('addClientModal');
-const closeAddClientModalBtn = document.getElementById('closeAddClientModalBtn');
-const cancelAddClientBtn = document.getElementById('cancelAddClientBtn');
-const saveNewClientFromModalBtn = document.getElementById('saveNewClientFromModalBtn');
-const newClientFormModal = document.getElementById('newClientFormModal');
-
 const deleteClientBtn = document.getElementById('deleteClientBtn');
 const updateClientBtn = document.getElementById('updateClientBtn');
 
@@ -186,24 +175,6 @@ const invoiceSearchInput = document.getElementById('invoiceSearchInput');
 const statusFilterSelect = document.getElementById('statusFilterSelect');
 const invoiceSearchBtn = document.getElementById('invoiceSearchBtn');
 
-const tabActive   = document.getElementById('tabActive');
-const tabInactive = document.getElementById('tabInactive');
-const listActive  = document.getElementById('activeClientsList');
-const listInactive= document.getElementById('inactiveClientsList');
-
-tabActive.addEventListener('click', () => {
-  tabActive.classList.add('active');
-  tabInactive.classList.remove('active');
-  listActive.classList.remove('hidden');
-  listInactive.classList.add('hidden');
-});
-tabInactive.addEventListener('click', () => {
-  tabInactive.classList.add('active');
-  tabActive.classList.remove('active');
-  listInactive.classList.remove('hidden');
-  listActive.classList.add('hidden');
-});
-
 const generateInvoiceFileBtn = document.getElementById('generateInvoiceFileBtn');
 
 // --- Variables Globales ---
@@ -240,20 +211,29 @@ let currentInvoiceIdForModalActions = null;
 async function saveNewClient(name, phone, email) {
     const user = auth.currentUser;
     if (!user) {
-        alert("Debes iniciar sesión.");
+        alert("Debes iniciar sesión para guardar un cliente.");
         return false;
     }
+
+    // Comprobar si un cliente con el mismo teléfono ya existe
     const q = query(collection(db, "clientes"), where("userId", "==", user.uid), where("phone", "==", phone));
     const querySnapshot = await getDocs(q);
-    if (!querySnapshot.empty && phone) { // Solo si se proporcionó un teléfono
+    if (!querySnapshot.empty) {
         alert("Ya existe un cliente con este número de celular.");
         return false;
     }
+
     const newClientData = { 
-        userId: user.uid, name, phone, email, 
-        createdAt: serverTimestamp(), isDeleted: false, 
-        estadoGeneralCliente: "Nuevo", estadoUltimaFacturaCliente: "N/A"
+        userId: user.uid,
+        name: name, 
+        phone: phone, 
+        email: email, 
+        createdAt: serverTimestamp(), 
+        isDeleted: false, 
+        estadoGeneralCliente: "Nuevo", 
+        estadoUltimaFacturaCliente: "N/A"
     };
+
     try {
         await addDoc(collection(db, "clientes"), newClientData);
         alert("¡Cliente guardado con éxito!");
@@ -449,73 +429,6 @@ const showLoading = (show) => {
         loadingOverlay.style.display = show ? 'flex' : 'none';
     }
 };
-
-function renderClients(clientsArray) {
-  // limpia ambas listas
-  listActive.innerHTML   = '';
-  listInactive.innerHTML = '';
-
-  clientsArray.forEach(c => {
-    const li = document.createElement('li');
-
-    // icono con color aleatorio
-    const img = document.createElement('img');
-    img.src = 'img/user_icon.svg';
-    img.className = 'user-icon';
-    // tono pastel aleatorio
-    img.style.backgroundColor = 
-      `hsl(${Math.random()*360}, 60%, 85%)`;
-    img.style.padding = '4px';
-
-    // info
-    const info = document.createElement('div');
-    info.className = 'client-info';
-    info.innerHTML = `
-      <h4>${c.name}</h4>
-      <p>${c.email}</p>
-      <p>${c.phone}</p>
-    `;
-
-    // estado
-    const pill = document.createElement('span');
-    pill.className = 'client-status-pill';
-    pill.textContent = c.estadoGeneralCliente || 'N/A';
-    // color según estado
-    const state = c.estadoGeneralCliente?.toLowerCase();
-    if (state === 'activo' || state === 'al día') {
-      pill.style.backgroundColor = 'var(--success-color)';
-      pill.style.color = '#fff';
-    } else if (state === 'moroso' || state === 'con pendientes') {
-      pill.style.backgroundColor = 'var(--warning-color)';
-      pill.style.color = '#333';
-    } else {
-      pill.style.backgroundColor = 'var(--secondary-color)';
-      pill.style.color = '#fff';
-    }
-
-    // botones
-    const actions = document.createElement('div');
-    actions.className = 'client-actions';
-    actions.innerHTML = `
-      <button class="btn btn-sm btn-info" data-id="${c.id}" data-action="edit">Editar</button>
-      <button class="btn btn-sm btn-danger" data-id="${c.id}" data-action="delete">Eliminar</button>
-    `;
-
-    li.append(img, info, pill, actions);
-
-    // añade a lista correspondiente
-    if (c.isDeleted) {
-      listInactive.append(li);
-    } else {
-      listActive.append(li);
-    }
-  });
-}
-
-function getRandomColor() {
-    const colors = ['#007bff', '#6f42c1', '#28a745', '#fd7e14', '#dc3545', '#17a2b8', '#6c757d'];
-    return colors[Math.floor(Math.random() * colors.length)];
-}
 
 /**
  * Normaliza el nombre de un ítem para agrupar productos similares.
@@ -1138,13 +1051,6 @@ function populateReminderImageTemplate(invoiceData, reminderStatus) {
     return true;
 }
 
-async function loadClients() {
-  const q = query(collection(db, "clientes"), where("userId", "==", auth.currentUser.uid));
-  const snapshot = await getDocs(q);
-  const arr = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-  renderClients(arr);
-}
-
 // ====> AQUÍ PUEDES PEGAR LA FUNCIÓN isCodeUniqueForUser <====
 async function isCodeUniqueForUser(code, userId) {
     console.log(`[isCodeUniqueForUser] Verificando código: ${code} para userId: ${userId}`);
@@ -1507,17 +1413,6 @@ async function generateInvoicePDF(invoiceDataSource) {
 //} else {
 //    console.error("Botón generateInvoiceFileBtn no encontrado en el DOM");
 //}
-
-function openNewClientModal() {
-    if (newClientFormModal) newClientFormModal.reset();
-    if (addClientModal) addClientModal.classList.add('active');
-    if (bodyElement) bodyElement.classList.add('modal-active');
-}
-
-function closeNewClientModal() {
-    if (addClientModal) addClientModal.classList.remove('active');
-    if (bodyElement) bodyElement.classList.remove('modal-active');
-}
 
 // --- Funciones para Modal de Detalle de Factura ---
 function openInvoiceDetailModal(invoiceData, invoiceId) {
@@ -2239,45 +2134,50 @@ async function loadClientForEditing(clientId) {
 }
 
 async function handleNavigation(sectionToShowId) {
+    // Se declaran UNA SOLA VEZ aquí al principio
     const sections = [homeSection, createInvoiceSection, viewInvoicesSection, clientsSection];
     const navLinks = [navHome, navCreateInvoice, navViewInvoices, navClients];
-    let targetTitle = "Dashboard";
+    let targetTitle = "Sistema de Facturación";
 
-    // Ocultar todas las secciones y desactivar todos los enlaces de navegación principal
-    sections.forEach(section => {
-        if (section) section.style.display = 'none';
+    sections.forEach(section => { 
+        if (section) section.style.display = 'none'; 
     });
-    navLinks.forEach(link => {
-        if (link) link.classList.remove('active-nav');
+    navLinks.forEach(link => { 
+        if (link) link.classList.remove('active-nav'); 
     });
 
-    // Activar la sección y el enlace principal correctos
     const currentSection = sections.find(s => s && s.id === sectionToShowId);
     if (currentSection) currentSection.style.display = 'block';
-
-    const currentNavLinkId = `nav${sectionToShowId.replace('Section', '')}`;
+    
+    // Determinar qué enlace de navegación activar
+    let currentNavLinkId = '';
+    if (sectionToShowId === 'homeSection') {
+        currentNavLinkId = 'navHome';
+    } else if (sectionToShowId === 'createInvoiceSection') {
+        currentNavLinkId = 'navCreateInvoice';
+    } else if (sectionToShowId === 'viewInvoicesSection') {
+        currentNavLinkId = 'navViewInvoices';
+    } else if (sectionToShowId === 'clientsSection') {
+        currentNavLinkId = 'navClients';
+    }
     const currentLink = navLinks.find(l => l && l.id === currentNavLinkId);
     if (currentLink) currentLink.classList.add('active-nav');
 
-    // Lógica específica para cada sección al ser cargada
+    // Lógica específica para cada sección
     if (sectionToShowId === 'createInvoiceSection') {
         targetTitle = "Crear Nueva Factura";
-        if (invoiceForm) invoiceForm.reset();
-        currentInvoiceItems = [];
-        renderItems();
-        setDefaultInvoiceDate();
-        handleDiscountChange();
-        await displayNextPotentialInvoiceNumber();
-        await loadClientsIntoDropdown();
+        if (typeof setDefaultInvoiceDate === 'function') setDefaultInvoiceDate();
+        if (typeof updateQuantityBasedOnStreaming === 'function') updateQuantityBasedOnStreaming();
+        if (typeof handleDiscountChange === 'function') handleDiscountChange();
+        if (typeof renderItems === 'function') renderItems();
+        if (typeof displayNextPotentialInvoiceNumber === 'function') await displayNextPotentialInvoiceNumber();
+        if (typeof loadClientsIntoDropdown === 'function') await loadClientsIntoDropdown();
     } else if (sectionToShowId === 'viewInvoicesSection') {
         targetTitle = "Mis Facturas";
-        await loadAndDisplayInvoices();
+        if (typeof loadAndDisplayInvoices === 'function') await loadAndDisplayInvoices();
     } else if (sectionToShowId === 'clientsSection') {
         targetTitle = "Mis Clientes";
-        
-        // --- LÓGICA CORREGIDA Y UNIFICADA PARA LA SECCIÓN DE CLIENTES ---
         if (clientsSection) {
-            // Se re-dibuja la estructura base para asegurar que los contenedores existan
             clientsSection.innerHTML = `
                 <div class="section-header-actions">
                     <h2>Clientes</h2>
@@ -2286,13 +2186,12 @@ async function handleNavigation(sectionToShowId) {
                         <span>Añadir Nuevo Cliente</span>
                     </button>
                 </div>
-
                 <div id="newClientFormContainer" class="form-section" style="display: none;">
                     <form id="newClientForm">
                         <legend>Datos del Nuevo Cliente</legend>
                         <div class="form-grid two-columns">
-                            <div class="form-group"><label for="newClientName">Nombres y Apellidos:</label><input type="text" id="newClientName" required></div>
-                            <div class="form-group"><label for="newClientPhone">Celular:</label><input type="tel" id="newClientPhone" required></div>
+                            <div class="form-group"><label for="newClientName">Nombres y Apellidos:</label><input type="text" id="newClientName"></div>
+                            <div class="form-group"><label for="newClientPhone">Celular:</label><input type="tel" id="newClientPhone"></div>
                             <div class="form-group full-width"><label for="newClientEmail">Correo Electrónico (Opcional):</label><input type="email" id="newClientEmail"></div>
                         </div>
                         <div class="form-actions">
@@ -2301,7 +2200,6 @@ async function handleNavigation(sectionToShowId) {
                         </div>
                     </form>
                 </div>
-
                 <div class="client-list-subsection">
                     <h3>Clientes Activos</h3>
                     <div id="activeClientsListContainer" class="client-list"><p>Cargando...</p></div>
@@ -2311,40 +2209,29 @@ async function handleNavigation(sectionToShowId) {
                     <div id="deletedClientsListContainer" class="client-list"><p>Cargando...</p></div>
                 </div>
             `;
-            
-            // Se vuelven a asignar los listeners a los elementos que acabamos de crear
+
+            // Volvemos a asignar los listeners a los elementos que acabamos de crear
             document.getElementById('showNewClientFormBtn').addEventListener('click', () => {
-                const formContainer = document.getElementById('newClientFormContainer');
-                const showBtn = document.getElementById('showNewClientFormBtn');
-                if (formContainer) formContainer.style.display = 'block';
-                if (showBtn) showBtn.style.display = 'none';
+                document.getElementById('newClientFormContainer').style.display = 'block';
+                document.getElementById('showNewClientFormBtn').style.display = 'none';
             });
-
             document.getElementById('cancelNewClientBtn').addEventListener('click', () => {
-                const formContainer = document.getElementById('newClientFormContainer');
-                const clientForm = document.getElementById('newClientForm');
-                const showBtn = document.getElementById('showNewClientFormBtn');
-                if (clientForm) clientForm.reset();
-                if (formContainer) formContainer.style.display = 'none';
-                if (showBtn) showBtn.style.display = 'inline-flex';
+                document.getElementById('newClientForm').reset();
+                document.getElementById('newClientFormContainer').style.display = 'none';
+                document.getElementById('showNewClientFormBtn').style.display = 'inline-flex';
             });
-
             document.getElementById('newClientForm').addEventListener('submit', async (e) => {
                 e.preventDefault();
                 const name = document.getElementById('newClientName').value.trim();
                 const phone = document.getElementById('newClientPhone').value.trim();
                 const email = document.getElementById('newClientEmail').value.trim();
-                
-                // Se permite guardar si al menos un campo tiene información
                 if (!name && !phone && !email) {
                     alert("Debes rellenar al menos un campo para guardar el cliente.");
                     return;
                 }
-                
                 showLoading(true);
-                const success = await saveNewClient(name, phone, email); // Asumiendo que saveNewClient ya existe
+                const success = await saveNewClient(name, phone, email);
                 showLoading(false);
-
                 if (success) {
                     document.getElementById('newClientForm').reset();
                     document.getElementById('newClientFormContainer').style.display = 'none';
@@ -2357,8 +2244,6 @@ async function handleNavigation(sectionToShowId) {
         }
         await displayActiveClients();
         await displayDeletedClients();
-        // --- FIN DE LA LÓGICA CORREGIDA ---
-
     } else if (sectionToShowId === 'homeSection') {
         targetTitle = "Inicio y Estadísticas";
         await loadDashboardData();
@@ -2537,23 +2422,37 @@ async function displayActiveClients() {
             querySnapshot.forEach((docSnap) => {
                 const client = docSnap.data();
                 const clientId = docSnap.id;
-                const clientElement = document.createElement('div');
-                clientElement.classList.add('client-list-item-redesigned');
-                
-                // --- Lógica para la Píldora de Estado General del Cliente ---
+            
+                // --- CORRECCIÓN AQUÍ: Definimos las variables ANTES de usarlas ---
+                // 1. Píldora de Estado General del Cliente
                 let estadoGeneral = client.estadoGeneralCliente || "Activo";
-                let claseCssEstadoGeneral = `status-client-${estadoGeneral.toLowerCase().replace(/ /g, '_').replace(/[^a-z0-9_]/gi, '')}`;
-
-                // --- Construir el HTML con el Nuevo Diseño de Lista ---
+                let claseCssEstadoGeneral = "status-client-default";
+                if (estadoGeneral === "Nuevo") claseCssEstadoGeneral = "status-client-nuevo";
+                else if (estadoGeneral === "Activo" || estadoGeneral === "Al día") claseCssEstadoGeneral = "status-client-al-dia";
+                else if (estadoGeneral === "Con Pendientes") claseCssEstadoGeneral = "status-client-con-pendientes";
+                else if (estadoGeneral === "Moroso") claseCssEstadoGeneral = "status-client-moroso";
+            
+                // 2. Píldora de Estado de Última Factura
+                let estadoFactura = client.estadoUltimaFacturaCliente || "N/A";
+                let claseCssEstadoFactura = `invoice-status-${estadoFactura.toLowerCase().replace(/ /g, '_')}`;
+                if (estadoFactura === "N/A") claseCssEstadoFactura = "invoice-status-na";
+                let textoPildoraFactura = paymentStatusDetails[estadoFactura.toLowerCase().replace(/ /g, '_')]?.text || estadoFactura;
+                if(estadoFactura === "N/A" && !paymentStatusDetails[estadoFactura.toLowerCase().replace(/ /g, '_')]) {
+                    textoPildoraFactura = "N/A";
+                }
+                // --- FIN DE LA CORRECCIÓN ---
+            
+                const clientElement = document.createElement('div');
+                clientElement.classList.add('client-list-item'); 
+                clientElement.setAttribute('data-client-id', clientId);
+            
+                // Ahora el innerHTML puede usar las variables sin problemas
                 clientElement.innerHTML = `
-                    <div class="client-profile-icon" style="background-color: ${getRandomColor()}">
-                        <img src="img/user_icon.svg" alt="Perfil" class="icon-svg">
+                    <div class="client-info">
+                        <strong class="client-name">${client.name}</strong>
+                        <span class="client-contact">${client.email || ''} ${client.email && client.phone ? '|' : ''} ${client.phone || ''}</span>
                     </div>
-                    <div class="client-info-main">
-                        <span class="client-name">${client.name}</span>
-                        <span class="client-contact">${client.phone || ''} ${client.phone && client.email ? '•' : ''} ${client.email || ''}</span>
-                    </div>
-                    <div class="client-status-pills">
+                    <div class="client-pills">
                         <span class="option-status-pill ${claseCssEstadoGeneral}">${estadoGeneral}</span>
                     </div>
                     <div class="client-actions-list">
@@ -2564,7 +2463,7 @@ async function displayActiveClients() {
             
                 // Listeners para los botones de la tarjeta
                 clientElement.querySelector('.edit-client-list-btn').addEventListener('click', () => {
-                    loadClientForEditing(clientId); // Llama a la función para editar
+                    loadClientForEditing(clientId);
                 });
                 clientElement.querySelector('.delete-client-list-btn').addEventListener('click', async () => {
                     if (confirm(`¿Seguro que deseas marcar como inactivo a "${client.name}"?`)) {
@@ -3164,41 +3063,6 @@ if (confirmAndSetNextBtn) {
     });
 }
 
-// --- LISTENERS PARA LAS SUB-PESTAÑAS DE LA SECCIÓN CLIENTES ---
-document.addEventListener('DOMContentLoaded', () => {
-    const clientNavLinks = document.querySelectorAll('.client-nav .sub-nav-link');
-    const subNavPanes = document.querySelectorAll('.sub-nav-pane');
-    const showNewClientBtnOnClients = document.querySelector('#clientsSection #showNewClientFormBtn');
-    const newClientFormContainerOnClients = document.getElementById('newClientFormContainer');
-
-    clientNavLinks.forEach(link => {
-        link.addEventListener('click', (e) => {
-            e.preventDefault();
-
-            // Quitar la clase 'active' de todas las pestañas y paneles
-            clientNavLinks.forEach(l => l.classList.remove('active'));
-            subNavPanes.forEach(p => p.classList.remove('active'));
-
-            // Añadir la clase 'active' a la pestaña y panel seleccionados
-            link.classList.add('active');
-            const targetId = link.getAttribute('data-target');
-            const targetPane = document.getElementById(targetId);
-            if (targetPane) {
-                targetPane.classList.add('active');
-            }
-
-            // Lógica para mostrar/ocultar el botón "Añadir Nuevo Cliente"
-            if (showNewClientBtnOnClients) {
-                showNewClientBtnOnClients.style.display = (targetId === 'activeClientsContent') ? 'inline-flex' : 'none';
-            }
-            if (newClientFormContainerOnClients && newClientFormContainerOnClients.style.display === 'block') {
-                newClientFormContainerOnClients.style.display = 'none';
-                if(showNewClientBtnOnClients) showNewClientBtnOnClients.style.display = 'inline-flex';
-            }
-        });
-    });
-});
-
 // Listener para el botón "Cancelar Suscripción"
 if (cancelSubscriptionBtn) {
     cancelSubscriptionBtn.addEventListener('click', async () => {
@@ -3543,56 +3407,6 @@ if (invoiceSearchBtn) {
 }
 
 if (navHome) navHome.addEventListener('click', (e) => { e.preventDefault(); handleNavigation('homeSection'); });
-
-document.addEventListener('DOMContentLoaded', () => {
-    const clientNavLinks = document.querySelectorAll('.client-nav .sub-nav-link');
-    clientNavLinks.forEach(link => {
-        link.addEventListener('click', (e) => {
-            e.preventDefault();
-            
-            // Ocultar todos los paneles y quitar la clase activa de los enlaces
-            document.querySelectorAll('.sub-nav-pane').forEach(pane => pane.classList.remove('active'));
-            clientNavLinks.forEach(navLink => navLink.classList.remove('active'));
-
-            // Mostrar el panel correcto y activar el enlace
-            const targetId = link.getAttribute('data-target');
-            document.getElementById(targetId).classList.add('active');
-            link.classList.add('active');
-
-            // Ocultar o mostrar el botón "Añadir Cliente"
-            if (showNewClientFormBtn) {
-                showNewClientFormBtn.style.display = (targetId === 'activeClientsContent') ? 'inline-flex' : 'none';
-            }
-        });
-    });
-});
-
-if (closeAddClientModalBtn) closeAddClientModalBtn.addEventListener('click', closeNewClientModal);
-if (cancelAddClientBtn) cancelAddClientBtn.addEventListener('click', closeNewClientModal);
-
-if (saveNewClientFromModalBtn) {
-    saveNewClientFromModalBtn.addEventListener('click', async () => {
-        const name = document.getElementById('newClientNameModal').value.trim();
-        const phone = document.getElementById('newClientPhoneModal').value.trim();
-        const email = document.getElementById('newClientEmailModal').value.trim();
-
-        if (!name && !phone && !email) {
-            alert("Debes rellenar al menos un campo para guardar el cliente.");
-            return;
-        }
-
-        showLoading(true);
-        const success = await saveNewClient(name, phone, email);
-        showLoading(false);
-
-        if (success) {
-            closeNewClientModal();
-            // Refrescar las vistas para que aparezca el nuevo cliente
-            await displayActiveClients();
-            await loadClientsIntoDropdown();
-        }
-    });
-}
 
 // if (generateInvoiceFileBtn) { 
 //    generateInvoiceFileBtn.addEventListener('click', () => {
