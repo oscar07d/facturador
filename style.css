@@ -2762,3 +2762,10 @@ textarea.input-error {
     min-height: 100px;
     min-width: 100px;
 }
+
+img[src$="Sign_Out_icon.svg"] {
+  filter: brightness(0) invert(1) !important;
+}
+img[src$="Sign_Out_icon.svg"]:hover {
+  filter: brightness(0) invert(1) !important;
+}
