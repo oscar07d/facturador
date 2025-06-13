@@ -1809,58 +1809,53 @@ textarea.input-error {
 #invoice-export-template .export-final-message p { margin-bottom: 1mm; }
 
 /* === ESTILOS PARA LA SECCIÓN CLIENTES === */
-/* === ESTILOS PARA EL BOTON NUEVO CLIENTE === */
 
 /* Regla general para los iconos en botones */
 .btn-icon .icon-svg {
-    width: 16px;
-    height: 16px;
-    margin-right: 8px;
-    vertical-align: middle;
-    transition: filter 0.2s ease;
+  width: 16px;
+  height: 16px;
+  margin-right: 8px;
+  vertical-align: middle;
+  transition: filter 0.2s ease;
 }
 
 /* Iconos blancos para botones con fondo de color */
 .btn-primary.btn-icon .icon-svg,
 .btn-success.btn-icon .icon-svg {
-    filter: brightness(0) invert(1);
-}
-.section-header-actions {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 15px;
-    margin-bottom: 25px;
-}
-.section-header-actions h2 {
-    margin: 0;
-}
-#newClientFormContainer {
-    margin-bottom: 30px;
-}
-/* === FIN ESTILOS PARA EL BOTON NUEVO CLIENTE === */
-.client-list-subsection {
-    margin-bottom: 35px;
-}
-.client-list-subsection:last-child {
-    border-bottom: none; 
-    margin-bottom: 0; 
-}
-.client-list-subsection h3 {
-    font-size: 1.4rem;
-    color: var(--secondary-color);
-    margin-bottom: 18px;
-    font-weight: 600;
-    padding-bottom: 8px;
-    border-bottom: 1px dashed var(--border-color);
+  filter: brightness(0) invert(1);
 }
 
-.client-list {
-    display: grid;
-    gap: 22px; /* Un poco más de espacio */
-    grid-template-columns: 1fr; /* Móvil primero: 1 columna */
+.section-header-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-bottom: 25px;
 }
+.section-header-actions h2 { margin: 0; }
+#newClientFormContainer { margin-bottom: 30px; }
+
+/* Subsecciones */
+.client-list-subsection { margin-bottom: 35px; }
+.client-list-subsection:last-child { border-bottom: none; margin-bottom: 0; }
+.client-list-subsection h3 {
+  font-size: 1.4rem;
+  color: var(--secondary-color);
+  margin-bottom: 18px;
+  font-weight: 600;
+  padding-bottom: 8px;
+  border-bottom: 1px dashed var(--border-color);
+}
+
+/* Lista de clientes en grid */
+.client-list {
+  display: grid;
+  gap: 22px;
+  grid-template-columns: 1fr;
+}
+
+/* Item de cliente: fila con avatar, info, estado y acciones */
 .client-list-item {
   display: flex;
   align-items: center;
@@ -1876,9 +1871,11 @@ textarea.input-error {
   flex-wrap: wrap;
 }
 .client-list-item:hover {
-    box-shadow: var(--box-shadow-medium);
-    transform: translateY(-4px); /* Efecto de flotación al pasar el cursor */
+  box-shadow: var(--box-shadow-medium);
+  transform: translateY(-4px);
 }
+
+/* Bordes de estado */
 .client-list-item.status-theme-status-client-nuevo { border-left-color: var(--info-color); }
 .client-list-item.status-theme-status-client-al-dia,
 .client-list-item.status-theme-status-client-activo { border-left-color: var(--success-color); }
@@ -1887,76 +1884,70 @@ textarea.input-error {
 .client-list-item.status-theme-status-client-inactivo,
 .client-list-item.status-theme-status-client-default { border-left-color: var(--secondary-color); }
 
-.client-list-item .client-info {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    flex-grow: 1;
-    min-width: 0; 
-}
-.client-list-item .client-name {
-    font-weight: 600;
-    font-size: 1.2rem; /* Nombre más grande */
-    color: var(--text-color);
-}
-.client-list-item .client-contact {
-    font-size: 0.9rem;
-    color: var(--text-muted-color);
-    word-break: break-all;
-}
-.client-list-item .client-deleted-date {
-    font-size: 0.8rem;
-    color: var(--danger-color);
-    font-style: italic;
-    margin-top: 5px;
-}
-.client-list-item .client-pills {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-    align-items: center; 
-}
-.client-list-item .client-actions-list {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    margin-top: 8px; 
-    padding-top: 12px;
-    border-top: 1px solid var(--border-color);
-    width: 100%;
-}
-.client-list-item .client-actions-list .btn-sm {
-    padding: 6px 12px;
-    font-size: 0.8rem;
-    /* Estilo sutil por defecto */
-    background-color: var(--light-gray-color);
-    color: var(--text-muted-color);
-    border-color: var(--light-gray-color);
-}
-.client-list-item:hover .client-actions-list .btn-sm.btn-warning {
-    background-color: var(--warning-color);
-    border-color: var(--warning-color);
-    color: #333;
-}
-.client-list-item:hover .client-actions-list .btn-sm.btn-danger {
-    background-color: var(--danger-color);
-    border-color: var(--danger-color);
-    color: white;
-}
-.client-actions .btn-icon .icon-svg {
-    filter: brightness(0) invert(1);
-}
-
-#logoutButton.btn-icon .icon-svg {
-    filter: brightness(0) invert(1);
-}
-
+/* Bloque de info: avatar + datos */
 .client-list-item .client-info {
   display: flex;
   align-items: center;
   flex: 1;
   min-width: 0;
 }
+.client-list-item .client-info .client-name {
+  font-weight: 600;
+  font-size: 1.2rem;
+  color: var(--text-color);
+}
+.client-list-item .client-info .client-contact {
+  font-size: 0.9rem;
+  color: var(--text-muted-color);
+  word-break: break-all;
+}
+.client-list-item .client-deleted-date {
+  font-size: 0.8rem;
+  color: var(--danger-color);
+  font-style: italic;
+  margin-top: 5px;
+}
+
+/* Píldoras */
+.client-list-item .client-pills {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+  flex-shrink: 0;
+  margin-right: 12px;
+}
+
+/* Acciones */
+.client-list-item .client-actions-list {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border-color);
+  width: 100%;
+  flex-shrink: 0;
+}
+.client-list-item .client-actions-list .btn-sm {
+  padding: 6px 12px;
+  font-size: 0.8rem;
+  background-color: var(--light-gray-color);
+  color: var(--text-muted-color);
+  border-color: var(--light-gray-color);
+}
+.client-list-item:hover .client-actions-list .btn-sm.btn-warning {
+  background-color: var(--warning-color);
+  border-color: var(--warning-color);
+  color: #333;
+}
+.client-list-item:hover .client-actions-list .btn-sm.btn-danger {
+  background-color: var(--danger-color);
+  border-color: var(--danger-color);
+  color: white;
+}
+
+/* === AVATAR CIRCULAR + RANDOM COLORS === */
 .client-list-item .client-info::before {
   content: "";
   display: block;
@@ -1964,6 +1955,10 @@ textarea.input-error {
   height: 50px;
   border-radius: 50%;
   background-color: var(--avatar-bg-color, #ccc);
+  background-image: var(
+    --avatar-img-url,
+    url('img/user_icon.svg')
+  );
   background-size: cover;
   background-position: center;
   margin-right: 12px;
@@ -1975,7 +1970,6 @@ textarea.input-error {
 .client-list-item:nth-child(6n+4) .client-info::before { --avatar-bg-color: #3F51B5; }
 .client-list-item:nth-child(6n+5) .client-info::before { --avatar-bg-color: #03A9F4; }
 .client-list-item:nth-child(6n+6) .client-info::before { --avatar-bg-color: #4CAF50; }
-
 
 /* =================================================== */
 /* === ESTILOS PARA PLANTILLA IMAGEN WHATSAPP === */
@@ -2608,17 +2602,14 @@ textarea.input-error {
     align-items: flex-start;
     padding: 12px;
   }
-
   .client-list-item .client-info {
     width: 100%;
     justify-content: flex-start;
     margin-bottom: 10px;
   }
-
   .client-list-item .client-info::before {
     margin-right: 10px;
   }
-
   .client-list-item .client-pills,
   .client-list-item .client-actions-list {
     width: 100%;
