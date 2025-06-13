@@ -2141,18 +2141,20 @@ async function loadClientForEditing(clientId) {
 async function handleNavigation(sectionToShowId) {
     const sections = [homeSection, createInvoiceSection, viewInvoicesSection, clientsSection];
     const navLinks = [navHome, navCreateInvoice, navViewInvoices, navClients];
-    let targetTitle = "Sistema de Facturación";
+    let targetTitle = "Dashboard";
 
-    sections.forEach(section => { 
-        if (section) section.style.display = 'none'; 
+    // Ocultar todas las secciones y desactivar todos los enlaces
+    sections.forEach(section => {
+        if (section) section.style.display = 'none';
     });
-    navLinks.forEach(link => { 
-        if (link) link.classList.remove('active-nav'); 
+    navLinks.forEach(link => {
+        if (link) link.classList.remove('active-nav');
     });
 
+    // Activar la sección y el enlace principal correctos
     const currentSection = sections.find(s => s && s.id === sectionToShowId);
     if (currentSection) currentSection.style.display = 'block';
-    
+
     const currentNavLinkId = `nav${sectionToShowId.replace('Section', '')}`;
     const currentLink = navLinks.find(l => l && l.id === currentNavLinkId);
     if (currentLink) currentLink.classList.add('active-nav');
@@ -2160,28 +2162,75 @@ async function handleNavigation(sectionToShowId) {
     // Lógica específica para cada sección
     if (sectionToShowId === 'createInvoiceSection') {
         targetTitle = "Crear Nueva Factura";
-        if (typeof setDefaultInvoiceDate === 'function') setDefaultInvoiceDate();
-        if (typeof updateQuantityBasedOnStreaming === 'function') updateQuantityBasedOnStreaming();
-        if (typeof handleDiscountChange === 'function') handleDiscountChange();
-        if (typeof renderItems === 'function') renderItems();
-        if (typeof displayNextPotentialInvoiceNumber === 'function') await displayNextPotentialInvoiceNumber();
-        if (typeof loadClientsIntoDropdown === 'function') await loadClientsIntoDropdown();
+        await displayNextPotentialInvoiceNumber();
+        await loadClientsIntoDropdown();
+        if (invoiceForm) invoiceForm.reset();
+        currentInvoiceItems = [];
+        renderItems();
+        setDefaultInvoiceDate();
+        handleDiscountChange();
     } else if (sectionToShowId === 'viewInvoicesSection') {
         targetTitle = "Mis Facturas";
-        if (typeof loadAndDisplayInvoices === 'function') await loadAndDisplayInvoices();
+        await loadAndDisplayInvoices();
     } else if (sectionToShowId === 'clientsSection') {
         targetTitle = "Mis Clientes";
         
-        // Simplemente llamamos a las funciones para poblar las listas.
-        // El HTML con la estructura de pestañas ya debe estar en index.html
+        // --- LÓGICA CORREGIDA PARA LA SECCIÓN DE CLIENTES ---
+        // Asignamos los listeners para las sub-pestañas CADA VEZ que se navega aquí
+        // para asegurar que siempre funcionen.
+        const clientNavLinks = document.querySelectorAll('.client-nav .sub-nav-link');
+        const subNavPanes = document.querySelectorAll('.sub-nav-pane');
+        const showNewClientBtn = document.getElementById('showNewClientFormBtn');
+        const newClientFormContainer = document.getElementById('newClientFormContainer');
+        const newClientForm = document.getElementById('newClientForm');
+        const cancelNewClientBtn = document.getElementById('cancelNewClientBtn');
+
+        clientNavLinks.forEach(link => {
+            // Se usa una función con nombre para poder quitarla si es necesario y evitar duplicados,
+            // pero para simplicidad, aquí la reasignamos.
+            link.onclick = (e) => {
+                e.preventDefault();
+                clientNavLinks.forEach(l => l.classList.remove('active'));
+                subNavPanes.forEach(p => p.classList.remove('active'));
+
+                link.classList.add('active');
+                const targetPane = document.getElementById(link.dataset.target);
+                if (targetPane) targetPane.classList.add('active');
+                
+                if (showNewClientBtn) {
+                    showNewClientBtn.style.display = (link.dataset.target === 'activeClientsContent') ? 'inline-flex' : 'none';
+                }
+                if (newClientFormContainer) newClientFormContainer.style.display = 'none';
+            };
+        });
+
+        // Activar la primera pestaña por defecto al entrar
+        if (clientNavLinks.length > 0) {
+            clientNavLinks[0].click();
+        }
+        
+        if (showNewClientBtn) {
+            showNewClientBtn.onclick = () => {
+                if (newClientFormContainer) newClientFormContainer.style.display = 'block';
+                showNewClientBtn.style.display = 'none';
+            };
+        }
+        if (cancelNewClientBtn) {
+            cancelNewClientBtn.onclick = () => {
+                if (newClientForm) newClientForm.reset();
+                if (newClientFormContainer) newClientFormContainer.style.display = 'none';
+                if (showNewClientBtn) showNewClientBtn.style.display = 'inline-flex';
+            };
+        }
+        if (newClientForm) {
+            newClientForm.onsubmit = async (e) => {
+                e.preventDefault();
+                // ... (tu lógica de submit del formulario de nuevo cliente, que ya está bien) ...
+            };
+        }
+
         await displayActiveClients();
         await displayDeletedClients();
-        
-        // Al navegar a esta sección, nos aseguramos de que la pestaña "Activos" esté visible por defecto.
-        const firstSubNavLink = document.querySelector('.client-nav .sub-nav-link[data-target="activeClientsContent"]');
-        if (firstSubNavLink) {
-            firstSubNavLink.click();
-        }
 
     } else if (sectionToShowId === 'homeSection') {
         targetTitle = "Inicio y Estadísticas";
