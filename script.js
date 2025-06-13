@@ -2139,7 +2139,6 @@ async function loadClientForEditing(clientId) {
 }
 
 async function handleNavigation(sectionToShowId) {
-    // Se declaran UNA SOLA VEZ aquí al principio
     const sections = [homeSection, createInvoiceSection, viewInvoicesSection, clientsSection];
     const navLinks = [navHome, navCreateInvoice, navViewInvoices, navClients];
     let targetTitle = "Sistema de Facturación";
@@ -2154,17 +2153,7 @@ async function handleNavigation(sectionToShowId) {
     const currentSection = sections.find(s => s && s.id === sectionToShowId);
     if (currentSection) currentSection.style.display = 'block';
     
-    // Determinar qué enlace de navegación activar
-    let currentNavLinkId = '';
-    if (sectionToShowId === 'homeSection') {
-        currentNavLinkId = 'navHome';
-    } else if (sectionToShowId === 'createInvoiceSection') {
-        currentNavLinkId = 'navCreateInvoice';
-    } else if (sectionToShowId === 'viewInvoicesSection') {
-        currentNavLinkId = 'navViewInvoices';
-    } else if (sectionToShowId === 'clientsSection') {
-        currentNavLinkId = 'navClients';
-    }
+    const currentNavLinkId = `nav${sectionToShowId.replace('Section', '')}`;
     const currentLink = navLinks.find(l => l && l.id === currentNavLinkId);
     if (currentLink) currentLink.classList.add('active-nav');
 
@@ -2182,73 +2171,18 @@ async function handleNavigation(sectionToShowId) {
         if (typeof loadAndDisplayInvoices === 'function') await loadAndDisplayInvoices();
     } else if (sectionToShowId === 'clientsSection') {
         targetTitle = "Mis Clientes";
-        if (clientsSection) {
-            clientsSection.innerHTML = `
-                <div class="section-header-actions">
-                    <h2>Clientes</h2>
-                    <button type="button" id="showNewClientFormBtn" class="btn btn-primary btn-icon">
-                        <img src="img/Add_User_icon.svg" alt="Añadir" class="icon-svg">
-                        <span>Añadir Nuevo Cliente</span>
-                    </button>
-                </div>
-                <div id="newClientFormContainer" class="form-section" style="display: none;">
-                    <form id="newClientForm">
-                        <legend>Datos del Nuevo Cliente</legend>
-                        <div class="form-grid two-columns">
-                            <div class="form-group"><label for="newClientName">Nombres y Apellidos:</label><input type="text" id="newClientName"></div>
-                            <div class="form-group"><label for="newClientPhone">Celular:</label><input type="tel" id="newClientPhone"></div>
-                            <div class="form-group full-width"><label for="newClientEmail">Correo Electrónico (Opcional):</label><input type="email" id="newClientEmail"></div>
-                        </div>
-                        <div class="form-actions">
-                            <button type="button" id="cancelNewClientBtn" class="btn btn-secondary">Cancelar</button>
-                            <button type="submit" class="btn btn-success">Guardar Cliente</button>
-                        </div>
-                    </form>
-                </div>
-                <div class="client-list-subsection">
-                    <h3>Clientes Activos</h3>
-                    <div id="activeClientsListContainer" class="client-list"><p>Cargando...</p></div>
-                </div>
-                <div class="client-list-subsection">
-                    <h3>Clientes Inactivos</h3>
-                    <div id="deletedClientsListContainer" class="client-list"><p>Cargando...</p></div>
-                </div>
-            `;
-
-            // Volvemos a asignar los listeners a los elementos que acabamos de crear
-            document.getElementById('showNewClientFormBtn').addEventListener('click', () => {
-                document.getElementById('newClientFormContainer').style.display = 'block';
-                document.getElementById('showNewClientFormBtn').style.display = 'none';
-            });
-            document.getElementById('cancelNewClientBtn').addEventListener('click', () => {
-                document.getElementById('newClientForm').reset();
-                document.getElementById('newClientFormContainer').style.display = 'none';
-                document.getElementById('showNewClientFormBtn').style.display = 'inline-flex';
-            });
-            document.getElementById('newClientForm').addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const name = document.getElementById('newClientName').value.trim();
-                const phone = document.getElementById('newClientPhone').value.trim();
-                const email = document.getElementById('newClientEmail').value.trim();
-                if (!name && !phone && !email) {
-                    alert("Debes rellenar al menos un campo para guardar el cliente.");
-                    return;
-                }
-                showLoading(true);
-                const success = await saveNewClient(name, phone, email);
-                showLoading(false);
-                if (success) {
-                    document.getElementById('newClientForm').reset();
-                    document.getElementById('newClientFormContainer').style.display = 'none';
-                    document.getElementById('showNewClientFormBtn').style.display = 'inline-flex';
-                    await displayActiveClients();
-                    await displayDeletedClients();
-                    await loadClientsIntoDropdown();
-                }
-            });
-        }
+        
+        // Simplemente llamamos a las funciones para poblar las listas.
+        // El HTML con la estructura de pestañas ya debe estar en index.html
         await displayActiveClients();
         await displayDeletedClients();
+        
+        // Al navegar a esta sección, nos aseguramos de que la pestaña "Activos" esté visible por defecto.
+        const firstSubNavLink = document.querySelector('.client-nav .sub-nav-link[data-target="activeClientsContent"]');
+        if (firstSubNavLink) {
+            firstSubNavLink.click();
+        }
+
     } else if (sectionToShowId === 'homeSection') {
         targetTitle = "Inicio y Estadísticas";
         await loadDashboardData();
@@ -3053,6 +2987,41 @@ if (confirmAndSetNextBtn) {
         }
     });
 }
+
+// --- LISTENERS PARA LAS SUB-PESTAÑAS DE LA SECCIÓN CLIENTES ---
+document.addEventListener('DOMContentLoaded', () => {
+    const clientNavLinks = document.querySelectorAll('.client-nav .sub-nav-link');
+    const subNavPanes = document.querySelectorAll('.sub-nav-pane');
+    const showNewClientBtnOnClients = document.querySelector('#clientsSection #showNewClientFormBtn');
+    const newClientFormContainerOnClients = document.getElementById('newClientFormContainer');
+
+    clientNavLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+
+            // Quitar la clase 'active' de todas las pestañas y paneles
+            clientNavLinks.forEach(l => l.classList.remove('active'));
+            subNavPanes.forEach(p => p.classList.remove('active'));
+
+            // Añadir la clase 'active' a la pestaña y panel seleccionados
+            link.classList.add('active');
+            const targetId = link.getAttribute('data-target');
+            const targetPane = document.getElementById(targetId);
+            if (targetPane) {
+                targetPane.classList.add('active');
+            }
+
+            // Lógica para mostrar/ocultar el botón "Añadir Nuevo Cliente"
+            if (showNewClientBtnOnClients) {
+                showNewClientBtnOnClients.style.display = (targetId === 'activeClientsContent') ? 'inline-flex' : 'none';
+            }
+            if (newClientFormContainerOnClients && newClientFormContainerOnClients.style.display === 'block') {
+                newClientFormContainerOnClients.style.display = 'none';
+                if(showNewClientBtnOnClients) showNewClientBtnOnClients.style.display = 'inline-flex';
+            }
+        });
+    });
+});
 
 // Listener para el botón "Cancelar Suscripción"
 if (cancelSubscriptionBtn) {
