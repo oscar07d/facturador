@@ -1,4 +1,3 @@
-
 /* === FUENTE E IMPORTACIONES === */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Lato:wght@400;700&family=Open+Sans:wght@400;600&display=swap');
@@ -1809,97 +1808,145 @@ textarea.input-error {
 #invoice-export-template .export-final-message { text-align: center; margin-top: 8mm; padding-top: 3mm; border-top: 1px dotted var(--pdf-border-color-medium); font-size: 8pt; color: var(--pdf-text-secondary); font-style: italic; }
 #invoice-export-template .export-final-message p { margin-bottom: 1mm; }
 
-/* =================================================== */
-/* === ESTILOS PARA LA SECCIÓN CLIENTES (NUEVO DISEÑO) === */
-/* =================================================== */
-.section-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
+/* === ESTILOS PARA LA SECCIÓN CLIENTES === */
+/* === ESTILOS PARA EL BOTON NUEVO CLIENTE === */
+
+/* Regla general para los iconos en botones */
+.btn-icon .icon-svg {
+    width: 16px;
+    height: 16px;
+    margin-right: 8px;
+    vertical-align: middle;
+    transition: filter 0.2s ease;
 }
 
-.clients-tabs {
-  display: flex;
-  margin-bottom: 1rem;
+/* Iconos blancos para botones con fondo de color */
+.btn-primary.btn-icon .icon-svg,
+.btn-success.btn-icon .icon-svg {
+    filter: brightness(0) invert(1);
+}
+.section-header-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+.section-header-actions h2 {
+    margin: 0;
+}
+#newClientFormContainer {
+    margin-bottom: 30px;
+}
+/* === FIN ESTILOS PARA EL BOTON NUEVO CLIENTE === */
+.client-list-subsection {
+    margin-bottom: 35px;
+}
+.client-list-subsection:last-child {
+    border-bottom: none; 
+    margin-bottom: 0; 
+}
+.client-list-subsection h3 {
+    font-size: 1.4rem;
+    color: var(--secondary-color);
+    margin-bottom: 18px;
+    font-weight: 600;
+    padding-bottom: 8px;
+    border-bottom: 1px dashed var(--border-color);
 }
 
-.clients-tabs .tab {
-  flex: 1;
-  padding: 10px;
-  text-align: center;
-  cursor: pointer;
-  border-bottom: 2px solid transparent;
-  transition: border-color var(--transition-speed);
+.client-list {
+    display: grid;
+    gap: 22px; /* Un poco más de espacio */
+    grid-template-columns: 1fr; /* Móvil primero: 1 columna */
+}
+.client-list-item {
+    background-color: var(--container-background);
+    border: 1px solid var(--border-color);
+    border-left-width: 5px; /* Prepara el espacio para el borde de color */
+    border-radius: var(--border-radius-s);
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06); /* Sombra más sutil */
+    transition: box-shadow 0.25s ease, transform 0.25s ease;
+    display: flex;
+    flex-direction: column; /* Apilado vertical para móvil */
+    gap: 12px;
+}
+.client-list-item:hover {
+    box-shadow: var(--box-shadow-medium);
+    transform: translateY(-4px); /* Efecto de flotación al pasar el cursor */
+}
+.client-list-item.status-theme-status-client-nuevo { border-left-color: var(--info-color); }
+.client-list-item.status-theme-status-client-al-dia,
+.client-list-item.status-theme-status-client-activo { border-left-color: var(--success-color); }
+.client-list-item.status-theme-status-client-con-pendientes { border-left-color: var(--warning-color); }
+.client-list-item.status-theme-status-client-moroso { border-left-color: var(--danger-color); }
+.client-list-item.status-theme-status-client-inactivo,
+.client-list-item.status-theme-status-client-default { border-left-color: var(--secondary-color); }
+
+.client-list-item .client-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex-grow: 1;
+    min-width: 0; 
+}
+.client-list-item .client-name {
+    font-weight: 600;
+    font-size: 1.2rem; /* Nombre más grande */
+    color: var(--text-color);
+}
+.client-list-item .client-contact {
+    font-size: 0.9rem;
+    color: var(--text-muted-color);
+    word-break: break-all;
+}
+.client-list-item .client-deleted-date {
+    font-size: 0.8rem;
+    color: var(--danger-color);
+    font-style: italic;
+    margin-top: 5px;
+}
+.client-list-item .client-pills {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center; 
+}
+.client-list-item .client-actions-list {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 8px; 
+    padding-top: 12px;
+    border-top: 1px solid var(--border-color);
+    width: 100%;
+}
+.client-list-item .client-actions-list .btn-sm {
+    padding: 6px 12px;
+    font-size: 0.8rem;
+    /* Estilo sutil por defecto */
+    background-color: var(--light-gray-color);
+    color: var(--text-muted-color);
+    border-color: var(--light-gray-color);
+}
+.client-list-item:hover .client-actions-list .btn-sm.btn-warning {
+    background-color: var(--warning-color);
+    border-color: var(--warning-color);
+    color: #333;
+}
+.client-list-item:hover .client-actions-list .btn-sm.btn-danger {
+    background-color: var(--danger-color);
+    border-color: var(--danger-color);
+    color: white;
+}
+.client-actions .btn-icon .icon-svg {
+    filter: brightness(0) invert(1);
 }
 
-.clients-tabs .tab.active {
-  border-color: var(--primary-color);
-  font-weight: 600;
-}
-
-.clients-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.clients-list.hidden {
-  display: none;
-}
-
-.clients-list li {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding: 12px;
-  border: 1px solid var(--border-color);
-  border-radius: var(--border-radius-s);
-  margin-bottom: 0.75rem;
-  background: var(--container-background);
-}
-
-.clients-list li img.user-icon {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-
-.client-info {
-  flex: 1;
-}
-
-.client-info h4 {
-  margin: 0;
-  font-size: 1rem;
-  font-weight: 500;
-}
-
-.client-info p {
-  margin: 2px 0;
-  font-size: 0.875rem;
-  color: var(--text-muted-color);
-}
-
-.client-status-pill {
-  padding: 4px 10px;
-  border-radius: var(--border-radius-pill);
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: capitalize;
-  white-space: nowrap;
-}
-
-.client-actions {
-  display: flex;
-  gap: 0.5rem;
-  flex-shrink: 0;
-}
-
-.client-actions .btn {
-  padding: 5px 10px;
-  font-size: 0.75rem;
+#logoutButton.btn-icon .icon-svg {
+    filter: brightness(0) invert(1);
 }
 
 /* =================================================== */
@@ -2017,9 +2064,6 @@ textarea.input-error {
 #payment-reminder-export-template .reminder-footer .contact-email { color: var(--reminder-text-secondary); font-weight: 600; }
 
 /* === ESTILOS PARA MODAL DETALLE DE FACTURA === */
-#addClientModal .modal-content {
-    max-width: 550px; /* Un tamaño mediano para el formulario */
-}
 /* (Los estilos del modal de detalle que ya tenías y los de los botones con iconos) */
 .modal-overlay {
     position: fixed;
@@ -2298,7 +2342,7 @@ textarea.input-error {
         border-radius: 50%;
     }
     #logoutButton.btn-icon .icon-svg {
-        filter: brightness(0) invert(1);
+        margin-right: 0;
     }
     
     /* Barra de Navegación Fija en la Parte Inferior */
@@ -2528,13 +2572,6 @@ textarea.input-error {
         height: 26px; /* Cambia este valor para hacerlo más grande o más pequeño */
         margin-right: 8px; /* Espacio entre el icono y el texto */
     }
-    .clients-list li {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-  .client-actions {
-      margin-top: 0.5rem;
-  }
 }
 
 @media (max-width: 480px) {
