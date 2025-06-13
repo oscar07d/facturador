@@ -619,8 +619,37 @@
     <div class="reminder-footer">
         <p id="reminder-final-note">Si ya pagaste, ignora este mensaje. ¡Gracias!</p>
         <p id="reminder-contact-info">Dudas: [info@oscar07dstudios.com]</p>
+    </div>
+        <div id="addClientModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Añadir Nuevo Cliente</h2>
+                <button id="closeAddClientModalBtn" class="modal-close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="newClientFormModal">
+                    <div class="form-group">
+                        <label for="newClientNameModal">Nombres y Apellidos:</label>
+                        <input type="text" id="newClientNameModal" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="newClientPhoneModal">Celular:</label>
+                        <input type="tel" id="newClientPhoneModal" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="newClientEmailModal">Correo Electrónico (Opcional):</label>
+                        <input type="email" id="newClientEmailModal">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="cancelAddClientBtn" class="btn btn-secondary">Cancelar</button>
+                <button type="button" id="saveNewClientFromModalBtn" class="btn btn-success">Guardar Cliente</button>
+            </div>
         </div>
-</div> <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" integrity="sha512-BNaRQnYJYiPSqHHDb58B0yaPfCu+Wgds8Gp/gU33kqBtgNS4tSPHuGibyoeqMV/TJlSKda6FXzoEyYGjTe+vXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    </div>
+</div> 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" integrity="sha512-BNaRQnYJYiPSqHHDb58B0yaPfCu+Wgds8Gp/gU33kqBtgNS4tSPHuGibyoeqMV/TJlSKda6FXzoEyYGjTe+vXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" integrity="sha512-qZvrmS2ekKPF2mSznTQsxqPgnpkI4DNTlrdUmTzrDgektczlKNRRhy5X5AAOnx5S09ydFYWWNSfcEqDTTHgtNA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://npmcdn.com/flatpickr/dist/plugins/weekSelect/weekSelect.js"></script>
