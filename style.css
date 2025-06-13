@@ -2034,6 +2034,9 @@ textarea.input-error {
 #payment-reminder-export-template .reminder-footer .contact-email { color: var(--reminder-text-secondary); font-weight: 600; }
 
 /* === ESTILOS PARA MODAL DETALLE DE FACTURA === */
+#addClientModal .modal-content {
+    max-width: 550px; /* Un tamaño mediano para el formulario */
+}
 /* (Los estilos del modal de detalle que ya tenías y los de los botones con iconos) */
 .modal-overlay {
     position: fixed;
