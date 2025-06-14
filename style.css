@@ -2619,6 +2619,10 @@ img[src$="Add_User_icon.svg"] {
         height: 26px; /* Cambia este valor para hacerlo más grande o más pequeño */
         margin-right: 8px; /* Espacio entre el icono y el texto */
     }
+    img[src$="Add_User_icon.svg"] {
+      width: 27px !important;
+      height: 27px !important;
+    }
 }
 
 @media (max-width: 768px) {
