@@ -1885,12 +1885,12 @@ textarea.input-error {
 .client-list-item.status-theme-status-client-default { border-left-color: var(--secondary-color); }
 
 /* Bloque de info: avatar + datos */
-.client-list-item .client-info {
+/* .client-list-item .client-info {
   display: flex;
   align-items: center;
   flex: 1;
   min-width: 0;
-}
+} */
 .client-list-item .client-info .client-name {
   font-weight: 600;
   font-size: 1.2rem;
@@ -1949,7 +1949,6 @@ textarea.input-error {
 
 /* === AVATAR CIRCULAR + RANDOM COLORS === */
 .client-list-item .client-info {
-  /* Usar grid para avatar + nombre + contacto */
   display: grid;
   grid-template-columns: 50px auto;
   grid-template-rows: auto auto;
@@ -1966,11 +1965,8 @@ textarea.input-error {
   height: 50px;
   border-radius: 50%;
   background-color: var(--avatar-bg-color, #ccc);
-  background-image: var(
-    --avatar-img-url,
-    url('img/user_icon.svg')
-  );
-  background-size: 60%; /* Icono más pequeño para mostrar color de fondo */
+  background-image: var(--avatar-img-url, url('img/user_icon.svg'));
+  background-size: 60%;
   background-repeat: no-repeat;
   background-position: center;
   flex-shrink: 0;
@@ -2622,19 +2618,47 @@ textarea.input-error {
 }
 
 @media (max-width: 768px) {
+  /* Item completo en columna */
   .client-list-item {
     flex-direction: column;
     align-items: flex-start;
     padding: 12px;
   }
+
+  /* Cliente info en grid para avatar + nombre + contacto */
   .client-list-item .client-info {
+    display: grid;
+    grid-template-columns: 40px auto;
+    grid-template-rows: auto auto;
+    column-gap: 10px;
+    row-gap: 4px;
     width: 100%;
-    justify-content: flex-start;
     margin-bottom: 10px;
   }
+
+  /* Avatar circular más pequeño */
   .client-list-item .client-info::before {
-    margin-right: 10px;
+    grid-area: 1 / 1 / 3 / 2;
+    width: 40px;
+    height: 40px;
+    margin: 0;
   }
+
+  /* Nombre en primera fila */
+  .client-list-item .client-info .client-name {
+    grid-area: 1 / 2 / 2 / 3;
+    font-size: 1rem;
+    margin: 0;
+  }
+
+  /* Contacto en segunda fila */
+  .client-list-item .client-info .client-contact {
+    grid-area: 2 / 2 / 3 / 3;
+    font-size: 0.8rem;
+    margin: 0;
+  }
+
+  /* Píldoras y acciones full width */
   .client-list-item .client-pills,
   .client-list-item .client-actions-list {
     width: 100%;
