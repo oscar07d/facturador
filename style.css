@@ -586,17 +586,21 @@ body.modal-active {
 }
 
 .app-header {
+  position: relative;       /* para que el título absoluto se refiera a este contenedor */
   display: flex !important;
   align-items: center !important;
   justify-content: space-between !important;
-  flex-wrap: nowrap !important;
-  gap: 1rem !important;
   padding: 0.5rem 1rem !important;
+  height: 60px;             /* fija una altura si te ayuda con el centrado vertical */
+}
+.app-header .app-logo-container {
+  flex-shrink: 0 !important;
+  z-index: 2;               /* por encima del título absoluto */
 }
 
-.app-header .app-logo-container,
 .app-header .btn-logout {
   flex-shrink: 0 !important;
+  z-index: 2;
 }
 
 .logo-app-container {
@@ -2864,6 +2868,18 @@ img[src$="Sign_Out_icon.svg"]:hover {
   white-space: nowrap !important;
   overflow: hidden !important;
   text-overflow: ellipsis !important;
+}
+
+.app-header .section-title {
+  position: absolute !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  margin: 0 !important;
+  white-space: nowrap !important;
+  font-size: 1.25rem !important;
+  z-index: 1;               /* por debajo de logo y botón */
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* Título ocupa el espacio central y puede reducirse */
