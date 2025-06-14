@@ -1856,11 +1856,7 @@ textarea.input-error {
     border-bottom: 1px dashed var(--border-color);
 }
 
-.client-list {
-    display: grid;
-    gap: 22px; /* Un poco más de espacio */
-    grid-template-columns: 1fr; /* Móvil primero: 1 columna */
-}
+
 .client-list-item {
     background-color: var(--container-background);
     border: 1px solid var(--border-color);
@@ -1869,9 +1865,6 @@ textarea.input-error {
     padding: 20px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.06); /* Sombra más sutil */
     transition: box-shadow 0.25s ease, transform 0.25s ease;
-    display: flex;
-    flex-direction: column; /* Apilado vertical para móvil */
-    gap: 12px;
 }
 .client-list-item:hover {
     box-shadow: var(--box-shadow-medium);
@@ -1886,7 +1879,6 @@ textarea.input-error {
 .client-list-item.status-theme-status-client-default { border-left-color: var(--secondary-color); }
 
 .client-list-item .client-info {
-    display: flex;
     flex-direction: column;
     gap: 4px;
     flex-grow: 1;
@@ -2574,6 +2566,23 @@ textarea.input-error {
     }
 }
 
+@media (max-width: 768px) {
+  .client-list-item {
+    padding: 10px 12px 10px 60px !important;
+  }
+  .client-list-item::before {
+    left: 12px !important;
+    width: 40px !important;
+    height: 40px !important;
+  }
+  .client-list-item .client-name {
+    font-size: 0.95rem !important;
+  }
+  .client-list-item .client-contact {
+    font-size: 0.8rem !important;
+  }
+}
+
 @media (max-width: 480px) {
     body {
         padding: 10px;
@@ -2718,3 +2727,58 @@ textarea.input-error {
     min-height: 100px;
     min-width: 100px;
 }
+.client-list {
+  list-style: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+/* 2) Cada cliente como LI con espacio para el avatar */
+.client-list-item {
+  position: relative !important;
+  display: block !important;
+  padding: 12px 16px 12px 72px !important;
+  margin-bottom: 12px !important;
+  background: var(--container-background) !important;
+  border: 1px solid var(--border-color) !important;
+  border-radius: var(--border-radius-s) !important;
+}
+
+/* 3) Avatar circular pseudo‑bullet */
+.client-list-item::before {
+  content: "" !important;
+  position: absolute !important;
+  left: 16px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  width: 48px !important;
+  height: 48px !important;
+  border-radius: 50% !important;
+  background-color: var(--avatar-bg-color, #ccc) !important;
+  background-image: var(--avatar-img-url, url('img/user_icon.svg')) !important;
+  background-size: 60% !important;
+  background-repeat: no-repeat !important;
+  background-position: center !important;
+}
+
+/* 4) Nombre y contacto */
+.client-list-item .client-name {
+  display: block !important;
+  font-weight: 600 !important;
+  font-size: 1rem !important;
+  margin: 0 0 4px !important;
+}
+.client-list-item .client-contact {
+  display: block !important;
+  font-size: 0.875rem !important;
+  color: var(--text-muted-color) !important;
+  margin: 0 !important;
+}
+
+/* 5) Colores de fondo cíclicos */
+.client-list-item:nth-child(6n+1)::before { --avatar-bg-color: #F44336; }
+.client-list-item:nth-child(6n+2)::before { --avatar-bg-color: #E91E63; }
+.client-list-item:nth-child(6n+3)::before { --avatar-bg-color: #9C27B0; }
+.client-list-item:nth-child(6n+4)::before { --avatar-bg-color: #3F51B5; }
+.client-list-item:nth-child(6n+5)::before { --avatar-bg-color: #03A9F4; }
+.client-list-item:nth-child(6n+6)::before { --avatar-bg-color: #4CAF50; }
