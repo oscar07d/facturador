@@ -1885,12 +1885,7 @@ textarea.input-error {
 .client-list-item.status-theme-status-client-default { border-left-color: var(--secondary-color); }
 
 /* Bloque de info: avatar + datos */
-/* .client-list-item .client-info {
-  display: flex;
-  align-items: center;
-  flex: 1;
-  min-width: 0;
-} */
+
 .client-list-item .client-info .client-name {
   font-weight: 600;
   font-size: 1.2rem;
@@ -1945,6 +1940,17 @@ textarea.input-error {
   background-color: var(--danger-color);
   border-color: var(--danger-color);
   color: white;
+}
+
+.client-list-item .client-info {
+  display: grid !important;
+  grid-template-columns: 50px auto;
+  grid-template-rows: auto auto;
+  column-gap: 12px;
+  row-gap: 4px;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
 }
 
 /* === AVATAR CIRCULAR + RANDOM COLORS === */
