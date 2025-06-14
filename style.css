@@ -2568,18 +2568,18 @@ textarea.input-error {
 
 @media (max-width: 768px) {
   .client-list-item {
-    padding: 10px 12px 10px 60px !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+  }
+  .client-info {
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 12px !important;
+    margin-bottom: 10px !important;
   }
   .client-list-item::before {
-    left: 12px !important;
     width: 40px !important;
     height: 40px !important;
-  }
-  .client-list-item .client-name {
-    font-size: 0.95rem !important;
-  }
-  .client-list-item .client-contact {
-    font-size: 0.8rem !important;
   }
 }
 
@@ -2744,22 +2744,20 @@ textarea.input-error {
 
 /* 2) Cada cliente como LI con espacio para el avatar */
 .client-list-item {
-  position: relative !important;
-  display: block !important;
-  padding: 12px 16px 12px 72px !important;
+  display: flex !important;
+  align-items: flex-start !important;
+  gap: 12px !important;
+  padding: 16px !important;
   margin-bottom: 12px !important;
   background: var(--container-background) !important;
   border: 1px solid var(--border-color) !important;
   border-radius: var(--border-radius-s) !important;
+  flex-direction: row !important;
+  flex-wrap: wrap !important;
 }
-
 /* 3) Avatar circular pseudo‑bullet */
 .client-list-item::before {
   content: "" !important;
-  position: absolute !important;
-  left: 16px !important;
-  top: 50% !important;
-  transform: translateY(-50%) !important;
   width: 48px !important;
   height: 48px !important;
   border-radius: 50% !important;
@@ -2768,8 +2766,22 @@ textarea.input-error {
   background-size: 60% !important;
   background-repeat: no-repeat !important;
   background-position: center !important;
+  flex-shrink: 0 !important;
+  margin-top: 4px; /* Alineación más precisa */
 }
 
+.client-list-item .client-name,
+.client-list-item .client-contact {
+  display: block !important;
+  line-height: 1.4 !important;
+}
+
+.client-list-item .client-info {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  flex: 1 1 auto !important;
+}
 /* 4) Nombre y contacto */
 .client-list-item .client-name {
   display: block !important;
@@ -2794,10 +2806,9 @@ textarea.input-error {
 
 .client-list-item .client-pills,
 .client-list-item .client-actions-list {
-  display: inline-flex !important;
-  justify-content: flex-end !important;
-  align-items: center !important;
-  gap: 8px !important;
   width: 100% !important;
-  margin-top: 10px !important;
+  display: flex !important;
+  justify-content: flex-end !important;
+  gap: 8px !important;
+  margin-top: 8px !important;
 }
