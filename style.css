@@ -2583,6 +2583,15 @@ textarea.input-error {
   }
 }
 
+@media (max-width: 768px) {
+  .client-list-item .client-pills,
+  .client-list-item .client-actions-list {
+    justify-content: flex-start !important;
+    flex-wrap: wrap !important;
+    gap: 6px !important;
+  }
+}
+
 @media (max-width: 480px) {
     body {
         padding: 10px;
@@ -2782,3 +2791,13 @@ textarea.input-error {
 .client-list-item:nth-child(6n+4)::before { --avatar-bg-color: #3F51B5; }
 .client-list-item:nth-child(6n+5)::before { --avatar-bg-color: #03A9F4; }
 .client-list-item:nth-child(6n+6)::before { --avatar-bg-color: #4CAF50; }
+
+.client-list-item .client-pills,
+.client-list-item .client-actions-list {
+  display: inline-flex !important;
+  justify-content: flex-end !important;
+  align-items: center !important;
+  gap: 8px !important;
+  width: 100% !important;
+  margin-top: 10px !important;
+}
