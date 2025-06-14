@@ -1948,8 +1948,8 @@ textarea.input-error {
 }
 
 /* === AVATAR CIRCULAR + RANDOM COLORS === */
-.client-list-item .client-info {
-  display: grid;
+.client-list .client-list-item .client-info {
+  display: grid !important;
   grid-template-columns: 50px auto;
   grid-template-rows: auto auto;
   column-gap: 12px;
@@ -1958,7 +1958,7 @@ textarea.input-error {
   flex: 1;
   min-width: 0;
 }
-.client-list-item .client-info::before {
+.client-list .client-list-item .client-info::before {
   content: "";
   grid-area: 1 / 1 / 3 / 2;
   width: 50px;
@@ -1966,17 +1966,17 @@ textarea.input-error {
   border-radius: 50%;
   background-color: var(--avatar-bg-color, #ccc);
   background-image: var(--avatar-img-url, url('img/user_icon.svg'));
-  background-size: 80%;
+  background-size: 60%;
   background-repeat: no-repeat;
   background-position: center;
   flex-shrink: 0;
 }
-.client-list-item .client-info .client-name {
-  grid-area: 1 / 2 / 2 / 3;
+.client-list .client-list-item .client-info .client-name {
+  grid-area: 1 / 2 / 2 / 3 !important;
   margin: 0;
 }
-.client-list-item .client-info .client-contact {
-  grid-area: 2 / 2 / 3 / 3;
+.client-list .client-list-item .client-info .client-contact {
+  grid-area: 2 / 2 / 3 / 3 !important;
   font-size: 0.9rem;
   color: var(--text-muted-color);
   word-break: break-all;
