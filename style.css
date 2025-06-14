@@ -1974,7 +1974,7 @@ textarea.input-error {
     --avatar-img-url,
     url('img/user_icon.svg')
   ) !important;
-  background-size: 60% !important;
+  background-size: 80% !important;
   background-repeat: no-repeat !important;
   background-position: center !important;
 }
@@ -2682,6 +2682,12 @@ img[src$="Add_User_icon.svg"] {
   }
 }
 
+@media (max-width: 768px) {
+  .app-header .section-title {
+    font-size: 1rem !important;
+  }
+}
+
 @media (max-width: 480px) {
     body {
         padding: 10px;
@@ -2832,4 +2838,31 @@ img[src$="Sign_Out_icon.svg"] {
 }
 img[src$="Sign_Out_icon.svg"]:hover {
   filter: brightness(0) invert(1) !important;
+}
+
+.app-header {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  flex-wrap: nowrap !important;
+  gap: 1rem !important;
+  padding: 0.5rem 1rem !important;
+}
+
+/* Logo y botón nunca se encogen */
+.app-header .app-logo-container,
+.app-header .btn-logout {
+  flex-shrink: 0 !important;
+}
+
+/* Título ocupa el espacio central y puede reducirse */
+.app-header .section-title {
+  flex: 1 1 auto !important;
+  margin: 0 !important;
+  text-align: center !important;
+  font-size: 1.25rem !important;
+  min-width: 0 !important;              /* clave para permitir shrink */
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
 }
