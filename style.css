@@ -626,7 +626,7 @@ body.modal-active {
     text-align: center;
 }
 
-.user-actions #logoutButton {
+.user-actions #logoutButton.btn-icon {
     margin: 0;
     background-color: var(--danger-color);
     color: white;
@@ -1831,12 +1831,10 @@ textarea.input-error {
 }
 
 .section-header-actions {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 15px;
-  margin-bottom: 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
 }
 .section-header-actions h2 { margin: 0; }
 #newClientFormContainer { margin-bottom: 30px; }
@@ -2369,12 +2367,15 @@ img[src$="Add_User_icon.svg"] {
         padding: 20px 20px 100px 20px; 
     }
     /* --- Cabecera y Navegación en Móvil --- */
-    .app-header { 
+    .app-header {
         flex-direction: row;
         justify-content: space-between;
         align-items: center;
-        gap: 10px;
-        padding: 10px 15px;
+    }
+    .app-title-container {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
     }
     .logo-app-container .app-logo-completo {
         display: none; /* Ocultar logo completo */
@@ -2389,7 +2390,8 @@ img[src$="Add_User_icon.svg"] {
         max-width: 40px;
     }
     .app-title-container h1 { 
-        font-size: 1.2rem; 
+        font-size: 1.2rem;
+        white-space: nowrap;
     }
     #logoutButton span {
         display: none; /* Ocultar texto del botón de logout */
@@ -2401,7 +2403,7 @@ img[src$="Add_User_icon.svg"] {
         border-radius: 50%;
     }
     #logoutButton.btn-icon .icon-svg {
-        margin-right: 0;
+        filter: brightness(0) invert(1);
     }
     
     /* Barra de Navegación Fija en la Parte Inferior */
