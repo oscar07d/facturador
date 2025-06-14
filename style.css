@@ -586,16 +586,17 @@ body.modal-active {
 }
 
 .app-header {
-    background-color: var(--container-background);
-    padding: 15px 30px;
-    border-radius: var(--border-radius-l) var(--border-radius-l) 0 0;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    flex-wrap: wrap;
-    margin-top: 20px;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  flex-wrap: nowrap !important;
+  gap: 1rem !important;
+  padding: 0.5rem 1rem !important;
+}
+
+.app-header .app-logo-container,
+.app-header .btn-logout {
+  flex-shrink: 0 !important;
 }
 
 .logo-app-container {
@@ -2853,6 +2854,16 @@ img[src$="Sign_Out_icon.svg"]:hover {
 .app-header .app-logo-container,
 .app-header .btn-logout {
   flex-shrink: 0 !important;
+}
+.app-header .section-title {
+  flex: 1 1 auto !important;
+  margin: 0 !important;
+  text-align: center !important;
+  font-size: 1.25rem !important;
+  min-width: 0 !important;              /* clave para permitir shrink */
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
 }
 
 /* Título ocupa el espacio central y puede reducirse */
