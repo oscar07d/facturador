@@ -1541,7 +1541,7 @@ textarea.input-error {
     background-color: #fff;
     border: 1px solid var(--border-color);
     border-left-width: 5px; /* Prepara el espacio para el borde de color */
-    border-radius: var(--border-radius-s); /* Bordes más sutiles */
+    border-radius: 35px; /* Bordes más sutiles */
     padding: 20px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.05); /* Sombra más suave */
     transition: box-shadow var(--transition-speed) ease, transform var(--transition-speed) ease;
