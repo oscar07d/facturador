@@ -900,7 +900,7 @@ body.modal-active {
     width: 100%;
     background-color: var(--container-background);
     border: 1px solid var(--border-color);
-    border-radius: var(--border-radius-s);
+    border-radius: 100px;
     cursor: pointer;
     user-select: none;
     padding: 10px 15px;
