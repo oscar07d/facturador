@@ -2592,6 +2592,36 @@ textarea.input-error {
   }
 }
 
+@media (max-width: 768px) {
+  /* Asegurar que el avatar/texto queden en columna y texto a la izquierda */
+  .client-list-item {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    padding: 12px !important;
+  }
+
+  /* Avatar encima, ligeramente centrado solo con margen */
+  .client-list-item::before {
+    margin: 0 0 8px 0 !important;
+  }
+
+  /* Texto del cliente alineado a la izquierda */
+  .client-list-item .client-name,
+  .client-list-item .client-contact {
+    text-align: left !important;
+    width: 100% !important;
+  }
+
+  /* Píldora y botones quedan debajo, alineados al inicio */
+  .client-list-item .client-pills,
+  .client-list-item .client-actions-list {
+    justify-content: flex-start !important;
+    width: 100% !important;
+    margin-top: 8px !important;
+  }
+}
+
 @media (max-width: 480px) {
     body {
         padding: 10px;
@@ -2751,19 +2781,19 @@ textarea.input-error {
   margin-bottom: 12px !important;
   background: var(--container-background) !important;
   border: 1px solid var(--border-color) !important;
-  border-radius: var(--border-radius-s) !important;
+  border-radius: 30px !important;
   flex-direction: row !important;
   flex-wrap: wrap !important;
 }
 /* 3) Avatar circular pseudo‑bullet */
 .client-list-item::before {
   content: "" !important;
-  width: 48px !important;
+  width: 47px !important;
   height: 48px !important;
   border-radius: 50% !important;
   background-color: var(--avatar-bg-color, #ccc) !important;
   background-image: var(--avatar-img-url, url('img/user_icon.svg')) !important;
-  background-size: 60% !important;
+  background-size: 80% !important;
   background-repeat: no-repeat !important;
   background-position: center !important;
   flex-shrink: 0 !important;
