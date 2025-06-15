@@ -775,7 +775,7 @@ body.modal-active {
     width: 100%;
     padding: 10px 14px;
     border: 1px solid var(--border-color);
-    border-radius: var(--border-radius-s);
+    border-radius: 100px;
     font-size: 1rem;
     font-family: 'Poppins', sans-serif;
     transition: border-color var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
