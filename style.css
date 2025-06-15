@@ -2574,7 +2574,7 @@ textarea.input-error {
   .client-info {
     flex-direction: row !important;
     align-items: center !important;
-    gap: 12px !important;
+    gap: 1px !important;
     margin-bottom: 10px !important;
   }
   .client-list-item::before {
