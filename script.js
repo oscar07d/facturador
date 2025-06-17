@@ -2950,19 +2950,25 @@ document.addEventListener('keydown', (event) => {
 // --- Lógica de Autenticación y Estado ---
 if (loginButton) { 
     loginButton.addEventListener('click', async () => {
-        console.log("Iniciando flujo de inicio de sesión nativo...");
+        console.log("Iniciando flujo de inicio de sesión nativo con Google...");
         showLoading(true);
         try {
-            // 1. Llama al plugin para que Android muestre la ventana de selección de cuentas
+            // 1. Inicializar el plugin de Google Auth una sola vez al inicio del flujo
+            // El serverClientId se lee automáticamente del strings.xml
+            await window.Capacitor.Plugins.GoogleAuth.initialize();
+
+            // 2. Llama al plugin para que Android muestre la ventana de selección de cuentas
             const googleUser = await window.Capacitor.Plugins.GoogleAuth.signIn();
 
-            // 2. Si el usuario elige una cuenta, obtenemos un "token" de Google
+            // 3. Si el usuario elige una cuenta, obtenemos un "token" de Google
             if (googleUser && googleUser.authentication?.idToken) {
-                // 3. Creamos una credencial de Firebase usando ese token
+                console.log("Token de Google obtenido con éxito.");
+                // 4. Creamos una credencial de Firebase usando ese token
                 const credential = GoogleAuthProvider.credential(googleUser.authentication.idToken);
 
-                // 4. Iniciamos sesión en Firebase con esa credencial
+                // 5. Iniciamos sesión en Firebase con esa credencial
                 await signInWithCredential(auth, credential);
+                console.log("Inicio de sesión en Firebase exitoso.");
                 // onAuthStateChanged se encargará del resto
             } else {
                 throw new Error("No se pudo obtener el token de autenticación de Google.");
