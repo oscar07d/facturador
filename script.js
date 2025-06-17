@@ -3420,6 +3420,24 @@ if (invoiceSearchBtn) {
 
 if (navHome) navHome.addEventListener('click', (e) => { e.preventDefault(); handleNavigation('homeSection'); });
 
+const loginButton = document.getElementById("loginButton");
+
+if (loginButton) {
+    loginButton.addEventListener("click", async () => {
+        try {
+            const result = await signInWithPopup(auth, googleProvider);
+            const user = result.user;
+
+            console.log("Usuario autenticado:", user);
+            alert(`¡Bienvenido, ${user.displayName}!`);
+            // Aquí puedes redirigir a otra vista, ocultar el login, etc.
+        } catch (error) {
+            console.error("Error en el inicio de sesión con Google:", error);
+            alert("Ocurrió un error al iniciar sesión con Google.");
+        }
+    });
+}
+
 // if (generateInvoiceFileBtn) { 
 //    generateInvoiceFileBtn.addEventListener('click', () => {
 //        alert("Funcionalidad 'Generar Factura (Archivo)' pendiente.");
