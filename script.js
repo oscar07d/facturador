@@ -3420,8 +3420,6 @@ if (invoiceSearchBtn) {
 
 if (navHome) navHome.addEventListener('click', (e) => { e.preventDefault(); handleNavigation('homeSection'); });
 
-const loginButton = document.getElementById("loginButton");
-
 if (loginButton) {
     loginButton.addEventListener("click", async () => {
         try {
