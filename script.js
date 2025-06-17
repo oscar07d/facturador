@@ -3,6 +3,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebas
 import {
     getAuth,
     GoogleAuthProvider,
+    signInWithCredential,
     signInWithPopup,
     onAuthStateChanged,
     signOut
@@ -2948,25 +2949,30 @@ document.addEventListener('keydown', (event) => {
 
 // --- Lógica de Autenticación y Estado ---
 if (loginButton) { 
-    loginButton.addEventListener('click', () => {
-        console.log("Paso 1: Clic en loginButton detectado.");
+    loginButton.addEventListener('click', async () => {
+        console.log("Iniciando flujo de inicio de sesión nativo...");
         showLoading(true);
-        signInWithPopup(auth, googleProvider)
-            .then((result) => { /* onAuthStateChanged lo maneja */ 
-                console.log("Paso 2: signInWithPopup completado exitosamente (then). Usuario:", result.user.displayName);
-            })
-            .catch((error) => {
-                console.error("Paso 2E: Error en signInWithPopup (catch):", error);
-                let msg = "Error al iniciar sesión.";
-                if (error.code === 'auth/popup-closed-by-user') msg = "Ventana de login cerrada.";
-                alert(msg);
-            })
-            .finally(() => { 
-                console.log("Paso 3: Bloque finally de signInWithPopup.");
-                if (!auth.currentUser && loadingOverlay.style.display !== 'none') {
-                    showLoading(false);
-                }
-            });
+        try {
+            // 1. Llama al plugin para que Android muestre la ventana de selección de cuentas
+            const googleUser = await window.Capacitor.Plugins.GoogleAuth.signIn();
+
+            // 2. Si el usuario elige una cuenta, obtenemos un "token" de Google
+            if (googleUser && googleUser.authentication?.idToken) {
+                // 3. Creamos una credencial de Firebase usando ese token
+                const credential = GoogleAuthProvider.credential(googleUser.authentication.idToken);
+
+                // 4. Iniciamos sesión en Firebase con esa credencial
+                await signInWithCredential(auth, credential);
+                // onAuthStateChanged se encargará del resto
+            } else {
+                throw new Error("No se pudo obtener el token de autenticación de Google.");
+            }
+
+        } catch (error) {
+            console.error("Error en el inicio de sesión nativo con Google:", error);
+            alert("Hubo un error al iniciar sesión. Por favor, intenta de nuevo.");
+            showLoading(false);
+        }
     });
 }
 if (logoutButton) { 
