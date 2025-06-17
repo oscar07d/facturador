@@ -3430,10 +3430,14 @@ if (loginButton) {
 
             console.log("Usuario autenticado:", user);
             alert(`¡Bienvenido, ${user.displayName}!`);
-            // Aquí puedes redirigir a otra vista, ocultar el login, etc.
+
+            // Aquí puedes redirigir o cambiar la vista
+            // Por ejemplo:
+            // window.location.href = "dashboard.html";
+
         } catch (error) {
-            console.error("Error en el inicio de sesión con Google:", error);
-            alert("Ocurrió un error al iniciar sesión con Google.");
+            console.error("Error durante el inicio de sesión con Google:", error.message);
+            alert("Ocurrió un error al iniciar sesión. Revisa la consola.");
         }
     });
 }
