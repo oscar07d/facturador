@@ -144,18 +144,26 @@
 }
 
 .splash-text {
-    font-size: 0.85rem; /* <-- TAMAÑO SUTIL */
-    color: #a0a0a0;   /* Un gris más claro */
-    font-weight: 500;
+    font-size: 0.9rem; /* Tamaño de fuente base para el texto */
+    color: #a0a0a0;
+    font-weight: 400;
     display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 8px;
+    flex-direction: column; /* <-- CAMBIO CLAVE: Apila los elementos verticalmente */
+    align-items: center;   /* <-- CAMBIO CLAVE: Centra los elementos horizontalmente */
+    gap: 8px;              /* Espacio vertical entre las líneas */
 }
 
+.splash-text strong {
+    font-size: 1.1rem; /* Un poco más grande y en negrita */
+    font-weight: 600;
+    color: var(--text-muted-color); /* Un gris un poco más oscuro */
+}
+
+
 .splash-brand-logo {
-    height: 20px; /* Altura del logo de tu marca */
+    height: 22px; /* Altura ajustada */
     width: auto;
+    margin-top: 5px; /* Espacio extra sobre el logo */
 }
 
 /* === RESET BÁSICO Y ESTILOS GLOBALES === */
