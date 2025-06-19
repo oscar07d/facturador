@@ -47,7 +47,7 @@ jobs:
 
     # Paso 7: Subir la APK generada como un "artefacto" para descargar
     - name: Subir Artefacto de la APK
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: app-debug-apk # Nombre del archivo que podrás descargar
         path: android/app/build/outputs/apk/debug/app-debug.apk
