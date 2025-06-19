@@ -144,26 +144,27 @@
 }
 
 .splash-text {
-    font-size: 0.85rem; /* Hacemos el texto base un poco más pequeño */
+    font-size: 0.7rem; /* Hacemos el texto base un poco más pequeño */
     color: #a0a0a0;
     font-weight: 400;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 4px; /* <-- CAMBIO CLAVE: Reducimos el espacio vertical entre líneas */
+    gap: 0px; /* <-- CAMBIO CLAVE: Reducimos el espacio vertical entre líneas */
 }
 
 .splash-text strong {
-    font-size: 1.1rem; /* Un poco más grande y en negrita */
+    font-size: 0.9rem; /* Un poco más grande y en negrita */
     font-weight: 600;
     color: var(--text-muted-color); /* Un gris un poco más oscuro */
+    margin-top: 0px;
 }
 
 
 .splash-brand-logo {
-    height: 22px; /* Altura ajustada */
+    height: 15px; /* Altura ajustada */
     width: auto;
-    margin-top: 5px; /* Espacio extra sobre el logo */
+    margin-top: 0px; /* Espacio extra sobre el logo */
 }
 
 /* === RESET BÁSICO Y ESTILOS GLOBALES === */
