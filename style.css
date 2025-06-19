@@ -164,7 +164,7 @@
 .splash-brand-logo {
     height: 15px; /* Altura ajustada */
     width: auto;
-    margin-top: 0px; /* Espacio extra sobre el logo */
+    margin-top: 1px; /* Espacio extra sobre el logo */
 }
 
 /* === RESET BÁSICO Y ESTILOS GLOBALES === */
