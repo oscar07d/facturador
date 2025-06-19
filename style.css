@@ -144,13 +144,13 @@
 }
 
 .splash-text {
-    font-size: 0.9rem; /* Tamaño de fuente base para el texto */
+    font-size: 0.85rem; /* Hacemos el texto base un poco más pequeño */
     color: #a0a0a0;
     font-weight: 400;
     display: flex;
-    flex-direction: column; /* <-- CAMBIO CLAVE: Apila los elementos verticalmente */
-    align-items: center;   /* <-- CAMBIO CLAVE: Centra los elementos horizontalmente */
-    gap: 8px;              /* Espacio vertical entre las líneas */
+    flex-direction: column;
+    align-items: center;
+    gap: 4px; /* <-- CAMBIO CLAVE: Reducimos el espacio vertical entre líneas */
 }
 
 .splash-text strong {
