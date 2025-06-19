@@ -1,0 +1,53 @@
+# Nombre del flujo de trabajo que verás en la pestaña "Actions" de GitHub
+name: Construir APK de Android
+
+# "Disparador": Esto le dice a GitHub cuándo debe ejecutar este flujo.
+# En este caso, cada vez que hagas un 'push' a la rama 'main'.
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  # Nombre del trabajo a realizar
+  build:
+    # El tipo de máquina virtual que se usará para ejecutar el trabajo
+    runs-on: ubuntu-latest
+
+    steps:
+    # Paso 1: Descargar tu código del repositorio
+    - name: Checkout del Repositorio
+      uses: actions/checkout@v3
+
+    # Paso 2: Configurar el entorno de Java (necesario para Android)
+    - name: Configurar JDK 11
+      uses: actions/setup-java@v3
+      with:
+        distribution: 'zulu'
+        java-version: '11'
+
+    # Paso 3: Configurar Node.js (necesario para npm y Capacitor)
+    - name: Configurar Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18' # Puedes usar la versión 18 o 20
+
+    # Paso 4: Instalar todas las dependencias de npm
+    - name: Instalar dependencias
+      run: npm install
+
+    # Paso 5: Sincronizar los archivos web con el proyecto de Android
+    - name: Sincronizar con Capacitor
+      run: npx cap sync android
+
+    # Paso 6: Construir la APK de depuración (debug)
+    - name: Construir la APK
+      run: |
+        cd android
+        ./gradlew assembleDebug
+
+    # Paso 7: Subir la APK generada como un "artefacto" para descargar
+    - name: Subir Artefacto de la APK
+      uses: actions/upload-artifact@v3
+      with:
+        name: app-debug-apk # Nombre del archivo que podrás descargar
+        path: android/app/build/outputs/apk/debug/app-debug.apk
