@@ -43,6 +43,17 @@ const auth = getAuth(app);
 const googleProvider = new GoogleAuthProvider();
 const db = getFirestore(app);
 
+// --- LÓGICA PARA LA PANTALLA DE CARGA (SPLASH SCREEN) ---
+document.addEventListener('DOMContentLoaded', () => {
+    const splashScreen = document.getElementById('splashScreen');
+    if (splashScreen) {
+        // Ocultar la pantalla de carga después de 5 segundos
+        setTimeout(() => {
+            splashScreen.classList.add('hidden');
+        }, 5000); // 5000 milisegundos = 5 segundos
+    }
+});
+
 // --- Selección de Elementos del DOM ---
 const bodyElement = document.body;
 
