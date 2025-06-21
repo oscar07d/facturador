@@ -1345,8 +1345,9 @@ async function generateInvoicePDF(invoiceDataSource) {
         return;
     }
 
-    if (!populateExportTemplate(invoiceDataToUse)) {
-        alert("Error al preparar los datos de la factura para la exportación.");
+    if (!await populateExportTemplate(invoiceDataToUse)) {
+        alert("Error al preparar la plantilla para la exportación.");
+        isGeneratingPdf = false;
         return;
     }
 
