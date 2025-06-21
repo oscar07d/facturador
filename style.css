@@ -99,74 +99,6 @@
     --reminder-width: 580px;
 }
 
-/* ================================================= */
-/* === ESTILOS PARA PANTALLA DE CARGA (SPLASH SCREEN) === */
-/* ================================================= */
-.splash-screen {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: #ffffff;
-    display: flex; /* <-- Usamos Flexbox */
-    flex-direction: column; /* Apilamos los elementos verticalmente */
-    z-index: 99999;
-    opacity: 1;
-    transition: opacity 0.5s ease-out, visibility 0s linear 0.5s;
-}
-.splash-screen.hidden {
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
-}
-
-/* Contenedor principal para el logo centrado */
-.splash-main {
-    flex-grow: 1; /* Ocupa todo el espacio disponible */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.splash-logo {
-    width: 120px;
-    height: auto;
-    animation: fadeInAndFloat 1.2s ease-out;
-}
-
-/* Contenedor para el texto en la parte inferior */
-.splash-footer {
-    padding: 25px;
-    width: 100%;
-    text-align: center;
-    flex-shrink: 0; /* Evita que se encoja */
-}
-
-.splash-text {
-    font-size: 0.7rem; /* Hacemos el texto base un poco más pequeño */
-    color: #a0a0a0;
-    font-weight: 400;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0px; /* <-- CAMBIO CLAVE: Reducimos el espacio vertical entre líneas */
-}
-
-.splash-text strong {
-    font-size: 0.9rem; /* Un poco más grande y en negrita */
-    font-weight: 600;
-    color: var(--text-muted-color); /* Un gris un poco más oscuro */
-    margin-top: 0px;
-}
-
-
-.splash-brand-logo {
-    height: 15px; /* Altura ajustada */
-    width: auto;
-    margin-top: 1px; /* Espacio extra sobre el logo */
-}
-
 /* === RESET BÁSICO Y ESTILOS GLOBALES === */
 * {
     margin: 0;
@@ -204,18 +136,6 @@ body.modal-active {
     display: flex;
     flex-direction: column;
     align-items: center;
-}
-
-.export-logo-container {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-}
-
-#customLogoPreview {
-    max-height: 60px;
-    max-width: 150px;
-    object-fit: contain;
 }
 
 /* === ESTILOS PARA LA PANTALLA DE LOGIN === */
@@ -2024,27 +1944,6 @@ textarea.input-error {
 /* =================================================== */
 /* === ESTILOS PARA PLANTILLA IMAGEN WHATSAPP === */
 /* =================================================== */
-.wa-logo-container, .reminder-logo-container {
-    display: flex;
-    align-items: center;
-    gap: 10px; /* Espacio entre los logos */
-    min-height: 60px; /* Altura mínima para alinear bien */
-}
-
-/* Estilo para el logo personalizado en ambas plantillas */
-.custom-template-logo {
-    max-height: 55px;
-    max-width: 150px;
-    object-fit: contain;
-}
-
-/* Estilo para los logos por defecto */
-#defaultLogoWA, #defaultLogoReminder {
-    max-height: 55px;
-    width: auto;
-    object-fit: contain;
-}
-
 #whatsapp-image-export-template {
     background-color: var(--wa-bg-main);
     width: var(--wa-width);
@@ -2664,18 +2563,6 @@ textarea.input-error {
         width: 26px;  /* Cambia este valor para hacerlo más grande o más pequeño */
         height: 26px; /* Cambia este valor para hacerlo más grande o más pequeño */
         margin-right: 8px; /* Espacio entre el icono y el texto */
-    }
-    .splash-logo {
-        width: 100px; /* Hacemos el logo un poco más pequeño */
-    }
-    
-    .splash-text {
-        font-size: 0.8rem; /* Hacemos el texto del footer más pequeño */
-        gap: 8px;
-    }
-    
-    .splash-brand-logo {
-        height: 18px; /* Ajustamos la altura del logo de tu marca */
     }
 }
 
