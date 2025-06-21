@@ -1058,17 +1058,19 @@ async function populateReminderImageTemplate(invoiceData, reminderStatus) {
 
     // Píldora de estado en el recordatorio
     const paymentStatusPillRem = template.querySelector("#reminder-payment-status-pill");
-    if(paymentStatusPillRem) {
+    if (paymentStatusPillRem) {
         const statusKey = reminderStatus || invoiceData.paymentStatus || 'pending';
         const statusDetail = paymentStatusDetails[statusKey];
         paymentStatusPillRem.textContent = statusDetail ? statusDetail.text.toUpperCase() : statusKey.replace(/_/g, ' ').toUpperCase();
+        
+        // Asignamos clases para los colores
         paymentStatusPillRem.className = 'status-pill'; // Clase base
         if (statusKey === 'pending') {
-            paymentStatusPillRem.classList.add('status-pending'); 
+            paymentStatusPillRem.classList.add('pill-status-pending');
         } else if (statusKey === 'overdue') {
-            paymentStatusPillRem.classList.add('status-overdue');
+            paymentStatusPillRem.classList.add('pill-status-overdue');
         } else {
-            paymentStatusPillRem.classList.add('status-default'); // Asumiendo que tienes .status-pill.status-default
+            paymentStatusPillRem.classList.add('pill-status-default');
         }
     }
 
