@@ -43,6 +43,17 @@ const auth = getAuth(app);
 const googleProvider = new GoogleAuthProvider();
 const db = getFirestore(app);
 
+document.addEventListener('DOMContentLoaded', () => {
+    const splashScreen = document.getElementById('splashScreen');
+    if (splashScreen) {
+        // Ocultar la pantalla de carga después de 5 segundos
+        setTimeout(() => {
+            splashScreen.classList.add('hidden');
+        }, 2000); // 2000 milisegundos = 2 segundos
+    }
+});
+
+
 // --- Selección de Elementos del DOM ---
 const bodyElement = document.body;
 
