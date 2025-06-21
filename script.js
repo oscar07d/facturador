@@ -1017,7 +1017,7 @@ async function populateWhatsappImageTemplate(invoiceData) {
 
 // ====> AQUÍ PUEDES PEGAR LA FUNCIÓN populateReminderImageTemplate COMPLETA <====
 async function populateReminderImageTemplate(invoiceData, reminderStatus) {
-    const template = document.getElementById('payment-reminder-export-template');
+    const template = document.getElementById('invoice-export-template');
     if (!template || !invoiceData) {
         console.error("Plantilla Recordatorio (#payment-reminder-export-template) o datos de factura no disponibles para poblar.");
         return false;
