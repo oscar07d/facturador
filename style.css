@@ -2629,14 +2629,14 @@ textarea.input-error {
         height: 26px; /* Cambia este valor para hacerlo más grande o más pequeño */
         margin-right: 8px; /* Espacio entre el icono y el texto */
     }
-    .splash-logo {More actions
+    .splash-logo {
         width: 100px; /* Hacemos el logo un poco más pequeño */
     }
 
     .splash-text {
         font-size: 0.8rem; /* Hacemos el texto del footer más pequeño */
         gap: 8px;
-    }More actions
+    }
 
     .splash-brand-logo {
         height: 18px; /* Ajustamos la altura del logo de tu marca */
