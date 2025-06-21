@@ -2024,6 +2024,27 @@ textarea.input-error {
 /* =================================================== */
 /* === ESTILOS PARA PLANTILLA IMAGEN WHATSAPP === */
 /* =================================================== */
+.wa-logo-container, .reminder-logo-container {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Espacio entre los logos */
+    min-height: 60px; /* Altura mínima para alinear bien */
+}
+
+/* Estilo para el logo personalizado en ambas plantillas */
+.custom-template-logo {
+    max-height: 55px;
+    max-width: 150px;
+    object-fit: contain;
+}
+
+/* Estilo para los logos por defecto */
+#defaultLogoWA, #defaultLogoReminder {
+    max-height: 55px;
+    width: auto;
+    object-fit: contain;
+}
+
 #whatsapp-image-export-template {
     background-color: var(--wa-bg-main);
     width: var(--wa-width);
