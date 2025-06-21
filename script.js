@@ -260,6 +260,25 @@ async function saveNewClient(name, phone, email) {
 // Variable global para guardar la instancia de la gráfica
 let revenueChartInstance = null;
 
+async function loadUserProfile() {
+    if (!auth.currentUser) return;
+    const userProfileRef = doc(db, "user_profiles", auth.currentUser.uid);
+    const docSnap = await getDoc(userProfileRef);
+
+    const logoPreview = document.getElementById('logoPreview');
+    const removeLogoBtn = document.getElementById('removeLogoBtn');
+
+    if (logoPreview && removeLogoBtn) {
+        if (docSnap.exists() && docSnap.data().logoUrl) {
+            logoPreview.src = docSnap.data().logoUrl;
+            removeLogoBtn.style.display = 'inline-flex';
+        } else {
+            logoPreview.src = "img/Logo_Archivos.png"; // Tu logo por defecto
+            removeLogoBtn.style.display = 'none';
+        }
+    }
+}
+
 async function loadDashboardData() {
     showLoading(true);
     const user = auth.currentUser;
@@ -574,12 +593,30 @@ function generateRandomAlphanumericCode(length = 7) { // Longitud por defecto de
 
 function populateExportTemplate(invoiceData) {
     if (!originalInvoiceExportTemplate || !invoiceData) { // Verifica que originalInvoiceExportTemplate exista
-        console.error("Plantilla de exportación (#invoice-export-template) o datos de factura no disponibles.");
+        console.error("Plantilla de exportación o datos de factura no disponibles.");
         return false;
     }
 
     const template = originalInvoiceExportTemplate; // Usamos la plantilla original del DOM
 
+    const customLogoEl = template.querySelector("#customLogo");
+    const defaultLogoEl = template.querySelector("#defaultLogo");
+
+    // Buscamos si el usuario tiene un logo guardado en su perfil
+    const userProfileRef = doc(db, "user_profiles", auth.currentUser.uid);
+    const docSnap = await getDoc(userProfileRef);
+
+    if (docSnap.exists() && docSnap.data().logoUrl) {
+        // Si tiene un logo, lo mostramos
+        customLogoEl.src = docSnap.data().logoUrl;
+        customLogoEl.style.display = 'block';
+        defaultLogoEl.style.display = 'inline'; // Asegurarse que el por defecto también se vea
+    } else {
+        // Si no tiene logo, ocultamos el contenedor del logo personalizado
+        customLogoEl.style.display = 'none';
+        defaultLogoEl.style.display = 'block'; // Asegurarse que el por defecto se vea
+    }
+    
     // --- Poblar Logo ---
     const logoPlaceholderEl = template.querySelector("#export-logo-placeholder");
     if (logoPlaceholderEl) {
@@ -2275,6 +2312,14 @@ async function handleNavigation(sectionToShowId) {
     } else if (sectionToShowId === 'homeSection') {
         targetTitle = "Inicio y Estadísticas";
         await loadDashboardData();
+    } else if (sectionToShowId === 'homeSection') {
+        targetTitle = "Inicio y Estadísticas";
+        await loadDashboardData();
+    
+    // ===> AÑADE ESTE NUEVO BLOQUE else if <===
+    } else if (sectionToShowId === 'settingsSection') {
+        targetTitle = "Configuración";
+        await loadUserProfile(); // Llamar a la función para cargar el logo guardado
     }
 
     if (appPageTitle) appPageTitle.textContent = targetTitle;
@@ -2416,6 +2461,9 @@ async function loadAndDisplayInvoices() {
         showLoading(false);
     }
 }
+
+
+
 // === INICIO: NUEVO CÓDIGO - Funciones para la Sección Clientes ===
 
 /**
