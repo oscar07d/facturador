@@ -3017,32 +3017,37 @@ if (logoutButton) {
         });
     });
 }
-onAuthStateChanged(auth, (user) => { 
-    console.log("Paso 5: onAuthStateChanged se disparó. Usuario:", user ? user.uid : "ninguno");
-    showLoading(false); 
-    if (user) {
-        console.log("Paso 6: Usuario autenticado en onAuthStateChanged.");
-        if (loginContainer) loginContainer.style.display = 'none';
-        if (mainContent) mainContent.style.display = 'flex'; 
-        handleNavigation('homeSection');
-    } else {
-        console.log("Paso 6B: Usuario NO autenticado en onAuthStateChanged.");
-        if (loginContainer) loginContainer.style.display = 'flex';
-        if (mainContent) mainContent.style.display = 'none';
-    }
+
+onAuthStateChanged(auth, (user) => {
+  console.log("Paso 5: onAuthStateChanged se disparó. Usuario:", user ? user.uid : "ninguno");
+  showLoading(false);
+
+  if (user) {
+    console.log("Paso 6: Usuario autenticado en onAuthStateChanged.");
+    loginContainer.style.display = 'none';
+    mainContent.style.display  = 'flex';
+    handleNavigation('homeSection');
+
+    // Mostrar la pestaña Ajustes
+    document.getElementById('settingsNav').style.display = 'flex';
+  } else {
+    console.log("Paso 6B: Usuario NO autenticado en onAuthStateChanged.");
+    loginContainer.style.display = 'flex';
+    mainContent.style.display  = 'none';
+
+    // Ocultar Ajustes si no está autenticado
+    document.getElementById('settingsNav').style.display = 'none';
+  }
 });
 
-if (user) {
-  // Mostrar menú / pestaña Ajustes en tu navegación
-  document.getElementById('settingsNav').style.display = 'inline';
-}
-
-// Cuando pinchamos Ajustes:
-document.getElementById('settingsNav').onclick = () => {
-  // Oculta todas las secciones y muestra solo Ajustes
-  document.querySelectorAll('section').forEach(s=>s.style.display='none');
+// 2) Handler de click en Ajustes
+document.getElementById('settingsNav').addEventListener('click', (e) => {
+  e.preventDefault();
+  // Oculta **todas** las secciones
+  document.querySelectorAll('section').forEach(s => s.style.display = 'none');
+  // Muestra solo Ajustes
   document.getElementById('settingsSection').style.display = 'block';
-};
+});
 
 // --- Event Listeners para el Modal de Actualizar Pago ---
 if (closePaymentUpdateModalBtn) {
