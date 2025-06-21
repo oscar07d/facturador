@@ -591,7 +591,7 @@ function generateRandomAlphanumericCode(length = 7) { // Longitud por defecto de
     return resultCode;
 }
 
-function populateExportTemplate(invoiceData) {
+async function populateExportTemplate(invoiceData) {
     if (!originalInvoiceExportTemplate || !invoiceData) { // Verifica que originalInvoiceExportTemplate exista
         console.error("Plantilla de exportación o datos de factura no disponibles.");
         return false;
@@ -843,12 +843,27 @@ function populateExportTemplate(invoiceData) {
     return true;
 }
 
-function populateWhatsappImageTemplate(invoiceData) {
+async function populateWhatsappImageTemplate(invoiceData) {
     const template = document.getElementById('whatsapp-image-export-template');
     if (!template || !invoiceData) {
         console.error("Plantilla WhatsApp (#whatsapp-image-export-template) o datos de factura no disponibles para poblar.");
         return false;
     }
+
+    const customLogoEl = template.querySelector("#customLogoWA");
+    const defaultLogoEl = template.querySelector("#defaultLogoWA");
+    const userProfileRef = doc(db, "user_profiles", auth.currentUser.uid);
+    const docSnap = await getDoc(userProfileRef);
+
+    if (docSnap.exists() && docSnap.data().logoUrl) {
+        customLogoEl.src = docSnap.data().logoUrl;
+        customLogoEl.style.display = 'block';
+        defaultLogoEl.style.display = 'inline';
+    } else {
+        customLogoEl.style.display = 'none';
+        defaultLogoEl.style.display = 'block';
+    }
+    
     // console.log("Poblando plantilla WhatsApp con datos:", invoiceData);
 
     // --- Poblar Encabezado ---
@@ -1001,12 +1016,27 @@ function populateWhatsappImageTemplate(invoiceData) {
 }
 
 // ====> AQUÍ PUEDES PEGAR LA FUNCIÓN populateReminderImageTemplate COMPLETA <====
-function populateReminderImageTemplate(invoiceData, reminderStatus) {
+async function populateReminderImageTemplate(invoiceData, reminderStatus) {
     const template = document.getElementById('payment-reminder-export-template');
     if (!template || !invoiceData) {
         console.error("Plantilla Recordatorio (#payment-reminder-export-template) o datos de factura no disponibles para poblar.");
         return false;
     }
+
+    const customLogoEl = template.querySelector("#customLogoReminder");
+    const defaultLogoEl = template.querySelector("#defaultLogoReminder");
+    const userProfileRef = doc(db, "user_profiles", auth.currentUser.uid);
+    const docSnap = await getDoc(userProfileRef);
+
+    if (docSnap.exists() && docSnap.data().logoUrl) {
+        customLogoEl.src = docSnap.data().logoUrl;
+        customLogoEl.style.display = 'block';
+        defaultLogoEl.style.display = 'inline';
+    } else {
+        customLogoEl.style.display = 'none';
+        defaultLogoEl.style.display = 'block';
+    }
+    
     // console.log("Poblando plantilla Recordatorio con datos:", invoiceData, "y estado:", reminderStatus);
 
     template.className = 'reminder-container'; 
@@ -2895,10 +2925,6 @@ if (cancelTemplateSelectionBtn) {
 }
 if (proceedWithTemplateSelectionBtn) {
     proceedWithTemplateSelectionBtn.addEventListener('click', async () => {
-        console.log("Botón 'Continuar' del modal de selección presionado.");
-        console.log("currentActionForTemplateSelection:", currentActionForTemplateSelection); // Para saber qué botón original lo llamó
-        console.log("currentInvoiceDataForModalActions:", currentInvoiceDataForModalActions); // Para ver los datos de la factura
-
         if (!currentInvoiceDataForModalActions) {
             alert("Error: No hay datos de factura seleccionados.");
             closeTemplateSelectionModal();
@@ -2906,86 +2932,70 @@ if (proceedWithTemplateSelectionBtn) {
         }
 
         const useReminderTemplate = isReminderCheckbox.checked;
-        console.log("Usar plantilla de recordatorio:", useReminderTemplate);
-
         let templateIdToUse;
         let reminderStatus = null;
-        let baseFileName = `Factura_${currentInvoiceDataForModalActions.invoiceNumberFormatted?.replace(/[^a-zA-Z0-9]/g, '_') || 'INV'}`; // Nombre de archivo base
+        let baseFileName = `Factura_${currentInvoiceDataForModalActions.invoiceNumberFormatted?.replace(/[^a-zA-Z0-9]/g, '_') || 'INV'}`;
+        let populatedCorrectly = false;
+
+        showLoading(true);
 
         if (useReminderTemplate) {
             templateIdToUse = 'payment-reminder-export-template';
             const paymentStatus = currentInvoiceDataForModalActions.paymentStatus;
-            if (paymentStatus === 'pending' || paymentStatus === 'in_process') { reminderStatus = 'pending'; } 
-            else if (paymentStatus === 'overdue') { reminderStatus = 'overdue'; } 
-            else { 
-                reminderStatus = 'pending'; 
-                console.warn(`Estado de factura '${paymentStatus}' no ideal para recordatorio, usando '${reminderStatus}'.`);
+            if (paymentStatus === 'pending' || paymentStatus === 'in_process') {
+                reminderStatus = 'pending';
+            } else if (paymentStatus === 'overdue') {
+                reminderStatus = 'overdue';
+            } else {
+                reminderStatus = 'default';
             }
             baseFileName = `Recordatorio_${currentInvoiceDataForModalActions.invoiceNumberFormatted?.replace(/[^a-zA-Z0-9]/g, '_') || 'REM'}`;
-            // console.log(`Acción: ${currentActionForTemplateSelection}, Usando Plantilla de Recordatorio (estado: ${reminderStatus})`);
+            populatedCorrectly = await populateReminderImageTemplate(currentInvoiceDataForModalActions, reminderStatus);
         } else {
             templateIdToUse = 'whatsapp-image-export-template';
-            // console.log(`Acción: ${currentActionForTemplateSelection}, Usando Plantilla de WhatsApp`);
+            populatedCorrectly = await populateWhatsappImageTemplate(currentInvoiceDataForModalActions);
         }
-        console.log("Plantilla a usar (ID):", templateIdToUse, "Estado recordatorio (si aplica):", reminderStatus);
 
-        const imageFormat = (currentActionForTemplateSelection === 'image') ? imageFormatSelect.value : 'png'; // PNG para compartir, configurable para descarga
-        const fullFileName = `${baseFileName}.${imageFormat}`;
-        console.log("Formato de imagen:", imageFormat, "Nombre de archivo:", fullFileName);
+        showLoading(false);
 
-        closeTemplateSelectionModal(); // Cerrar el modal de selección antes de procesar
-
-        console.log("Llamando a generateInvoiceImage...");
-        const imageBlob = await generateInvoiceImage(templateIdToUse, currentInvoiceDataForModalActions, imageFormat, reminderStatus);
-
-        console.log("Resultado de generateInvoiceImage (imageBlob):", imageBlob); // MUY IMPORTANTE VER ESTO
-
-        if (!imageBlob) {
-            console.error("generateInvoiceImage devolvió null o undefined. No se puede continuar.");
-            // generateInvoiceImage ya muestra una alerta en caso de error,
-            // pero podrías añadir un mensaje más específico aquí si quieres.
-            // alert("No se pudo generar la imagen para la acción seleccionada.");
+        if (!populatedCorrectly) {
+            alert("Hubo un error al preparar los datos de la plantilla.");
             return;
         }
 
-        // Convertir el Blob a un File object para la Web Share API
+        const imageFormat = (currentActionForTemplateSelection === 'image') ? imageFormatSelect.value : 'png';
+        const fullFileName = `${baseFileName}.${imageFormat}`;
+
+        closeTemplateSelectionModal();
+
+        const imageBlob = await generateInvoiceImage(templateIdToUse, currentInvoiceDataForModalActions, imageFormat, reminderStatus);
+
+        if (!imageBlob) return;
+
         const imageFile = new File([imageBlob], fullFileName, { type: `image/${imageFormat}` });
-        console.log("Archivo de imagen creado:", imageFile);
 
         if (currentActionForTemplateSelection === 'image') {
-            console.log("Acción: Descargar imagen.");
-            // Acción: Descargar la imagen
             downloadBlob(imageBlob, imageFile.name);
-            console.log(`Imagen ${imageFile.name} debería haber sido descargada.`);
         } else if (currentActionForTemplateSelection === 'whatsapp' || currentActionForTemplateSelection === 'share') {
-            console.log("Acción: Compartir (WhatsApp/General). Intentando navigator.share...");
-            // Acción: Intentar compartir con Web Share API
-            if (navigator.share && navigator.canShare && navigator.canShare({ files: [imageFile] })) {
+            if (navigator.share && navigator.canShare({ files: [imageFile] })) {
                 try {
                     await navigator.share({
                         files: [imageFile],
                         title: useReminderTemplate ? `Recordatorio ${currentInvoiceDataForModalActions.invoiceNumberFormatted}` : `Factura ${currentInvoiceDataForModalActions.invoiceNumberFormatted}`,
                         text: `Aquí está tu ${useReminderTemplate ? 'recordatorio de pago' : 'factura'} de OSCAR 07D Studios.`
-                        // No se puede pre-seleccionar WhatsApp con navigator.share, el usuario elige.
                     });
-                    console.log('Contenido compartido exitosamente vía Web Share API.');
                 } catch (error) {
-                    console.error('Error al usar Web Share API:', error);
-                    // Fallback si el usuario cancela el share o hay un error
-                    if (error.name !== 'AbortError') { // No mostrar alerta si solo canceló
+                    if (error.name !== 'AbortError') {
                         alert('No se pudo compartir. Descargando imagen para que la compartas manualmente.');
+                        downloadBlob(imageBlob, imageFile.name);
                     }
-                    downloadBlob(imageBlob, imageFile.name); // Descargar como fallback
                 }
             } else {
-                console.warn('navigator.share no disponible o no puede compartir archivos. Descargando como fallback.');
-                // Fallback para navegadores que no soportan Web Share API con archivos
                 alert('Tu navegador no soporta compartir archivos directamente. Descargando la imagen para que la puedas compartir manualmente.');
                 downloadBlob(imageBlob, imageFile.name);
             }
         }
-        // Limpiar la acción actual después de procesarla
-        currentActionForTemplateSelection = null; 
+        currentActionForTemplateSelection = null;
     });
 }
 
