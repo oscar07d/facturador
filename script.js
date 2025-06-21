@@ -3032,6 +3032,18 @@ onAuthStateChanged(auth, (user) => {
     }
 });
 
+if (user) {
+  // Mostrar menú / pestaña Ajustes en tu navegación
+  document.getElementById('settingsNav').style.display = 'inline';
+}
+
+// Cuando pinchamos Ajustes:
+document.getElementById('settingsNav').onclick = () => {
+  // Oculta todas las secciones y muestra solo Ajustes
+  document.querySelectorAll('section').forEach(s=>s.style.display='none');
+  document.getElementById('settingsSection').style.display = 'block';
+};
+
 // --- Event Listeners para el Modal de Actualizar Pago ---
 if (closePaymentUpdateModalBtn) {
     closePaymentUpdateModalBtn.addEventListener('click', closePaymentUpdateModal);
