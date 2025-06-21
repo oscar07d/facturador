@@ -206,6 +206,18 @@ body.modal-active {
     align-items: center;
 }
 
+.export-logo-container {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+#customLogoPreview {
+    max-height: 60px;
+    max-width: 150px;
+    object-fit: contain;
+}
+
 /* === ESTILOS PARA LA PANTALLA DE LOGIN === */
 .login-container {
     background-color: rgba(255, 255, 255, 0.9); /* Fondo ligeramente traslúcido */
