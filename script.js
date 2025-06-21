@@ -43,17 +43,6 @@ const auth = getAuth(app);
 const googleProvider = new GoogleAuthProvider();
 const db = getFirestore(app);
 
-// --- LÓGICA PARA LA PANTALLA DE CARGA (SPLASH SCREEN) ---
-document.addEventListener('DOMContentLoaded', () => {
-    const splashScreen = document.getElementById('splashScreen');
-    if (splashScreen) {
-        // Ocultar la pantalla de carga después de 5 segundos
-        setTimeout(() => {
-            splashScreen.classList.add('hidden');
-        }, 2000); // 5000 milisegundos = 5 segundos
-    }
-});
-
 // --- Selección de Elementos del DOM ---
 const bodyElement = document.body;
 
@@ -259,25 +248,6 @@ async function saveNewClient(name, phone, email) {
 
 // Variable global para guardar la instancia de la gráfica
 let revenueChartInstance = null;
-
-async function loadUserProfile() {
-    if (!auth.currentUser) return;
-    const userProfileRef = doc(db, "user_profiles", auth.currentUser.uid);
-    const docSnap = await getDoc(userProfileRef);
-
-    const logoPreview = document.getElementById('logoPreview');
-    const removeLogoBtn = document.getElementById('removeLogoBtn');
-
-    if (logoPreview && removeLogoBtn) {
-        if (docSnap.exists() && docSnap.data().logoUrl) {
-            logoPreview.src = docSnap.data().logoUrl;
-            removeLogoBtn.style.display = 'inline-flex';
-        } else {
-            logoPreview.src = "img/Logo_Archivos.png"; // Tu logo por defecto
-            removeLogoBtn.style.display = 'none';
-        }
-    }
-}
 
 async function loadDashboardData() {
     showLoading(true);
@@ -591,32 +561,14 @@ function generateRandomAlphanumericCode(length = 7) { // Longitud por defecto de
     return resultCode;
 }
 
-async function populateExportTemplate(invoiceData) {
+function populateExportTemplate(invoiceData) {
     if (!originalInvoiceExportTemplate || !invoiceData) { // Verifica que originalInvoiceExportTemplate exista
-        console.error("Plantilla de exportación o datos de factura no disponibles.");
+        console.error("Plantilla de exportación (#invoice-export-template) o datos de factura no disponibles.");
         return false;
     }
 
     const template = originalInvoiceExportTemplate; // Usamos la plantilla original del DOM
 
-    const customLogoEl = template.querySelector("#customLogo");
-    const defaultLogoEl = template.querySelector("#defaultLogo");
-
-    // Buscamos si el usuario tiene un logo guardado en su perfil
-    const userProfileRef = doc(db, "user_profiles", auth.currentUser.uid);
-    const docSnap = await getDoc(userProfileRef);
-
-    if (docSnap.exists() && docSnap.data().logoUrl) {
-        // Si tiene un logo, lo mostramos
-        customLogoEl.src = docSnap.data().logoUrl;
-        customLogoEl.style.display = 'block';
-        defaultLogoEl.style.display = 'inline'; // Asegurarse que el por defecto también se vea
-    } else {
-        // Si no tiene logo, ocultamos el contenedor del logo personalizado
-        customLogoEl.style.display = 'none';
-        defaultLogoEl.style.display = 'block'; // Asegurarse que el por defecto se vea
-    }
-    
     // --- Poblar Logo ---
     const logoPlaceholderEl = template.querySelector("#export-logo-placeholder");
     if (logoPlaceholderEl) {
@@ -843,27 +795,12 @@ async function populateExportTemplate(invoiceData) {
     return true;
 }
 
-async function populateWhatsappImageTemplate(invoiceData) {
+function populateWhatsappImageTemplate(invoiceData) {
     const template = document.getElementById('whatsapp-image-export-template');
     if (!template || !invoiceData) {
         console.error("Plantilla WhatsApp (#whatsapp-image-export-template) o datos de factura no disponibles para poblar.");
         return false;
     }
-
-    const customLogoEl = template.querySelector("#customLogoWA");
-    const defaultLogoEl = template.querySelector("#defaultLogoWA");
-    const userProfileRef = doc(db, "user_profiles", auth.currentUser.uid);
-    const docSnap = await getDoc(userProfileRef);
-
-    if (docSnap.exists() && docSnap.data().logoUrl) {
-        customLogoEl.src = docSnap.data().logoUrl;
-        customLogoEl.style.display = 'block';
-        defaultLogoEl.style.display = 'inline';
-    } else {
-        customLogoEl.style.display = 'none';
-        defaultLogoEl.style.display = 'block';
-    }
-    
     // console.log("Poblando plantilla WhatsApp con datos:", invoiceData);
 
     // --- Poblar Encabezado ---
@@ -1016,59 +953,103 @@ async function populateWhatsappImageTemplate(invoiceData) {
 }
 
 // ====> AQUÍ PUEDES PEGAR LA FUNCIÓN populateReminderImageTemplate COMPLETA <====
-async function populateReminderImageTemplate(invoiceData, reminderStatus) {
-  // 1) Traemos tu plantilla original de factura (debe existir en el HTML)
-  const template = document.getElementById('invoice-export-template');
-  if (!template) {
-    console.error("No se encontró #invoice-export-template");
-    return false;
-  }
-  if (!invoiceData) {
-    console.error("Datos de factura no disponibles");
-    return false;
-  }
+function populateReminderImageTemplate(invoiceData, reminderStatus) {
+    const template = document.getElementById('payment-reminder-export-template');
+    if (!template || !invoiceData) {
+        console.error("Plantilla Recordatorio (#payment-reminder-export-template) o datos de factura no disponibles para poblar.");
+        return false;
+    }
+    // console.log("Poblando plantilla Recordatorio con datos:", invoiceData, "y estado:", reminderStatus);
 
-  // 2) Clonamos el nodo (así no rompemos la original) y lo mostramos
-  const clone = template.cloneNode(true);
-  clone.style.display = 'block';
-  clone.id = 'reminder-clone';
+    template.className = 'reminder-container'; 
+    if (reminderStatus === 'pending') {
+        template.classList.add('status-pending');
+    } else if (reminderStatus === 'overdue') {
+        template.classList.add('status-overdue');
+    } else {
+        template.classList.add('status-pending'); // Fallback
+    }
 
-  // 3) Rellenamos los campos dinámicos
-  clone.querySelector('#invoice-number').textContent = invoiceData.id;
-  clone.querySelector('#invoice-date').textContent   = invoiceData.date;
-  clone.querySelector('#client-name').textContent    = invoiceData.client.name;
-  clone.querySelector('#total-amount').textContent   = invoiceData.total.toFixed(2);
+    const logoImgRem = template.querySelector("#reminder-logo-image");
+    if (logoImgRem) {
+        logoImgRem.src = "img/Isologo_img.png";
+    }
 
-  // 4) Estado de pago (pill)
-  const statusPill = clone.querySelector('#payment-status-pill');
-  statusPill.textContent = reminderStatus.toUpperCase();
-  statusPill.className = ''; // limpiamos clases previas
-  statusPill.classList.add(`pill-${reminderStatus.toLowerCase()}`);
+    const emitterNameRem = template.querySelector("#reminder-emitter-name");
+    if (emitterNameRem) emitterNameRem.textContent = invoiceData.emitter?.name || "OSCAR 07D Studios";
 
-  // 5) Logo: si invoiceData.logoUrl está definido, lo usamos
-  const customLogo = clone.querySelector('#customLogo');
-  const defaultLogo = clone.querySelector('#defaultLogo');
-  if (invoiceData.logoUrl) {
-    customLogo.src = invoiceData.logoUrl;
-    customLogo.style.display = 'block';
-    defaultLogo.style.display = 'none';
-  } else {
-    customLogo.style.display = 'none';
-    defaultLogo.style.display = 'block';
-  }
+    // Píldora de estado en el recordatorio
+    const paymentStatusPillRem = template.querySelector("#reminder-payment-status-pill");
+    if(paymentStatusPillRem) {
+        const statusKey = reminderStatus || invoiceData.paymentStatus || 'pending';
+        const statusDetail = paymentStatusDetails[statusKey];
+        paymentStatusPillRem.textContent = statusDetail ? statusDetail.text.toUpperCase() : statusKey.replace(/_/g, ' ').toUpperCase();
+        paymentStatusPillRem.className = 'status-pill'; // Clase base
+        if (statusKey === 'pending') {
+            paymentStatusPillRem.classList.add('status-pending'); 
+        } else if (statusKey === 'overdue') {
+            paymentStatusPillRem.classList.add('status-overdue');
+        } else {
+            paymentStatusPillRem.classList.add('status-default'); // Asumiendo que tienes .status-pill.status-default
+        }
+    }
 
-  // 6) Insertamos el clon en un contenedor invisible (o body) para html2canvas
-  const container = document.getElementById('export-helpers') || document.body;
-  container.appendChild(clone);
+    const titleElRem = template.querySelector("#reminder-main-title");
+    const messageElRem = template.querySelector("#reminder-message-content");
+    if (titleElRem && messageElRem) {
+        if (reminderStatus === 'pending') {
+            titleElRem.textContent = "RECORDATORIO DE PAGO";
+            messageElRem.textContent = `Te escribimos para recordarte amablemente que el pago de tu factura está programado para la siguiente fecha. ¡Evita contratiempos!`;
+        } else if (reminderStatus === 'overdue') {
+            titleElRem.textContent = "AVISO: FACTURA VENCIDA";
+            messageElRem.textContent = `Hemos notado que el pago de tu factura ha vencido. Te agradecemos si puedes realizarlo a la brevedad para continuar disfrutando de nuestros servicios.`;
+        } else { // Un mensaje por defecto si el status no es ni pending ni overdue
+            titleElRem.textContent = "INFORMACIÓN DE PAGO";
+            messageElRem.textContent = `Detalles de tu factura a continuación.`;
+        }
+    }
 
-  // 7) Generamos la imagen con html2canvas
-  const canvas = await html2canvas(clone, { scale: 2 });
-  const dataUrl = canvas.toDataURL('image/png');
+    const clientNameRem = template.querySelector("#reminder-client-name");
+    if (clientNameRem) {
+        const fullName = invoiceData.client?.name || 'Cliente';
+        const firstName = fullName.split(' ')[0]; // Divide el nombre por espacios y toma la primera palabra
+        clientNameRem.textContent = firstName;
+    }
 
-  // 8) Limpiamos el DOM
-  container.removeChild(clone);
+    const invNumRem = template.querySelector("#reminder-invoice-number");
+    if(invNumRem) invNumRem.textContent = invoiceData.invoiceNumberFormatted || 'N/A';
 
-  return dataUrl;
+    const dueDateRem = template.querySelector("#reminder-due-date");
+    if(dueDateRem) {
+        const dateToUse = invoiceData.serviceStartDate || invoiceData.invoiceDate; // Usa serviceStartDate o invoiceDate
+        dueDateRem.textContent = dateToUse ? new Date(dateToUse + 'T00:00:00').toLocaleDateString('es-CO', {day: 'numeric', month: 'long', year: 'numeric'}) : 'N/A';
+    }
+
+    const amountDueRem = template.querySelector("#reminder-amount-due");
+    if(amountDueRem) {
+        amountDueRem.textContent = (invoiceData.totals?.grandTotal || 0).toLocaleString('es-CO', { 
+            style: 'currency', 
+            currency: 'COP', 
+            minimumFractionDigits: 0, // <-- Asegura que no haya decimales
+            maximumFractionDigits: 0  // <-- Asegura que no haya decimales
+        });
+    }
+
+    const paymentDetailsEl = template.querySelector("#reminder-payment-method-details");
+    if(paymentDetailsEl) { // Ejemplo de cómo podrías hacerlo más dinámico si tuvieras los datos en el objeto invoiceData.emitter o similar
+        const nequiAccount = invoiceData.emitter?.nequiAccount || "3023935392"; // Ejemplo
+        const nequiName = invoiceData.emitter?.nequiName || "OS*** ROL***";   // Ejemplo
+        paymentDetailsEl.innerHTML = `Nequi: <strong>${nequiAccount}</strong> (${nequiName})`;
+    }
+
+    const contactInfoRem = template.querySelector("#reminder-contact-info");
+    if(contactInfoRem && invoiceData.emitter?.email) {
+        contactInfoRem.innerHTML = `Dudas: ${invoiceData.emitter.email}`;
+    } else if (contactInfoRem) {
+        contactInfoRem.innerHTML = `Dudas: info@oscar07dstudios.com`; // Fallback
+    }
+
+    return true;
 }
 
 // ====> AQUÍ PUEDES PEGAR LA FUNCIÓN isCodeUniqueForUser <====
@@ -1286,9 +1267,8 @@ async function generateInvoicePDF(invoiceDataSource) {
         return;
     }
 
-    if (!await populateExportTemplate(invoiceDataToUse)) {
-        alert("Error al preparar la plantilla para la exportación.");
-        isGeneratingPdf = false;
+    if (!populateExportTemplate(invoiceDataToUse)) {
+        alert("Error al preparar los datos de la factura para la exportación.");
         return;
     }
 
@@ -1658,44 +1638,28 @@ function closeTemplateSelectionModal() {
 }
 
 function openPaymentUpdateModal(invoiceData, invoiceId) {
-    // Guardamos los datos de la factura seleccionada para usarlos después
     currentInvoiceDataForModalActions = invoiceData;
     currentInvoiceIdForModalActions = invoiceId;
+    if (!paymentUpdateModal) return;
 
-    if (!paymentUpdateModal) {
-        console.error("El modal de actualización de pago no se encuentra en el HTML.");
-        return;
-    }
-
-    // Rellenamos el modal con la información de la factura
     if (paymentUpdateInvoiceNumber) {
         paymentUpdateInvoiceNumber.textContent = invoiceData.invoiceNumberFormatted || 'N/A';
     }
 
-    // Calculamos y establecemos la próxima fecha de vencimiento por defecto
     if (nextDueDateInput) {
-        // Tomamos la fecha de servicio/vencimiento actual
         const currentDueDate = new Date(invoiceData.serviceStartDate + 'T00:00:00');
-        // Le sumamos un mes
+        // Calcular el próximo mes
         currentDueDate.setMonth(currentDueDate.getMonth() + 1);
-        // La ponemos en el input
         nextDueDateInput.value = currentDueDate.toISOString().split('T')[0];
     }
     
-    // Mostramos el modal
     paymentUpdateModal.classList.add('active');
     if (bodyElement) bodyElement.classList.add('modal-active');
 }
 
 function closePaymentUpdateModal() {
-    if (paymentUpdateModal) {
-        paymentUpdateModal.classList.remove('active');
-    }
-    // Solo quitamos la clase del body si ningún otro modal está abierto
-    const isAnotherModalActive = document.querySelector('.modal-overlay.active');
-    if (bodyElement && !isAnotherModalActive) {
-        bodyElement.classList.remove('modal-active');
-    }
+    if (paymentUpdateModal) paymentUpdateModal.classList.remove('active');
+    if (bodyElement) bodyElement.classList.remove('modal-active');
 }
 
 function formatInvoiceNumber(number) {
@@ -2284,14 +2248,6 @@ async function handleNavigation(sectionToShowId) {
     } else if (sectionToShowId === 'homeSection') {
         targetTitle = "Inicio y Estadísticas";
         await loadDashboardData();
-    } else if (sectionToShowId === 'homeSection') {
-        targetTitle = "Inicio y Estadísticas";
-        await loadDashboardData();
-    
-    // ===> AÑADE ESTE NUEVO BLOQUE else if <===
-    } else if (sectionToShowId === 'settingsSection') {
-        targetTitle = "Configuración";
-        await loadUserProfile(); // Llamar a la función para cargar el logo guardado
     }
 
     if (appPageTitle) appPageTitle.textContent = targetTitle;
@@ -2433,9 +2389,6 @@ async function loadAndDisplayInvoices() {
         showLoading(false);
     }
 }
-
-
-
 // === INICIO: NUEVO CÓDIGO - Funciones para la Sección Clientes ===
 
 /**
@@ -2867,6 +2820,10 @@ if (cancelTemplateSelectionBtn) {
 }
 if (proceedWithTemplateSelectionBtn) {
     proceedWithTemplateSelectionBtn.addEventListener('click', async () => {
+        console.log("Botón 'Continuar' del modal de selección presionado.");
+        console.log("currentActionForTemplateSelection:", currentActionForTemplateSelection); // Para saber qué botón original lo llamó
+        console.log("currentInvoiceDataForModalActions:", currentInvoiceDataForModalActions); // Para ver los datos de la factura
+
         if (!currentInvoiceDataForModalActions) {
             alert("Error: No hay datos de factura seleccionados.");
             closeTemplateSelectionModal();
@@ -2874,70 +2831,86 @@ if (proceedWithTemplateSelectionBtn) {
         }
 
         const useReminderTemplate = isReminderCheckbox.checked;
+        console.log("Usar plantilla de recordatorio:", useReminderTemplate);
+
         let templateIdToUse;
         let reminderStatus = null;
-        let baseFileName = `Factura_${currentInvoiceDataForModalActions.invoiceNumberFormatted?.replace(/[^a-zA-Z0-9]/g, '_') || 'INV'}`;
-        let populatedCorrectly = false;
-
-        showLoading(true);
+        let baseFileName = `Factura_${currentInvoiceDataForModalActions.invoiceNumberFormatted?.replace(/[^a-zA-Z0-9]/g, '_') || 'INV'}`; // Nombre de archivo base
 
         if (useReminderTemplate) {
             templateIdToUse = 'payment-reminder-export-template';
             const paymentStatus = currentInvoiceDataForModalActions.paymentStatus;
-            if (paymentStatus === 'pending' || paymentStatus === 'in_process') {
-                reminderStatus = 'pending';
-            } else if (paymentStatus === 'overdue') {
-                reminderStatus = 'overdue';
-            } else {
-                reminderStatus = 'default';
+            if (paymentStatus === 'pending' || paymentStatus === 'in_process') { reminderStatus = 'pending'; } 
+            else if (paymentStatus === 'overdue') { reminderStatus = 'overdue'; } 
+            else { 
+                reminderStatus = 'pending'; 
+                console.warn(`Estado de factura '${paymentStatus}' no ideal para recordatorio, usando '${reminderStatus}'.`);
             }
             baseFileName = `Recordatorio_${currentInvoiceDataForModalActions.invoiceNumberFormatted?.replace(/[^a-zA-Z0-9]/g, '_') || 'REM'}`;
-            populatedCorrectly = await populateReminderImageTemplate(currentInvoiceDataForModalActions, reminderStatus);
+            // console.log(`Acción: ${currentActionForTemplateSelection}, Usando Plantilla de Recordatorio (estado: ${reminderStatus})`);
         } else {
             templateIdToUse = 'whatsapp-image-export-template';
-            populatedCorrectly = await populateWhatsappImageTemplate(currentInvoiceDataForModalActions);
+            // console.log(`Acción: ${currentActionForTemplateSelection}, Usando Plantilla de WhatsApp`);
         }
+        console.log("Plantilla a usar (ID):", templateIdToUse, "Estado recordatorio (si aplica):", reminderStatus);
 
-        showLoading(false);
+        const imageFormat = (currentActionForTemplateSelection === 'image') ? imageFormatSelect.value : 'png'; // PNG para compartir, configurable para descarga
+        const fullFileName = `${baseFileName}.${imageFormat}`;
+        console.log("Formato de imagen:", imageFormat, "Nombre de archivo:", fullFileName);
 
-        if (!populatedCorrectly) {
-            alert("Hubo un error al preparar los datos de la plantilla.");
+        closeTemplateSelectionModal(); // Cerrar el modal de selección antes de procesar
+
+        console.log("Llamando a generateInvoiceImage...");
+        const imageBlob = await generateInvoiceImage(templateIdToUse, currentInvoiceDataForModalActions, imageFormat, reminderStatus);
+
+        console.log("Resultado de generateInvoiceImage (imageBlob):", imageBlob); // MUY IMPORTANTE VER ESTO
+
+        if (!imageBlob) {
+            console.error("generateInvoiceImage devolvió null o undefined. No se puede continuar.");
+            // generateInvoiceImage ya muestra una alerta en caso de error,
+            // pero podrías añadir un mensaje más específico aquí si quieres.
+            // alert("No se pudo generar la imagen para la acción seleccionada.");
             return;
         }
 
-        const imageFormat = (currentActionForTemplateSelection === 'image') ? imageFormatSelect.value : 'png';
-        const fullFileName = `${baseFileName}.${imageFormat}`;
-
-        closeTemplateSelectionModal();
-
-        const imageBlob = await generateInvoiceImage(templateIdToUse, currentInvoiceDataForModalActions, imageFormat, reminderStatus);
-
-        if (!imageBlob) return;
-
+        // Convertir el Blob a un File object para la Web Share API
         const imageFile = new File([imageBlob], fullFileName, { type: `image/${imageFormat}` });
+        console.log("Archivo de imagen creado:", imageFile);
 
         if (currentActionForTemplateSelection === 'image') {
+            console.log("Acción: Descargar imagen.");
+            // Acción: Descargar la imagen
             downloadBlob(imageBlob, imageFile.name);
+            console.log(`Imagen ${imageFile.name} debería haber sido descargada.`);
         } else if (currentActionForTemplateSelection === 'whatsapp' || currentActionForTemplateSelection === 'share') {
-            if (navigator.share && navigator.canShare({ files: [imageFile] })) {
+            console.log("Acción: Compartir (WhatsApp/General). Intentando navigator.share...");
+            // Acción: Intentar compartir con Web Share API
+            if (navigator.share && navigator.canShare && navigator.canShare({ files: [imageFile] })) {
                 try {
                     await navigator.share({
                         files: [imageFile],
                         title: useReminderTemplate ? `Recordatorio ${currentInvoiceDataForModalActions.invoiceNumberFormatted}` : `Factura ${currentInvoiceDataForModalActions.invoiceNumberFormatted}`,
                         text: `Aquí está tu ${useReminderTemplate ? 'recordatorio de pago' : 'factura'} de OSCAR 07D Studios.`
+                        // No se puede pre-seleccionar WhatsApp con navigator.share, el usuario elige.
                     });
+                    console.log('Contenido compartido exitosamente vía Web Share API.');
                 } catch (error) {
-                    if (error.name !== 'AbortError') {
+                    console.error('Error al usar Web Share API:', error);
+                    // Fallback si el usuario cancela el share o hay un error
+                    if (error.name !== 'AbortError') { // No mostrar alerta si solo canceló
                         alert('No se pudo compartir. Descargando imagen para que la compartas manualmente.');
-                        downloadBlob(imageBlob, imageFile.name);
                     }
+                    downloadBlob(imageBlob, imageFile.name); // Descargar como fallback
                 }
             } else {
+                console.warn('navigator.share no disponible o no puede compartir archivos. Descargando como fallback.');
+                // Fallback para navegadores que no soportan Web Share API con archivos
                 alert('Tu navegador no soporta compartir archivos directamente. Descargando la imagen para que la puedas compartir manualmente.');
                 downloadBlob(imageBlob, imageFile.name);
             }
         }
-        currentActionForTemplateSelection = null;
+        // Limpiar la acción actual después de procesarla
+        currentActionForTemplateSelection = null; 
     });
 }
 
