@@ -1017,119 +1017,58 @@ async function populateWhatsappImageTemplate(invoiceData) {
 
 // ====> AQUÍ PUEDES PEGAR LA FUNCIÓN populateReminderImageTemplate COMPLETA <====
 async function populateReminderImageTemplate(invoiceData, reminderStatus) {
-    const template = document.getElementById('invoice-export-template');
-    if (!template || !invoiceData) {
-        console.error("Plantilla Recordatorio (#payment-reminder-export-template) o datos de factura no disponibles para poblar.");
-        return false;
-    }
+  // 1) Traemos tu plantilla original de factura (debe existir en el HTML)
+  const template = document.getElementById('invoice-export-template');
+  if (!template) {
+    console.error("No se encontró #invoice-export-template");
+    return false;
+  }
+  if (!invoiceData) {
+    console.error("Datos de factura no disponibles");
+    return false;
+  }
 
-    const customLogoEl = template.querySelector("#customLogoReminder");
-    const defaultLogoEl = template.querySelector("#defaultLogoReminder");
-    const userProfileRef = doc(db, "user_profiles", auth.currentUser.uid);
-    const docSnap = await getDoc(userProfileRef);
+  // 2) Clonamos el nodo (así no rompemos la original) y lo mostramos
+  const clone = template.cloneNode(true);
+  clone.style.display = 'block';
+  clone.id = 'reminder-clone';
 
-    if (docSnap.exists() && docSnap.data().logoUrl) {
-        customLogoEl.src = docSnap.data().logoUrl;
-        customLogoEl.style.display = 'block';
-        defaultLogoEl.style.display = 'inline';
-    } else {
-        customLogoEl.style.display = 'none';
-        defaultLogoEl.style.display = 'block';
-    }
-    
-    // console.log("Poblando plantilla Recordatorio con datos:", invoiceData, "y estado:", reminderStatus);
+  // 3) Rellenamos los campos dinámicos
+  clone.querySelector('#invoice-number').textContent = invoiceData.id;
+  clone.querySelector('#invoice-date').textContent   = invoiceData.date;
+  clone.querySelector('#client-name').textContent    = invoiceData.client.name;
+  clone.querySelector('#total-amount').textContent   = invoiceData.total.toFixed(2);
 
-    template.className = 'reminder-container'; 
-    if (reminderStatus === 'pending') {
-        template.classList.add('status-pending');
-    } else if (reminderStatus === 'overdue') {
-        template.classList.add('status-overdue');
-    } else {
-        template.classList.add('status-pending'); // Fallback
-    }
+  // 4) Estado de pago (pill)
+  const statusPill = clone.querySelector('#payment-status-pill');
+  statusPill.textContent = reminderStatus.toUpperCase();
+  statusPill.className = ''; // limpiamos clases previas
+  statusPill.classList.add(`pill-${reminderStatus.toLowerCase()}`);
 
-    const logoImgRem = template.querySelector("#reminder-logo-image");
-    if (logoImgRem) {
-        logoImgRem.src = "img/Isologo_img.png";
-    }
+  // 5) Logo: si invoiceData.logoUrl está definido, lo usamos
+  const customLogo = clone.querySelector('#customLogo');
+  const defaultLogo = clone.querySelector('#defaultLogo');
+  if (invoiceData.logoUrl) {
+    customLogo.src = invoiceData.logoUrl;
+    customLogo.style.display = 'block';
+    defaultLogo.style.display = 'none';
+  } else {
+    customLogo.style.display = 'none';
+    defaultLogo.style.display = 'block';
+  }
 
-    const emitterNameRem = template.querySelector("#reminder-emitter-name");
-    if (emitterNameRem) emitterNameRem.textContent = invoiceData.emitter?.name || "OSCAR 07D Studios";
+  // 6) Insertamos el clon en un contenedor invisible (o body) para html2canvas
+  const container = document.getElementById('export-helpers') || document.body;
+  container.appendChild(clone);
 
-    // Píldora de estado en el recordatorio
-    const paymentStatusPillRem = template.querySelector("#reminder-payment-status-pill");
-    if (paymentStatusPillRem) {
-        const statusKey = reminderStatus || invoiceData.paymentStatus || 'pending';
-        const statusDetail = paymentStatusDetails[statusKey];
-        paymentStatusPillRem.textContent = statusDetail ? statusDetail.text.toUpperCase() : statusKey.replace(/_/g, ' ').toUpperCase();
-        
-        // Asignamos clases para los colores
-        paymentStatusPillRem.className = 'status-pill'; // Clase base
-        if (statusKey === 'pending') {
-            paymentStatusPillRem.classList.add('pill-status-pending');
-        } else if (statusKey === 'overdue') {
-            paymentStatusPillRem.classList.add('pill-status-overdue');
-        } else {
-            paymentStatusPillRem.classList.add('pill-status-default');
-        }
-    }
+  // 7) Generamos la imagen con html2canvas
+  const canvas = await html2canvas(clone, { scale: 2 });
+  const dataUrl = canvas.toDataURL('image/png');
 
-    const titleElRem = template.querySelector("#reminder-main-title");
-    const messageElRem = template.querySelector("#reminder-message-content");
-    if (titleElRem && messageElRem) {
-        if (reminderStatus === 'pending') {
-            titleElRem.textContent = "RECORDATORIO DE PAGO";
-            messageElRem.textContent = `Te escribimos para recordarte amablemente que el pago de tu factura está programado para la siguiente fecha. ¡Evita contratiempos!`;
-        } else if (reminderStatus === 'overdue') {
-            titleElRem.textContent = "AVISO: FACTURA VENCIDA";
-            messageElRem.textContent = `Hemos notado que el pago de tu factura ha vencido. Te agradecemos si puedes realizarlo a la brevedad para continuar disfrutando de nuestros servicios.`;
-        } else { // Un mensaje por defecto si el status no es ni pending ni overdue
-            titleElRem.textContent = "INFORMACIÓN DE PAGO";
-            messageElRem.textContent = `Detalles de tu factura a continuación.`;
-        }
-    }
+  // 8) Limpiamos el DOM
+  container.removeChild(clone);
 
-    const clientNameRem = template.querySelector("#reminder-client-name");
-    if (clientNameRem) {
-        const fullName = invoiceData.client?.name || 'Cliente';
-        const firstName = fullName.split(' ')[0]; // Divide el nombre por espacios y toma la primera palabra
-        clientNameRem.textContent = firstName;
-    }
-
-    const invNumRem = template.querySelector("#reminder-invoice-number");
-    if(invNumRem) invNumRem.textContent = invoiceData.invoiceNumberFormatted || 'N/A';
-
-    const dueDateRem = template.querySelector("#reminder-due-date");
-    if(dueDateRem) {
-        const dateToUse = invoiceData.serviceStartDate || invoiceData.invoiceDate; // Usa serviceStartDate o invoiceDate
-        dueDateRem.textContent = dateToUse ? new Date(dateToUse + 'T00:00:00').toLocaleDateString('es-CO', {day: 'numeric', month: 'long', year: 'numeric'}) : 'N/A';
-    }
-
-    const amountDueRem = template.querySelector("#reminder-amount-due");
-    if(amountDueRem) {
-        amountDueRem.textContent = (invoiceData.totals?.grandTotal || 0).toLocaleString('es-CO', { 
-            style: 'currency', 
-            currency: 'COP', 
-            minimumFractionDigits: 0, // <-- Asegura que no haya decimales
-            maximumFractionDigits: 0  // <-- Asegura que no haya decimales
-        });
-    }
-
-    const paymentDetailsEl = template.querySelector("#reminder-payment-method-details");
-    if(paymentDetailsEl) { // Ejemplo de cómo podrías hacerlo más dinámico si tuvieras los datos en el objeto invoiceData.emitter o similar
-        const nequiAccount = invoiceData.emitter?.nequiAccount || "3023935392"; // Ejemplo
-        const nequiName = invoiceData.emitter?.nequiName || "OS*** ROL***";   // Ejemplo
-        paymentDetailsEl.innerHTML = `Nequi: <strong>${nequiAccount}</strong> (${nequiName})`;
-    }
-
-    const contactInfoRem = template.querySelector("#reminder-contact-info");
-    if(contactInfoRem && invoiceData.emitter?.email) {
-        contactInfoRem.innerHTML = `Dudas: ${invoiceData.emitter.email}`;
-    } else if (contactInfoRem) {
-        contactInfoRem.innerHTML = `Dudas: info@oscar07dstudios.com`; // Fallback
-    }
-
-    return true;
+  return dataUrl;
 }
 
 // ====> AQUÍ PUEDES PEGAR LA FUNCIÓN isCodeUniqueForUser <====
