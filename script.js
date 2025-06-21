@@ -1638,28 +1638,44 @@ function closeTemplateSelectionModal() {
 }
 
 function openPaymentUpdateModal(invoiceData, invoiceId) {
+    // Guardamos los datos de la factura seleccionada para usarlos después
     currentInvoiceDataForModalActions = invoiceData;
     currentInvoiceIdForModalActions = invoiceId;
-    if (!paymentUpdateModal) return;
 
+    if (!paymentUpdateModal) {
+        console.error("El modal de actualización de pago no se encuentra en el HTML.");
+        return;
+    }
+
+    // Rellenamos el modal con la información de la factura
     if (paymentUpdateInvoiceNumber) {
         paymentUpdateInvoiceNumber.textContent = invoiceData.invoiceNumberFormatted || 'N/A';
     }
 
+    // Calculamos y establecemos la próxima fecha de vencimiento por defecto
     if (nextDueDateInput) {
+        // Tomamos la fecha de servicio/vencimiento actual
         const currentDueDate = new Date(invoiceData.serviceStartDate + 'T00:00:00');
-        // Calcular el próximo mes
+        // Le sumamos un mes
         currentDueDate.setMonth(currentDueDate.getMonth() + 1);
+        // La ponemos en el input
         nextDueDateInput.value = currentDueDate.toISOString().split('T')[0];
     }
     
+    // Mostramos el modal
     paymentUpdateModal.classList.add('active');
     if (bodyElement) bodyElement.classList.add('modal-active');
 }
 
 function closePaymentUpdateModal() {
-    if (paymentUpdateModal) paymentUpdateModal.classList.remove('active');
-    if (bodyElement) bodyElement.classList.remove('modal-active');
+    if (paymentUpdateModal) {
+        paymentUpdateModal.classList.remove('active');
+    }
+    // Solo quitamos la clase del body si ningún otro modal está abierto
+    const isAnotherModalActive = document.querySelector('.modal-overlay.active');
+    if (bodyElement && !isAnotherModalActive) {
+        bodyElement.classList.remove('modal-active');
+    }
 }
 
 function formatInvoiceNumber(number) {
