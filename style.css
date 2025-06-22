@@ -238,6 +238,36 @@ input[type="file"] {
   background-color: #b02a37;
 }
 
+.bank-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.bank-card {
+  border: 2px solid transparent;
+  padding: 8px;
+  border-radius: 8px;
+  width: 100px;
+  text-align: center;
+  cursor: pointer;
+  transition: 0.3s;
+  background-color: #fff;
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.05);
+}
+
+.bank-card img {
+  width: 36px;
+  height: auto;
+  margin-bottom: 6px;
+}
+
+.bank-card.selected {
+  border-color: #4caf50;
+  background-color: #f0fff3;
+}
+
 /* === Pantalla de carga === */
 .splash-screen {
     position: fixed;
