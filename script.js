@@ -53,12 +53,22 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
+const allSections = [
+  'homeSection',
+  'createInvoiceSection',
+  'viewInvoicesSection',
+  'clientsSection',
+  'settingsSection'
+];
+
 
 // --- Selección de Elementos del DOM ---
 const bodyElement = document.body;
 
 const navHome = document.getElementById('navHome');
 const homeSection = document.getElementById('homeSection');
+const settingsSection = document.getElementById('settingsSection');
+const navSettings = document.getElementById('navSettings');
 
 const invoiceDetailModal = document.getElementById('invoiceDetailModal');
 const modalInvoiceTitle = document.getElementById('modalInvoiceTitle');
@@ -2163,8 +2173,20 @@ async function loadClientForEditing(clientId) {
 
 async function handleNavigation(sectionToShowId) {
     // Se declaran UNA SOLA VEZ aquí al principio
-    const sections = [homeSection, createInvoiceSection, viewInvoicesSection, clientsSection];
-    const navLinks = [navHome, navCreateInvoice, navViewInvoices, navClients];
+    const sections = [
+      homeSection,
+      createInvoiceSection,
+      viewInvoicesSection,
+      clientsSection,
+      settingsSection    // ← añadimos Ajustes aquí
+    ];
+    const navLinks = [
+      navHome,
+      navCreateInvoice,
+      navViewInvoices,
+      navClients,
+      navSettings       // ← y también el link de Ajustes
+    ];
     let targetTitle = "Sistema de Facturación";
 
     sections.forEach(section => { 
@@ -2187,6 +2209,9 @@ async function handleNavigation(sectionToShowId) {
         currentNavLinkId = 'navViewInvoices';
     } else if (sectionToShowId === 'clientsSection') {
         currentNavLinkId = 'navClients';
+    }
+    else if (sectionToShowId === 'settingsSection') {
+        currentNavLinkId = 'navSettings';
     }
     const currentLink = navLinks.find(l => l && l.id === currentNavLinkId);
     if (currentLink) currentLink.classList.add('active-nav');
@@ -2276,7 +2301,12 @@ async function handleNavigation(sectionToShowId) {
         targetTitle = "Inicio y Estadísticas";
         await loadDashboardData();
     }
-
+    if (sectionToShowId === 'settingsSection') {
+      targetTitle = "Ajustes";
+      // Aquí dentro pon cualquier inicialización de esa sección.
+      // Ejemplo: cargar logo guardado, listeners para subir logo/QR, etc.
+    }
+    
     if (appPageTitle) appPageTitle.textContent = targetTitle;
 }
 
@@ -3022,21 +3052,25 @@ onAuthStateChanged(auth, (user) => {
   console.log("Paso 5: onAuthStateChanged se disparó. Usuario:", user ? user.uid : "ninguno");
   showLoading(false);
 
+  // Asegura que el botón "Ajustes" siempre se actualice según login
+  const navSettings = document.getElementById('navSettings');
+
   if (user) {
     console.log("Paso 6: Usuario autenticado en onAuthStateChanged.");
     loginContainer.style.display = 'none';
     mainContent.style.display  = 'flex';
     handleNavigation('homeSection');
 
-    // Mostrar la pestaña Ajustes
-    document.getElementById('settingsNav').style.display = 'flex';
+    // Mostrar la pestaña Ajustes si existe
+    if (navSettings) navSettings.style.display = 'flex';
+
   } else {
     console.log("Paso 6B: Usuario NO autenticado en onAuthStateChanged.");
     loginContainer.style.display = 'flex';
     mainContent.style.display  = 'none';
 
-    // Ocultar Ajustes si no está autenticado
-    document.getElementById('settingsNav').style.display = 'none';
+    // Ocultar la pestaña Ajustes si existe
+    if (navSettings) navSettings.style.display = 'none';
   }
 });
 
