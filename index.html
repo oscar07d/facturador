@@ -108,49 +108,62 @@
                 </nav>
 
             <main class="invoice-app-container">
-                <section id="settingsSection" style="display:none;">
+                <section id="settingsSection" style="display: none;">
                   <h2>Ajustes de Plantillas</h2>
                 
-                  <!-- 1) Logo de Comercio -->
-                  <div class="setting-block">
+                  <!-- 1) Logo del Comercio -->
+                  <div class="settings-group">
                     <h3>Logo del Comercio</h3>
-                    <img id="previewLogo" src="img/default-logo.png" alt="Previsualización Logo" style="max-width:200px;">
-                    <button id="btnUploadLogo">Subir Nuevo Logo</button>
-                    <input type="file" id="inputUploadLogo" accept="image/*" style="display:none">
+                    <label for="inputUploadLogo" class="btn-upload-label">Seleccionar Logo</label>
+                    <input type="file" id="inputUploadLogo" accept="image/*" />
+                    <img id="previewLogo" src="img/default-logo.png" alt="Previsualización Logo" class="preview-image" />
                   </div>
                 
                   <!-- 2) QR de Pago -->
-                  <div class="setting-block">
+                  <div class="settings-group">
                     <h3>QR de Pago (Nequi)</h3>
-                    <img id="previewQR" src="" alt="Previsualización QR" style="max-width:200px; display:none;">
-                    <button id="btnUploadQR">Subir QR</button>
-                    <input type="file" id="inputUploadQR" accept="image/*" style="display:none">
+                    <label for="inputUploadQR" class="btn-upload-label">Seleccionar QR</label>
+                    <input type="file" id="inputUploadQR" accept="image/*" />
+                    <img id="previewQR" src="" alt="Previsualización QR" class="preview-image" style="display: none;" />
                   </div>
                 
                   <!-- 3) Configuración PDF -->
-                  <div class="setting-block">
+                  <div class="settings-group">
                     <h3>Opciones PDF</h3>
-                    <label>Link de Pago (opcional)</label>
-                    <input type="url" id="inputPdfLink" placeholder="https://">
                 
-                    <label>Bancos / Neobancos</label>
+                    <label for="inputPdfLink">Link de Pago (opcional)</label>
+                    <input type="url" id="inputPdfLink" placeholder="https://tu-enlace-de-pago.com" />
+                
+                    <label for="selectPdfBanks">Bancos / Neobancos</label>
                     <select id="selectPdfBanks" multiple>
                       <optgroup label="Neobancos">
                         <option value="nequi">Nequi</option>
                         <option value="daviplata">Daviplata</option>
                         <option value="lulo">Lulo Bank</option>
-                        <!-- … resto … -->
+                        <option value="nu">Nu Colombia</option>
+                        <option value="uala">Ualá</option>
+                        <option value="pibank">Pibank</option>
+                        <option value="movii">Movii</option>
+                        <option value="powwi">Powwi</option>
                       </optgroup>
                       <optgroup label="Bancos Tradicionales">
                         <option value="bancolombia">Bancolombia</option>
                         <option value="davivienda">Davivienda</option>
-                        <!-- … resto … -->
+                        <option value="caja-social">Banco Caja Social</option>
+                        <option value="falabella">Banco Falabella</option>
+                        <option value="bbva">BBVA</option>
+                        <option value="itau">Banco Itaú</option>
+                        <option value="av-villas">Banco AV Villas</option>
+                        <option value="finandina">Banco Finandina</option>
+                        <option value="bogota">Banco de Bogotá</option>
                       </optgroup>
                       <option value="all">Permitir todos los bancos</option>
                     </select>
                   </div>
                 
-                  <button id="btnSaveSettings">Guardar Ajustes</button>
+                  <div class="settings-section-actions">
+                    <button class="btn-save" id="btnSaveSettings">Guardar Ajustes</button>
+                  </div>
                 </section>
                 <section id="createInvoiceSection" class="invoice-section active-section">
                     <form id="invoiceForm" class="invoice-form">
