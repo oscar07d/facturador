@@ -3075,7 +3075,7 @@ onAuthStateChanged(auth, (user) => {
 });
 
 // 2) Handler de click en Ajustes
-document.getElementById('settingsNav').addEventListener('click', (e) => {
+document.getElementById('navSettings').addEventListener('click', (e) => {
   e.preventDefault();
   // Oculta **todas** las secciones
   document.querySelectorAll('section').forEach(s => s.style.display = 'none');
