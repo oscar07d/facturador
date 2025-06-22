@@ -133,32 +133,28 @@
                 
                     <label for="inputPdfLink">Link de Pago (opcional)</label>
                     <input type="url" id="inputPdfLink" placeholder="https://tu-enlace-de-pago.com" />
-                
+                    
                     <label for="selectPdfBanks">Bancos / Neobancos</label>
-                    <select id="selectPdfBanks" multiple>
-                      <optgroup label="Neobancos">
-                        <option value="nequi">Nequi</option>
-                        <option value="daviplata">Daviplata</option>
-                        <option value="lulo">Lulo Bank</option>
-                        <option value="nu">Nu Colombia</option>
-                        <option value="uala">Ualá</option>
-                        <option value="pibank">Pibank</option>
-                        <option value="movii">Movii</option>
-                        <option value="powwi">Powwi</option>
-                      </optgroup>
-                      <optgroup label="Bancos Tradicionales">
-                        <option value="bancolombia">Bancolombia</option>
-                        <option value="davivienda">Davivienda</option>
-                        <option value="caja-social">Banco Caja Social</option>
-                        <option value="falabella">Banco Falabella</option>
-                        <option value="bbva">BBVA</option>
-                        <option value="itau">Banco Itaú</option>
-                        <option value="av-villas">Banco AV Villas</option>
-                        <option value="finandina">Banco Finandina</option>
-                        <option value="bogota">Banco de Bogotá</option>
-                      </optgroup>
-                      <option value="all">Permitir todos los bancos</option>
-                    </select>
+                    <div class="bank-grid" id="bankSelectionGrid">
+                      <label><input type="checkbox" value="all"> Permitir todos los bancos</label>
+                      <div class="bank-card" data-value="nequi"><img src="img/banks/nequi.svg" alt="Nequi" /><span>Nequi</span></div>
+                      <div class="bank-card" data-value="daviplata"><img src="img/banks/daviplata.svg" alt="Daviplata" /><span>Daviplata</span></div>
+                      <div class="bank-card" data-value="lulo"><img src="img/banks/lulo.svg" alt="Lulo" /><span>Lulo Bank</span></div>
+                      <div class="bank-card" data-value="nu"><img src="img/banks/nu.svg" alt="Nu" /><span>Nu Colombia</span></div>
+                      <div class="bank-card" data-value="uala"><img src="img/banks/uala.svg" alt="Ualá" /><span>Ualá</span></div>
+                      <div class="bank-card" data-value="pibank"><img src="img/banks/pibank.svg" alt="Pibank" /><span>Pibank</span></div>
+                      <div class="bank-card" data-value="movii"><img src="img/banks/movii.svg" alt="Movii" /><span>Movii</span></div>
+                      <div class="bank-card" data-value="powwi"><img src="img/banks/powwi.svg" alt="Powwi" /><span>Powwi</span></div>
+                      <div class="bank-card" data-value="bancolombia"><img src="img/banks/bancolombia.svg" alt="Bancolombia" /><span>Bancolombia</span></div>
+                      <div class="bank-card" data-value="davivienda"><img src="img/banks/davivienda.svg" alt="Davivienda" /><span>Davivienda</span></div>
+                      <div class="bank-card" data-value="caja-social"><img src="img/banks/caja-social.svg" alt="Caja Social" /><span>Caja Social</span></div>
+                      <div class="bank-card" data-value="falabella"><img src="img/banks/falabella.svg" alt="Falabella" /><span>Falabella</span></div>
+                      <div class="bank-card" data-value="bbva"><img src="img/banks/bbva.svg" alt="BBVA" /><span>BBVA</span></div>
+                      <div class="bank-card" data-value="itau"><img src="img/banks/itau.svg" alt="Itaú" /><span>Itaú</span></div>
+                      <div class="bank-card" data-value="av-villas"><img src="img/banks/av-villas.svg" alt="AV Villas" /><span>AV Villas</span></div>
+                      <div class="bank-card" data-value="finandina"><img src="img/banks/finandina.svg" alt="Finandina" /><span>Finandina</span></div>
+                      <div class="bank-card" data-value="bogota"><img src="img/banks/bogota.svg" alt="Bogotá" /><span>Bogotá</span></div>
+                    </div>
                   </div>
                 
                   <div class="settings-section-actions">
