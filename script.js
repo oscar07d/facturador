@@ -3518,6 +3518,37 @@ if (loginButton) {
     });
 }
 
+// Controlador de selección de bancos
+const selectedBanks = new Set();
+const allBanksCheckbox = document.querySelector('#bankSelectionGrid input[value="all"]');
+const bankCards = document.querySelectorAll('.bank-card');
+
+bankCards.forEach(card => {
+  card.addEventListener('click', () => {
+    const value = card.dataset.value;
+
+    if (selectedBanks.has(value)) {
+      selectedBanks.delete(value);
+      card.classList.remove('selected');
+    } else {
+      selectedBanks.add(value);
+      card.classList.add('selected');
+    }
+
+    // Si se selecciona uno manual, desactiva "Permitir todos"
+    if (allBanksCheckbox.checked) {
+      allBanksCheckbox.checked = false;
+    }
+  });
+});
+
+allBanksCheckbox.addEventListener('change', () => {
+  if (allBanksCheckbox.checked) {
+    selectedBanks.clear();
+    bankCards.forEach(c => c.classList.remove('selected'));
+  }
+});
+
 // if (generateInvoiceFileBtn) { 
 //    generateInvoiceFileBtn.addEventListener('click', () => {
 //        alert("Funcionalidad 'Generar Factura (Archivo)' pendiente.");
