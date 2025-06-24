@@ -3607,20 +3607,60 @@ const previewWhatsapp = document.getElementById('whatsappTemplatePreview');
 const previewReminder = document.getElementById('reminderTemplatePreview');
 
 function updateTemplatePreviews() {
-  const selectedTemplates = Array.from(templateCheckboxes)
+  const selectedTemplates = Array.from(document.querySelectorAll('.template-toggle'))
     .filter(cb => cb.checked)
     .map(cb => cb.value);
 
-  // Mostrar solo las plantillas seleccionadas
-  previewPdf.style.display = selectedTemplates.includes('pdf') ? 'block' : 'none';
-  previewWhatsapp.style.display = selectedTemplates.includes('whatsapp') ? 'block' : 'none';
-  previewReminder.style.display = selectedTemplates.includes('reminder') ? 'block' : 'none';
+  // PDF
+  const pdfTemplateOriginal = document.getElementById('invoice-export-template');
+  const pdfPreviewContainer = document.getElementById('pdfTemplatePreview');
+  pdfPreviewContainer.innerHTML = '';
+  if (selectedTemplates.includes('pdf') && pdfTemplateOriginal) {
+    const clone = pdfTemplateOriginal.cloneNode(true);
+    clone.style.transform = 'scale(0.8)';
+    clone.style.transformOrigin = 'top left';
+    clone.style.border = '1px solid #ccc';
+    clone.style.padding = '8px';
+    pdfPreviewContainer.appendChild(clone);
+    pdfPreviewContainer.style.display = 'block';
+  } else {
+    pdfPreviewContainer.style.display = 'none';
+  }
+
+  // WhatsApp
+  const whatsappTemplateOriginal = document.getElementById('whatsapp-share-template');
+  const whatsappPreviewContainer = document.getElementById('whatsappTemplatePreview');
+  whatsappPreviewContainer.innerHTML = '';
+  if (selectedTemplates.includes('whatsapp') && whatsappTemplateOriginal) {
+    const clone = whatsappTemplateOriginal.cloneNode(true);
+    clone.style.border = '1px solid #ccc';
+    clone.style.padding = '8px';
+    whatsappPreviewContainer.appendChild(clone);
+    whatsappPreviewContainer.style.display = 'block';
+  } else {
+    whatsappPreviewContainer.style.display = 'none';
+  }
+
+  // Recordatorio
+  const reminderTemplateOriginal = document.getElementById('payment-reminder-export-template');
+  const reminderPreviewContainer = document.getElementById('reminderTemplatePreview');
+  reminderPreviewContainer.innerHTML = '';
+  if (selectedTemplates.includes('reminder') && reminderTemplateOriginal) {
+    const clone = reminderTemplateOriginal.cloneNode(true);
+    clone.style.border = '1px solid #ccc';
+    clone.style.padding = '8px';
+    reminderPreviewContainer.appendChild(clone);
+    reminderPreviewContainer.style.display = 'block';
+  } else {
+    reminderPreviewContainer.style.display = 'none';
+  }
 }
 
-// Detectar cambios en los checkboxes
-templateCheckboxes.forEach(cb => cb.addEventListener('change', updateTemplatePreviews));
+document.querySelectorAll('.template-toggle').forEach(cb =>
+  cb.addEventListener('change', updateTemplatePreviews)
+);
 
-// Ejecutar al cargar
+// Llamado inicial
 updateTemplatePreviews();
 
 // if (generateInvoiceFileBtn) { 
