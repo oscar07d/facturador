@@ -313,6 +313,43 @@ input[type="file"]#inputUploadQR {
   background: #138496;
 }
 
+.file-upload-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+.file-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.btn-pill {
+  padding: 6px 12px;
+  background-color: #007BFF;
+  color: white;
+  font-size: 0.85rem;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.btn-pill:hover {
+  background-color: #0056b3;
+}
+
+.btn-pill.red {
+  background-color: #dc3545;
+}
+
+.btn-pill.red:hover {
+  background-color: #a71d2a;
+}
+
 /* === Pantalla de carga === */
 .splash-screen {
     position: fixed;
