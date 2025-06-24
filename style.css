@@ -217,6 +217,13 @@ input[type="file"]#inputUploadQR {
 }
 
 /* ======= TARJETAS DE BANCOS ======= */
+.bank-all-label {
+  color: #555; /* o el color que tú quieras */
+  font-weight: 500;
+  margin-bottom: 10px;
+  display: inline-block;
+}
+
 #bankSelectionGrid {
   display: flex;
   flex-wrap: wrap;
