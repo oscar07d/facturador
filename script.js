@@ -3572,6 +3572,35 @@ document.getElementById('btnSaveSettings').addEventListener('click', async () =>
   alert("Ajustes guardados correctamente.");
 });
 
+// Funcionalidad: Previsualizar logo cargado
+document.getElementById('inputUploadLogo').addEventListener('change', function (e) {
+  const file = e.target.files[0];
+  const preview = document.getElementById('previewLogo');
+
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function (event) {
+      preview.src = event.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+});
+
+// Funcionalidad: Previsualizar QR cargado
+document.getElementById('inputUploadQR').addEventListener('change', function (e) {
+  const file = e.target.files[0];
+  const preview = document.getElementById('previewQR');
+
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function (event) {
+      preview.src = event.target.result;
+      preview.style.display = 'block'; // Mostrar solo si hay imagen
+    };
+    reader.readAsDataURL(file);
+  }
+});
+
 // if (generateInvoiceFileBtn) { 
 //    generateInvoiceFileBtn.addEventListener('click', () => {
 //        alert("Funcionalidad 'Generar Factura (Archivo)' pendiente.");
