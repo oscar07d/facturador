@@ -166,18 +166,18 @@
 
 /* ======= BOTONES ======= */
 .btn-upload {
-  display: inline-block;
+  color: white !important; /* Solo afecta estos botones */
+  background-color: #007bff;
   padding: 6px 14px;
   font-size: 14px;
   font-weight: 600;
-  color: #ffffff; /* Cambia solo el texto a blanco */
-  background-color: #007bff;
+  border: none;
   border-radius: 20px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
-  border: none;
+  display: inline-block;
   text-align: center;
-  text-decoration: none;
+  transition: background-color 0.3s ease;
+  margin-bottom: 10px;
 }
 
 .btn-upload:hover {
