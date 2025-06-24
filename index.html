@@ -112,17 +112,16 @@
                   <h2>Ajustes de Plantillas</h2>
 
                     <div class="settings-group">
-                      <h3>Aplicar cambios a:</h3>
-                      <label><input type="checkbox" class="template-toggle" value="pdf" checked> Plantilla PDF</label><br>
-                      <label><input type="checkbox" class="template-toggle" value="whatsapp" checked> Plantilla WhatsApp</label><br>
-                      <label><input type="checkbox" class="template-toggle" value="reminder" checked> Plantilla Recordatorio</label>
-                    </div>
+                      <h3>Previsualizaciones</h3>
+                      <div class="form-group">
+                        <label><input type="checkbox" class="template-toggle" value="pdf"> Ver Plantilla PDF</label>
+                        <label><input type="checkbox" class="template-toggle" value="whatsapp"> Ver Plantilla WhatsApp</label>
+                        <label><input type="checkbox" class="template-toggle" value="reminder"> Ver Plantilla Recordatorio</label>
+                      </div>
                     
-                    <!-- Previsualizaciones -->
-                    <div class="template-preview-container" id="templatePreviewContainer">
-                      <div id="pdfTemplatePreview" class="template-preview">[Aquí va la previsualización de PDF]</div>
-                      <div id="whatsappTemplatePreview" class="template-preview">[Aquí va la previsualización de WhatsApp]</div>
-                      <div id="reminderTemplatePreview" class="template-preview">[Aquí va la previsualización de Recordatorio]</div>
+                      <div id="pdfTemplatePreview" class="template-preview" style="display: none;"></div>
+                      <div id="whatsappTemplatePreview" class="template-preview" style="display: none;"></div>
+                      <div id="reminderTemplatePreview" class="template-preview" style="display: none;"></div>
                     </div>
                 
                   <!-- 1) Logo del Comercio -->
