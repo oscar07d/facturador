@@ -3627,8 +3627,8 @@ function updateTemplatePreviews() {
     pdfPreviewContainer.style.display = 'none';
   }
 
-  // WhatsApp
-  const whatsappTemplateOriginal = document.getElementById('whatsapp-share-template');
+  // WhatsApp (CORREGIDO)
+  const whatsappTemplateOriginal = document.getElementById('whatsapp-image-export-template');
   const whatsappPreviewContainer = document.getElementById('whatsappTemplatePreview');
   whatsappPreviewContainer.innerHTML = '';
   if (selectedTemplates.includes('whatsapp') && whatsappTemplateOriginal) {
