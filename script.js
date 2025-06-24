@@ -3668,6 +3668,152 @@ document.addEventListener("DOMContentLoaded", () => {
   updateTemplatePreviews();
 });
 
+// ===================== CONFIGURACIÓN GLOBAL OPCIONAL ===================== //
+
+let userSettings = {
+  logoUrl: '',
+  qrUrl: '',
+  linkPago: '',
+  bancos: []
+};
+
+// ===================== CARGA DE AJUSTES DESDE FIRESTORE ===================== //
+
+async function loadUserSettingsFromFirestore() {
+  try {
+    const userId = auth.currentUser?.uid;
+    if (!userId) return;
+
+    const ref = doc(db, "user_profiles", userId);
+    const snap = await getDoc(ref);
+
+    if (snap.exists()) {
+      const data = snap.data();
+      userSettings.logoUrl = data.logoUrl || '';
+      userSettings.qrUrl = data.qrUrl || '';
+      userSettings.linkPago = data.linkPago || '';
+      userSettings.bancos = data.bancos || [];
+    }
+
+    updateVisualSettingsPreview();
+  } catch (error) {
+    console.error("Error al cargar ajustes:", error);
+  }
+}
+
+// ===================== FUNCIONES DE APOYO ===================== //
+
+function applyOptionalLogo(doc, x, y, width, height) {
+  if (userSettings.logoUrl) {
+    try {
+      doc.addImage(userSettings.logoUrl, 'PNG', x, y, width, height);
+    } catch (e) {
+      console.warn("⚠️ Logo no válido. Usando logo por defecto.");
+      doc.addImage('img/default-logo.png', 'PNG', x, y, width, height);
+    }
+  } else {
+    doc.addImage('img/default-logo.png', 'PNG', x, y, width, height);
+  }
+}
+
+function applyOptionalQR(doc, x, y, width, height) {
+  if (userSettings.qrUrl) {
+    try {
+      doc.addImage(userSettings.qrUrl, 'PNG', x, y, width, height);
+    } catch (e) {
+      console.warn("⚠️ QR no válido:", e.message);
+    }
+  }
+}
+
+function applyOptionalLinkAndBanks(doc, startX, startY) {
+  let y = startY;
+
+  if (userSettings.linkPago) {
+    doc.setFontSize(10);
+    doc.text("Link de pago:", startX, y);
+    y += 6;
+    doc.text(userSettings.linkPago, startX, y);
+    y += 10;
+  }
+
+  if (userSettings.bancos && userSettings.bancos.length > 0) {
+    const bancoLogos = {
+      nequi: 'img/banks/nequi.svg',
+      daviplata: 'img/banks/daviplata.svg',
+      lulo: 'img/banks/lulo.svg',
+      nu: 'img/banks/nu.svg',
+      uala: 'img/banks/uala.svg',
+      pibank: 'img/banks/pibank.svg',
+      movii: 'img/banks/movii.svg',
+      powwi: 'img/banks/powwi.svg',
+      bancolombia: 'img/banks/bancolombia.svg',
+      davivienda: 'img/banks/davivienda.svg',
+      'caja-social': 'img/banks/caja-social.svg',
+      falabella: 'img/banks/falabella.svg',
+      bbva: 'img/banks/bbva.svg',
+      itau: 'img/banks/itau.svg',
+      'av-villas': 'img/banks/av-villas.svg',
+      finandina: 'img/banks/finandina.svg',
+      bogota: 'img/banks/bogota.svg'
+    };
+
+    userSettings.bancos.forEach((banco, index) => {
+      const img = bancoLogos[banco];
+      if (img) {
+        try {
+          doc.addImage(img, 'PNG', startX + (index * 28), y, 20, 20);
+        } catch (e) {
+          console.warn(`⚠️ No se cargó logo de banco '${banco}':`, e.message);
+        }
+      }
+    });
+  }
+}
+
+function buildWhatsAppMessage(clientName) {
+  let mensaje = `Hola ${clientName}, aquí te compartimos tu factura.`;
+  if (userSettings.linkPago) {
+    mensaje += ` Puedes pagar aquí: ${userSettings.linkPago}`;
+  }
+  return mensaje;
+}
+
+// ===================== MANEJO DE BOTONES DE AJUSTES ===================== //
+
+document.getElementById('btnDeleteLogo')?.addEventListener('click', () => {
+  userSettings.logoUrl = '';
+  document.getElementById('previewLogo').src = 'img/default-logo.png';
+  alert('Logo eliminado');
+});
+
+document.getElementById('btnDeleteQR')?.addEventListener('click', () => {
+  userSettings.qrUrl = '';
+  document.getElementById('previewQR').style.display = 'none';
+  alert('QR eliminado');
+});
+
+function updateVisualSettingsPreview() {
+  const previewLogo = document.getElementById('previewLogo');
+  if (userSettings.logoUrl && previewLogo) {
+    previewLogo.src = userSettings.logoUrl;
+  }
+
+  const previewQR = document.getElementById('previewQR');
+  if (userSettings.qrUrl && previewQR) {
+    previewQR.src = userSettings.qrUrl;
+    previewQR.style.display = 'block';
+  }
+}
+
+// ===================== INICIALIZACIÓN DESPUÉS DE AUTENTICACIÓN ===================== //
+
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    loadUserSettingsFromFirestore();
+  }
+});
+
 // if (generateInvoiceFileBtn) { 
 //    generateInvoiceFileBtn.addEventListener('click', () => {
 //        alert("Funcionalidad 'Generar Factura (Archivo)' pendiente.");
