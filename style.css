@@ -313,22 +313,23 @@ input[type="file"]#inputUploadQR {
   background: #138496;
 }
 
-.file-upload-row {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  flex-wrap: wrap;
-  margin-top: 10px;
+.preview-image {
+  max-width: 150px;
+  margin-bottom: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.05);
 }
 
-.file-buttons {
+.file-buttons-row {
   display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
 .btn-pill {
-  padding: 6px 12px;
+  padding: 6px 14px;
   background-color: #007BFF;
   color: white;
   font-size: 0.85rem;
