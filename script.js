@@ -3601,6 +3601,28 @@ document.getElementById('inputUploadQR').addEventListener('change', function (e)
   }
 });
 
+const templateCheckboxes = document.querySelectorAll('.template-toggle');
+const previewPdf = document.getElementById('pdfTemplatePreview');
+const previewWhatsapp = document.getElementById('whatsappTemplatePreview');
+const previewReminder = document.getElementById('reminderTemplatePreview');
+
+function updateTemplatePreviews() {
+  const selectedTemplates = Array.from(templateCheckboxes)
+    .filter(cb => cb.checked)
+    .map(cb => cb.value);
+
+  // Mostrar solo las plantillas seleccionadas
+  previewPdf.style.display = selectedTemplates.includes('pdf') ? 'block' : 'none';
+  previewWhatsapp.style.display = selectedTemplates.includes('whatsapp') ? 'block' : 'none';
+  previewReminder.style.display = selectedTemplates.includes('reminder') ? 'block' : 'none';
+}
+
+// Detectar cambios en los checkboxes
+templateCheckboxes.forEach(cb => cb.addEventListener('change', updateTemplatePreviews));
+
+// Ejecutar al cargar
+updateTemplatePreviews();
+
 // if (generateInvoiceFileBtn) { 
 //    generateInvoiceFileBtn.addEventListener('click', () => {
 //        alert("Funcionalidad 'Generar Factura (Archivo)' pendiente.");
