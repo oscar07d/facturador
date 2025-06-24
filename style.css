@@ -138,21 +138,41 @@
 /* ======= PREVISUALIZACIONES ======= */
 .preview-image {
   display: block;
-  margin-top: 0.7rem;
-  border-radius: 8px;
-  max-width: 200px;
+  margin-top: 0.4rem;
+  border-radius: 6px;
+  max-width: 120px;
   border: 1px solid #ccc;
   background: #f8f8f8;
+}
+
+/* ==== REDUCIR ESCALA DE LAS PLANTILLAS EN AJUSTES ==== */
+#pdfTemplatePreview,
+#whatsappTemplatePreview,
+#reminderTemplatePreview {
+  transform: scale(0.6);
+  transform-origin: top left;
+  margin-bottom: 1rem;
+  border: 1px solid #ccc;
+  padding: 0.5rem;
+  background: white;
+  overflow: auto;
+  width: fit-content;
+}
+
+/* Opcional: centro horizontal si quieres */
+.template-preview-container {
+  overflow-x: auto;
 }
 
 /* ======= BOTONES ======= */
 .btn-upload-label {
   display: inline-block;
-  padding: 0.5rem 1rem;
+  padding: 0.3rem 0.8rem;
   background-color: #007bff;
   color: white;
-  font-weight: 600;
-  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  border-radius: 999px;
   cursor: pointer;
   margin-top: 0.5rem;
   margin-bottom: 0.5rem;
@@ -161,6 +181,11 @@
 
 .btn-upload-label:hover {
   background-color: #0056b3;
+}
+
+input[type="file"]#inputUploadLogo,
+input[type="file"]#inputUploadQR {
+  display: none;
 }
 
 .btn-save {
