@@ -149,7 +149,7 @@
 #pdfTemplatePreview,
 #whatsappTemplatePreview,
 #reminderTemplatePreview {
-  transform: scale(0.6);
+  transform: scale(0.4);
   transform-origin: top left;
   margin-bottom: 1rem;
   border: 1px solid #ccc;
