@@ -132,7 +132,7 @@
   font-weight: 500;
   margin-bottom: 0.3rem;
   display: block;
-  color: #555;
+  color: #fff;
 }
 
 /* ======= PREVISUALIZACIONES ======= */
@@ -210,7 +210,7 @@ input[type="file"]#inputUploadQR {
   width: 100%;
   padding: 0.5rem 0.75rem;
   border: 1px solid #ccc;
-  border-radius: 6px;
+  border-radius: 50px;
   margin-top: 0.4rem;
   margin-bottom: 1rem;
   font-size: 1rem;
