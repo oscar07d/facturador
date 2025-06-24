@@ -3611,49 +3611,50 @@ function updateTemplatePreviews() {
     .filter(cb => cb.checked)
     .map(cb => cb.value);
 
-  // PDF
-  const pdfTemplateOriginal = document.getElementById('invoice-export-template');
-  const pdfPreviewContainer = document.getElementById('pdfTemplatePreview');
-  pdfPreviewContainer.innerHTML = '';
-  if (selectedTemplates.includes('pdf') && pdfTemplateOriginal) {
-    const clone = pdfTemplateOriginal.cloneNode(true);
-    clone.style.transform = 'scale(0.8)';
-    clone.style.transformOrigin = 'top left';
-    clone.style.border = '1px solid #ccc';
-    clone.style.padding = '8px';
-    pdfPreviewContainer.appendChild(clone);
-    pdfPreviewContainer.style.display = 'block';
-  } else {
-    pdfPreviewContainer.style.display = 'none';
-  }
+  const templates = [
+    {
+      value: 'pdf',
+      originalId: 'invoice-export-template',
+      previewId: 'pdfTemplatePreview'
+    },
+    {
+      value: 'whatsapp',
+      originalId: 'whatsapp-image-export-template',
+      previewId: 'whatsappTemplatePreview'
+    },
+    {
+      value: 'reminder',
+      originalId: 'payment-reminder-export-template',
+      previewId: 'reminderTemplatePreview'
+    }
+  ];
 
-  // WhatsApp (CORREGIDO)
-  const whatsappTemplateOriginal = document.getElementById('whatsapp-image-export-template');
-  const whatsappPreviewContainer = document.getElementById('whatsappTemplatePreview');
-  whatsappPreviewContainer.innerHTML = '';
-  if (selectedTemplates.includes('whatsapp') && whatsappTemplateOriginal) {
-    const clone = whatsappTemplateOriginal.cloneNode(true);
-    clone.style.border = '1px solid #ccc';
-    clone.style.padding = '8px';
-    whatsappPreviewContainer.appendChild(clone);
-    whatsappPreviewContainer.style.display = 'block';
-  } else {
-    whatsappPreviewContainer.style.display = 'none';
-  }
+  templates.forEach(({ value, originalId, previewId }) => {
+    const original = document.getElementById(originalId);
+    const container = document.getElementById(previewId);
 
-  // Recordatorio
-  const reminderTemplateOriginal = document.getElementById('payment-reminder-export-template');
-  const reminderPreviewContainer = document.getElementById('reminderTemplatePreview');
-  reminderPreviewContainer.innerHTML = '';
-  if (selectedTemplates.includes('reminder') && reminderTemplateOriginal) {
-    const clone = reminderTemplateOriginal.cloneNode(true);
-    clone.style.border = '1px solid #ccc';
-    clone.style.padding = '8px';
-    reminderPreviewContainer.appendChild(clone);
-    reminderPreviewContainer.style.display = 'block';
-  } else {
-    reminderPreviewContainer.style.display = 'none';
-  }
+    if (!container) return;
+
+    container.innerHTML = '';
+
+    if (selectedTemplates.includes(value) && original) {
+      const clone = original.cloneNode(true);
+      clone.style.display = 'block'; // 👈 Asegura que el clon no herede "display: none"
+
+      // Opcional: escala y bordes
+      clone.style.transform = 'scale(0.8)';
+      clone.style.transformOrigin = 'top left';
+      clone.style.border = '1px solid #ccc';
+      clone.style.padding = '8px';
+      clone.style.marginBottom = '12px';
+      clone.style.background = 'white';
+
+      container.appendChild(clone);
+      container.style.display = 'block';
+    } else {
+      container.style.display = 'none';
+    }
+  });
 }
 
 document.querySelectorAll('.template-toggle').forEach(cb =>
