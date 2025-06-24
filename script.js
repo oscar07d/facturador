@@ -3642,7 +3642,7 @@ function updateTemplatePreviews() {
       clone.style.display = 'block'; // 👈 Asegura que el clon no herede "display: none"
 
       // Opcional: escala y bordes
-      clone.style.transform = 'scale(0.8)';
+      clone.style.transform = 'scale(1)';
       clone.style.transformOrigin = 'top left';
       clone.style.border = '1px solid #ccc';
       clone.style.padding = '8px';
