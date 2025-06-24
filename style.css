@@ -276,10 +276,11 @@ input[type="file"] {
 }
 
 .template-preview {
-  background: #fdfdfd;
-  padding: 12px;
-  border-radius: 10px;
-  overflow: auto;
+  background: #f8f8f8;
+  padding: 10px;
+  border-radius: 12px;
+  margin-top: 10px;
+  overflow-x: auto;
 }
 
 /* === Pantalla de carga === */
