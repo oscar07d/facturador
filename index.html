@@ -113,11 +113,16 @@
 
                     <div class="settings-group">
                       <h3>Previsualizaciones</h3>
-                      <div class="form-group">
-                        <label><input type="checkbox" class="template-toggle" value="pdf"> Ver Plantilla PDF</label>
-                        <label><input type="checkbox" class="template-toggle" value="whatsapp"> Ver Plantilla WhatsApp</label>
-                        <label><input type="checkbox" class="template-toggle" value="reminder"> Ver Plantilla Recordatorio</label>
-                      </div>
+                      <div class="template-preview-container">
+                      <label><input type="checkbox" class="template-toggle" value="pdf" checked> Ver PDF</label>
+                      <div id="pdfTemplatePreview" class="template-preview-box"></div>
+                    
+                      <label><input type="checkbox" class="template-toggle" value="whatsapp" checked> Ver WhatsApp</label>
+                      <div id="whatsappTemplatePreview" class="template-preview-box"></div>
+                    
+                      <label><input type="checkbox" class="template-toggle" value="reminder" checked> Ver Recordatorio</label>
+                      <div id="reminderTemplatePreview" class="template-preview-box"></div>
+                    </div>
                     
                       <div id="pdfTemplatePreview" class="template-preview" style="display: none;"></div>
                       <div id="whatsappTemplatePreview" class="template-preview" style="display: none;"></div>
