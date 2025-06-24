@@ -154,28 +154,103 @@
                     
                     <label for="selectPdfBanks">Bancos / Neobancos</label>
                     <div class="bank-grid" id="bankSelectionGrid">
-                      <label class="bank-all-label">
-                          <input type="checkbox" value="all"> Permitir todos los bancos
+                    
+                      <!-- Permitir todos los bancos -->
+                      <label class="bank-card bank-all-label">
+                        <input type="checkbox" value="all" />
+                        <span>Permitir todos los bancos</span>
                       </label>
-                      <div class="bank-card" data-value="nequi"><img src="img/banks/nequi.svg" alt="Nequi" /><span>Nequi</span></div>
-                      <div class="bank-card" data-value="daviplata"><img src="img/banks/daviplata.svg" alt="Daviplata" /><span>Daviplata</span></div>
-                      <div class="bank-card" data-value="lulo"><img src="img/banks/lulo.svg" alt="Lulo" /><span>Lulo Bank</span></div>
-                      <div class="bank-card" data-value="nu"><img src="img/banks/nu.svg" alt="Nu" /><span>Nu Colombia</span></div>
-                      <div class="bank-card" data-value="uala"><img src="img/banks/uala.svg" alt="Ualá" /><span>Ualá</span></div>
-                      <div class="bank-card" data-value="pibank"><img src="img/banks/pibank.svg" alt="Pibank" /><span>Pibank</span></div>
-                      <div class="bank-card" data-value="movii"><img src="img/banks/movii.svg" alt="Movii" /><span>Movii</span></div>
-                      <div class="bank-card" data-value="powwi"><img src="img/banks/powwi.svg" alt="Powwi" /><span>Powwi</span></div>
-                      <div class="bank-card" data-value="bancolombia"><img src="img/banks/bancolombia.svg" alt="Bancolombia" /><span>Bancolombia</span></div>
-                      <div class="bank-card" data-value="davivienda"><img src="img/banks/davivienda.svg" alt="Davivienda" /><span>Davivienda</span></div>
-                      <div class="bank-card" data-value="caja-social"><img src="img/banks/caja-social.svg" alt="Caja Social" /><span>Caja Social</span></div>
-                      <div class="bank-card" data-value="falabella"><img src="img/banks/falabella.svg" alt="Falabella" /><span>Falabella</span></div>
-                      <div class="bank-card" data-value="bbva"><img src="img/banks/bbva.svg" alt="BBVA" /><span>BBVA</span></div>
-                      <div class="bank-card" data-value="itau"><img src="img/banks/itau.svg" alt="Itaú" /><span>Itaú</span></div>
-                      <div class="bank-card" data-value="av-villas"><img src="img/banks/av-villas.svg" alt="AV Villas" /><span>AV Villas</span></div>
-                      <div class="bank-card" data-value="finandina"><img src="img/banks/finandina.svg" alt="Finandina" /><span>Finandina</span></div>
-                      <div class="bank-card" data-value="bogota"><img src="img/banks/bogota.svg" alt="Bogotá" /><span>Bogotá</span></div>
+                    
+                      <!-- Neobancos -->
+                      <label class="bank-card">
+                        <input type="checkbox" value="nequi" />
+                        <img src="img/banks/nequi.svg" alt="Nequi" />
+                        <span>Nequi</span>
+                      </label>
+                      <label class="bank-card">
+                        <input type="checkbox" value="daviplata" />
+                        <img src="img/banks/daviplata.svg" alt="Daviplata" />
+                        <span>Daviplata</span>
+                      </label>
+                      <label class="bank-card">
+                        <input type="checkbox" value="lulo" />
+                        <img src="img/banks/lulo.svg" alt="Lulo Bank" />
+                        <span>Lulo Bank</span>
+                      </label>
+                      <label class="bank-card">
+                        <input type="checkbox" value="nu" />
+                        <img src="img/banks/nu.svg" alt="Nu Colombia" />
+                        <span>Nu Colombia</span>
+                      </label>
+                      <label class="bank-card">
+                        <input type="checkbox" value="uala" />
+                        <img src="img/banks/uala.svg" alt="Ualá" />
+                        <span>Ualá</span>
+                      </label>
+                      <label class="bank-card">
+                        <input type="checkbox" value="pibank" />
+                        <img src="img/banks/pibank.svg" alt="Pibank" />
+                        <span>Pibank</span>
+                      </label>
+                      <label class="bank-card">
+                        <input type="checkbox" value="movii" />
+                        <img src="img/banks/movii.svg" alt="Movii" />
+                        <span>Movii</span>
+                      </label>
+                      <label class="bank-card">
+                        <input type="checkbox" value="powwi" />
+                        <img src="img/banks/powwi.svg" alt="Powwi" />
+                        <span>Powwi</span>
+                      </label>
+                    
+                      <!-- Bancos Tradicionales -->
+                      <label class="bank-card">
+                        <input type="checkbox" value="bancolombia" />
+                        <img src="img/banks/bancolombia.svg" alt="Bancolombia" />
+                        <span>Bancolombia</span>
+                      </label>
+                      <label class="bank-card">
+                        <input type="checkbox" value="davivienda" />
+                        <img src="img/banks/davivienda.svg" alt="Davivienda" />
+                        <span>Davivienda</span>
+                      </label>
+                      <label class="bank-card">
+                        <input type="checkbox" value="caja-social" />
+                        <img src="img/banks/caja-social.svg" alt="Caja Social" />
+                        <span>Caja Social</span>
+                      </label>
+                      <label class="bank-card">
+                        <input type="checkbox" value="falabella" />
+                        <img src="img/banks/falabella.svg" alt="Falabella" />
+                        <span>Falabella</span>
+                      </label>
+                      <label class="bank-card">
+                        <input type="checkbox" value="bbva" />
+                        <img src="img/banks/bbva.svg" alt="BBVA" />
+                        <span>BBVA</span>
+                      </label>
+                      <label class="bank-card">
+                        <input type="checkbox" value="itau" />
+                        <img src="img/banks/itau.svg" alt="Itaú" />
+                        <span>Itaú</span>
+                      </label>
+                      <label class="bank-card">
+                        <input type="checkbox" value="av-villas" />
+                        <img src="img/banks/av-villas.svg" alt="AV Villas" />
+                        <span>AV Villas</span>
+                      </label>
+                      <label class="bank-card">
+                        <input type="checkbox" value="finandina" />
+                        <img src="img/banks/finandina.svg" alt="Finandina" />
+                        <span>Finandina</span>
+                      </label>
+                      <label class="bank-card">
+                        <input type="checkbox" value="bogota" />
+                        <img src="img/banks/bogota.svg" alt="Bogotá" />
+                        <span>Bogotá</span>
+                      </label>
+                    
                     </div>
-                  </div>
                 
                   <div class="settings-section-actions">
                     <button class="btn-save" id="btnSaveSettings">Guardar Ajustes</button>
