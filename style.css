@@ -164,6 +164,23 @@
   overflow-x: auto;
 }
 
+.template-preview {
+  margin: 20px 0;
+  border: 1px solid #ccc;
+  padding: 10px;
+  overflow: auto;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+}
+
+/* Aplica escala uniforme */
+.scaled-preview > * {
+  transform: scale(0.4);
+  transform-origin: top left;
+  width: fit-content;
+  display: inline-block;
+}
+
 /* ======= BOTONES ======= */
 .btn-upload {
   color: white !important; /* Solo afecta estos botones */
@@ -2915,6 +2932,12 @@ textarea.input-error {
   .template-preview-buttons button {
     width: 100%;
     margin-bottom: 0.6rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .scaled-preview > * {
+    transform: scale(0.3);
   }
 }
 
