@@ -3663,6 +3663,10 @@ document.querySelectorAll('.template-toggle').forEach(cb =>
 // Llamado inicial
 updateTemplatePreviews();
 
+document.addEventListener("DOMContentLoaded", () => {
+  updateTemplatePreviews();
+});
+
 // if (generateInvoiceFileBtn) { 
 //    generateInvoiceFileBtn.addEventListener('click', () => {
 //        alert("Funcionalidad 'Generar Factura (Archivo)' pendiente.");
