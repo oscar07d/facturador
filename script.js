@@ -3607,7 +3607,8 @@ const previewWhatsapp = document.getElementById('whatsappTemplatePreview');
 const previewReminder = document.getElementById('reminderTemplatePreview');
 
 function updateTemplatePreviews() {
-  const selectedTemplates = Array.from(document.querySelectorAll('.template-toggle'))
+  const selectedTemplates = Array
+    .from(document.querySelectorAll('.template-toggle'))
     .filter(cb => cb.checked)
     .map(cb => cb.value);
 
@@ -3615,55 +3616,61 @@ function updateTemplatePreviews() {
     {
       value: 'pdf',
       originalId: 'invoice-export-template',
-      previewId: 'pdfTemplatePreview'
+      previewId: 'pdfTemplatePreview',
+      scale: 0.24
     },
     {
       value: 'whatsapp',
       originalId: 'whatsapp-image-export-template',
-      previewId: 'whatsappTemplatePreview'
+      previewId: 'whatsappTemplatePreview',
+      scale: 0.32
     },
     {
       value: 'reminder',
       originalId: 'payment-reminder-export-template',
-      previewId: 'reminderTemplatePreview'
+      previewId: 'reminderTemplatePreview',
+      scale: 0.42
     }
   ];
 
-  templates.forEach(({ value, originalId, previewId }) => {
-    const original = document.getElementById(originalId);
+  templates.forEach(({ value, originalId, previewId, scale }) => {
+    const original  = document.getElementById(originalId);
     const container = document.getElementById(previewId);
 
     if (!container) return;
-
     container.innerHTML = '';
 
     if (selectedTemplates.includes(value) && original) {
+      // 1) Mostrar momentáneamente la plantilla oculta
+      original.style.display = 'block';
+
+      // 2) Clonar y estilizar
       const clone = original.cloneNode(true);
-      clone.style.display = 'block'; // 👈 Asegura que el clon no herede "display: none"
-
-      // Opcional: escala y bordes
-      clone.style.transform = 'scale(1)';
+      clone.style.display         = '';
+      clone.style.transform       = `scale(${scale})`;
       clone.style.transformOrigin = 'top left';
-      clone.style.border = '1px solid #ccc';
-      clone.style.padding = '8px';
-      clone.style.marginBottom = '12px';
-      clone.style.background = 'white';
+      clone.style.border          = '1px solid #ccc';
+      clone.style.padding         = '8px';
+      clone.style.background      = '#fff';
 
+      // 3) Insertar en su contenedor
       container.appendChild(clone);
       container.style.display = 'block';
+
+      // 4) Volver a ocultar la plantilla original
+      original.style.display = 'none';
     } else {
       container.style.display = 'none';
     }
   });
 }
 
-document.querySelectorAll('.template-toggle').forEach(cb =>
-  cb.addEventListener('change', updateTemplatePreviews)
-);
+// Vuelve a enganchar el listener si fuera necesario:
+document.querySelectorAll('.template-toggle')
+        .forEach(cb => cb.addEventListener('change', updateTemplatePreviews));
 
-// Llamado inicial
+// Llamada inicial
 updateTemplatePreviews();
-
 document.addEventListener("DOMContentLoaded", () => {
   updateTemplatePreviews();
 });
