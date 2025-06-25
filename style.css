@@ -99,207 +99,248 @@
     --reminder-width: 580px;
 }
 
-/* ========== AJUSTES: Estilo General ========== */
+/* ===================================================
+   AJUSTES DE PLANTILLAS – ESTILOS COMPLETOS
+   Incluye vista escritorio y móvil (≤768px)
+   =================================================== */
+
+/* Contenedor principal */
 #settingsSection {
-  padding: 2rem;
-  background: #f3f7fd;
-  color: #222;
-    overflow-x: hidden;
-  overflow-y: auto;
+  display: none;               /* Se muestra vía JS sólo al clicar “Ajustes” */
+  padding: 40px 20px;
+  background: #eef2f7;
+  border-radius: 12px;
+  max-width: 1100px;
+  margin: 0 auto 60px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  box-sizing: border-box;
 }
 
+/* Título */
 #settingsSection h2 {
   text-align: center;
-  color: #1b3b8b;
-  margin-bottom: 2rem;
+  margin-bottom: 30px;
+  color: #0d2b5e;
+  font-size: 2rem;
+  font-weight: 600;
 }
 
-/* ========== Vista de Previsualizaciones ========== */
+/* ----------------------------------------
+   PREVISUALIZACIÓN DE PLANTILLAS
+   ---------------------------------------- */
 .template-previews-container {
   display: flex;
+  justify-content: space-between;
   gap: 20px;
-  justify-content: center;
-  flex-wrap: wrap;
-  margin: 20px 0;
+  margin-bottom: 40px;
 }
 
 .template-preview-wrapper {
-  width: 300px;
-  height: 400px;
-  background: #ffffff;
+  background: #fff;
   border-radius: 12px;
-  padding: 12px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  flex: 1;
+  max-width: 32%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start;
-  position: relative;
-  overflow: hidden;
+  padding: 16px;
+  box-sizing: border-box;
 }
 
 .template-preview-wrapper label {
-  font-weight: 600;
-  margin-bottom: 8px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 12px;
 }
 
 .template-preview {
   width: 100%;
-  height: 100%;
-  position: relative;
+  height: 280px;
+  background: #f7f9fc;
+  border-radius: 8px;
   overflow: hidden;
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #f8f9fc;
-  border-radius: 8px;
 }
 
-.template-preview > * {
-  transform: scale(0.3) !important;
-  transform-origin: top center !important;
-  pointer-events: none;
+.template-preview > div {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform-origin: top left;
 }
 
-/* ========== BLOQUES INDIVIDUALES ========== */
+/* Escalas según proporción de cada plantilla */
+#pdfTemplatePreview > div {
+  transform: translate(-50%, -50%) scale(0.24) !important;
+}
+
+#whatsappTemplatePreview > div {
+  transform: translate(-50%, -50%) scale(0.32) !important;
+}
+
+#reminderTemplatePreview > div {
+  transform: translate(-50%, -50%) scale(0.42) !important;
+}
+
+/* ----------------------------------------
+   BLOQUES DE AJUSTES: LOGO y QR
+   ---------------------------------------- */
 .setting-block {
-  background: #ffffff;
-  padding: 1.5rem;
-  border-radius: 14px;
-  box-shadow: 0 0 8px rgba(0,0,0,0.03);
-  margin-bottom: 2rem;
+  background: #fff;
+  padding: 25px;
+  margin-bottom: 25px;
+  border-radius: 10px;
+  border: 1px solid #e2e6ea;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.03);
 }
 
 .setting-block h3 {
-  margin-bottom: 1rem;
-  color: #444;
+  font-size: 1.3rem;
+  margin-bottom: 15px;
+  color: #333;
 }
 
-/* ========== Vista previa de Logo / QR ========== */
+/* Fila de previsualización + botones */
 .file-upload-row {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
-  flex-wrap: wrap;
+  gap: 20px;
 }
 
 .file-upload-row img {
-  width: 120px;
-  height: 120px;
-  object-fit: contain;
+  max-width: 150px;
+  max-height: 150px;
   border: 1px solid #ddd;
   border-radius: 8px;
-  background: #fafafa;
+  object-fit: contain;
 }
 
-/* ========== Botones Estilo Pastilla ========== */
+/* Botones estilo píldora */
+.file-buttons {
+  display: flex;
+  gap: 10px;
+}
+
 .btn-pill {
-  background: #007bff;
-  color: white;
-  border: none;
-  padding: 6px 14px;
-  border-radius: 30px;
+  padding: 6px 16px;
   font-size: 0.9rem;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 50px;
   cursor: pointer;
-  margin-bottom: 0.4rem;
-}
-
-.btn-pill.red {
-  background: #dc3545;
+  transition: background-color 0.25s ease;
 }
 
 .btn-pill:hover {
-  opacity: 0.9;
+  background-color: #0056b3;
 }
 
-.file-buttons {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+.btn-pill.red {
+  background-color: #dc3545;
 }
 
-/* ========== Input y bancos ========== */
+.btn-pill.red:hover {
+  background-color: #b02a37;
+}
+
+/* ----------------------------------------
+   OPCIONES PDF: LINK + BANCOS
+   ---------------------------------------- */
+.settings-group {
+  background: #fff;
+  padding: 25px;
+  margin-bottom: 25px;
+  border-radius: 10px;
+  border: 1px solid #e2e6ea;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+}
+
+.settings-group h3 {
+  font-size: 1.3rem;
+  margin-bottom: 15px;
+  color: #333;
+}
+
+.settings-group label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 500;
+  color: #444;
+}
+
 #inputPdfLink {
   width: 100%;
-  padding: 8px 12px;
+  padding: 10px 12px;
   font-size: 0.95rem;
+  margin-bottom: 18px;
   border: 1px solid #ccc;
   border-radius: 8px;
-  margin-bottom: 1rem;
+  box-sizing: border-box;
 }
 
-/* ========== Tarjetas de bancos ========== */
+/* Grid de tarjetas de bancos */
 .bank-grid {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 12px;
 }
 
 .bank-card {
   display: flex;
   align-items: center;
-  gap: 6px;
-  background: #f0f4fa;
-  padding: 6px 10px;
+  gap: 8px;
+  padding: 10px 12px;
+  background: #f1f3f5;
+  border: 1px solid #ccc;
   border-radius: 10px;
   cursor: pointer;
-  transition: all 0.3s ease;
-  border: 1px solid transparent;
+  transition: background 0.2s ease;
+  flex: 1 1 calc(33% - 12px);
+  min-width: 120px;
+  box-sizing: border-box;
 }
 
 .bank-card:hover {
-  background: #d9e7fa;
-  border-color: #b3d4fc;
+  background: #e6eaf0;
 }
 
 .bank-card img {
-  width: 20px;
-  height: 20px;
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
 }
 
-.bank-card input[type="checkbox"] {
-  margin-right: 4px;
+/* Checkbox dentro de label.bank-card */
+.bank-card input {
+  margin-right: 6px;
 }
 
-/* ========== Guardar botón ========== */
+/* ----------------------------------------
+   BOTÓN GUARDAR
+   ---------------------------------------- */
 .settings-section-actions {
   text-align: center;
+  margin-top: 30px;
 }
 
-#btnSaveSettings {
-  background: #28a745;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 30px;
+.btn-save {
+  padding: 12px 24px;
   font-size: 1rem;
+  background-color: #28a745;
+  border: none;
+  border-radius: 10px;
+  color: #fff;
   cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
-#btnSaveSettings:hover {
-  background: #218838;
-}
-
-#pdfTemplatePreview > * {
-  transform: scale(0.25) !important;
-  transform-origin: top center !important;
-  pointer-events: none;
-}
-
-#whatsappTemplatePreview > * {
-  transform: scale(0.35) !important;
-  transform-origin: top center !important;
-  pointer-events: none;
-}
-
-#reminderTemplatePreview > * {
-  transform: scale(0.45) !important;
-  transform-origin: top center !important;
-  pointer-events: none;
+.btn-save:hover {
+  background-color: #218838;
 }
 
 /* === Pantalla de carga === */
@@ -2905,50 +2946,54 @@ textarea.input-error {
 }
 
 @media (max-width: 768px) {
+
+  #settingsSection {
+    padding: 30px 15px;
+  }
+
   .template-previews-container {
     flex-direction: column;
-    align-items: center;
+    gap: 20px;
+    margin-bottom: 30px;
   }
+
+  .template-preview-wrapper {
+    max-width: 100%;
+  }
+
+  .template-preview {
+    height: 200px;
+  }
+
+  /* Ajustar escalas */
+  #pdfTemplatePreview > div       { transform: translate(-50%, -50%) scale(0.18) !important; }
+  #whatsappTemplatePreview > div  { transform: translate(-50%, -50%) scale(0.25) !important; }
+  #reminderTemplatePreview > div  { transform: translate(-50%, -50%) scale(0.32) !important; }
 
   .file-upload-row {
     flex-direction: column;
-    align-items: center;
+    align-items: flex-start;
+    gap: 15px;
   }
 
   .file-buttons {
     width: 100%;
-    flex-direction: row;
-    justify-content: center;
-    gap: 1rem;
-  }
-
-  .bank-grid {
-    justify-content: center;
+    justify-content: space-between;
   }
 
   .bank-card {
-    font-size: 0.85rem;
-    padding: 5px 10px;
+    flex: 1 1 48%;
   }
 
-  #btnSaveSettings {
-    width: 100%;
+  .settings-group {
+    padding: 20px;
   }
 
-  #inputPdfLink {
-    font-size: 1rem;
-  }
-
-  .template-preview-wrapper {
-    width: 90%;
-    max-width: 320px;
-    height: 180px;
-  }
-    .template-preview > * {
-    transform: scale(0.28) !important;
+  .btn-pill {
+    flex: 1;
+    text-align: center;
   }
 }
-
 @media (max-width: 480px) {
     body {
         padding: 10px;
