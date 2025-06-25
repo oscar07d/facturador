@@ -138,8 +138,12 @@
 }
 
 .template-preview-wrapper label {
-  margin-bottom: 0.5rem;
-  font-weight: 500;
+  font-weight: 600;
+  background: #f5f7ff;
+  padding: 4px 8px;
+  border-radius: 20px;
+  font-size: 13px;
+  border: 1px solid #cfd9ff;
 }
 
 .template-preview {
