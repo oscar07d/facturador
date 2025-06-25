@@ -111,17 +111,24 @@
                 <section id="settingsSection" style="display: none;">
                   <h2>Ajustes de Plantillas</h2>
 
-                    <div class="settings-group">
-                      <h3>Previsualizaciones</h3>
-                      <div class="template-preview-container">
-                      <label><input type="checkbox" class="template-toggle" value="pdf" checked> Ver PDF</label>
-                      <div id="pdfTemplatePreview" class="template-preview-box"></div>
+                    <div class="template-preview-wrapper">
+                      <label class="template-card">
+                        <input type="checkbox" class="template-toggle" value="pdf" />
+                        <h4>Plantilla PDF</h4>
+                        <div id="pdfTemplatePreview" class="preview-container"></div>
+                      </label>
                     
-                      <label><input type="checkbox" class="template-toggle" value="whatsapp" checked> Ver WhatsApp</label>
-                      <div id="whatsappTemplatePreview" class="template-preview-box"></div>
+                      <label class="template-card">
+                        <input type="checkbox" class="template-toggle" value="whatsapp" />
+                        <h4>Plantilla WhatsApp</h4>
+                        <div id="whatsappTemplatePreview" class="preview-container"></div>
+                      </label>
                     
-                      <label><input type="checkbox" class="template-toggle" value="reminder" checked> Ver Recordatorio</label>
-                      <div id="reminderTemplatePreview" class="template-preview-box"></div>
+                      <label class="template-card">
+                        <input type="checkbox" class="template-toggle" value="reminder" />
+                        <h4>Plantilla Recordatorio</h4>
+                        <div id="reminderTemplatePreview" class="preview-container"></div>
+                      </label>
                     </div>
                     
                       <div id="pdfTemplatePreview" class="template-preview scaled-preview"></div>
