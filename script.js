@@ -2178,7 +2178,7 @@ async function handleNavigation(sectionToShowId) {
       createInvoiceSection,
       viewInvoicesSection,
       clientsSection,
-      document.getElementById('settingsSection') // ← AÑADIR ESTA
+      settingsSection
     ];
     const navLinks = [
       navHome,
