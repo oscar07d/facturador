@@ -99,206 +99,172 @@
     --reminder-width: 580px;
 }
 
-/* ====== CONTENEDOR PRINCIPAL ====== */
+/* ========== AJUSTES: Estilo General ========== */
 #settingsSection {
-  padding: 30px 20px;
-  background: #f9f9fb;
-  border-radius: 12px;
-  max-width: 1000px;
-  margin: auto;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
-}
-
-/* ====== ENCABEZADO ====== */
-#settingsSection > h2 {
-  font-size: 1.8rem;
-  margin-bottom: 25px;
+  padding: 2rem;
+  background: #f3f7fd;
   color: #222;
-  text-align: center;
 }
 
-/* ====== BLOQUES DE SECCIÓN ====== */
-.setting-block {
+#settingsSection h2 {
+  text-align: center;
+  color: #1b3b8b;
+  margin-bottom: 2rem;
+}
+
+/* ========== Vista de Previsualizaciones ========== */
+.template-previews-container {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 2rem;
+}
+
+.template-preview-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 1px solid #e2e2e2;
+  border-radius: 12px;
   background: #fff;
-  padding: 25px;
-  margin-bottom: 25px;
-  border-radius: 10px;
-  border: 1px solid #e2e6ea;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+  padding: 1rem;
+  width: 240px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+.template-preview-wrapper label {
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.template-preview {
+  width: 100%;
+  max-height: 280px;
+  overflow: auto;
+  background: #fafafa;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 0.5rem;
+}
+
+/* ========== BLOQUES INDIVIDUALES ========== */
+.setting-block {
+  background: #ffffff;
+  padding: 1.5rem;
+  border-radius: 14px;
+  box-shadow: 0 0 8px rgba(0,0,0,0.03);
+  margin-bottom: 2rem;
 }
 
 .setting-block h3 {
-  font-size: 1.3rem;
-  margin-bottom: 15px;
-  color: #333;
+  margin-bottom: 1rem;
+  color: #444;
 }
 
-/* ====== PREVISUALIZACIONES ====== */
-.preview-image {
-  display: block;
-  max-width: 160px;
-  max-height: 160px;
-  margin-bottom: 15px;
-  border-radius: 8px;
+/* ========== Vista previa de Logo / QR ========== */
+.file-upload-row {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.file-upload-row img {
+  width: 120px;
+  height: 120px;
   object-fit: contain;
   border: 1px solid #ddd;
+  border-radius: 8px;
+  background: #fafafa;
 }
 
-/* ====== BOTONES ====== */
-.file-buttons-row {
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-  align-items: center;
-}
-
+/* ========== Botones Estilo Pastilla ========== */
 .btn-pill {
-  padding: 6px 16px;
-  font-size: 0.9rem;
-  background-color: #007bff;
-  color: #fff;
+  background: #007bff;
+  color: white;
   border: none;
-  border-radius: 50px;
+  padding: 6px 14px;
+  border-radius: 30px;
+  font-size: 0.9rem;
   cursor: pointer;
-  transition: background-color 0.25s ease;
-}
-
-.btn-pill:hover {
-  background-color: #0056b3;
+  margin-bottom: 0.4rem;
 }
 
 .btn-pill.red {
-  background-color: #dc3545;
+  background: #dc3545;
 }
 
-.btn-pill.red:hover {
-  background-color: #b02a37;
+.btn-pill:hover {
+  opacity: 0.9;
 }
 
-/* ====== INPUTS ====== */
+.file-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* ========== Input y bancos ========== */
 #inputPdfLink {
   width: 100%;
-  padding: 10px 12px;
+  padding: 8px 12px;
   font-size: 0.95rem;
-  margin-bottom: 18px;
   border: 1px solid #ccc;
   border-radius: 8px;
+  margin-bottom: 1rem;
 }
 
-/* ====== BANCOS / NEOBANCOS ====== */
+/* ========== Tarjetas de bancos ========== */
 .bank-grid {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
-  margin-top: 10px;
-}
-
-.bank-all-label {
-  flex: 1 1 100%;
-  font-size: 0.95rem;
-  margin-bottom: 6px;
-  color: #222;
+  gap: 10px;
 }
 
 .bank-card {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 10px 12px;
-  background: #f1f3f5;
-  border: 1px solid #ccc;
+  gap: 6px;
+  background: #f0f4fa;
+  padding: 6px 10px;
   border-radius: 10px;
   cursor: pointer;
-  transition: background 0.2s ease;
-  min-width: 150px;
-  flex-grow: 1;
-  max-width: calc(50% - 12px);
+  transition: all 0.3s ease;
+  border: 1px solid transparent;
 }
 
 .bank-card:hover {
-  background: #e6eaf0;
+  background: #d9e7fa;
+  border-color: #b3d4fc;
 }
 
 .bank-card img {
-  width: 30px;
-  height: 30px;
-  object-fit: contain;
+  width: 20px;
+  height: 20px;
 }
 
-/* ====== BOTÓN FINAL GUARDAR AJUSTES ====== */
-#btnSaveSettings {
-  display: block;
-  margin: 30px auto 0;
-  padding: 12px 24px;
-  font-size: 1rem;
-  background-color: #28a745;
-  border: none;
-  border-radius: 10px;
-  color: white;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
+.bank-card input[type="checkbox"] {
+  margin-right: 4px;
 }
 
-#btnSaveSettings:hover {
-  background-color: #218838;
-}
-
-.template-preview-wrapper {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
-  margin-top: 16px;
-  justify-content: center;
-}
-
-.template-card {
-  position: relative;
-  background: #fff;
-  border: 2px solid #ddd;
-  border-radius: 12px;
-  padding: 12px;
-  width: 250px;
-  max-width: 100%;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.06);
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.template-card input[type="checkbox"] {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  transform: scale(1.3);
-}
-
-.template-card.active {
-  border-color: #0d6efd;
-  box-shadow: 0 0 0 3px rgba(13,110,253,0.2);
-}
-
-.template-card h4 {
-  margin-top: 32px;
-  margin-bottom: 10px;
-  font-size: 16px;
-  font-weight: 600;
+/* ========== Guardar botón ========== */
+.settings-section-actions {
   text-align: center;
 }
 
-.template-card .preview-container {
-  width: 100%;
-  height: 200px;
-  overflow: hidden;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  background-color: #f9f9f9;
+#btnSaveSettings {
+  background: #28a745;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 30px;
+  font-size: 1rem;
+  cursor: pointer;
 }
 
-.template-card .preview-container > div {
-  transform: scale(0.4);
-  transform-origin: top left;
-  width: fit-content;
+#btnSaveSettings:hover {
+  background: #218838;
 }
 
 /* === Pantalla de carga === */
@@ -2903,67 +2869,44 @@ textarea.input-error {
   }
 }
 
-/* ======= RESPONSIVE PARA TABLETS Y MÓVILES ======= */
 @media (max-width: 768px) {
-  #settingsSection {
-    padding: 20px 10px;
-  }
-
-  .bank-card {
-    max-width: 100%;
-    justify-content: flex-start;
-  }
-
-  .file-buttons-row {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .preview-image {
-    max-width: 100%;
-    height: auto;
-  }
-
-  .setting-block {
-    padding: 20px 15px;
-  }
-}
-
-@media (max-width: 768px) {
-  .scaled-preview > * {
-    transform: scale(0.3);
-  }
-}
-
-@media screen and (max-width: 768px) {
-  .template-preview-wrapper {
+  .template-previews-container {
     flex-direction: column;
     align-items: center;
   }
 
-  .template-card {
-    width: 90%;
-    max-width: 340px;
-    margin: 0 auto;
+  .file-upload-row {
+    flex-direction: column;
+    align-items: center;
   }
 
-  .template-card h4 {
-    font-size: 15px;
-    margin-top: 36px;
+  .file-buttons {
+    width: 100%;
+    flex-direction: row;
+    justify-content: center;
+    gap: 1rem;
   }
 
-  .template-card input[type="checkbox"] {
-    top: 12px;
-    left: 12px;
-    transform: scale(1.4);
+  .bank-grid {
+    justify-content: center;
   }
 
-  .template-card .preview-container {
-    height: 160px;
+  .bank-card {
+    font-size: 0.85rem;
+    padding: 5px 10px;
   }
 
-  .template-card .preview-container > div {
-    transform: scale(0.35);
+  #btnSaveSettings {
+    width: 100%;
+  }
+
+  #inputPdfLink {
+    font-size: 1rem;
+  }
+
+  .template-preview-wrapper {
+    width: 100%;
+    max-width: 320px;
   }
 }
 
