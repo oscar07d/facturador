@@ -101,6 +101,7 @@
 
 /* ====== CONTENEDOR PRINCIPAL ====== */
 #settingsSection {
+  display: none; /* Esto lo oculta por defecto */
   padding: 30px 20px;
   background: #f9f9fb;
   border-radius: 12px;
