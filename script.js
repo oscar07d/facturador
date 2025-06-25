@@ -2178,7 +2178,7 @@ async function handleNavigation(sectionToShowId) {
       createInvoiceSection,
       viewInvoicesSection,
       clientsSection,
-      settingsSection    // ← añadimos Ajustes aquí
+      document.getElementById('settingsSection') // ← AÑADIR ESTA
     ];
     const navLinks = [
       navHome,
@@ -2211,7 +2211,9 @@ async function handleNavigation(sectionToShowId) {
         currentNavLinkId = 'navClients';
     }
     else if (sectionToShowId === 'settingsSection') {
-        currentNavLinkId = 'navSettings';
+      targetTitle = "Ajustes de Plantillas";
+      const settingsSection = document.getElementById('settingsSection');
+      if (settingsSection) settingsSection.style.display = 'block';
     }
     const currentLink = navLinks.find(l => l && l.id === currentNavLinkId);
     if (currentLink) currentLink.classList.add('active-nav');
@@ -3077,10 +3079,7 @@ onAuthStateChanged(auth, (user) => {
 // 2) Handler de click en Ajustes
 document.getElementById('navSettings').addEventListener('click', (e) => {
   e.preventDefault();
-  // Oculta **todas** las secciones
-  document.querySelectorAll('section').forEach(s => s.style.display = 'none');
-  // Muestra solo Ajustes
-  document.getElementById('settingsSection').style.display = 'block';
+  handleNavigation('settingsSection');
 });
 
 // --- Event Listeners para el Modal de Actualizar Pago ---
