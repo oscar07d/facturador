@@ -3059,6 +3059,7 @@ onAuthStateChanged(auth, (user) => {
 
   if (user) {
     console.log("Paso 6: Usuario autenticado en onAuthStateChanged.");
+    document.getElementById('settingsSection').style.display = 'block';
     loginContainer.style.display = 'none';
     mainContent.style.display  = 'flex';
     handleNavigation('homeSection');
