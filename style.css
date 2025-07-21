@@ -2416,16 +2416,44 @@ textarea.input-error {
 .modal-header h2 { margin: 0; font-size: 1.5rem; color: var(--primary-color); font-weight: 600; }
 .modal-close-btn { background: none; border: none; font-size: 2.2rem; font-weight: 300; color: var(--text-muted-color); cursor: pointer; padding: 0 5px; line-height: 1; transition: color var(--transition-speed) ease; }
 .modal-close-btn:hover { color: var(--danger-color); }
-.modal-body { overflow-y: auto; flex-grow: 1; min-height: 150px; padding-right: 5px; margin-bottom: 15px; }
+.modal-body {
+    overflow-y: auto; /* Permite el scroll vertical si el contenido es muy largo */
+    overflow-x: hidden; /* ¡CLAVE! Oculta el scroll horizontal */
+    flex-grow: 1;
+    min-height: 150px;
+    padding-right: 10px; /* Espacio para la barra de scroll vertical */
+    margin-bottom: 15px;
+}
 #modalInvoiceDetailsContent { font-size: 0.95rem; }
 #modalInvoiceDetailsContent h3 { font-size: 1.1rem; color: var(--secondary-color); margin-top: 15px; margin-bottom: 10px; padding-bottom: 5px; border-bottom: 1px dashed var(--border-color); }
 #modalInvoiceDetailsContent h3:first-child { margin-top: 0; }
-#modalInvoiceDetailsContent p { margin-bottom: 8px; line-height: 1.5; }
+#modalInvoiceDetailsContent p {
+    margin-bottom: 8px;
+    line-height: 1.5;
+    word-wrap: break-word; /* Permite que textos largos se partan */
+    overflow-wrap: break-word; /* Alternativa moderna para lo mismo */
+}
 #modalInvoiceDetailsContent strong { font-weight: 600; }
 #modalInvoiceDetailsContent .modal-section-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px 20px; margin-bottom: 15px; }
-#modalInvoiceDetailsContent .modal-items-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.9rem; }
-#modalInvoiceDetailsContent .modal-items-table th, #modalInvoiceDetailsContent .modal-items-table td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border-color); }
-#modalInvoiceDetailsContent .modal-items-table th { background-color: #f8f9fa; font-weight: 500; white-space: nowrap; }
+#modalInvoiceDetailsContent .modal-items-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    font-size: 0.9rem;
+    table-layout: fixed; /* ¡CLAVE! Fuerza a la tabla a respetar el ancho del contenedor */
+}
+#modalInvoiceDetailsContent .modal-items-table th, 
+#modalInvoiceDetailsContent .modal-items-table td {
+    text-align: left;
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--border-color);
+    word-wrap: break-word; /* Permite que el texto de las celdas se parta */
+}
+#modalInvoiceDetailsContent .modal-items-table th {
+    background-color: #f8f9fa;
+    font-weight: 500;
+    white-space: normal; /* Permite que los títulos de la tabla se partan si es necesario */
+}
 #modalInvoiceDetailsContent .modal-items-table .text-right { text-align: right; }
 #modalInvoiceDetailsContent .item-profile-details { font-size: 0.8em; color: var(--text-muted-color); display: block; margin-top: 2px; }
 #modalInvoiceDetailsContent .modal-totals-summary { margin-top: 20px; padding-top: 15px; border-top: 1px solid var(--border-color); }
