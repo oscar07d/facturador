@@ -2624,92 +2624,129 @@ textarea.input-error {
     }
 }
 
-/* === VISTA MÓVIL PARA LA SECCIÓN INICIO (DASHBOARD) === */
 @media (max-width: 768px) {
-    /* Ocultar elementos que ocupen espacio innecesario */
-    body {
-        padding: 0;
-        background: #f8f9fa;
-    }
+  /* 1) RESET DE ESPACIOS */
+  body, #app {
+    padding: 0;
+    margin: 0;
+  }
 
-    #homeSection {
-        padding: 0;
-        margin: 0;
-        background: #f8f9fa;
-    }
+  /* 2) CABECERA SIMPLIFICADA */
+  .app-header {
+    padding: 12px 16px;
+    justify-content: space-between;
+  }
+  .app-header h1,
+  .section-header h2 {
+    font-size: 1.2rem;
+    margin: 0;
+    flex: 1;
+    text-align: center;
+  }
+  .app-header .icon-button {
+    width: 24px;
+    height: 24px;
+  }
 
-    /* Cabecera del dashboard */
-    #homeSection h2 {
-        display: none; /* Ocultamos el título general */
-    }
+  /* 3) SWITCH DE SECCIONES COMO “CARDS” EN COLUMNA */
+  section {
+    padding: 0 16px 16px;
+    margin: 0;
+  }
+  .dashboard-grid,
+  .form-grid,
+  .clients-list,
+  .invoice-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
 
-    /* Cards de métricas: estilo más compacto y full width */
-    .dashboard-grid {
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-        padding: 16px;
-    }
+  /* 4) TARJETAS/ÍTEMS COMO “CARDS” */
+  .dashboard-card,
+  .invoice-list-item,
+  .clients-list li,
+  .form-section,
+  .modal-content {
+    background: #F0F2F5;
+    border-radius: 12px;
+    padding: 12px;
+    box-shadow: none;
+    border: none;
+  }
 
-    .dashboard-card {
-        background-color: #eaedf1;
-        border-radius: 12px;
-        padding: 16px;
-        box-shadow: none;
-        border: none;
-    }
+  /* 5) TEXTO Y TIPOGRAFÍA */
+  .dashboard-card h4,
+  .invoice-list-item h3,
+  .clients-list li .client-info h4 {
+    font-size: 1rem;
+    margin-bottom: 4px;
+  }
+  .dashboard-card p,
+  .invoice-list-item p,
+  .clients-list li .client-info p {
+    font-size: 1.3rem;
+    font-weight: 600;
+  }
 
-    .dashboard-card h4 {
-        font-size: 1rem;
-        margin-bottom: 6px;
-        font-weight: 500;
-    }
+  /* 6) GRÁFICA MÁS COMPACTA */
+  .chart-wrapper {
+    height: 200px;
+  }
 
-    .dashboard-card p {
-        font-size: 1.4rem;
-        font-weight: 700;
-        color: #101418;
-    }
+  /* 7) FILTROS / SELECT EN COLUMNA */
+  .chart-filters,
+  .invoice-search-controls,
+  .filter-group,
+  .form-actions {
+    flex-direction: column;
+    gap: 8px;
+  }
+  .chart-filters select,
+  .invoice-search-controls input,
+  .invoice-search-controls button,
+  .form-actions .btn {
+    width: 100%;
+  }
 
-    /* Gráfica ocupa todo el ancho y más espacio vertical */
-    .dashboard-card.chart-container {
-        padding: 16px;
-        margin-top: 12px;
-    }
+  /* 8) BARRA DE NAVEGACIÓN INFERIOR FIJA */
+  .bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 56px;
+    background: #ffffff;
+    display: flex;
+    border-top: 1px solid #ddd;
+    box-shadow: 0 -2px 8px rgba(0,0,0,0.05);
+    z-index: 1000;
+  }
+  .bottom-nav a {
+    flex: 1;
+    text-align: center;
+    font-size: 0.75rem;
+    color: #5c718a;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .bottom-nav a.active {
+    color: #007bff;
+  }
+  .bottom-nav a svg {
+    width: 24px;
+    height: 24px;
+    margin-bottom: 2px;
+  }
 
-    .chart-wrapper {
-        height: 200px; /* Más compacto */
-    }
-
-    /* Lista de ítems más vendidos */
-    .dashboard-card.top-items-list-container {
-        padding: 16px;
-    }
-
-    .top-items-list li {
-        padding: 10px 0;
-        font-size: 0.95rem;
-    }
-
-    .top-items-list .item-logo {
-        width: 32px;
-        height: 32px;
-    }
-
-    /* Ajuste para filtros */
-    .chart-filters {
-        flex-direction: column;
-        gap: 10px;
-    }
-
-    .filter-group label {
-        font-size: 0.85rem;
-    }
-
-    .chart-filters select,
-    .chart-filters input {
-        width: 100%;
-    }
+  /* 9) OCULTAR SCROLL INNECESARIO */
+  .dashboard-grid, .invoice-list, .clients-list {
+    overflow-y: auto;
+    max-height: calc(100vh - 200px);
+    padding-bottom: 80px; /* espacio para bottom-nav */
+  }
 }
 
 @media (max-width: 768px) {
