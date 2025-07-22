@@ -2714,7 +2714,7 @@ textarea.input-error {
   #homeSection .top-items-list {
     list-style: none;
     margin: 0;
-    padding: 0 16px 80px; /* espacio para footer */
+    padding: auto !important; /* espacio para footer */
   }
 
   #homeSection .top-items-list li {
@@ -2768,7 +2768,7 @@ textarea.input-error {
 
   /* Evitar que el contenido quede tapado */
   #homeSection {
-    padding-bottom: 80px !important;
+    padding-bottom: 0px !important;
   }
 }
 
