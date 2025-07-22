@@ -2625,49 +2625,15 @@ textarea.input-error {
 }
 
 @media (max-width: 768px) {
-  /* 1) RESET DE ESPACIOS */
-  body, #app {
-    padding: 0;
-    margin: 0;
-  }
-
-  /* 2) CABECERA SIMPLIFICADA */
-  .app-header {
-    padding: 12px 16px;
-    justify-content: space-between;
-  }
-  .app-header h1,
-  .section-header h2 {
-    font-size: 1.2rem;
-    margin: 0;
-    flex: 1;
-    text-align: center;
-  }
-  .app-header .icon-button {
-    width: 24px;
-    height: 24px;
-  }
-
-  /* 3) SWITCH DE SECCIONES COMO “CARDS” EN COLUMNA */
-  section {
-    padding: 0 16px 16px;
-    margin: 0;
-  }
-  .dashboard-grid,
-  .form-grid,
-  .clients-list,
-  .invoice-list {
-    display: flex;
-    flex-direction: column;
+  /* Contenedor de indicadores: 2 columnas */
+  .dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
     gap: 12px;
+    padding: 16px;
   }
 
-  /* 4) TARJETAS/ÍTEMS COMO “CARDS” */
-  .dashboard-card,
-  .invoice-list-item,
-  .clients-list li,
-  .form-section,
-  .modal-content {
+  .dashboard-card {
     background: #F0F2F5;
     border-radius: 12px;
     padding: 12px;
@@ -2675,77 +2641,97 @@ textarea.input-error {
     border: none;
   }
 
-  /* 5) TEXTO Y TIPOGRAFÍA */
-  .dashboard-card h4,
-  .invoice-list-item h3,
-  .clients-list li .client-info h4 {
-    font-size: 1rem;
+  .dashboard-card h4 {
+    font-size: 0.95rem;
     margin-bottom: 4px;
   }
-  .dashboard-card p,
-  .invoice-list-item p,
-  .clients-list li .client-info p {
+  .dashboard-card p {
     font-size: 1.3rem;
     font-weight: 600;
+    margin: 0;
   }
 
-  /* 6) GRÁFICA MÁS COMPACTA */
-  .chart-wrapper {
-    height: 200px;
+  /* Título “Resumen de Ingresos” con margen */
+  #homeSection h3 {
+    font-size: 1.1rem;
+    margin: 16px 16px 8px;
   }
 
-  /* 7) FILTROS / SELECT EN COLUMNA */
+  /* Selector full width * dentro de su contenedor */
   .chart-filters,
-  .invoice-search-controls,
-  .filter-group,
-  .form-actions {
-    flex-direction: column;
-    gap: 8px;
-  }
-  .chart-filters select,
-  .invoice-search-controls input,
-  .invoice-search-controls button,
-  .form-actions .btn {
-    width: 100%;
+  .chart-filters select {
+    width: calc(100% - 32px);
+    margin: 0 16px 12px;
   }
 
-  /* 8) BARRA DE NAVEGACIÓN INFERIOR FIJA */
+  /* Gráfica a todo ancho y altura compacta */
+  .dashboard-card.chart-container {
+    grid-column: 1 / -1;
+    padding: 0;
+    margin: 0 16px 16px;
+    background: none;
+    box-shadow: none;
+  }
+  .chart-wrapper {
+    height: 180px;
+  }
+
+  /* Ítems más vendidos: lista vertical */
+  .dashboard-card.top-items-list-container {
+    grid-column: 1 / -1;
+    padding: 0;
+    margin: 0 16px 80px; /* espacio bottom-nav */
+    background: none;
+    box-shadow: none;
+  }
+  .top-items-list li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #F0F2F5;
+    border-radius: 8px;
+    padding: 8px 12px;
+    margin-bottom: 8px;
+  }
+  .top-items-list .item-logo {
+    width: 32px;
+    height: 32px;
+  }
+  .top-items-list span {
+    font-size: 0.95rem;
+    font-weight: 500;
+  }
+
+  /* Barra inferior fija */
   .bottom-nav {
     position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
+    bottom: 0; left: 0; right: 0;
     height: 56px;
-    background: #ffffff;
+    background: #fff;
     display: flex;
     border-top: 1px solid #ddd;
-    box-shadow: 0 -2px 8px rgba(0,0,0,0.05);
     z-index: 1000;
   }
   .bottom-nav a {
     flex: 1;
     text-align: center;
-    font-size: 0.75rem;
     color: #5c718a;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+    font-size: 0.7rem;
+    text-decoration: none;
+    padding-top: 4px;
   }
-  .bottom-nav a.active {
-    color: #007bff;
-  }
+  .bottom-nav a.active { color: #007bff; }
   .bottom-nav a svg {
-    width: 24px;
-    height: 24px;
-    margin-bottom: 2px;
+    width: 24px; height: 24px;
+    display: block; margin: 0 auto 2px;
   }
 
-  /* 9) OCULTAR SCROLL INNECESARIO */
-  .dashboard-grid, .invoice-list, .clients-list {
-    overflow-y: auto;
-    max-height: calc(100vh - 200px);
-    padding-bottom: 80px; /* espacio para bottom-nav */
+  /* Ajustar el padding-bottom en el contenido para no taparlo */
+  #homeSection,
+  #clientsSection,
+  #viewInvoicesSection,
+  #createInvoiceSection {
+    padding-bottom: 80px;
   }
 }
 
