@@ -556,7 +556,7 @@ function getIconForItem(itemName) {
         return 'img/logos/prime_video.png'; // Asegúrate de que el nombre del archivo coincida
     }
     if (name.includes('max') || name.includes('hbo')) {
-        return 'img/logos/max.png';
+        return 'img/logos/HBO Max.png';
     }
     if (name.includes('netflix')) {
         return 'img/logos/netflix.png';
