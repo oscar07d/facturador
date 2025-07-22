@@ -2624,6 +2624,93 @@ textarea.input-error {
     }
 }
 
+/* === VISTA MÓVIL PARA LA SECCIÓN INICIO (DASHBOARD) === */
+@media (max-width: 768px) {
+    /* Ocultar elementos que ocupen espacio innecesario */
+    body {
+        padding: 0;
+        background: #f8f9fa;
+    }
+
+    #homeSection {
+        padding: 0;
+        margin: 0;
+        background: #f8f9fa;
+    }
+
+    /* Cabecera del dashboard */
+    #homeSection h2 {
+        display: none; /* Ocultamos el título general */
+    }
+
+    /* Cards de métricas: estilo más compacto y full width */
+    .dashboard-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        padding: 16px;
+    }
+
+    .dashboard-card {
+        background-color: #eaedf1;
+        border-radius: 12px;
+        padding: 16px;
+        box-shadow: none;
+        border: none;
+    }
+
+    .dashboard-card h4 {
+        font-size: 1rem;
+        margin-bottom: 6px;
+        font-weight: 500;
+    }
+
+    .dashboard-card p {
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: #101418;
+    }
+
+    /* Gráfica ocupa todo el ancho y más espacio vertical */
+    .dashboard-card.chart-container {
+        padding: 16px;
+        margin-top: 12px;
+    }
+
+    .chart-wrapper {
+        height: 200px; /* Más compacto */
+    }
+
+    /* Lista de ítems más vendidos */
+    .dashboard-card.top-items-list-container {
+        padding: 16px;
+    }
+
+    .top-items-list li {
+        padding: 10px 0;
+        font-size: 0.95rem;
+    }
+
+    .top-items-list .item-logo {
+        width: 32px;
+        height: 32px;
+    }
+
+    /* Ajuste para filtros */
+    .chart-filters {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .filter-group label {
+        font-size: 0.85rem;
+    }
+
+    .chart-filters select,
+    .chart-filters input {
+        width: 100%;
+    }
+}
 
 @media (max-width: 768px) {
     main.invoice-app-container {
