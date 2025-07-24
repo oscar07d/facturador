@@ -571,7 +571,7 @@ function getIconForItem(itemName) {
         return 'img/logos/cocina.png'; // Cocina
     }
     
-    if (name.includes('aseo hogar') || name.includes('liquido') || name.includes('escoba') || name.includes('trapero') || name.includes('mopa') || name.includes('limpieza') || name.includes('detergente') || name.includes('plumero') || name.includes('trapo') || name.includes('paño') || name.includes('esponja')) {
+    if (name.includes('aseo hogar') || name.includes('líquido') || name.includes('escoba') || name.includes('trapero') || name.includes('mopa') || name.includes('limpieza') || name.includes('detergente') || name.includes('plumero') || name.includes('trapo') || name.includes('paño') || name.includes('esponja')) {
         return 'img/logos/aseo_hogar.png'; // Aseo del hogar
     }
     
