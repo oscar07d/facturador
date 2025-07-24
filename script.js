@@ -567,248 +567,309 @@ function getIconForItem(itemName) {
     if (name.includes('spotify')) {
         return 'img/logos/spotify.png';
     }
+    // ——————————————————————
+    // 1. Cocina
     if (
         name.includes('cocina') || name.includes('olla') || name.includes('cazuela') || name.includes('cazo') ||
-        name.includes('sartén') || name.includes('wok') ||
+        name.includes('sartén') || name.includes('wok') || name.includes('paellera') || name.includes('perol') ||
         name.includes('cuchara') || name.includes('cucharón') || name.includes('cucharilla') || name.includes('cuchara de palo') ||
-        name.includes('tenedor') ||
-        name.includes('cuchillo') || name.includes('chef') || name.includes('panadero') || name.includes('pelador') ||
-        name.includes('rallador') || name.includes('mortero') ||
-        name.includes('espátula') || name.includes('raspador') ||
-        name.includes('batidor') || name.includes('whisk') ||
-        name.includes('tabla') || name.includes('tabla picar') || name.includes('tabla cortar') ||
+        name.includes('tenedor') || name.includes('tenedor de mesa') || name.includes('tenedor de postre') ||
+        name.includes('cuchillo') || name.includes('cuchillo chef') || name.includes('cuchillo pan') || name.includes('pelador') ||
+        name.includes('pelador zebra') || name.includes('pelador juliana') || name.includes('rallador') || name.includes('mortero') ||
+        name.includes('mano de mortero') || name.includes('espátula') || name.includes('raspador') || name.includes('turner') ||
+        name.includes('batidor') || name.includes('whisk') || name.includes('varilla batidora') ||
+        name.includes('tabla') || name.includes('tabla picar') || name.includes('tabla cortar') || name.includes('tabla sushi') ||
         name.includes('recipiente') || name.includes('tazón') || name.includes('bol') || name.includes('cuenco') ||
-        name.includes('jarra') || name.includes('medidor') || name.includes('vaso medidor') ||
-        name.includes('embudo') ||
-        name.includes('molde') || name.includes('molde pastel') || name.includes('molde pan') || name.includes('molde muffins') ||
-        name.includes('rodillo') || name.includes('reposa pasta') ||
+        name.includes('jarra') || name.includes('medidor') || name.includes('vaso medidor') || name.includes('taza medidora') ||
+        name.includes('embudo') || name.includes('cono filtrante') || name.includes('colador') || name.includes('cedazo') ||
+        name.includes('tamiz') || name.includes('molde') || name.includes('molde pastel') || name.includes('molde pan') ||
+        name.includes('molde muffins') || name.includes('rodillo') || name.includes('amasador') || name.includes('reposa pasta') ||
         name.includes('horno') || name.includes('microondas') || name.includes('tostadora') || name.includes('sandwichera') ||
-        name.includes('freidora') || name.includes('freidora aire') || name.includes('cafetera') || name.includes('prensa francesa') ||
+        name.includes('freidora') || name.includes('freidora aire') || name.includes('air fryer') || name.includes('cafetera') ||
+        name.includes('prensa francesa') || name.includes('espresso') || name.includes('cafetera moka') ||
         name.includes('licuadora') || name.includes('procesador') || name.includes('batidora inmersión') ||
-        name.includes('trapo cocina') || name.includes('limpión') || name.includes('paño cocina') || name.includes('esponja cocina') ||
-        name.includes('bayeta') || name.includes('estropajo')
+        name.includes('minipimer') || name.includes('trapo cocina') || name.includes('limpión') ||
+        name.includes('paño cocina') || name.includes('bayeta cocina') || name.includes('bayeta grasa') ||
+        name.includes('esponja cocina') || name.includes('estropajo cocina') || name.includes('esponjilla') ||
+        name.includes('moldes repostería') || name.includes('piedra pizza') || name.includes('piedra horno')
     ) {
         return 'img/logos/cocina.png'; // Cocina
     }
     
+    // ——————————————————————
+    // 2. Aseo del hogar
     if (
-        name.includes('aseo hogar') || name.includes('limpieza') || name.includes('desinfección') ||
-        name.includes('escoba') || name.includes('recogedor') ||
-        name.includes('mopa') || name.includes('trapero') || name.includes('fregona') ||
-        name.includes('cubeta') || name.includes('balde') || name.includes('cubo escurridor') ||
-        name.includes('plumero') || name.includes('cepillo piso') || name.includes('cepillo esquinas') ||
-        name.includes('paño') || name.includes('bayeta multiuso') || name.includes('trapo') ||
-        name.includes('esponja') || name.includes('estropajo multiuso') ||
-        name.includes('spray') || name.includes('pulverizador') ||
-        name.includes('detergente') || name.includes('jabón líquido') || name.includes('lejía') || name.includes('cloro') ||
-        name.includes('desinfectante') || name.includes('limpiavidrios') ||
-        name.includes('aspiradora') || name.includes('vaporizador')
+        name.includes('aseo hogar') || name.includes('limpieza') || name.includes('desinfección') || name.includes('higienización') ||
+        name.includes('escoba') || name.includes('broom') || name.includes('recogedor') || name.includes('dustpan') ||
+        name.includes('mopa') || name.includes('trapero') || name.includes('fregona') || name.includes('mop') ||
+        name.includes('cubeta') || name.includes('balde') || name.includes('cubo escurridor') || name.includes('bucket') ||
+        name.includes('plumero') || name.includes('feather duster') || name.includes('cepillo piso') || name.includes('floor brush') ||
+        name.includes('cepillo esquinas') || name.includes('corner brush') || name.includes('paño') || name.includes('bayeta') ||
+        name.includes('trapo') || name.includes('trapo multiuso') || name.includes('esponja') || name.includes('estropajo') ||
+        name.includes('esponja multiuso') || name.includes('spray') || name.includes('pulverizador') || name.includes('atomizador') ||
+        name.includes('detergente') || name.includes('jabón líquido') || name.includes('jabón polvo') || name.includes('lejía') ||
+        name.includes('cloro') || name.includes('bleach') || name.includes('desinfectante') || name.includes('antiséptico') ||
+        name.includes('limpiavidrios') || name.includes('glass cleaner') || name.includes('aspiradora') || name.includes('vacuum') ||
+        name.includes('vaporizador') || name.includes('steam mop') || name.includes('escurridor') || name.includes('fregadero')
     ) {
         return 'img/logos/aseo_hogar.png'; // Aseo del hogar
     }
     
+    // ——————————————————————
+    // 3. Aseo personal
     if (
-        name.includes('aseo personal') || name.includes('higiene personal') ||
-        name.includes('jabón') || name.includes('gel baño') || name.includes('gel ducha') ||
-        name.includes('shampoo') || name.includes('acondicionador') || name.includes('tónico') ||
-        name.includes('cotonete') || name.includes('algodón') ||
+        name.includes('aseo personal') || name.includes('higiene personal') || name.includes('cuidado personal') ||
+        name.includes('jabón') || name.includes('gel baño') || name.includes('gel ducha') || name.includes('jabón corporal') ||
+        name.includes('shampoo') || name.includes('acondicionador') || name.includes('tónico capilar') ||
+        name.includes('cotonete') || name.includes('hisopo') || name.includes('algodón') ||
         name.includes('cepillo dientes') || name.includes('pasta dental') || name.includes('hilo dental') || name.includes('enjuague bucal') ||
-        name.includes('rasuradora') || name.includes('afeitadora') || name.includes('crema afeitar') ||
+        name.includes('rasuradora') || name.includes('afeitadora') || name.includes('maquinilla') || name.includes('crema afeitar') ||
         name.includes('toalla facial') || name.includes('toalla mano') || name.includes('toalla baño') ||
-        name.includes('esponja facial') || name.includes('esponja corporal') ||
-        name.includes('desodorante') || name.includes('antitranspirante') ||
-        name.includes('crema hidratante') || name.includes('loción') ||
-        name.includes('cepillo cabello') || name.includes('peine') || name.includes('secador pelo')
+        name.includes('esponja facial') || name.includes('lufa') || name.includes('esponja corporal') ||
+        name.includes('desodorante') || name.includes('antitranspirante') || name.includes('spray axilas') ||
+        name.includes('crema hidratante') || name.includes('loción corporal') || name.includes('aceite corporal') ||
+        name.includes('cepillo cabello') || name.includes('peine') || name.includes('secador pelo') || name.includes('planchita')
     ) {
         return 'img/logos/aseo_personal.png'; // Aseo personal
     }
     
+    // ——————————————————————
+    // 4. Frutas
     if (
-        name.includes('fruta') || name.includes('frutas') ||
+        name.includes('fruta') || name.includes('frutas') || name.includes('frutería') ||
         name.includes('manzana') || name.includes('pera') || name.includes('plátano') || name.includes('banana') ||
         name.includes('fresa') || name.includes('kiwi') || name.includes('durazno') || name.includes('melocotón') ||
-        name.includes('uva') || name.includes('cereza') || name.includes('piña') || name.includes('mango') || name.includes('papaya') ||
-        name.includes('naranja') || name.includes('mandarina') || name.includes('limón') || name.includes('lima')
+        name.includes('nectarina') || name.includes('uva') || name.includes('cereza') || name.includes('piña') ||
+        name.includes('mango') || name.includes('papaya') || name.includes('maracuyá') || name.includes('naranja') ||
+        name.includes('mandarina') || name.includes('limón') || name.includes('lima') || name.includes('pomelo') ||
+        name.includes('toronja') || name.includes('arándano') || name.includes('frambuesa')
     ) {
         return 'img/logos/alimento_frutas.png'; // Frutas
     }
     
+    // ——————————————————————
+    // 5. Verduras
     if (
-        name.includes('verdura') || name.includes('verduras') ||
-        name.includes('zanahoria') || name.includes('tomate') || name.includes('lechuga') ||
-        name.includes('espinaca') || name.includes('col') || name.includes('repollo') ||
-        name.includes('acelga') || name.includes('pimiento') || name.includes('pepino') ||
-        name.includes('berenjena') || name.includes('calabaza') || name.includes('brocoli') ||
-        name.includes('ajo') || name.includes('cebolla') || name.includes('espárrago')
+        name.includes('verdura') || name.includes('verduras') || name.includes('hortaliza') || name.includes('legumbre') ||
+        name.includes('zanahoria') || name.includes('tomate') || name.includes('lechuga') || name.includes('espinaca') ||
+        name.includes('col') || name.includes('repollo') || name.includes('acelga') || name.includes('pimiento') ||
+        name.includes('pepino') || name.includes('berenjena') || name.includes('calabaza') || name.includes('brócoli') ||
+        name.includes('coliflor') || name.includes('ajo') || name.includes('cebolla') || name.includes('espárrago') ||
+        name.includes('alcachofa') || name.includes('rábano') || name.includes('okra') || name.includes('apio')
     ) {
         return 'img/logos/alimento_verduras.png'; // Verduras
     }
     
+    // ——————————————————————
+    // 6. Carnes y proteínas
     if (
-        name.includes('carne') || name.includes('proteína') ||
-        name.includes('pollo') || name.includes('cerdo') || name.includes('res') ||
-        name.includes('cordero') || name.includes('jamón') || name.includes('tocino') ||
-        name.includes('salchicha') || name.includes('pescado') || name.includes('atún') ||
-        name.includes('marisco') || name.includes('camarón') || name.includes('huevo')
+        name.includes('carne') || name.includes('carnes') || name.includes('proteína') || name.includes('proteínas') ||
+        name.includes('pollo') || name.includes('cerdo') || name.includes('res') || name.includes('cordero') ||
+        name.includes('jamón') || name.includes('tocino') || name.includes('salchicha') || name.includes('embutido') ||
+        name.includes('chorizo') || name.includes('pescado') || name.includes('atún') || name.includes('salmón') ||
+        name.includes('merluza') || name.includes('bacalao') || name.includes('marisco') || name.includes('camarón') ||
+        name.includes('langosta') || name.includes('mejillón') || name.includes('ostra') || name.includes('huevo') ||
+        name.includes('huevos') || name.includes('pavo') || name.includes('anchoa')
     ) {
         return 'img/logos/alimento_carnes.png'; // Carnes y proteínas
     }
     
+    // ——————————————————————
+    // 7. Lácteos
     if (
-        name.includes('lácteo') || name.includes('lacteos') ||
-        name.includes('leche') || name.includes('yogur') || name.includes('queso') ||
-        name.includes('mantequilla') || name.includes('nata') || name.includes('crema agria')
+        name.includes('lácteo') || name.includes('lacteos') || name.includes('leche') || name.includes('yogur') ||
+        name.includes('queso') || name.includes('mantequilla') || name.includes('nata') || name.includes('crema agria') ||
+        name.includes('suero') || name.includes('kefir') || name.includes('requesón')
     ) {
         return 'img/logos/alimento_lacteos.png'; // Lácteos
     }
     
+    // ——————————————————————
+    // 8. Panadería y cereales
     if (
-        name.includes('pan') || name.includes('bollo') || name.includes('panadería') ||
-        name.includes('baguette') || name.includes('croissant') || name.includes('rosquilla') ||
-        name.includes('cereal') || name.includes('harina') || name.includes('avena') ||
-        name.includes('arroz') || name.includes('pasta')
+        name.includes('pan') || name.includes('bollo') || name.includes('baguette') || name.includes('croissant') ||
+        name.includes('rosquilla') || name.includes('donut') || name.includes('cereal') || name.includes('harina') ||
+        name.includes('avena') || name.includes('granola') || name.includes('pan integral') || name.includes('arroz') ||
+        name.includes('pasta') || name.includes('fideos') || name.includes('espagueti') || name.includes('macarrones')
     ) {
         return 'img/logos/alimento_panaderia.png'; // Panadería y cereales
     }
     
+    // ——————————————————————
+    // 9. Bebidas
     if (
-        name.includes('bebida') || name.includes('bebidas') ||
-        name.includes('jugo') || name.includes('líquido') || name.includes('batido') ||
-        name.includes('licuado') || name.includes('té') || name.includes('café') ||
-        name.includes('gaseosa') || name.includes('refresco') || name.includes('agua') ||
-        name.includes('infusión') || name.includes('té frío')
+        name.includes('bebida') || name.includes('bebidas') || name.includes('jugo') || name.includes('batido') ||
+        name.includes('licuado') || name.includes('té') || name.includes('café') || name.includes('gaseosa') ||
+        name.includes('refresco') || name.includes('soda') || name.includes('agua') || name.includes('infusión') ||
+        name.includes('smoothie') || name.includes('shake')
     ) {
         return 'img/logos/bebidas.png'; // Bebidas
     }
     
+    // ——————————————————————
+    // 10. Electrodomésticos
     if (
-        name.includes('electrodoméstico') || name.includes('electrodomesticos') ||
-        name.includes('microondas') || name.includes('horno') || name.includes('refrigerador') ||
-        name.includes('nevera') || name.includes('congelador') || name.includes('lavadora') ||
-        name.includes('secadora') || name.includes('lavavajillas') || name.includes('cafetera') ||
-        name.includes('tostadora') || name.includes('licuadora') || name.includes('procesador') ||
-        name.includes('batidora') || name.includes('sandwichera') || name.includes('freidora') ||
-        name.includes('plancha') || name.includes('aspiradora') || name.includes('humidificador')
+        name.includes('electrodoméstico') || name.includes('electrodomesticos') || name.includes('microondas') ||
+        name.includes('horno') || name.includes('refrigerador') || name.includes('nevera') || name.includes('congelador') ||
+        name.includes('lavadora') || name.includes('secadora') || name.includes('lavavajillas') || name.includes('cafetera') ||
+        name.includes('tostadora') || name.includes('licuadora') || name.includes('procesador') || name.includes('batidora') ||
+        name.includes('sandwichera') || name.includes('freidora') || name.includes('aspiradora') ||
+        name.includes('humidificador') || name.includes('ventilador') || name.includes('aire acondicionado') ||
+        name.includes('calefactor') || name.includes('plancha')
     ) {
         return 'img/logos/electrodomesticos.png'; // Electrodomésticos
     }
     
+    // ——————————————————————
+    // 11. Muebles – Sala
     if (
-        name.includes('mueble sala') || name.includes('sala') ||
-        name.includes('sofá') || name.includes('sofa') || name.includes('sillón') || name.includes('sillon') ||
-        name.includes('mesa centro') || name.includes('mesita') || name.includes('estantería') || name.includes('librero') ||
-        name.includes('alfombra') || name.includes('lampara pie') || name.includes('mesa lateral')
+        name.includes('sala') || name.includes('mueble sala') || name.includes('sofá') || name.includes('sofa') ||
+        name.includes('sillón') || name.includes('sillon') || name.includes('mesa centro') || name.includes('mesita') ||
+        name.includes('estantería') || name.includes('librero') || name.includes('alfombra') || name.includes('lampara pie') ||
+        name.includes('lampara') || name.includes('apoyapiés') || name.includes('otoman')
     ) {
         return 'img/logos/mueble_sala.png'; // Muebles - Sala
     }
     
+    // ——————————————————————
+    // 12. Muebles – Comedor
     if (
-        name.includes('mueble comedor') || name.includes('comedor') ||
-        name.includes('mesa comedor') || name.includes('silla comedor') || name.includes('aparador') ||
-        name.includes('vajilla') || name.includes('mantel') || name.includes('servilleta')
+        name.includes('comedor') || name.includes('mueble comedor') || name.includes('mesa comedor') ||
+        name.includes('silla comedor') || name.includes('aparador') || name.includes('buffet') ||
+        name.includes('vajilla') || name.includes('mantel') || name.includes('servilleta') || name.includes('copas')
     ) {
         return 'img/logos/mueble_comedor.png'; // Muebles - Comedor
     }
     
+    // ——————————————————————
+    // 13. Muebles – Dormitorio
     if (
-        name.includes('mueble dormitorio') || name.includes('dormitorio') ||
-        name.includes('cama') || name.includes('somier') || name.includes('armario') ||
+        name.includes('dormitorio') || name.includes('mueble dormitorio') || name.includes('cama') ||
+        name.includes('somier') || name.includes('colchón') || name.includes('armario') ||
         name.includes('closet') || name.includes('ropero') || name.includes('tocador') ||
-        name.includes('mesita noche') || name.includes('cojín') || name.includes('cobija')
+        name.includes('cojín') || name.includes('cobija') || name.includes('edredón') ||
+        name.includes('colcha') || name.includes('mesita noche')
     ) {
         return 'img/logos/mueble_dormitorio.png'; // Muebles - Dormitorio
     }
     
+    // ——————————————————————
+    // 14. Oficina en casa
     if (
-        name.includes('oficina') || name.includes('home office') ||
-        name.includes('escritorio') || name.includes('silla ergonómica') || name.includes('silla oficina') ||
-        name.includes('librero oficina') || name.includes('archivador') || name.includes('monitor') ||
-        name.includes('teclado') || name.includes('impresora')
+        name.includes('oficina') || name.includes('home office') || name.includes('escritorio') ||
+        name.includes('silla ergonómica') || name.includes('silla oficina') || name.includes('librero oficina') ||
+        name.includes('archivador') || name.includes('monitor') || name.includes('teclado') ||
+        name.includes('ratón') || name.includes('mouse') || name.includes('impresora')
     ) {
         return 'img/logos/oficina.png'; // Oficina en casa
     }
     
+    // ——————————————————————
+    // 15. Jardín / Terraza
     if (
-        name.includes('jardín') || name.includes('jardin') || name.includes('terraza') ||
-        name.includes('mesa exterior') || name.includes('silla exterior') || name.includes('tumbona') ||
-        name.includes('hamaca') || name.includes('maceta') || name.includes('regadera')
+        name.includes('jardín') || name.includes('jardin') || name.includes('terraza') || name.includes('patio') ||
+        name.includes('exterior') || name.includes('balcón') || name.includes('maceta') || name.includes('regadera') ||
+        name.includes('semillas') || name.includes('abono') || name.includes('césped') || name.includes('césped sintético') ||
+        name.includes('tijeras poda') || name.includes('tijeras de poda') || name.includes('poda') ||
+        name.includes('pesticidas') || name.includes('herbicida') || name.includes('fungicida') ||
+        name.includes('cerca madera') || name.includes('valla madera') || name.includes('hamaca') ||
+        name.includes('tumbona') || name.includes('mesa exterior') || name.includes('silla exterior')
     ) {
         return 'img/logos/jardin.png'; // Jardín / Terraza
     }
     
+    // ——————————————————————
+    // 16. Snacks y golosinas
     if (
-        name.includes('snack') || name.includes('aperitivo') || name.includes('tapa') ||
-        name.includes('golosina') || name.includes('galleta') || name.includes('papas fritas') ||
-        name.includes('chocolate') || name.includes('frutos secos')
+        name.includes('snack') || name.includes('snacks') || name.includes('aperitivo') || name.includes('tapa') ||
+        name.includes('golosina') || name.includes('galleta') || name.includes('papas fritas') || name.includes('chips') ||
+        name.includes('chocolate') || name.includes('frutos secos') || name.includes('nuts') || name.includes('pistacho')
     ) {
         return 'img/logos/snacks.png'; // Snacks y golosinas
     }
     
+    // ——————————————————————
+    // 17. Mascotas
     if (
-        name.includes('mascota') || name.includes('perro') || name.includes('gato') ||
-        name.includes('alimento perro') || name.includes('alimento gato') ||
-        name.includes('cama mascota') || name.includes('correa') || name.includes('juguete mascota') ||
-        name.includes('collar') || name.includes('bebedero')
+        name.includes('mascota') || name.includes('perro') || name.includes('gato') || name.includes('felino') ||
+        name.includes('canino') || name.includes('alimento perro') || name.includes('alimento gato') ||
+        name.includes('comida perro') || name.includes('comida gato') || name.includes('juguete mascota') ||
+        name.includes('collar') || name.includes('correa') || name.includes('cama mascota') ||
+        name.includes('bebedero') || name.includes('comedero')
     ) {
         return 'img/logos/mascotas.png'; // Mascotas
     }
     
+    // ——————————————————————
+    // 18. Bebés
     if (
-        name.includes('bebé') || name.includes('bebe') || name.includes('pañal') ||
-        name.includes('biberón') || name.includes('cochecito') || name.includes('formula') ||
-        name.includes('chupete') || name.includes('pañalera')
+        name.includes('bebé') || name.includes('bebe') || name.includes('pañal') || name.includes('pañales') ||
+        name.includes('biberón') || name.includes('fórmula') || name.includes('chupete') || name.includes('tetina') ||
+        name.includes('cochecito') || name.includes('cuna') || name.includes('moisés') || name.includes('pañalera')
     ) {
         return 'img/logos/bebes.png'; // Bebés
     }
     
+    // ——————————————————————
+    // 19. Bebidas alcohólicas
     if (
-        name.includes('vino') || name.includes('cerveza') || name.includes('licor') ||
-        name.includes('coctel') || name.includes('whisky') || name.includes('vodka') ||
-        name.includes('ron') || name.includes('ginebra')
+        name.includes('vino') || name.includes('cerveza') || name.includes('licor') || name.includes('coctel') ||
+        name.includes('cocktail') || name.includes('whisky') || name.includes('vodka') || name.includes('ron') ||
+        name.includes('ginebra') || name.includes('tequila') || name.includes('champán') || name.includes('moscato')
     ) {
         return 'img/logos/bebidas_alcoholicas.png'; // Bebidas alcohólicas
     }
     
+    // ——————————————————————
+    // 20. Tecnología y domótica
     if (
-        name.includes('tecnología') || name.includes('domótica') ||
-        name.includes('smartphone') || name.includes('tablet') || name.includes('laptop') ||
+        name.includes('tecnología') || name.includes('domótica') || name.includes('smartphone') ||
+        name.includes('tablet') || name.includes('laptop') || name.includes('ordenador') ||
         name.includes('router') || name.includes('altavoz') || name.includes('televisor') ||
-        name.includes('consola') || name.includes('videojuego')
+        name.includes('tv') || name.includes('consola') || name.includes('videojuego') ||
+        name.includes('smartwatch') || name.includes('dron')
     ) {
         return 'img/logos/tecnologia.png'; // Tecnología y domótica
     }
     
+    // ——————————————————————
+    // 21. Textiles y costura
     if (
-        name.includes('textil') || name.includes('costura') || name.includes('tela') ||
-        name.includes('sábana') || name.includes('sabana') || name.includes('toalla') ||
-        name.includes('cortina') || name.includes('hilo') || name.includes('aguja') ||
-        name.includes('botón') || name.includes('tijera costura') || name.includes('manta') ||
-        name.includes('colcha') || name.includes('edredón') || name.includes('cojín')
+        name.includes('textil') || name.includes('costura') || name.includes('tela') || name.includes('sábana') ||
+        name.includes('sabana') || name.includes('toalla') || name.includes('cortina') || name.includes('hilo') ||
+        name.includes('aguja') || name.includes('botón') || name.includes('botones') || name.includes('tijeras costura') ||
+        name.includes('tijera costura') || name.includes('manta') || name.includes('colcha') || name.includes('edredón') ||
+        name.includes('cojín') || name.includes('alfombra tela')
     ) {
         return 'img/logos/textiles_costura.png'; // Textiles y costura
     }
     
+    // ——————————————————————
+    // 22. Medicamentos e implementos médicos
     if (
-        name.includes('medicina') || name.includes('medicamento') || name.includes('pastilla') ||
-        name.includes('jarabe') || name.includes('antibiótico') || name.includes('analgésico') ||
-        name.includes('jeringa') || name.includes('termómetro') || name.includes('venda') ||
-        name.includes('esparadrapo') || name.includes('tira test') || name.includes('tensiómetro')
+        name.includes('medicamento') || name.includes('medicina') || name.includes('pastilla') || name.includes('jarabe') ||
+        name.includes('antibiótico') || name.includes('analgésico') || name.includes('jeringa') || name.includes('inyección') ||
+        name.includes('termómetro') || name.includes('tensiómetro') || name.includes('glucometro') ||
+        name.includes('venda') || name.includes('esparadrapo') || name.includes('gasas') || name.includes('curita') ||
+        name.includes('ferula') || name.includes('muleta') || name.includes('andadera') || name.includes('silla ruedas') ||
+        name.includes('oxímetro') || name.includes('estetoscopio') || name.includes('bata médica') ||
+        name.includes('guantes médicos') || name.includes('mascarilla') || name.includes('tapabocas')
     ) {
-        return 'img/logos/medicamentos.png'; // Medicamentos y implementos médicos
+        return 'img/logos/medicamentos.png'; // Medicamentos e implementos médicos
     }
     
+    // ——————————————————————
+    // 23. Viajes y transporte
     if (
-        name.includes('viaje') || name.includes('viajes') || name.includes('transporte') ||
-        name.includes('autobús') || name.includes('bus') || name.includes('metro') ||
-        name.includes('tren') || name.includes('avión') || name.includes('barco') ||
-        name.includes('crucero') || name.includes('taxi') || name.includes('bicicleta') ||
-        name.includes('coche') || name.includes('auto') || name.includes('equipaje') ||
-        name.includes('maleta') || name.includes('boleto') || name.includes('ticket') ||
-        name.includes('transporte público')
+        name.includes('viaje') || name.includes('viajes') || name.includes('transporte') || name.includes('transporte público') ||
+        name.includes('autobús') || name.includes('bus') || name.includes('metro') || name.includes('tren') ||
+        name.includes('avión') || name.includes('barco') || name.includes('crucero') || name.includes('taxi') ||
+        name.includes('bicicleta') || name.includes('coche') || name.includes('auto') || name.includes('automóvil') ||
+        name.includes('maleta') || name.includes('equipaje') || name.includes('maletas') || name.includes('boleto') ||
+        name.includes('ticket') || name.includes('pasaje') || name.includes('ferrocarril')
     ) {
         return 'img/logos/viajes_transporte.png'; // Viajes y transporte
     }
-
     // ...puedes añadir más 'if' para otros servicios aquí...
 
     return null; // Devuelve null si no se encuentra un logo conocido
