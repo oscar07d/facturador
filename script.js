@@ -567,95 +567,245 @@ function getIconForItem(itemName) {
     if (name.includes('spotify')) {
         return 'img/logos/spotify.png';
     }
-    if (name.includes('cocina') || name.includes('olla') || name.includes('cuchara') || name.includes('tenedor') || name.includes('sartén') || name.includes('batidor') || name.includes('tabla') || name.includes('licuadora') || name.includes('trapo cocina') || name.includes('limpión') || name.includes('paño cocina') || name.includes('esponja cocina')) {
+    if (
+        name.includes('cocina') || name.includes('olla') || name.includes('cazuela') || name.includes('cazo') ||
+        name.includes('sartén') || name.includes('wok') ||
+        name.includes('cuchara') || name.includes('cucharón') || name.includes('cucharilla') || name.includes('cuchara de palo') ||
+        name.includes('tenedor') ||
+        name.includes('cuchillo') || name.includes('chef') || name.includes('panadero') || name.includes('pelador') ||
+        name.includes('rallador') || name.includes('mortero') ||
+        name.includes('espátula') || name.includes('raspador') ||
+        name.includes('batidor') || name.includes('whisk') ||
+        name.includes('tabla') || name.includes('tabla picar') || name.includes('tabla cortar') ||
+        name.includes('recipiente') || name.includes('tazón') || name.includes('bol') || name.includes('cuenco') ||
+        name.includes('jarra') || name.includes('medidor') || name.includes('vaso medidor') ||
+        name.includes('embudo') ||
+        name.includes('molde') || name.includes('molde pastel') || name.includes('molde pan') || name.includes('molde muffins') ||
+        name.includes('rodillo') || name.includes('reposa pasta') ||
+        name.includes('horno') || name.includes('microondas') || name.includes('tostadora') || name.includes('sandwichera') ||
+        name.includes('freidora') || name.includes('freidora aire') || name.includes('cafetera') || name.includes('prensa francesa') ||
+        name.includes('licuadora') || name.includes('procesador') || name.includes('batidora inmersión') ||
+        name.includes('trapo cocina') || name.includes('limpión') || name.includes('paño cocina') || name.includes('esponja cocina') ||
+        name.includes('bayeta') || name.includes('estropajo')
+    ) {
         return 'img/logos/cocina.png'; // Cocina
     }
     
-    if (name.includes('aseo hogar') || name.includes('líquido') || name.includes('escoba') || name.includes('trapero') || name.includes('mopa') || name.includes('limpieza') || name.includes('detergente') || name.includes('plumero') || name.includes('trapo') || name.includes('paño') || name.includes('esponja')) {
+    if (
+        name.includes('aseo hogar') || name.includes('limpieza') || name.includes('desinfección') ||
+        name.includes('escoba') || name.includes('recogedor') ||
+        name.includes('mopa') || name.includes('trapero') || name.includes('fregona') ||
+        name.includes('cubeta') || name.includes('balde') || name.includes('cubo escurridor') ||
+        name.includes('plumero') || name.includes('cepillo piso') || name.includes('cepillo esquinas') ||
+        name.includes('paño') || name.includes('bayeta multiuso') || name.includes('trapo') ||
+        name.includes('esponja') || name.includes('estropajo multiuso') ||
+        name.includes('spray') || name.includes('pulverizador') ||
+        name.includes('detergente') || name.includes('jabón líquido') || name.includes('lejía') || name.includes('cloro') ||
+        name.includes('desinfectante') || name.includes('limpiavidrios') ||
+        name.includes('aspiradora') || name.includes('vaporizador')
+    ) {
         return 'img/logos/aseo_hogar.png'; // Aseo del hogar
     }
     
-    if (name.includes('aseo personal') || name.includes('jabón') || name.includes('shampoo') || name.includes('crema') || name.includes('cepillo dientes') || name.includes('pasta dental') || name.includes('rasuradora')) {
+    if (
+        name.includes('aseo personal') || name.includes('higiene personal') ||
+        name.includes('jabón') || name.includes('gel baño') || name.includes('gel ducha') ||
+        name.includes('shampoo') || name.includes('acondicionador') || name.includes('tónico') ||
+        name.includes('cotonete') || name.includes('algodón') ||
+        name.includes('cepillo dientes') || name.includes('pasta dental') || name.includes('hilo dental') || name.includes('enjuague bucal') ||
+        name.includes('rasuradora') || name.includes('afeitadora') || name.includes('crema afeitar') ||
+        name.includes('toalla facial') || name.includes('toalla mano') || name.includes('toalla baño') ||
+        name.includes('esponja facial') || name.includes('esponja corporal') ||
+        name.includes('desodorante') || name.includes('antitranspirante') ||
+        name.includes('crema hidratante') || name.includes('loción') ||
+        name.includes('cepillo cabello') || name.includes('peine') || name.includes('secador pelo')
+    ) {
         return 'img/logos/aseo_personal.png'; // Aseo personal
     }
     
-    if (name.includes('fruta') || name.includes('manzana') || name.includes('fresa') || name.includes('mango') || name.includes('uva') || name.includes('piña') || name.includes('naranja')) {
+    if (
+        name.includes('fruta') || name.includes('frutas') ||
+        name.includes('manzana') || name.includes('pera') || name.includes('plátano') || name.includes('banana') ||
+        name.includes('fresa') || name.includes('kiwi') || name.includes('durazno') || name.includes('melocotón') ||
+        name.includes('uva') || name.includes('cereza') || name.includes('piña') || name.includes('mango') || name.includes('papaya') ||
+        name.includes('naranja') || name.includes('mandarina') || name.includes('limón') || name.includes('lima')
+    ) {
         return 'img/logos/alimento_frutas.png'; // Frutas
     }
     
-    if (name.includes('verdura') || name.includes('zanahoria') || name.includes('tomate') || name.includes('lechuga') || name.includes('papa') || name.includes('pepino') || name.includes('brócoli')) {
+    if (
+        name.includes('verdura') || name.includes('verduras') ||
+        name.includes('zanahoria') || name.includes('tomate') || name.includes('lechuga') ||
+        name.includes('espinaca') || name.includes('col') || name.includes('repollo') ||
+        name.includes('acelga') || name.includes('pimiento') || name.includes('pepino') ||
+        name.includes('berenjena') || name.includes('calabaza') || name.includes('brocoli') ||
+        name.includes('ajo') || name.includes('cebolla') || name.includes('espárrago')
+    ) {
         return 'img/logos/alimento_verduras.png'; // Verduras
     }
     
-    if (name.includes('carne') || name.includes('pollo') || name.includes('pescado') || name.includes('huevo') || name.includes('proteína')) {
+    if (
+        name.includes('carne') || name.includes('proteína') ||
+        name.includes('pollo') || name.includes('cerdo') || name.includes('res') ||
+        name.includes('cordero') || name.includes('jamón') || name.includes('tocino') ||
+        name.includes('salchicha') || name.includes('pescado') || name.includes('atún') ||
+        name.includes('marisco') || name.includes('camarón') || name.includes('huevo')
+    ) {
         return 'img/logos/alimento_carnes.png'; // Carnes y proteínas
     }
     
-    if (name.includes('lácteo') || name.includes('leche') || name.includes('queso') || name.includes('yogur') || name.includes('mantequilla')) {
+    if (
+        name.includes('lácteo') || name.includes('lacteos') ||
+        name.includes('leche') || name.includes('yogur') || name.includes('queso') ||
+        name.includes('mantequilla') || name.includes('nata') || name.includes('crema agria')
+    ) {
         return 'img/logos/alimento_lacteos.png'; // Lácteos
     }
     
-    if (name.includes('pan') || name.includes('cereal') || name.includes('harina') || name.includes('arroz') || name.includes('pasta')) {
+    if (
+        name.includes('pan') || name.includes('bollo') || name.includes('panadería') ||
+        name.includes('baguette') || name.includes('croissant') || name.includes('rosquilla') ||
+        name.includes('cereal') || name.includes('harina') || name.includes('avena') ||
+        name.includes('arroz') || name.includes('pasta')
+    ) {
         return 'img/logos/alimento_panaderia.png'; // Panadería y cereales
     }
     
-    if (name.includes('bebida') || name.includes('jugo') || name.includes('gaseosa') || name.includes('agua')) {
+    if (
+        name.includes('bebida') || name.includes('bebidas') ||
+        name.includes('jugo') || name.includes('líquido') || name.includes('batido') ||
+        name.includes('licuado') || name.includes('té') || name.includes('café') ||
+        name.includes('gaseosa') || name.includes('refresco') || name.includes('agua') ||
+        name.includes('infusión') || name.includes('té frío')
+    ) {
         return 'img/logos/bebidas.png'; // Bebidas
     }
     
-    if (name.includes('electrodoméstico') || name.includes('microondas') || name.includes('horno') || name.includes('nevera') || name.includes('lavadora') || name.includes('secadora') || name.includes('cafetera')) {
+    if (
+        name.includes('electrodoméstico') || name.includes('electrodomesticos') ||
+        name.includes('microondas') || name.includes('horno') || name.includes('refrigerador') ||
+        name.includes('nevera') || name.includes('congelador') || name.includes('lavadora') ||
+        name.includes('secadora') || name.includes('lavavajillas') || name.includes('cafetera') ||
+        name.includes('tostadora') || name.includes('licuadora') || name.includes('procesador') ||
+        name.includes('batidora') || name.includes('sandwichera') || name.includes('freidora') ||
+        name.includes('plancha') || name.includes('aspiradora') || name.includes('humidificador')
+    ) {
         return 'img/logos/electrodomesticos.png'; // Electrodomésticos
     }
     
-    if (name.includes('mueble sala') || name.includes('sofá') || name.includes('sillón') || name.includes('mesa centro')) {
+    if (
+        name.includes('mueble sala') || name.includes('sala') ||
+        name.includes('sofá') || name.includes('sofa') || name.includes('sillón') || name.includes('sillon') ||
+        name.includes('mesa centro') || name.includes('mesita') || name.includes('estantería') || name.includes('librero') ||
+        name.includes('alfombra') || name.includes('lampara pie') || name.includes('mesa lateral')
+    ) {
         return 'img/logos/mueble_sala.png'; // Muebles - Sala
     }
     
-    if (name.includes('mueble comedor') || name.includes('mesa comedor') || name.includes('sillas comedor')) {
+    if (
+        name.includes('mueble comedor') || name.includes('comedor') ||
+        name.includes('mesa comedor') || name.includes('silla comedor') || name.includes('aparador') ||
+        name.includes('vajilla') || name.includes('mantel') || name.includes('servilleta')
+    ) {
         return 'img/logos/mueble_comedor.png'; // Muebles - Comedor
     }
     
-    if (name.includes('mueble dormitorio') || name.includes('cama') || name.includes('closet') || name.includes('tocador')) {
+    if (
+        name.includes('mueble dormitorio') || name.includes('dormitorio') ||
+        name.includes('cama') || name.includes('somier') || name.includes('armario') ||
+        name.includes('closet') || name.includes('ropero') || name.includes('tocador') ||
+        name.includes('mesita noche') || name.includes('cojín') || name.includes('cobija')
+    ) {
         return 'img/logos/mueble_dormitorio.png'; // Muebles - Dormitorio
     }
     
-    if (name.includes('oficina') || name.includes('escritorio') || name.includes('silla ergonómica') || name.includes('librero')) {
+    if (
+        name.includes('oficina') || name.includes('home office') ||
+        name.includes('escritorio') || name.includes('silla ergonómica') || name.includes('silla oficina') ||
+        name.includes('librero oficina') || name.includes('archivador') || name.includes('monitor') ||
+        name.includes('teclado') || name.includes('impresora')
+    ) {
         return 'img/logos/oficina.png'; // Oficina en casa
     }
     
-    if (name.includes('jardín') || name.includes('terraza') || name.includes('silla exterior') || name.includes('sombrilla')) {
+    if (
+        name.includes('jardín') || name.includes('jardin') || name.includes('terraza') ||
+        name.includes('mesa exterior') || name.includes('silla exterior') || name.includes('tumbona') ||
+        name.includes('hamaca') || name.includes('maceta') || name.includes('regadera')
+    ) {
         return 'img/logos/jardin.png'; // Jardín / Terraza
     }
     
-    if (name.includes('snack') || name.includes('dulce') || name.includes('chocolate') || name.includes('papas fritas')) {
+    if (
+        name.includes('snack') || name.includes('aperitivo') || name.includes('tapa') ||
+        name.includes('golosina') || name.includes('galleta') || name.includes('papas fritas') ||
+        name.includes('chocolate') || name.includes('frutos secos')
+    ) {
         return 'img/logos/snacks.png'; // Snacks y golosinas
     }
     
-    if (name.includes('mascota') || name.includes('alimento perro') || name.includes('alimento gato') || name.includes('juguete mascota')) {
+    if (
+        name.includes('mascota') || name.includes('perro') || name.includes('gato') ||
+        name.includes('alimento perro') || name.includes('alimento gato') ||
+        name.includes('cama mascota') || name.includes('correa') || name.includes('juguete mascota') ||
+        name.includes('collar') || name.includes('bebedero')
+    ) {
         return 'img/logos/mascotas.png'; // Mascotas
     }
     
-    if (name.includes('bebé') || name.includes('pañal') || name.includes('biberón') || name.includes('fórmula')) {
+    if (
+        name.includes('bebé') || name.includes('bebe') || name.includes('pañal') ||
+        name.includes('biberón') || name.includes('cochecito') || name.includes('formula') ||
+        name.includes('chupete') || name.includes('pañalera')
+    ) {
         return 'img/logos/bebes.png'; // Bebés
     }
     
-    if (name.includes('vino') || name.includes('cerveza') || name.includes('licor')) {
+    if (
+        name.includes('vino') || name.includes('cerveza') || name.includes('licor') ||
+        name.includes('coctel') || name.includes('whisky') || name.includes('vodka') ||
+        name.includes('ron') || name.includes('ginebra')
+    ) {
         return 'img/logos/bebidas_alcoholicas.png'; // Bebidas alcohólicas
     }
     
-    if (name.includes('tecnología') || name.includes('domótica') || name.includes('enchufe inteligente') || name.includes('alexa')) {
+    if (
+        name.includes('tecnología') || name.includes('domótica') ||
+        name.includes('smartphone') || name.includes('tablet') || name.includes('laptop') ||
+        name.includes('router') || name.includes('altavoz') || name.includes('televisor') ||
+        name.includes('consola') || name.includes('videojuego')
+    ) {
         return 'img/logos/tecnologia.png'; // Tecnología y domótica
     }
     
-    if (name.includes('textil') || name.includes('costura') || name.includes('sábana') || name.includes('toalla') || name.includes('cortina') || name.includes('tela') || name.includes('aguja') || name.includes('hilo') || name.includes('botón')) {
+    if (
+        name.includes('textil') || name.includes('costura') || name.includes('tela') ||
+        name.includes('sábana') || name.includes('sabana') || name.includes('toalla') ||
+        name.includes('cortina') || name.includes('hilo') || name.includes('aguja') ||
+        name.includes('botón') || name.includes('tijera costura') || name.includes('manta') ||
+        name.includes('colcha') || name.includes('edredón') || name.includes('cojín')
+    ) {
         return 'img/logos/textiles_costura.png'; // Textiles y costura
     }
     
-    if (name.includes('medicina') || name.includes('medicamento') || name.includes('pastilla') || name.includes('jeringa') || name.includes('termómetro') || name.includes('venda') || name.includes('esparadrapo')) {
+    if (
+        name.includes('medicina') || name.includes('medicamento') || name.includes('pastilla') ||
+        name.includes('jarabe') || name.includes('antibiótico') || name.includes('analgésico') ||
+        name.includes('jeringa') || name.includes('termómetro') || name.includes('venda') ||
+        name.includes('esparadrapo') || name.includes('tira test') || name.includes('tensiómetro')
+    ) {
         return 'img/logos/medicamentos.png'; // Medicamentos y implementos médicos
     }
     
-    if (name.includes('viaje') || name.includes('transporte') || name.includes('autobús') || name.includes('avión') || name.includes('tren') || name.includes('equipaje') || name.includes('boleto') || name.includes('transporte público')) {
+    if (
+        name.includes('viaje') || name.includes('viajes') || name.includes('transporte') ||
+        name.includes('autobús') || name.includes('bus') || name.includes('metro') ||
+        name.includes('tren') || name.includes('avión') || name.includes('barco') ||
+        name.includes('crucero') || name.includes('taxi') || name.includes('bicicleta') ||
+        name.includes('coche') || name.includes('auto') || name.includes('equipaje') ||
+        name.includes('maleta') || name.includes('boleto') || name.includes('ticket') ||
+        name.includes('transporte público')
+    ) {
         return 'img/logos/viajes_transporte.png'; // Viajes y transporte
     }
 
