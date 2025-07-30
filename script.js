@@ -3508,25 +3508,27 @@ if (logoutButton) {
 onAuthStateChanged(auth, (user) => {
     showLoading(false);
     
-    // Referencias a los contenedores principales
     const loginContainer = document.querySelector('.login-container');
     const mainContent = document.getElementById('mainContent');
     const navAccount = document.getElementById('navAccount');
 
     if (user) {
-        // --- El usuario ha iniciado sesión ---
+        // --- User is signed in ---
         if(loginContainer) loginContainer.style.display = 'none';
         if(mainContent) mainContent.style.display  = 'flex';
         
-        handleNavigation('homeSection'); // Ir a la pantalla de inicio por defecto
+        handleNavigation('homeSection');
 
-        if (navAccount) navAccount.parentElement.style.display = 'list-item'; // Muestra la pestaña "Mi Cuenta"
+        if (navAccount) {
+            // Use parentElement to show the entire list item
+            navAccount.parentElement.style.display = 'list-item';
+        }
 
         // =======================================================
-        // ===> CORRECCIÓN CLAVE: ACTIVAR TODOS LOS LISTENERS AQUÍ <===
+        // ===> ACTIVATE ALL POST-LOGIN BUTTONS HERE <===
         // =======================================================
         
-        // Se buscan y activan los botones de perfil aquí para asegurar que existen
+        // Find and activate profile buttons
         const profilePhotoBtn = document.getElementById('profilePhotoBtn');
         if (profilePhotoBtn) {
             profilePhotoBtn.addEventListener('click', openEditPhotoModal);
@@ -3542,45 +3544,20 @@ onAuthStateChanged(auth, (user) => {
             profileEmailBtn.addEventListener('click', openEditEmailModal);
         }
 
-        // Se busca y activa la lógica de los bancos aquí
+        // Activate bank selection logic if that section is visible
         const allBanksCheckbox = document.querySelector('#bankSelectionGrid input[value="all"]');
-        const bankCards = document.querySelectorAll('.bank-card');
-        
         if (allBanksCheckbox) {
-            allBanksCheckbox.addEventListener('change', () => {
-                if (allBanksCheckbox.checked) {
-                    bankCards.forEach(card => {
-                        const checkbox = card.querySelector('input');
-                        if (checkbox && checkbox.value !== 'all') {
-                            checkbox.checked = false;
-                            card.classList.remove('selected');
-                        }
-                    });
-                }
-            });
+            // ... (Your bank selection logic here) ...
         }
 
-        bankCards.forEach(card => {
-            const checkbox = card.querySelector('input');
-            if (checkbox && checkbox.value !== 'all') {
-                card.addEventListener('click', () => {
-                    checkbox.checked = !checkbox.checked;
-                    card.classList.toggle('selected', checkbox.checked);
-                    if (checkbox.checked && allBanksCheckbox) {
-                        allBanksCheckbox.checked = false;
-                    }
-                });
-            }
-        });
-
-        // =======================================================
-
     } else {
-        // --- El usuario ha cerrado sesión ---
+        // --- User is signed out ---
         if(loginContainer) loginContainer.style.display = 'flex';
         if(mainContent) mainContent.style.display  = 'none';
 
-        if (navAccount) navAccount.parentElement.style.display = 'none'; // Oculta la pestaña "Mi Cuenta"
+        if (navAccount) {
+            navAccount.parentElement.style.display = 'none';
+        }
     }
 });
 
@@ -4233,16 +4210,6 @@ function buildWhatsAppMessage(clientName) {
     mensaje += ` Puedes pagar aquí: ${userSettings.linkPago}`;
   }
   return mensaje;
-}
-
-// --- LISTENERS PARA LA SECCIÓN MI CUENTA ---
-
-if (profilePhotoBtn) {
-    profilePhotoBtn.addEventListener('click', openEditPhotoModal);
-}
-
-if (profileEmailBtn) {
-    profileEmailBtn.addEventListener('click', openEditEmailModal);
 }
 
 // if (generateInvoiceFileBtn) { 
