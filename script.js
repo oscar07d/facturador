@@ -3507,21 +3507,26 @@ if (logoutButton) {
 
 onAuthStateChanged(auth, (user) => {
     showLoading(false);
+    
+    // Referencias a los contenedores principales
+    const loginContainer = document.querySelector('.login-container');
+    const mainContent = document.getElementById('mainContent');
     const navAccount = document.getElementById('navAccount');
 
     if (user) {
-        // User is signed in, show the main app
+        // --- El usuario ha iniciado sesión ---
         if(loginContainer) loginContainer.style.display = 'none';
         if(mainContent) mainContent.style.display  = 'flex';
         
-        handleNavigation('homeSection'); // Go to the home screen by default
+        handleNavigation('homeSection'); // Ir a la pantalla de inicio por defecto
 
-        if (navAccount) navAccount.style.display = 'list-item'; // Show the "Mi Cuenta" tab
+        if (navAccount) navAccount.parentElement.style.display = 'list-item'; // Muestra la pestaña "Mi Cuenta"
 
         // =======================================================
-        // ===> CORE FIX: ACTIVATE PROFILE BUTTONS HERE <===
+        // ===> CORRECCIÓN CLAVE: ACTIVAR TODOS LOS LISTENERS AQUÍ <===
         // =======================================================
         
+        // Se buscan y activan los botones de perfil aquí para asegurar que existen
         const profilePhotoBtn = document.getElementById('profilePhotoBtn');
         if (profilePhotoBtn) {
             profilePhotoBtn.addEventListener('click', openEditPhotoModal);
@@ -3536,14 +3541,46 @@ onAuthStateChanged(auth, (user) => {
         if (profileEmailBtn) {
             profileEmailBtn.addEventListener('click', openEditEmailModal);
         }
+
+        // Se busca y activa la lógica de los bancos aquí
+        const allBanksCheckbox = document.querySelector('#bankSelectionGrid input[value="all"]');
+        const bankCards = document.querySelectorAll('.bank-card');
+        
+        if (allBanksCheckbox) {
+            allBanksCheckbox.addEventListener('change', () => {
+                if (allBanksCheckbox.checked) {
+                    bankCards.forEach(card => {
+                        const checkbox = card.querySelector('input');
+                        if (checkbox && checkbox.value !== 'all') {
+                            checkbox.checked = false;
+                            card.classList.remove('selected');
+                        }
+                    });
+                }
+            });
+        }
+
+        bankCards.forEach(card => {
+            const checkbox = card.querySelector('input');
+            if (checkbox && checkbox.value !== 'all') {
+                card.addEventListener('click', () => {
+                    checkbox.checked = !checkbox.checked;
+                    card.classList.toggle('selected', checkbox.checked);
+                    if (checkbox.checked && allBanksCheckbox) {
+                        allBanksCheckbox.checked = false;
+                    }
+                });
+            }
+        });
+
         // =======================================================
 
     } else {
-        // User is signed out, show the login screen
+        // --- El usuario ha cerrado sesión ---
         if(loginContainer) loginContainer.style.display = 'flex';
         if(mainContent) mainContent.style.display  = 'none';
 
-        if (navAccount) navAccount.style.display = 'none'; // Hide the "Mi Cuenta" tab
+        if (navAccount) navAccount.parentElement.style.display = 'none'; // Oculta la pestaña "Mi Cuenta"
     }
 });
 
@@ -4010,13 +4047,6 @@ bankCards.forEach(card => {
       allBanksCheckbox.checked = false;
     }
   });
-});
-
-allBanksCheckbox.addEventListener('change', () => {
-  if (allBanksCheckbox.checked) {
-    selectedBanks.clear();
-    bankCards.forEach(c => c.classList.remove('selected'));
-  }
 });
 
 document.getElementById('btnSaveSettings').addEventListener('click', async () => {
