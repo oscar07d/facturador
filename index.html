@@ -108,120 +108,131 @@
                 </nav>
 
             <main class="invoice-app-container">
-                <section id="profileSection" style="display: none;">
-                  <h2>Mi Cuenta</h2>
+                <section id="profileSection" style="display:none;">
+                    <header class="profile-header">
+                      <button id="backFromProfile" class="back-btn">←</button>
+                      <h2>Configuración</h2>
+                    </header>
                 
-                  <!-- Aquí embed el logoutButton -->
-                  <div class="setting-block">
-                    <h3>Sesión</h3>
-                    <button id="logoutButton" class="btn-pill red">Cerrar Sesión</button>
-                  </div>
+                    <div class="profile-list">
                 
-                  <!-- Y luego tu grid de Bancos / Neobancos tal cual lo tenías -->
-                  <div class="settings-group">
-                    <h3>Bancos / Neobancos permitidos</h3>
-                    <div class="bank-grid" id="bankSelectionGrid">
-                          <div class="bank-grid" id="bankSelectionGrid">
-                        
-                          <!-- Permitir todos los bancos -->
-                          <label class="bank-card bank-all-label">
-                            <input type="checkbox" value="all" />
-                            <span>Permitir todos los bancos</span>
-                          </label>
-                        
-                          <!-- Neobancos -->
-                          <label class="bank-card">
-                            <input type="checkbox" value="nequi" />
-                            <img src="img/banks/nequi.svg" alt="Nequi" />
-                            <span>Nequi</span>
-                          </label>
-                          <label class="bank-card">
-                            <input type="checkbox" value="daviplata" />
-                            <img src="img/banks/daviplata.svg" alt="Daviplata" />
-                            <span>Daviplata</span>
-                          </label>
-                          <label class="bank-card">
-                            <input type="checkbox" value="lulo" />
-                            <img src="img/banks/lulo.svg" alt="Lulo Bank" />
-                            <span>Lulo Bank</span>
-                          </label>
-                          <label class="bank-card">
-                            <input type="checkbox" value="nu" />
-                            <img src="img/banks/nu.svg" alt="Nu Colombia" />
-                            <span>Nu Colombia</span>
-                          </label>
-                          <label class="bank-card">
-                            <input type="checkbox" value="uala" />
-                            <img src="img/banks/uala.svg" alt="Ualá" />
-                            <span>Ualá</span>
-                          </label>
-                          <label class="bank-card">
-                            <input type="checkbox" value="pibank" />
-                            <img src="img/banks/pibank.svg" alt="Pibank" />
-                            <span>Pibank</span>
-                          </label>
-                          <label class="bank-card">
-                            <input type="checkbox" value="movii" />
-                            <img src="img/banks/movii.svg" alt="Movii" />
-                            <span>Movii</span>
-                          </label>
-                          <label class="bank-card">
-                            <input type="checkbox" value="powwi" />
-                            <img src="img/banks/powwi.svg" alt="Powwi" />
-                            <span>Powwi</span>
-                          </label>
-                        
-                          <!-- Bancos Tradicionales -->
-                          <label class="bank-card">
-                            <input type="checkbox" value="bancolombia" />
-                            <img src="img/banks/bancolombia.svg" alt="Bancolombia" />
-                            <span>Bancolombia</span>
-                          </label>
-                          <label class="bank-card">
-                            <input type="checkbox" value="davivienda" />
-                            <img src="img/banks/davivienda.svg" alt="Davivienda" />
-                            <span>Davivienda</span>
-                          </label>
-                          <label class="bank-card">
-                            <input type="checkbox" value="caja-social" />
-                            <img src="img/banks/caja-social.svg" alt="Caja Social" />
-                            <span>Caja Social</span>
-                          </label>
-                          <label class="bank-card">
-                            <input type="checkbox" value="falabella" />
-                            <img src="img/banks/falabella.svg" alt="Falabella" />
-                            <span>Falabella</span>
-                          </label>
-                          <label class="bank-card">
-                            <input type="checkbox" value="bbva" />
-                            <img src="img/banks/bbva.svg" alt="BBVA" />
-                            <span>BBVA</span>
-                          </label>
-                          <label class="bank-card">
-                            <input type="checkbox" value="itau" />
-                            <img src="img/banks/itau.svg" alt="Itaú" />
-                            <span>Itaú</span>
-                          </label>
-                          <label class="bank-card">
-                            <input type="checkbox" value="av-villas" />
-                            <img src="img/banks/av-villas.svg" alt="AV Villas" />
-                            <span>AV Villas</span>
-                          </label>
-                          <label class="bank-card">
-                            <input type="checkbox" value="finandina" />
-                            <img src="img/banks/finandina.svg" alt="Finandina" />
-                            <span>Finandina</span>
-                          </label>
-                          <label class="bank-card">
-                            <input type="checkbox" value="bogota" />
-                            <img src="img/banks/bogota.svg" alt="Bogotá" />
-                            <span>Bogotá</span>
-                          </label>
-                        
-                        </div>
+                      <h3>Cuenta</h3>
+                      <ul>
+                        <li>
+                          <button class="profile-item">
+                            <img src="img/user-photo-placeholder.svg" alt="Foto" class="icon-round">
+                            <div>
+                              <span>Foto de perfil</span>
+                              <small>Editar foto de perfil</small>
+                            </div>
+                            <span class="chevron">›</span>
+                          </button>
+                        </li>
+                        <li>
+                          <button class="profile-item">
+                            <img src="img/user-icon.svg" alt="Nombre" class="icon-round">
+                            <div>
+                              <span>Nombre</span>
+                              <small>Editar nombre</small>
+                            </div>
+                            <span class="chevron">›</span>
+                          </button>
+                        </li>
+                        <li>
+                          <button class="profile-item">
+                            <img src="img/email-icon.svg" alt="Email" class="icon-round">
+                            <div>
+                              <span>Correo electrónico</span>
+                              <small>Editar correo electrónico</small>
+                            </div>
+                            <span class="chevron">›</span>
+                          </button>
+                        </li>
+                        <li>
+                          <button class="profile-item">
+                            <img src="img/phone-icon.svg" alt="Teléfono" class="icon-round">
+                            <div>
+                              <span>Número de teléfono</span>
+                              <small>Editar número de teléfono</small>
+                            </div>
+                            <span class="chevron">›</span>
+                          </button>
+                        </li>
+                      </ul>
+                
+                      <h3>Preferencias</h3>
+                      <ul>
+                        <li>
+                          <button class="profile-item">
+                            <img src="img/globe-icon.svg" alt="Idioma" class="icon-round">
+                            <div>
+                              <span>Idioma</span>
+                              <small>Seleccionar idioma</small>
+                            </div>
+                            <span class="chevron">›</span>
+                          </button>
+                        </li>
+                        <li>
+                          <button class="profile-item">
+                            <img src="img/theme-icon.svg" alt="Tema" class="icon-round">
+                            <div>
+                              <span>Tema</span>
+                              <small>Seleccionar tema</small>
+                            </div>
+                            <span class="chevron">›</span>
+                          </button>
+                        </li>
+                      </ul>
+                
+                      <h3>Privacidad y seguridad</h3>
+                      <ul>
+                        <li>
+                          <button class="profile-item">
+                            <img src="img/bell-icon.svg" alt="Notificaciones" class="icon-round">
+                            <div>
+                              <span>Notificaciones</span>
+                              <small>Gestionar notificaciones</small>
+                            </div>
+                            <span class="chevron">›</span>
+                          </button>
+                        </li>
+                        <li>
+                          <button class="profile-item">
+                            <img src="img/shield-icon.svg" alt="Seguridad" class="icon-round">
+                            <div>
+                              <span>Seguridad de la cuenta</span>
+                              <small>Ajustes de seguridad</small>
+                            </div>
+                            <span class="chevron">›</span>
+                          </button>
+                        </li>
+                      </ul>
+                
+                      <h3>Ayuda y soporte</h3>
+                      <ul>
+                        <li>
+                          <button class="profile-item">
+                            <img src="img/help-icon.svg" alt="FAQ" class="icon-round">
+                            <div>
+                              <span>Preguntas frecuentes</span>
+                              <small>Preguntas frecuentes</small>
+                            </div>
+                            <span class="chevron">›</span>
+                          </button>
+                        </li>
+                        <li>
+                          <button class="profile-item">
+                            <img src="img/support-icon.svg" alt="Soporte" class="icon-round">
+                            <div>
+                              <span>Soporte</span>
+                              <small>Contactar con soporte</small>
+                            </div>
+                            <span class="chevron">›</span>
+                          </button>
+                        </li>
+                      </ul>
                     </div>
-                  </div>
-                </section>
+                  </section>
                 <section id="createInvoiceSection" class="invoice-section active-section">
                     <form id="invoiceForm" class="invoice-form">
 
