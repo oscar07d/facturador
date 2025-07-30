@@ -4235,69 +4235,6 @@ function buildWhatsAppMessage(clientName) {
   return mensaje;
 }
 
-// ===================== MANEJO DE BOTONES DE AJUSTES ===================== //
-
-document.getElementById('btnDeleteLogo')?.addEventListener('click', () => {
-  userSettings.logoUrl = '';
-  document.getElementById('previewLogo').src = 'img/default-logo.png';
-  alert('Logo eliminado');
-});
-
-document.getElementById('btnDeleteQR')?.addEventListener('click', () => {
-  userSettings.qrUrl = '';
-  document.getElementById('previewQR').style.display = 'none';
-  alert('QR eliminado');
-});
-
-function updateVisualSettingsPreview() {
-  const previewLogo = document.getElementById('previewLogo');
-  if (userSettings.logoUrl && previewLogo) {
-    previewLogo.src = userSettings.logoUrl;
-  }
-
-  const previewQR = document.getElementById('previewQR');
-  if (userSettings.qrUrl && previewQR) {
-    previewQR.src = userSettings.qrUrl;
-    previewQR.style.display = 'block';
-  }
-}
-
-// ===================== INICIALIZACIÓN DESPUÉS DE AUTENTICACIÓN ===================== //
-
-onAuthStateChanged(auth, (user) => {
-  if (user) {
-    loadUserSettingsFromFirestore();
-  }
-});
-
-document.getElementById('btnDeleteLogo').addEventListener('click', () => {
-  document.getElementById('previewLogo').src = 'img/default-logo.png';
-  userSettings.logoUrl = '';
-});
-
-document.getElementById('btnUploadQR').addEventListener('click', () => {
-  document.getElementById('inputUploadQR').click();
-});
-
-document.getElementById('inputUploadQR').addEventListener('change', (e) => {
-  const file = e.target.files[0];
-  if (file) {
-    const reader = new FileReader();
-    reader.onload = function(evt) {
-      document.getElementById('previewQR').src = evt.target.result;
-      document.getElementById('previewQR').style.display = 'block';
-      userSettings.qrUrl = evt.target.result;
-    };
-    reader.readAsDataURL(file);
-  }
-});
-
-document.getElementById('btnDeleteQR').addEventListener('click', () => {
-  document.getElementById('previewQR').src = '';
-  document.getElementById('previewQR').style.display = 'none';
-  userSettings.qrUrl = '';
-});
-
 // --- LISTENERS PARA LA SECCIÓN MI CUENTA ---
 
 if (profilePhotoBtn) {
