@@ -759,17 +759,68 @@
 
         <div class="reminder-payment-instructions">
             <p id="reminder-payment-method-details">
-                Paga fácil a Nequi: <strong>[3023935392]</strong> ([OS* ROL***])
+                Paga fácil a Nequi: <strong>[3023935392]</strong> ([OS*** ROL***])
             </p>
         </div>
     </div>
 
     <div class="reminder-footer">
         <p id="reminder-final-note">Si ya pagaste, ignora este mensaje. ¡Gracias!</p>
-        <p id="reminder-contact-info">Dudas: [info@oscar07dstudios.com]</p>
+        <p id="reminder-contact-info">Dudas: [oscar07dcontacto@gmail.com]</p>
 
         </div>
-</div> <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" integrity="sha512-BNaRQnYJYiPSqHHDb58B0yaPfCu+Wgds8Gp/gU33kqBtgNS4tSPHuGibyoeqMV/TJlSKda6FXzoEyYGjTe+vXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    </div>
+    <div id="editPhotoModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Editar Foto de Perfil</h2>
+                <button id="closeEditPhotoModalBtn" class="modal-close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="profile-photo-uploader">
+                    <img id="photoPreview" src="img/user-photo-placeholder.svg" alt="Vista previa de la foto de perfil">
+                    <input type="file" id="photoUploadInput" accept="image/png, image/jpeg" style="display: none;">
+                    <button type="button" id="selectPhotoBtn" class="btn btn-secondary">Seleccionar Imagen</button>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="cancelEditPhotoBtn" class="btn btn-secondary">Cancelar</button>
+                <button type="button" id="savePhotoBtn" class="btn btn-success" disabled>Guardar Foto</button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="editNameModal" class="modal-overlay">
+        </div>
+    
+    <div id="editEmailModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Editar Correo Electrónico</h2>
+                <button id="closeEditEmailModalBtn" class="modal-close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p class="modal-notice">Por tu seguridad, para cambiar tu correo electrónico debes volver a introducir tu contraseña actual.</p>
+                <form id="editEmailForm">
+                    <div class="form-group">
+                        <label for="profileEmailInput">Nuevo correo electrónico:</label>
+                        <input type="email" id="profileEmailInput" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="profilePasswordInput">Contraseña actual:</label>
+                        <input type="password" id="profilePasswordInput" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="cancelEditEmailBtn" class="btn btn-secondary">Cancelar</button>
+                <button type="button" id="saveEmailBtn" class="btn btn-success">Actualizar Correo</button>
+            </div>
+        </div>
+    </div>
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" integrity="sha512-BNaRQnYJYiPSqHHDb58B0yaPfCu+Wgds8Gp/gU33kqBtgNS4tSPHuGibyoeqMV/TJlSKda6FXzoEyYGjTe+vXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" integrity="sha512-qZvrmS2ekKPF2mSznTQsxqPgnpkI4DNTlrdUmTzrDgektczlKNRRhy5X5AAOnx5S09ydFYWWNSfcEqDTTHgtNA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://npmcdn.com/flatpickr/dist/plugins/weekSelect/weekSelect.js"></script>
