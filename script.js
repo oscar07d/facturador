@@ -4241,10 +4241,6 @@ if (profilePhotoBtn) {
     profilePhotoBtn.addEventListener('click', openEditPhotoModal);
 }
 
-if (profileNameBtn) {
-    profileNameBtn.addEventListener('click', openEditNameModal);
-}
-
 if (profileEmailBtn) {
     profileEmailBtn.addEventListener('click', openEditEmailModal);
 }
