@@ -2,6 +2,10 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
 import {
     getAuth,
+    updateProfile,
+    updateEmail,
+    EmailAuthProvider,
+    reauthenticateWithCredential,
     GoogleAuthProvider,
     signInWithCredential,
     signInWithPopup,
@@ -10,6 +14,10 @@ import {
 } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
 import { 
     getFirestore,
+    getStorage,
+    ref,
+    uploadBytes,
+    getDownloadURL,
     collection,
     addDoc,
     serverTimestamp,
@@ -42,6 +50,7 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const googleProvider = new GoogleAuthProvider();
 const db = getFirestore(app);
+const storage = getStorage(app);
 
 document.addEventListener('DOMContentLoaded', () => {
     const splashScreen = document.getElementById('splashScreen');
@@ -75,6 +84,25 @@ const navHome = document.getElementById('navHome');
 const homeSection = document.getElementById('homeSection');
 const profileSection = document.getElementById('profileSection');
 const navProfile = document.getElementById('navProfile');
+
+const profilePhotoBtn = document.getElementById('profilePhotoBtn');
+const editPhotoModal = document.getElementById('editPhotoModal');
+const closeEditPhotoModalBtn = document.getElementById('closeEditPhotoModalBtn');
+const cancelEditPhotoBtn = document.getElementById('cancelEditPhotoBtn');
+const photoPreview = document.getElementById('photoPreview');
+const photoUploadInput = document.getElementById('photoUploadInput');
+const selectPhotoBtn = document.getElementById('selectPhotoBtn');
+const savePhotoBtn = document.getElementById('savePhotoBtn');
+
+const profileEmailBtn = document.getElementById('profileEmailBtn');
+const editEmailModal = document.getElementById('editEmailModal');
+const closeEditEmailModalBtn = document.getElementById('closeEditEmailModalBtn');
+const cancelEditEmailBtn = document.getElementById('cancelEditEmailBtn');
+const saveEmailBtn = document.getElementById('saveEmailBtn');
+const profileEmailInput = document.getElementById('profileEmailInput');
+const profilePasswordInput = document.getElementById('profilePasswordInput');
+
+let selectedPhotoFile = null; // Variable global para la foto
 
 const invoiceDetailModal = document.getElementById('invoiceDetailModal');
 const modalInvoiceTitle = document.getElementById('modalInvoiceTitle');
@@ -2005,6 +2033,118 @@ function closePaymentUpdateModal() {
     const isAnotherModalActive = document.querySelector('.modal-overlay.active');
     if (bodyElement && !isAnotherModalActive) {
         bodyElement.classList.remove('modal-active');
+    }
+}
+
+function openEditPhotoModal() {
+    const user = auth.currentUser;
+    if (user) {
+        photoPreview.src = user.photoURL || 'img/user-photo-placeholder.svg';
+        selectedPhotoFile = null;
+        savePhotoBtn.disabled = true;
+        photoUploadInput.value = null;
+        if (editPhotoModal) editPhotoModal.classList.add('active');
+        if (bodyElement) bodyElement.classList.add('modal-active');
+    }
+}
+function closeEditPhotoModal() {
+    if (editPhotoModal) editPhotoModal.classList.remove('active');
+    if (bodyElement && !document.querySelector('.modal-overlay.active')) {
+        bodyElement.classList.remove('modal-active');
+    }
+}
+async function saveProfilePhoto() {
+    if (!selectedPhotoFile) {
+        alert("Primero selecciona una nueva imagen.");
+        return;
+    }
+    const user = auth.currentUser;
+    if (!user) return;
+
+    showLoading(true);
+    const filePath = `profile_photos/${user.uid}/${selectedPhotoFile.name}`;
+    const storageRef = ref(storage, filePath);
+
+    try {
+        // 1. Subir la nueva foto a Storage
+        const snapshot = await uploadBytes(storageRef, selectedPhotoFile);
+        // 2. Obtener la URL de descarga
+        const photoURL = await getDownloadURL(snapshot.ref);
+        // 3. Actualizar el perfil del usuario en Auth
+        await updateProfile(user, { photoURL: photoURL });
+
+        // 4. Actualizar la vista en la sección "Mi Cuenta"
+        const profileIcon = profilePhotoBtn.querySelector('img');
+        if (profileIcon) profileIcon.src = photoURL;
+
+        alert("Foto de perfil actualizada con éxito.");
+        closeEditPhotoModal();
+
+    } catch (error) {
+        console.error("Error al subir la foto de perfil:", error);
+        alert("Hubo un error al guardar tu foto.");
+    } finally {
+        showLoading(false);
+    }
+}
+
+// --- Funciones para Editar Correo Electrónico ---
+function openEditEmailModal() {
+    const user = auth.currentUser;
+    if (user) {
+        profileEmailInput.value = user.email || '';
+        profilePasswordInput.value = '';
+        if (editEmailModal) editEmailModal.classList.add('active');
+        if (bodyElement) bodyElement.classList.add('modal-active');
+    }
+}
+function closeEditEmailModal() {
+    if (editEmailModal) editEmailModal.classList.remove('active');
+    if (bodyElement && !document.querySelector('.modal-overlay.active')) {
+        bodyElement.classList.remove('modal-active');
+    }
+}
+async function saveProfileEmail() {
+    const newEmail = profileEmailInput.value.trim();
+    const password = profilePasswordInput.value;
+    const user = auth.currentUser;
+
+    if (!newEmail || !password) {
+        alert("Por favor, completa todos los campos.");
+        return;
+    }
+    if (newEmail === user.email) {
+        alert("El nuevo correo es el mismo que el actual.");
+        return;
+    }
+
+    showLoading(true);
+    try {
+        // 1. Crear una credencial con el email y contraseña actuales para re-autenticar
+        const credential = EmailAuthProvider.credential(user.email, password);
+        await reauthenticateWithCredential(user, credential);
+        
+        // 2. Si la re-autenticación es exitosa, actualizar el email
+        await updateEmail(user, newEmail);
+
+        // 3. Actualizar la vista en la sección "Mi Cuenta"
+        const emailDisplay = profileEmailBtn.querySelector('span');
+        if (emailDisplay) emailDisplay.textContent = newEmail;
+
+        alert("Correo electrónico actualizado con éxito.");
+        closeEditEmailModal();
+
+    } catch (error) {
+        console.error("Error al actualizar el correo:", error);
+        if (error.code === 'auth/wrong-password') {
+            alert("La contraseña es incorrecta. Inténtalo de nuevo.");
+        } else if (error.code === 'auth/email-already-in-use') {
+            alert("Ese correo electrónico ya está en uso por otra cuenta.");
+        } else {
+            alert("Hubo un error al actualizar tu correo.");
+        }
+    } finally {
+        showLoading(false);
     }
 }
 
@@ -4086,6 +4226,31 @@ function applyOptionalLinkAndBanks(doc, startX, startY) {
     });
   }
 }
+
+// --- LISTENERS PARA MODALES DE MI CUENTA ---
+
+// Listeners para Editar Foto de Perfil
+if (profilePhotoBtn) profilePhotoBtn.addEventListener('click', openEditPhotoModal);
+if (closeEditPhotoModalBtn) closeEditPhotoModalBtn.addEventListener('click', closeEditPhotoModal);
+if (cancelEditPhotoBtn) cancelEditPhotoBtn.addEventListener('click', closeEditPhotoModal);
+if (selectPhotoBtn) selectPhotoBtn.addEventListener('click', () => photoUploadInput.click());
+if (photoUploadInput) {
+    photoUploadInput.addEventListener('change', (e) => {
+        if (e.target.files && e.target.files[0]) {
+            const file = e.target.files[0];
+            selectedPhotoFile = file;
+            photoPreview.src = URL.createObjectURL(file);
+            savePhotoBtn.disabled = false;
+        }
+    });
+}
+if (savePhotoBtn) savePhotoBtn.addEventListener('click', saveProfilePhoto);
+
+// Listeners para Editar Correo Electrónico
+if (profileEmailBtn) profileEmailBtn.addEventListener('click', openEditEmailModal);
+if (closeEditEmailModalBtn) closeEditEmailModalBtn.addEventListener('click', closeEditEmailModal);
+if (cancelEditEmailBtn) cancelEditEmailBtn.addEventListener('click', closeEditEmailModal);
+if (saveEmailBtn) saveEmailBtn.addEventListener('click', saveProfileEmail);
 
 function buildWhatsAppMessage(clientName) {
   let mensaje = `Hola ${clientName}, aquí te compartimos tu factura.`;
