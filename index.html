@@ -98,9 +98,9 @@
                             <span class="nav-text">Clientes</span>
                         </a>
                     </li>
-                    <li id="navAccount">
+                    <li id="navProfile">
                       <a href="#">
-                        <img src="img/Profile_icon.svg" alt="Mi Cuenta" class="nav-icon">
+                        <img src="img/Settings_icon.svg" alt="Mi Perfil" class="nav-icon">
                         <span class="nav-text">Mi Cuenta</span>
                       </a>
                     </li>
@@ -108,69 +108,21 @@
                 </nav>
 
             <main class="invoice-app-container">
-                <section id="accountSection" style="display: none;">
+                <section id="profileSection" style="display: none;">
                   <h2>Mi Cuenta</h2>
                 
-                  <div class="template-previews-container">
-                    <div class="template-preview-wrapper">
-                      <label><input type="checkbox" class="template-toggle" value="pdf"> PDF</label>
-                      <div id="pdfTemplatePreview" class="template-preview scaled-preview"></div>
-                    </div>
-                  
-                    <div class="template-preview-wrapper">
-                      <label><input type="checkbox" class="template-toggle" value="whatsapp"> WhatsApp</label>
-                      <div id="whatsappTemplatePreview" class="template-preview scaled-preview"></div>
-                    </div>
-                  
-                    <div class="template-preview-wrapper">
-                      <label><input type="checkbox" class="template-toggle" value="reminder"> Recordatorio</label>
-                      <div id="reminderTemplatePreview" class="template-preview scaled-preview"></div>
-                    </div>
-                  </div>
-                              
+                  <!-- Aquí embed el logoutButton -->
                   <div class="setting-block">
-                    <h3>Logo del Comercio</h3>
-                    <div class="file-upload-row">
-                      <img id="previewLogo" src="img/default-logo.png" alt="Previsualización Logo" style="max-width: 150px;" />
-                      <div class="file-buttons">
-                        <button id="btnUploadLogo" class="btn-pill">Seleccionar Logo</button>
-                        <input type="file" id="inputUploadLogo" accept="image/*" style="display: none;" />
-                        <button id="btnDeleteLogo" class="btn-pill red">Eliminar Logo</button>
-                      </div>
-                    </div>
-                  </div>
-                
-                  <div class="setting-block">
-                    <h3>QR de Pago (Nequi)</h3>
-                    <div class="file-upload-row">
-                      <img id="previewQR" src="img/default-qr.png" alt="Previsualización QR" style="max-width: 150px; display: none;" />
-                      <div class="file-buttons">
-                        <button id="btnUploadQR" class="btn-pill">Seleccionar QR</button>
-                        <input type="file" id="inputUploadQR" accept="image/*" style="display: none;" />
-                        <button id="btnDeleteQR" class="btn-pill red">Eliminar QR</button>
-                      </div>
-                    </div>
-                  </div>
-                
-                  <div class="settings-group">
-                    <h3>Opciones PDF</h3>
-                    <label for="inputPdfLink">Link de Pago (opcional)</label>
-                    <input type="url" id="inputPdfLink" placeholder="https://tu-enlace-de-pago.com" />
-                
-                    <label for="selectPdfBanks">Bancos / Neobancos</label>
-                    <div class="bank-grid" id="bankSelectionGrid">
-                      <!-- Aquí se mantienen todos los <label class="bank-card">...</label> que ya tenías -->
-                      <!-- (no los repito aquí por espacio, pero los puedes dejar tal cual como estaban) -->
-                    </div>
-                  </div>
-                
-                  <div class="settings-section-actions">
-                    <button class="btn-save" id="btnSaveSettings">Guardar Ajustes</button>
-                  </div>
-                
-                  <div class="setting-block">
-                    <h3>Acciones de Cuenta</h3>
+                    <h3>Sesión</h3>
                     <button id="logoutButton" class="btn-pill red">Cerrar Sesión</button>
+                  </div>
+                
+                  <!-- Y luego tu grid de Bancos / Neobancos tal cual lo tenías -->
+                  <div class="settings-group">
+                    <h3>Bancos / Neobancos permitidos</h3>
+                    <div class="bank-grid" id="bankSelectionGrid">
+                      <!-- copia aquí todo el bloque de <label class="bank-card">…</label> -->
+                    </div>
                   </div>
                 </section>
                 <section id="createInvoiceSection" class="invoice-section active-section">
