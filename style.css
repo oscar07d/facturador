@@ -210,6 +210,72 @@
   overflow-y: auto;
 }
 
+/* === Pantalla de carga === */
+.splash-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #ffffff;
+    display: flex; /* <-- Usamos Flexbox */
+    flex-direction: column; /* Apilamos los elementos verticalmente */
+    z-index: 99999;
+    opacity: 1;
+    transition: opacity 0.5s ease-out, visibility 0s linear 0.5s;
+}
+.splash-screen.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+/* Contenedor principal para el logo centrado */
+.splash-main {
+    flex-grow: 1; /* Ocupa todo el espacio disponible */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.splash-logo {
+    width: 120px;
+    height: auto;
+    animation: fadeInAndFloat 1.2s ease-out;
+}
+
+/* Contenedor para el texto en la parte inferior */
+.splash-footer {
+    padding: 25px;
+    width: 100%;
+    text-align: center;
+    flex-shrink: 0; /* Evita que se encoja */
+}
+
+.splash-text {
+    font-size: 0.7rem; /* Hacemos el texto base un poco más pequeño */
+    color: #a0a0a0;
+    font-weight: 400;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0px; /* <-- CAMBIO CLAVE: Reducimos el espacio vertical entre líneas */
+}
+
+.splash-text strong {
+    font-size: 0.9rem; /* Un poco más grande y en negrita */
+    font-weight: 600;
+    color: var(--text-muted-color); /* Un gris un poco más oscuro */
+    margin-top: 0px;
+}
+
+
+.splash-brand-logo {
+    height: 15px; /* Altura ajustada */
+    width: auto;
+    margin-top: 1px; /* Espacio extra sobre el logo */
+}
+
 /* === RESET BÁSICO Y ESTILOS GLOBALES === */
 * {
     margin: 0;
