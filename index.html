@@ -793,29 +793,26 @@
     <div id="editNameModal" class="modal-overlay">
         </div>
     
-    <div id="editEmailModal" class="modal-overlay">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Editar Correo Electrónico</h2>
-                <button id="closeEditEmailModalBtn" class="modal-close-btn">&times;</button>
-            </div>
-            <div class="modal-body">
-                <p class="modal-notice">Por tu seguridad, para cambiar tu correo electrónico debes volver a introducir tu contraseña actual.</p>
-                <form id="editEmailForm">
-                    <div class="form-group">
-                        <label for="profileEmailInput">Nuevo correo electrónico:</label>
-                        <input type="email" id="profileEmailInput" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="profilePasswordInput">Contraseña actual:</label>
-                        <input type="password" id="profilePasswordInput" required>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" id="cancelEditEmailBtn" class="btn btn-secondary">Cancelar</button>
-                <button type="button" id="saveEmailBtn" class="btn btn-success">Actualizar Correo</button>
-            </div>
+    <div class="modal-body">
+        <p class="modal-notice">Para mayor seguridad, necesitamos verificar tu identidad antes de cambiar tu correo electrónico.</p>
+        
+        <div class="reauth-options">
+            <p class="reauth-text">Elige una de las siguientes opciones para continuar:</p>
+            <button type="button" id="googleReauthBtn" class="btn btn-google">
+                <img src="img/google_logo.svg" alt="Continuar con Google" class="icon-svg">
+                <span>Continuar con Google</span>
+            </button>
+            <div class="separator"><span>O</span></div>
+            <form id="editEmailForm">
+                <div class="form-group">
+                    <label for="profilePasswordInput">Introduce tu contraseña actual:</label>
+                    <input type="password" id="profilePasswordInput" required>
+                </div>
+                <div class="form-group">
+                    <label for="profileEmailInput">Nuevo correo electrónico:</label>
+                    <input type="email" id="profileEmailInput" required>
+                </div>
+            </form>
         </div>
     </div>
     
