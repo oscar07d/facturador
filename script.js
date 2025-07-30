@@ -4270,10 +4270,6 @@ onAuthStateChanged(auth, (user) => {
   }
 });
 
-document.getElementById('btnUploadLogo').addEventListener('click', () => {
-  document.getElementById('inputUploadLogo').click();
-});
-
 document.getElementById('inputUploadLogo').addEventListener('change', (e) => {
   const file = e.target.files[0];
   if (file) {
