@@ -4344,6 +4344,23 @@ document.getElementById('btnDeleteQR').addEventListener('click', () => {
   userSettings.qrUrl = '';
 });
 
+// --- LISTENERS PARA LA SECCIÓN MI CUENTA ---
+
+const profilePhotoBtn = document.getElementById('profilePhotoBtn');
+if (profilePhotoBtn) {
+    profilePhotoBtn.addEventListener('click', openEditPhotoModal);
+}
+
+const profileNameBtn = document.getElementById('profileNameBtn');
+if (profileNameBtn) {
+    profileNameBtn.addEventListener('click', openEditNameModal);
+}
+
+const profileEmailBtn = document.getElementById('profileEmailBtn');
+if (profileEmailBtn) {
+    profileEmailBtn.addEventListener('click', openEditEmailModal);
+}
+
 // if (generateInvoiceFileBtn) { 
 //    generateInvoiceFileBtn.addEventListener('click', () => {
 //        alert("Funcionalidad 'Generar Factura (Archivo)' pendiente.");
