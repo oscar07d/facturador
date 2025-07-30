@@ -2408,6 +2408,41 @@ textarea.input-error {
     justify-content: space-between; /* Para distribuir los botones */
 }
 
+/* ===================================== */
+/* === ESTILOS PARA MODALES DE MI CUENTA === */
+/* ===================================== */
+#editPhotoModal .modal-content,
+#editEmailModal .modal-content {
+    max-width: 500px;
+}
+
+.profile-photo-uploader {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+#photoPreview {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--border-color);
+}
+
+.modal-notice {
+    font-size: 0.9rem;
+    color: var(--text-muted-color);
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: var(--border-radius-s);
+    margin-bottom: 20px;
+    border-left: 4px solid var(--info-color);
+}
+
+
+
 /* === MEDIA QUERIES PARA ADAPTABILIDAD (Generales de la app) === */
 /* ... (tus media queries existentes) ... */
 @media (min-width: 769px) {
