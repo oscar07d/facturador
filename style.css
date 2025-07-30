@@ -172,36 +172,47 @@
   color: var(--text-muted-color);
 }
 
-/* Móvil: navegación fija abajo */
 .app-nav {
   position: fixed;
-  bottom: 0;
+  top: 0;
   left: 0;
   width: 100%;
-  background: #fff;
-  border-top: 1px solid var(--border-color);
+  height: auto;
+  background-color: #fff;
+  border-bottom: 1px solid #e5e7eb;
+  z-index: 100;
 }
+
 .app-nav ul {
   display: flex;
   justify-content: space-around;
-  padding: 8px 0;
+  align-items: center;
   margin: 0;
+  padding: 10px 0;
   list-style: none;
 }
+
 .app-nav li a {
   display: flex;
   flex-direction: column;
   align-items: center;
+  color: #333;
   text-decoration: none;
 }
-.app-nav .nav-icon {
+
+.nav-icon {
   width: 24px;
   height: 24px;
 }
-.app-nav .nav-text {
+
+.nav-text {
   font-size: 0.75rem;
   margin-top: 4px;
-  color: var(--text-muted-color);
+}
+
+/* Deja espacio arriba para que el contenido no se tape */
+.invoice-app-container {
+  margin-top: 70px;
 }
 
 /* Asegúrate de que #profileSection ocupe todo el alto del contenedor */
