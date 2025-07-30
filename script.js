@@ -3503,31 +3503,51 @@ if (logoutButton) {
     });
 }
 
+// En tu script.js, reemplaza tu onAuthStateChanged con esto:
+
 onAuthStateChanged(auth, (user) => {
-  console.log("Paso 5: onAuthStateChanged se disparó. Usuario:", user ? user.uid : "ninguno");
-  showLoading(false);
+    console.log("Paso 5: onAuthStateChanged se disparó. Usuario:", user ? user.uid : "ninguno");
+    showLoading(false);
 
-  // Asegura que el botón "Ajustes" siempre se actualice según login
-  const navProfile = document.getElementById('navProfile');
+    const navProfile = document.getElementById('navProfile'); // Asumiendo que ahora se llama navProfile
 
-  if (user) {
-    console.log("Paso 6: Usuario autenticado en onAuthStateChanged.");
-    document.getElementById('profileSection').style.display = 'block';
-    loginContainer.style.display = 'none';
-    mainContent.style.display  = 'flex';
-    handleNavigation('homeSection');
+    if (user) {
+        console.log("Paso 6: Usuario autenticado.");
+        if(loginContainer) loginContainer.style.display = 'none';
+        if(mainContent) mainContent.style.display  = 'flex';
+        
+        handleNavigation('homeSection');
 
-    // Mostrar la pestaña Ajustes si existe
-    if (navProfile) navProfile.style.display = 'flex';
+        if (navProfile) navProfile.style.display = 'flex';
 
-  } else {
-    console.log("Paso 6B: Usuario NO autenticado en onAuthStateChanged.");
-    loginContainer.style.display = 'flex';
-    mainContent.style.display  = 'none';
+        // =======================================================
+        // ===> CORRECCIÓN CLAVE: ACTIVAR LOS BOTONES DE PERFIL AQUÍ <===
+        // =======================================================
+        
+        // Se buscan los botones aquí para asegurar que existen en el DOM
+        const profilePhotoBtn = document.getElementById('profilePhotoBtn');
+        if (profilePhotoBtn) {
+            profilePhotoBtn.addEventListener('click', openEditPhotoModal);
+        }
 
-    // Ocultar la pestaña Ajustes si existe
-    if (navProfile) navProfile.style.display = 'none';
-  }
+        const profileNameBtn = document.getElementById('profileNameBtn');
+        if (profileNameBtn) {
+            profileNameBtn.addEventListener('click', openEditNameModal);
+        }
+
+        const profileEmailBtn = document.getElementById('profileEmailBtn');
+        if (profileEmailBtn) {
+            profileEmailBtn.addEventListener('click', openEditEmailModal);
+        }
+        // =======================================================
+
+    } else {
+        console.log("Paso 6B: Usuario NO autenticado.");
+        if(loginContainer) loginContainer.style.display = 'flex';
+        if(mainContent) mainContent.style.display  = 'none';
+
+        if (navProfile) navProfile.style.display = 'none';
+    }
 });
 
 // 2) Handler de click en Ajustes
