@@ -2613,7 +2613,7 @@ async function handleNavigation(sectionToShowId) {
         await loadDashboardData();
     }
     if (sectionToShowId === 'profileSection') {
-      targetTitle = "Ajustes";
+      targetTitle = "Mi Cuenta";
       // Aquí dentro pon cualquier inicialización de esa sección.
       // Ejemplo: cargar logo guardado, listeners para subir logo/QR, etc.
     }
