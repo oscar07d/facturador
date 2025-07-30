@@ -4025,59 +4025,6 @@ if (loginButton) {
     });
 }
 
-// Controlador de selección de bancos
-const selectedBanks = new Set();
-const allBanksCheckbox = document.querySelector('#bankSelectionGrid input[value="all"]');
-const bankCards = document.querySelectorAll('.bank-card');
-
-bankCards.forEach(card => {
-  card.addEventListener('click', () => {
-    const value = card.dataset.value;
-
-    if (selectedBanks.has(value)) {
-      selectedBanks.delete(value);
-      card.classList.remove('selected');
-    } else {
-      selectedBanks.add(value);
-      card.classList.add('selected');
-    }
-
-    // Si se selecciona uno manual, desactiva "Permitir todos"
-    if (allBanksCheckbox.checked) {
-      allBanksCheckbox.checked = false;
-    }
-  });
-});
-
-// Funcionalidad: Previsualizar logo cargado
-document.getElementById('inputUploadLogo').addEventListener('change', function (e) {
-  const file = e.target.files[0];
-  const preview = document.getElementById('previewLogo');
-
-  if (file) {
-    const reader = new FileReader();
-    reader.onload = function (event) {
-      preview.src = event.target.result;
-    };
-    reader.readAsDataURL(file);
-  }
-});
-
-// Funcionalidad: Previsualizar QR cargado
-document.getElementById('inputUploadQR').addEventListener('change', function (e) {
-  const file = e.target.files[0];
-  const preview = document.getElementById('previewQR');
-
-  if (file) {
-    const reader = new FileReader();
-    reader.onload = function (event) {
-      preview.src = event.target.result;
-      preview.style.display = 'block'; // Mostrar solo si hay imagen
-    };
-    reader.readAsDataURL(file);
-  }
-});
-
 const templateCheckboxes = document.querySelectorAll('.template-toggle');
 const previewPdf = document.getElementById('pdfTemplatePreview');
 const previewWhatsapp = document.getElementById('whatsappTemplatePreview');
