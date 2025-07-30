@@ -4270,19 +4270,6 @@ onAuthStateChanged(auth, (user) => {
   }
 });
 
-document.getElementById('inputUploadLogo').addEventListener('change', (e) => {
-  const file = e.target.files[0];
-  if (file) {
-    const reader = new FileReader();
-    reader.onload = function(evt) {
-      document.getElementById('previewLogo').src = evt.target.result;
-      document.getElementById('previewLogo').style.display = 'block';
-      userSettings.logoUrl = evt.target.result;
-    };
-    reader.readAsDataURL(file);
-  }
-});
-
 document.getElementById('btnDeleteLogo').addEventListener('click', () => {
   document.getElementById('previewLogo').src = 'img/default-logo.png';
   userSettings.logoUrl = '';
