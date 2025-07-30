@@ -3506,25 +3506,22 @@ if (logoutButton) {
 // En tu script.js, reemplaza tu onAuthStateChanged con esto:
 
 onAuthStateChanged(auth, (user) => {
-    console.log("Paso 5: onAuthStateChanged se disparó. Usuario:", user ? user.uid : "ninguno");
     showLoading(false);
-
-    const navProfile = document.getElementById('navProfile'); // Asumiendo que ahora se llama navProfile
+    const navAccount = document.getElementById('navAccount');
 
     if (user) {
-        console.log("Paso 6: Usuario autenticado.");
+        // User is signed in, show the main app
         if(loginContainer) loginContainer.style.display = 'none';
         if(mainContent) mainContent.style.display  = 'flex';
         
-        handleNavigation('homeSection');
+        handleNavigation('homeSection'); // Go to the home screen by default
 
-        if (navProfile) navProfile.style.display = 'flex';
+        if (navAccount) navAccount.style.display = 'list-item'; // Show the "Mi Cuenta" tab
 
         // =======================================================
-        // ===> CORRECCIÓN CLAVE: ACTIVAR LOS BOTONES DE PERFIL AQUÍ <===
+        // ===> CORE FIX: ACTIVATE PROFILE BUTTONS HERE <===
         // =======================================================
         
-        // Se buscan los botones aquí para asegurar que existen en el DOM
         const profilePhotoBtn = document.getElementById('profilePhotoBtn');
         if (profilePhotoBtn) {
             profilePhotoBtn.addEventListener('click', openEditPhotoModal);
@@ -3542,11 +3539,11 @@ onAuthStateChanged(auth, (user) => {
         // =======================================================
 
     } else {
-        console.log("Paso 6B: Usuario NO autenticado.");
+        // User is signed out, show the login screen
         if(loginContainer) loginContainer.style.display = 'flex';
         if(mainContent) mainContent.style.display  = 'none';
 
-        if (navProfile) navProfile.style.display = 'none';
+        if (navAccount) navAccount.style.display = 'none'; // Hide the "Mi Cuenta" tab
     }
 });
 
