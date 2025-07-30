@@ -58,17 +58,23 @@ const allSections = [
   'createInvoiceSection',
   'viewInvoicesSection',
   'clientsSection',
-  'settingsSection'
+  'profileSection'
 ];
 
+function showSection(sectionId) {
+  allSections.forEach(id => {
+    document.getElementById(id).style.display =
+      (id === sectionId) ? 'block' : 'none';
+  });
+}
 
 // --- Selección de Elementos del DOM ---
 const bodyElement = document.body;
 
 const navHome = document.getElementById('navHome');
 const homeSection = document.getElementById('homeSection');
-const settingsSection = document.getElementById('settingsSection');
-const navSettings = document.getElementById('navSettings');
+const profileSection = document.getElementById('profileSection');
+const navProfile = document.getElementById('navProfile');
 
 const invoiceDetailModal = document.getElementById('invoiceDetailModal');
 const modalInvoiceTitle = document.getElementById('modalInvoiceTitle');
@@ -2481,14 +2487,14 @@ async function handleNavigation(sectionToShowId) {
       createInvoiceSection,
       viewInvoicesSection,
       clientsSection,
-      settingsSection
+      profileSection
     ];
     const navLinks = [
       navHome,
       navCreateInvoice,
       navViewInvoices,
       navClients,
-      navSettings       // ← y también el link de Ajustes
+      navProfile       // ← y también el link de Ajustes
     ];
     let targetTitle = "Sistema de Facturación";
 
@@ -3358,17 +3364,17 @@ onAuthStateChanged(auth, (user) => {
   showLoading(false);
 
   // Asegura que el botón "Ajustes" siempre se actualice según login
-  const navSettings = document.getElementById('navSettings');
+  const navProfile = document.getElementById('navProfile');
 
   if (user) {
     console.log("Paso 6: Usuario autenticado en onAuthStateChanged.");
-    document.getElementById('settingsSection').style.display = 'block';
+    document.getElementById('profileSection').style.display = 'block';
     loginContainer.style.display = 'none';
     mainContent.style.display  = 'flex';
     handleNavigation('homeSection');
 
     // Mostrar la pestaña Ajustes si existe
-    if (navSettings) navSettings.style.display = 'flex';
+    if (navProfile) navProfile.style.display = 'flex';
 
   } else {
     console.log("Paso 6B: Usuario NO autenticado en onAuthStateChanged.");
@@ -3376,14 +3382,14 @@ onAuthStateChanged(auth, (user) => {
     mainContent.style.display  = 'none';
 
     // Ocultar la pestaña Ajustes si existe
-    if (navSettings) navSettings.style.display = 'none';
+    if (navProfile) navProfile.style.display = 'none';
   }
 });
 
 // 2) Handler de click en Ajustes
-document.getElementById('navSettings').addEventListener('click', (e) => {
+document.getElementById('navProfile').addEventListener('click', (e) => {
   e.preventDefault();
-  handleNavigation('settingsSection');
+  handleNavigation('profileSection');
 });
 
 // --- Event Listeners para el Modal de Actualizar Pago ---
