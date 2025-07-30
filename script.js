@@ -4049,29 +4049,6 @@ bankCards.forEach(card => {
   });
 });
 
-document.getElementById('btnSaveSettings').addEventListener('click', async () => {
-  const linkDePago = document.getElementById('inputPdfLink').value.trim();
-
-  // Capturar bancos seleccionados
-  const allBanksCheckbox = document.querySelector('#bankSelectionGrid input[type="checkbox"][value="all"]');
-  const selectedBankCards = document.querySelectorAll('#bankSelectionGrid .bank-card.selected');
-
-  const selectedBanks = Array.from(selectedBankCards).map(card => card.dataset.value);
-  const bancosSeleccionados = allBanksCheckbox.checked ? ['all'] : selectedBanks;
-
-  // Previsualización (o puedes guardar en Firestore aquí)
-  console.log("✅ Link de Pago ingresado:", linkDePago || 'Ninguno');
-  console.log("✅ Bancos seleccionados:", bancosSeleccionados);
-
-  // Aquí podrías guardar a Firestore si deseas:
-  // await setDoc(doc(db, "user_profiles", auth.currentUser.uid), {
-  //   paymentLink: linkDePago,
-  //   acceptedBanks: bancosSeleccionados
-  // }, { merge: true });
-
-  alert("Ajustes guardados correctamente.");
-});
-
 // Funcionalidad: Previsualizar logo cargado
 document.getElementById('inputUploadLogo').addEventListener('change', function (e) {
   const file = e.target.files[0];
