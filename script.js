@@ -2519,10 +2519,10 @@ async function handleNavigation(sectionToShowId) {
     } else if (sectionToShowId === 'clientsSection') {
         currentNavLinkId = 'navClients';
     }
-    else if (sectionToShowId === 'settingsSection') {
+    else if (sectionToShowId === 'profileSection') {
       targetTitle = "Ajustes de Plantillas";
-      const settingsSection = document.getElementById('settingsSection');
-      if (settingsSection) settingsSection.style.display = 'block';
+      const profileSection = document.getElementById('profileSection');
+      if (profileSection) profileSection.style.display = 'block';
     }
     const currentLink = navLinks.find(l => l && l.id === currentNavLinkId);
     if (currentLink) currentLink.classList.add('active-nav');
@@ -2612,7 +2612,7 @@ async function handleNavigation(sectionToShowId) {
         targetTitle = "Inicio y Estadísticas";
         await loadDashboardData();
     }
-    if (sectionToShowId === 'settingsSection') {
+    if (sectionToShowId === 'profileSection') {
       targetTitle = "Ajustes";
       // Aquí dentro pon cualquier inicialización de esa sección.
       // Ejemplo: cargar logo guardado, listeners para subir logo/QR, etc.
