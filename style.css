@@ -99,126 +99,95 @@
     --reminder-width: 580px;
 }
 
-/* === Perfil / Mi Cuenta === */
-.profile-header {
-  display: flex;
-  align-items: center;
-  padding: 16px;
-}
-.profile-header .back-btn {
-  font-size: 1.5rem;
-  background: none;
-  border: none;
-  margin-right: 8px;
-  cursor: pointer;
-}
-.profile-header h2 {
-  font-size: 1.25rem;
-  font-weight: 600;
-  margin: 0;
-}
+/* ==============================
+   SECCIÓN "Mi Cuenta" (#profileSection)
+   ============================== */
 
-.profile-list {
-  padding: 0 16px 60px;
-}
-.profile-list h3 {
-  margin: 24px 0 8px;
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: var(--text-color);
-}
-.profile-list ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-.profile-item {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  padding: 12px 0;
-  background: none;
-  border: none;
-  cursor: pointer;
-}
-.profile-item + .profile-item {
-  border-top: 1px solid var(--border-color);
-}
-.profile-item .icon-round {
-  width: 40px;
-  height: 40px;
-  background: var(--light-gray-color);
-  border-radius: 8px;
-  padding: 8px;
-  margin-right: 12px;
-  flex-shrink: 0;
-}
-.profile-item div {
-  flex: 1;
-  text-align: left;
-}
-.profile-item div span {
-  display: block;
-  font-size: 1rem;
-  color: var(--text-color);
-}
-.profile-item div small {
-  display: block;
-  font-size: 0.85rem;
-  color: var(--text-muted-color);
-}
-.profile-item .chevron {
-  font-size: 1.2rem;
-  color: var(--text-muted-color);
-}
-
-.app-nav {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: auto;
-  background-color: #fff;
-  border-bottom: 1px solid #e5e7eb;
-  z-index: 100;
-}
-
-.app-nav ul {
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  margin: 0;
-  padding: 10px 0;
-  list-style: none;
-}
-
-.app-nav li a {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  color: #333;
-  text-decoration: none;
-}
-
-.nav-icon {
-  width: 24px;
-  height: 24px;
-}
-
-.nav-text {
-  font-size: 0.75rem;
-  margin-top: 4px;
-}
-
-/* Deja espacio arriba para que el contenido no se tape */
-.invoice-app-container {
-  margin-top: 70px;
-}
-
-/* Asegúrate de que #profileSection ocupe todo el alto del contenedor */
 #profileSection {
-  flex: 1;
-  overflow-y: auto;
+  display: none;              /* Se mostrará vía JS */
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 24px;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  font-family: 'Poppins', sans-serif;
+}
+
+/* Título de sección */
+#profileSection > h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #1f2937;
+}
+
+/* Cada bloque de opciones */
+.profile-group {
+  margin-bottom: 32px;
+}
+
+.profile-group-title {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #4b5563;
+  margin-bottom: 16px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Ítems dentro de cada bloque */
+.profile-item {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  border-radius: 8px;
+  transition: background-color 0.2s ease;
+  cursor: pointer;
+}
+
+.profile-item + .profile-item {
+  margin-top: 8px;
+}
+
+.profile-item:hover {
+  background-color: #f3f4f6;
+}
+
+/* Icono a la izquierda */
+.profile-item img {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  margin-right: 12px;
+}
+
+/* Contenedor de texto */
+.profile-item-content {
+  flex-grow: 1;
+}
+
+.profile-item-title {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #111827;
+}
+
+.profile-item-subtitle {
+  font-size: 0.85rem;
+  color: #6b7280;
+  margin-top: 2px;
+}
+
+/* Flecha o indicador a la derecha */
+.profile-item-arrow {
+  font-size: 1.2rem;
+  color: #9ca3af;
+  margin-left: 12px;
+  flex-shrink: 0;
 }
 
 /* === Pantalla de carga === */
