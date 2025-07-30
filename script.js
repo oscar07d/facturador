@@ -2,22 +2,18 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
 import {
     getAuth,
-    updateProfile,
-    updateEmail,
-    EmailAuthProvider,
-    reauthenticateWithCredential,
     GoogleAuthProvider,
     signInWithCredential,
     signInWithPopup,
     onAuthStateChanged,
-    signOut
+    signOut,
+    updateProfile, // <-- Faltaba esta
+    updateEmail, // <-- Faltaba esta
+    EmailAuthProvider, // <-- Faltaba esta
+    reauthenticateWithCredential // <-- Faltaba esta
 } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
 import { 
     getFirestore,
-    getStorage,
-    ref,
-    uploadBytes,
-    getDownloadURL,
     collection,
     addDoc,
     serverTimestamp,
@@ -33,6 +29,14 @@ import {
     deleteDoc,
     writeBatch
 } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
+
+import { 
+    getStorage,
+    ref,
+    uploadBytes,
+    getDownloadURL,
+    deleteObject
+} from "https://www.gstatic.com/firebasejs/11.8.1/firebase-storage.js";
 
 // Configuración de Firebase
 const firebaseConfig = {
