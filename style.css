@@ -242,6 +242,19 @@
 #editNameModal .modal-content {
     max-width: 500px;
 }
+#editPhoneModal .modal-content {
+    max-width: 500px;
+}
+
+.current-info-display {
+    font-size: 0.9rem;
+    color: var(--text-muted-color);
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: var(--border-radius-s);
+    margin-bottom: 25px;
+    text-align: center;
+}
 
 /* Estilos para el cargador de foto de perfil */
 .profile-photo-uploader {
