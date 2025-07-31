@@ -3528,7 +3528,7 @@ if (logoutButton) {
     });
 }
 
-// In script.js, replace your entire onAuthStateChanged function with this:
+// In your script.js, replace the entire onAuthStateChanged function with this:
 
 onAuthStateChanged(auth, (user) => {
     showLoading(false);
@@ -3549,7 +3549,7 @@ onAuthStateChanged(auth, (user) => {
         }
 
         // =======================================================
-        // ===> ACTIVATE ALL POST-LOGIN BUTTONS HERE <===
+        // ===> FINAL FIX: FIND AND ACTIVATE BUTTONS HERE <===
         // =======================================================
         
         const profilePhotoBtn = document.getElementById('profilePhotoBtn');
