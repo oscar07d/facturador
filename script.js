@@ -2109,6 +2109,37 @@ function closeEditNameModal() {
     }
 }
 
+function setupEditNameModalListeners() {
+    // Botón 'Guardar Cambios'
+    const saveNameBtn = document.getElementById('saveNameBtn');
+    if (saveNameBtn) {
+        saveNameBtn.addEventListener('click', saveProfileName);
+    }
+
+    // Botón 'Cancelar'
+    const cancelEditNameBtn = document.getElementById('cancelEditNameBtn');
+    if (cancelEditNameBtn) {
+        cancelEditNameBtn.addEventListener('click', closeEditNameModal);
+    }
+
+    // Botón 'X' para cerrar
+    const closeEditNameModalBtn = document.getElementById('closeEditNameModalBtn');
+    if (closeEditNameModalBtn) {
+        closeEditNameModalBtn.addEventListener('click', closeEditNameModal);
+    }
+
+    // Clic fuera del modal para cerrar
+    const editNameModal = document.getElementById('editNameModal');
+    if (editNameModal) {
+        editNameModal.addEventListener('click', (event) => {
+            // Cierra el modal solo si se hace clic en el fondo oscuro (el overlay)
+            if (event.target === editNameModal) {
+                closeEditNameModal();
+            }
+        });
+    }
+}
+
 async function saveProfileName() {
     const newName = profileNameInput.value.trim();
     if (!newName) {
@@ -3557,7 +3588,7 @@ onAuthStateChanged(auth, (user) => {
         if (googleReauthBtn) {
             googleReauthBtn.addEventListener('click', reauthenticateWithGoogle);
         }
-
+    setupEditNameModalListeners();
     } else {
         // --- User is signed out ---
         if(loginContainer) loginContainer.style.display = 'flex';
@@ -4219,11 +4250,6 @@ function buildWhatsAppMessage(clientName) {
   }
   return mensaje;
 }
-
-// Listeners for the Edit Name modal
-if (closeEditNameModalBtn) closeEditNameModalBtn.addEventListener('click', closeEditNameModal);
-if (cancelEditNameBtn) cancelEditNameBtn.addEventListener('click', closeEditNameModal);
-if (saveNameBtn) saveNameBtn.addEventListener('click', saveProfileName);
 
 // if (generateInvoiceFileBtn) { 
 //    generateInvoiceFileBtn.addEventListener('click', () => {
