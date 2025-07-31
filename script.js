@@ -57,6 +57,8 @@ const googleProvider = new GoogleAuthProvider();
 const db = getFirestore(app);
 const storage = getStorage(app);
 
+const googleProvider = new GoogleAuthProvider();
+
 document.addEventListener('DOMContentLoaded', () => {
     const splashScreen = document.getElementById('splashScreen');
     if (splashScreen) {
@@ -3528,7 +3530,7 @@ if (logoutButton) {
     });
 }
 
-// In your script.js, replace the entire onAuthStateChanged function with this:
+// In script.js, replace your entire onAuthStateChanged function
 
 onAuthStateChanged(auth, (user) => {
     showLoading(false);
@@ -3549,7 +3551,7 @@ onAuthStateChanged(auth, (user) => {
         }
 
         // =======================================================
-        // ===> FINAL FIX: FIND AND ACTIVATE BUTTONS HERE <===
+        // ===> ACTIVATE ALL POST-LOGIN BUTTONS HERE <===
         // =======================================================
         
         const profilePhotoBtn = document.getElementById('profilePhotoBtn');
