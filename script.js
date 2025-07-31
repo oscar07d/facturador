@@ -105,6 +105,14 @@ const cancelEditNameBtn = document.getElementById('cancelEditNameBtn');
 const saveNameBtn = document.getElementById('saveNameBtn');
 const profileNameInput = document.getElementById('profileNameInput');
 
+const profilePhoneBtn = document.getElementById('profilePhoneBtn');
+const editPhoneModal = document.getElementById('editPhoneModal');
+const closeEditPhoneModalBtn = document.getElementById('closeEditPhoneModalBtn');
+const cancelEditPhoneBtn = document.getElementById('cancelEditPhoneBtn');
+const savePhoneBtn = document.getElementById('savePhoneBtn');
+const currentPhoneNumber = document.getElementById('currentPhoneNumber');
+const profilePhoneInput = document.getElementById('profilePhoneInput');
+
 let selectedPhotoFile = null; // Variable global para la foto
 
 const invoiceDetailModal = document.getElementById('invoiceDetailModal');
@@ -2168,6 +2176,68 @@ async function saveProfileName() {
     }
 }
 
+// --- LÓGICA PARA EL MODAL DE EDITAR TELÉFONO ---
+async function openEditPhoneModal() {
+    if (!auth.currentUser) return;
+    
+    // Buscar el número guardado en el perfil de Firestore
+    const userProfileRef = doc(db, "user_profiles", auth.currentUser.uid);
+    const docSnap = await getDoc(userProfileRef);
+    
+    if (docSnap.exists() && docSnap.data().phoneNumber) {
+        currentPhoneNumber.textContent = `Tu número actual es: ${docSnap.data().phoneNumber}`;
+    } else {
+        currentPhoneNumber.textContent = 'Aún no has guardado un número de teléfono.';
+    }
+
+    profilePhoneInput.value = ''; // Limpiar el input
+    if (editPhoneModal) editPhoneModal.classList.add('active');
+    if (bodyElement) bodyElement.classList.add('modal-active');
+}
+
+function closeEditPhoneModal() {
+    if (editPhoneModal) editPhoneModal.classList.remove('active');
+    if (bodyElement && !document.querySelector('.modal-overlay.active')) {
+        bodyElement.classList.remove('modal-active');
+    }
+}
+
+async function saveProfilePhone() {
+    const newPhone = profilePhoneInput.value.trim();
+    if (!newPhone) {
+        alert("El número de teléfono no puede estar vacío.");
+        return;
+    }
+
+    showLoading(true);
+    try {
+        const userProfileRef = doc(db, "user_profiles", auth.currentUser.uid);
+        await setDoc(userProfileRef, { phoneNumber: newPhone }, { merge: true });
+
+        alert("¡Número de teléfono actualizado con éxito!");
+        closeEditPhoneModal();
+
+    } catch (error) {
+        console.error("Error al actualizar el teléfono:", error);
+        alert("Hubo un error al guardar tu número.");
+    } finally {
+        showLoading(false);
+    }
+}
+
+function setupEditPhoneModalListeners() {
+    if (savePhoneBtn) savePhoneBtn.addEventListener('click', saveProfilePhone);
+    if (cancelEditPhoneBtn) cancelEditPhoneBtn.addEventListener('click', closeEditPhoneModal);
+    if (closeEditPhoneModalBtn) closeEditPhoneModalBtn.addEventListener('click', closeEditPhoneModal);
+    if (editPhoneModal) {
+        editPhoneModal.addEventListener('click', (event) => {
+            if (event.target === editPhoneModal) {
+                closeEditPhoneModal();
+            }
+        });
+    }
+}
+
 // --- Funciones para Editar Correo Electrónico ---
 async function reauthenticateWithGoogle() {
     console.log("DEBUG: La función reauthenticateWithGoogle() ha comenzado.");
@@ -3588,7 +3658,14 @@ onAuthStateChanged(auth, (user) => {
         if (googleReauthBtn) {
             googleReauthBtn.addEventListener('click', reauthenticateWithGoogle);
         }
-    setupEditNameModalListeners();
+        setupEditNameModalListeners();
+        
+        const profilePhoneBtn = document.getElementById('profilePhoneBtn');
+        if (profilePhoneBtn) {
+            profilePhoneBtn.addEventListener('click', openEditPhoneModal);
+        }
+        setupEditPhoneModalListeners();
+        
     } else {
         // --- User is signed out ---
         if(loginContainer) loginContainer.style.display = 'flex';
