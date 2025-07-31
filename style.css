@@ -3167,3 +3167,21 @@ textarea.input-error {
   gap: 8px !important;
   margin-top: 8px !important;
 }
+
+/* =================================================== */
+/* === FIX DEFINITIVO PARA MODALES VISIBLES (AÑADIR AL FINAL) === */
+/* =================================================== */
+
+.modal-overlay {
+    position: fixed !important;
+    display: flex !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+}
+
+.modal-overlay.active {
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+}
