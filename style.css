@@ -178,7 +178,7 @@
 }
 
 .profile-item div {
-    flex-grow: 1; /* Ocupa el espacio restante */
+    flex-grow: 0; /* Ocupa el espacio restante */
     display: flex;
     flex-direction: column;
 }
