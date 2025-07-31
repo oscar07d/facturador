@@ -802,6 +802,26 @@
             </div>
         </div>
     </div>
+    <div id="editNameModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Editar Nombre</h2>
+                <button id="closeEditNameModalBtn" class="modal-close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="editNameForm">
+                    <div class="form-group">
+                        <label for="profileNameInput">Nombre de la cuenta:</label>
+                        <input type="text" id="profileNameInput" placeholder="Tu nombre y apellido" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="cancelEditNameBtn" class="btn btn-secondary">Cancelar</button>
+                <button type="button" id="saveNameBtn" class="btn btn-success">Guardar Cambios</button>
+            </div>
+        </div>
+    </div>
     
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" integrity="sha512-BNaRQnYJYiPSqHHDb58B0yaPfCu+Wgds8Gp/gU33kqBtgNS4tSPHuGibyoeqMV/TJlSKda6FXzoEyYGjTe+vXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
