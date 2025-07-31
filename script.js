@@ -57,8 +57,6 @@ const googleProvider = new GoogleAuthProvider();
 const db = getFirestore(app);
 const storage = getStorage(app);
 
-const googleProvider = new GoogleAuthProvider();
-
 document.addEventListener('DOMContentLoaded', () => {
     const splashScreen = document.getElementById('splashScreen');
     if (splashScreen) {
