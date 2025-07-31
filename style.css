@@ -171,8 +171,11 @@
     height: 40px;
     background-color: #e9ecef;
     border-radius: 50%;
-    padding: 8px; /* Para que el icono no toque el borde */
+    display: flex; /* Use flexbox to center the icon */
+    justify-content: center;
+    align-items: center;
     flex-shrink: 0;
+    overflow: hidden; /* Prevents content from spilling out */
 }
 
 .profile-item div {
@@ -206,6 +209,20 @@
 .profile-item.logout-item .icon-round {
     background-color: #ffebee; /* A light red background for the icon */
     color: var(--danger-color);
+}
+
+/* Estilo para los iconos SVG genéricos dentro del círculo */
+.profile-item .icon-round img {
+    width: 22px;  /* Tamaño más pequeño para que quepa bien */
+    height: 22px;
+    object-fit: contain; /* Asegura que el icono no se deforme */
+}
+
+/* Estilo específico para la FOTO de perfil */
+#profilePhotoBtn .icon-round img {
+    width: 100%; /* La imagen ocupa todo el círculo */
+    height: 100%;
+    object-fit: cover; /* Rellena el círculo sin deformarse (recorta el exceso) */
 }
 
 /* ============================================= */
