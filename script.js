@@ -3478,6 +3478,11 @@ onAuthStateChanged(auth, (user) => {
         
         handleNavigation('homeSection');
 
+        const profileIcon = document.querySelector('#profilePhotoBtn .icon-round');
+        if (profileIcon && user.photoURL) {
+            profileIcon.src = user.photoURL;
+        }
+        
         if (navAccount && navAccount.parentElement) {
             navAccount.parentElement.style.display = 'list-item';
         }
