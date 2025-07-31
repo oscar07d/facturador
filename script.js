@@ -7,10 +7,11 @@ import {
     signInWithPopup,
     onAuthStateChanged,
     signOut,
-    updateProfile, // <-- Faltaba esta
-    updateEmail, // <-- Faltaba esta
-    EmailAuthProvider, // <-- Faltaba esta
-    reauthenticateWithCredential // <-- Faltaba esta
+    updateProfile,
+    updateEmail, 
+    EmailAuthProvider,
+    reauthenticateWithCredential,
+    reauthenticateWithPopup
 } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
 import { 
     getFirestore,
