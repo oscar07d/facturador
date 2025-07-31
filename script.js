@@ -2095,6 +2095,7 @@ async function saveProfilePhoto() {
 
 // --- Funciones para Editar Correo Electrónico ---
 async function reauthenticateWithGoogle() {
+    console.log("DEBUG: La función reauthenticateWithGoogle() ha comenzado.");
     if (!auth.currentUser) return;
     showLoading(true);
     try {
@@ -3531,6 +3532,7 @@ if (logoutButton) {
 
 // En tu script.js, reemplaza tu onAuthStateChanged con esto:
 
+// En tu script.js, reemplaza tu onAuthStateChanged completo con esto:
 onAuthStateChanged(auth, (user) => {
     showLoading(false);
     
@@ -3550,25 +3552,39 @@ onAuthStateChanged(auth, (user) => {
         }
 
         // =======================================================
-        // ===> ACTIVAR TODOS LOS LISTENERS DE MI CUENTA AQUÍ <===
+        // ===> BLOQUE DE DEPURACIÓN <===
         // =======================================================
         
-        // Listeners para los botones principales de la lista
+        console.log("--- DEBUG: Buscando botones de Mi Cuenta ---");
+
         const profilePhotoBtn = document.getElementById('profilePhotoBtn');
-        if (profilePhotoBtn) { profilePhotoBtn.addEventListener('click', openEditPhotoModal); }
+        console.log("Botón Foto de Perfil encontrado:", profilePhotoBtn);
+        if (profilePhotoBtn) {
+            profilePhotoBtn.addEventListener('click', openEditPhotoModal);
+        }
 
         const profileNameBtn = document.getElementById('profileNameBtn');
-        if (profileNameBtn) { profileNameBtn.addEventListener('click', openEditNameModal); }
+        console.log("Botón Nombre encontrado:", profileNameBtn);
+        if (profileNameBtn) {
+            profileNameBtn.addEventListener('click', openEditNameModal);
+        }
 
         const profileEmailBtn = document.getElementById('profileEmailBtn');
-        if (profileEmailBtn) { profileEmailBtn.addEventListener('click', openEditEmailModal); }
-        
-        // Listener para el botón de re-autenticación con Google
-        const googleReauthBtn = document.getElementById('googleReauthBtn');
-        if (googleReauthBtn) {
-            googleReauthBtn.addEventListener('click', reauthenticateWithGoogle);
+        console.log("Botón Correo encontrado:", profileEmailBtn);
+        if (profileEmailBtn) {
+            profileEmailBtn.addEventListener('click', openEditEmailModal);
         }
         
+        const googleReauthBtn = document.getElementById('googleReauthBtn');
+        console.log("Botón Re-autenticación Google encontrado:", googleReauthBtn);
+        if (googleReauthBtn) {
+            googleReauthBtn.addEventListener('click', () => {
+                console.log("DEBUG: ¡Clic en el botón de Google detectado! Llamando a reauthenticateWithGoogle...");
+                reauthenticateWithGoogle();
+            });
+        } else {
+            console.error("DEBUG: ¡ERROR! No se pudo encontrar el botón con id='googleReauthBtn'. Revisa tu index.html.");
+        }
         // =======================================================
 
     } else {
