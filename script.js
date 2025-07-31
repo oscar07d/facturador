@@ -3528,11 +3528,8 @@ if (logoutButton) {
     });
 }
 
-// En tu script.js, reemplaza tu onAuthStateChanged con esto:
+// In script.js, replace your entire onAuthStateChanged function with this:
 
-// En tu script.js, reemplaza tu onAuthStateChanged con esto:
-
-// En tu script.js, reemplaza tu onAuthStateChanged completo con esto:
 onAuthStateChanged(auth, (user) => {
     showLoading(false);
     
@@ -3541,7 +3538,7 @@ onAuthStateChanged(auth, (user) => {
     const navAccount = document.getElementById('navAccount');
 
     if (user) {
-        // --- El usuario ha iniciado sesión ---
+        // --- User is signed in ---
         if(loginContainer) loginContainer.style.display = 'none';
         if(mainContent) mainContent.style.display  = 'flex';
         
@@ -3551,44 +3548,33 @@ onAuthStateChanged(auth, (user) => {
             navAccount.parentElement.style.display = 'list-item';
         }
 
-        // =======================================================
-        // ===> BLOQUE DE DEPURACIÓN <===
-        // =======================================================
+        // =================================================================
+        // ===> FINAL FIX: DECLARE CONSTANTS & ADD LISTENERS HERE <===
+        // =================================================================
         
-        console.log("--- DEBUG: Buscando botones de Mi Cuenta ---");
-
         const profilePhotoBtn = document.getElementById('profilePhotoBtn');
-        console.log("Botón Foto de Perfil encontrado:", profilePhotoBtn);
         if (profilePhotoBtn) {
             profilePhotoBtn.addEventListener('click', openEditPhotoModal);
         }
 
         const profileNameBtn = document.getElementById('profileNameBtn');
-        console.log("Botón Nombre encontrado:", profileNameBtn);
         if (profileNameBtn) {
             profileNameBtn.addEventListener('click', openEditNameModal);
         }
 
         const profileEmailBtn = document.getElementById('profileEmailBtn');
-        console.log("Botón Correo encontrado:", profileEmailBtn);
         if (profileEmailBtn) {
             profileEmailBtn.addEventListener('click', openEditEmailModal);
         }
         
         const googleReauthBtn = document.getElementById('googleReauthBtn');
-        console.log("Botón Re-autenticación Google encontrado:", googleReauthBtn);
         if (googleReauthBtn) {
-            googleReauthBtn.addEventListener('click', () => {
-                console.log("DEBUG: ¡Clic en el botón de Google detectado! Llamando a reauthenticateWithGoogle...");
-                reauthenticateWithGoogle();
-            });
-        } else {
-            console.error("DEBUG: ¡ERROR! No se pudo encontrar el botón con id='googleReauthBtn'. Revisa tu index.html.");
+            googleReauthBtn.addEventListener('click', reauthenticateWithGoogle);
         }
-        // =======================================================
+        // =================================================================
 
     } else {
-        // --- El usuario ha cerrado sesión ---
+        // --- User is signed out ---
         if(loginContainer) loginContainer.style.display = 'flex';
         if(mainContent) mainContent.style.display  = 'none';
 
