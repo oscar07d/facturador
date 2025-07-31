@@ -2443,21 +2443,111 @@ textarea.input-error {
     justify-content: space-between; /* Para distribuir los botones */
 }
 
-/* ===================================== */
-/* === ESTILOS PARA MODALES DE MI CUENTA === */
-/* ===================================== */
+/* ============================================= */
+/* === ESTILOS MEJORADOS PARA MODALES DE MI CUENTA === */
+/* ============================================= */
+
+/* Ancho específico para los modales de perfil */
 #editPhotoModal .modal-content,
 #editEmailModal .modal-content {
-    max-width: 500px;
+    max-width: 480px;
 }
 
+/* --- Estilos para el modal de Editar Correo --- */
+
+#editEmailModal .modal-header h2 {
+    color: var(--primary-color);
+    font-weight: 700;
+}
+
+#editEmailModal .modal-notice {
+    background-color: #e7f1ff; /* Un azul muy claro */
+    border-left: 4px solid var(--primary-color);
+    color: #004a99;
+    padding: 15px;
+    border-radius: var(--border-radius-s);
+    margin-bottom: 25px;
+    font-size: 0.9rem;
+}
+
+#editEmailModal .reauth-options {
+    text-align: center;
+}
+
+#editEmailModal .reauth-text {
+    color: var(--text-color);
+    margin-bottom: 15px;
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+/* Estilo para el botón de Google */
+#editEmailModal .btn-google {
+    background-color: #ffffff;
+    color: #333;
+    border: 1px solid var(--border-color);
+    border-radius: 50px; /* Forma de píldora */
+    padding: 10px 20px;
+    font-weight: 500;
+    width: 100%;
+    max-width: 320px;
+    margin: 0 auto;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+#editEmailModal .btn-google:hover {
+    background-color: #f8f9fa;
+}
+#editEmailModal .btn-google .icon-svg {
+    width: 18px;
+    height: 18px;
+    margin-right: 10px;
+}
+
+/* Estilo para el separador "O" */
+#editEmailModal .separator {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    color: var(--text-muted-color);
+    margin: 25px 0;
+}
+#editEmailModal .separator::before,
+#editEmailModal .separator::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid var(--border-color);
+}
+#editEmailModal .separator span {
+    padding: 0 15px;
+}
+
+/* Estilos para el formulario de contraseña */
+#editEmailModal #editEmailForm .form-group {
+    text-align: left;
+    margin-bottom: 15px;
+}
+#editEmailModal #editEmailForm label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 500;
+    font-size: 0.9rem;
+    color: var(--text-muted-color);
+}
+
+/* Estilos para los botones del footer */
+#editEmailModal .modal-footer .btn {
+    border-radius: 50px; /* Forma de píldora */
+    padding: 10px 25px;
+    font-weight: 600;
+}
+
+/* --- Estilos para el modal de Editar Foto (ya los tenías) --- */
 .profile-photo-uploader {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 20px;
 }
-
 #photoPreview {
     width: 150px;
     height: 150px;
@@ -2465,17 +2555,6 @@ textarea.input-error {
     object-fit: cover;
     border: 3px solid var(--border-color);
 }
-
-.modal-notice {
-    font-size: 0.9rem;
-    color: var(--text-muted-color);
-    background-color: #f8f9fa;
-    padding: 15px;
-    border-radius: var(--border-radius-s);
-    margin-bottom: 20px;
-    border-left: 4px solid var(--info-color);
-}
-
 
 
 /* === MEDIA QUERIES PARA ADAPTABILIDAD (Generales de la app) === */
