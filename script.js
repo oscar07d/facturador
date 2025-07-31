@@ -3548,9 +3548,9 @@ onAuthStateChanged(auth, (user) => {
             navAccount.parentElement.style.display = 'list-item';
         }
 
-        // =================================================================
-        // ===> FINAL FIX: DECLARE CONSTANTS & ADD LISTENERS HERE <===
-        // =================================================================
+        // =======================================================
+        // ===> ACTIVATE ALL POST-LOGIN BUTTONS HERE <===
+        // =======================================================
         
         const profilePhotoBtn = document.getElementById('profilePhotoBtn');
         if (profilePhotoBtn) {
@@ -3566,12 +3566,11 @@ onAuthStateChanged(auth, (user) => {
         if (profileEmailBtn) {
             profileEmailBtn.addEventListener('click', openEditEmailModal);
         }
-        
+
         const googleReauthBtn = document.getElementById('googleReauthBtn');
         if (googleReauthBtn) {
             googleReauthBtn.addEventListener('click', reauthenticateWithGoogle);
         }
-        // =================================================================
 
     } else {
         // --- User is signed out ---
