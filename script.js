@@ -99,6 +99,12 @@ const photoUploadInput = document.getElementById('photoUploadInput');
 const selectPhotoBtn = document.getElementById('selectPhotoBtn');
 const savePhotoBtn = document.getElementById('savePhotoBtn');
 
+const editNameModal = document.getElementById('editNameModal');
+const closeEditNameModalBtn = document.getElementById('closeEditNameModalBtn');
+const cancelEditNameBtn = document.getElementById('cancelEditNameBtn');
+const saveNameBtn = document.getElementById('saveNameBtn');
+const profileNameInput = document.getElementById('profileNameInput');
+
 let selectedPhotoFile = null; // Variable global para la foto
 
 const invoiceDetailModal = document.getElementById('invoiceDetailModal');
@@ -2080,6 +2086,52 @@ async function saveProfilePhoto() {
     } catch (error) {
         console.error("Error al subir la foto de perfil:", error);
         alert("Hubo un error al guardar tu foto.");
+    } finally {
+        showLoading(false);
+    }
+}
+
+// --- LÓGICA PARA EL MODAL DE EDITAR NOMBRE ---
+function openEditNameModal() {
+    const user = auth.currentUser;
+    if (user && profileNameInput) {
+        // Fill the input with the user's current name
+        profileNameInput.value = user.displayName || '';
+        if (editNameModal) editNameModal.classList.add('active');
+        if (bodyElement) bodyElement.classList.add('modal-active');
+    }
+}
+
+function closeEditNameModal() {
+    if (editNameModal) editNameModal.classList.remove('active');
+    if (bodyElement && !document.querySelector('.modal-overlay.active')) {
+        bodyElement.classList.remove('modal-active');
+    }
+}
+
+async function saveProfileName() {
+    const newName = profileNameInput.value.trim();
+    if (!newName) {
+        alert("El nombre no puede estar vacío.");
+        return;
+    }
+
+    showLoading(true);
+    try {
+        await updateProfile(auth.currentUser, {
+            displayName: newName
+        });
+
+        // Update the name in the "Mi Cuenta" list
+        const nameDisplay = document.querySelector('#profileNameBtn span');
+        if (nameDisplay) nameDisplay.textContent = newName;
+
+        alert("¡Nombre actualizado con éxito!");
+        closeEditNameModal();
+
+    } catch (error) {
+        console.error("Error al actualizar el nombre:", error);
+        alert("Hubo un error al guardar tu nombre.");
     } finally {
         showLoading(false);
     }
@@ -4167,6 +4219,11 @@ function buildWhatsAppMessage(clientName) {
   }
   return mensaje;
 }
+
+// Listeners for the Edit Name modal
+if (closeEditNameModalBtn) closeEditNameModalBtn.addEventListener('click', closeEditNameModal);
+if (cancelEditNameBtn) cancelEditNameBtn.addEventListener('click', closeEditNameModal);
+if (saveNameBtn) saveNameBtn.addEventListener('click', saveProfileName);
 
 // if (generateInvoiceFileBtn) { 
 //    generateInvoiceFileBtn.addEventListener('click', () => {
