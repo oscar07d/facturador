@@ -239,6 +239,9 @@
 #editPhotoModal .modal-content {
     max-width: 500px;
 }
+#editNameModal .modal-content {
+    max-width: 500px;
+}
 
 /* Estilos para el cargador de foto de perfil */
 .profile-photo-uploader {
