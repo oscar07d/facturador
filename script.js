@@ -99,14 +99,6 @@ const photoUploadInput = document.getElementById('photoUploadInput');
 const selectPhotoBtn = document.getElementById('selectPhotoBtn');
 const savePhotoBtn = document.getElementById('savePhotoBtn');
 
-const profileEmailBtn = document.getElementById('profileEmailBtn');
-const editEmailModal = document.getElementById('editEmailModal');
-const closeEditEmailModalBtn = document.getElementById('closeEditEmailModalBtn');
-const cancelEditEmailBtn = document.getElementById('cancelEditEmailBtn');
-const saveEmailBtn = document.getElementById('saveEmailBtn');
-const profileEmailInput = document.getElementById('profileEmailInput');
-const profilePasswordInput = document.getElementById('profilePasswordInput');
-
 let selectedPhotoFile = null; // Variable global para la foto
 
 const invoiceDetailModal = document.getElementById('invoiceDetailModal');
@@ -2118,64 +2110,6 @@ async function reauthenticateWithGoogle() {
     }
 }
 
-function openEditEmailModal() {
-    const user = auth.currentUser;
-    if (user) {
-        profileEmailInput.value = user.email || '';
-        profilePasswordInput.value = '';
-        if (editEmailModal) editEmailModal.classList.add('active');
-        if (bodyElement) bodyElement.classList.add('modal-active');
-    }
-}
-function closeEditEmailModal() {
-    if (editEmailModal) editEmailModal.classList.remove('active');
-    if (bodyElement && !document.querySelector('.modal-overlay.active')) {
-        bodyElement.classList.remove('modal-active');
-    }
-}
-async function saveProfileEmail() {
-    const newEmail = profileEmailInput.value.trim();
-    const password = profilePasswordInput.value;
-    const user = auth.currentUser;
-
-    if (!newEmail || !password) {
-        alert("Por favor, completa todos los campos.");
-        return;
-    }
-    if (newEmail === user.email) {
-        alert("El nuevo correo es el mismo que el actual.");
-        return;
-    }
-
-    showLoading(true);
-    try {
-        // 1. Crear una credencial con el email y contraseña actuales para re-autenticar
-        const credential = EmailAuthProvider.credential(user.email, password);
-        await reauthenticateWithCredential(user, credential);
-        
-        // 2. Si la re-autenticación es exitosa, actualizar el email
-        await updateEmail(user, newEmail);
-
-        // 3. Actualizar la vista en la sección "Mi Cuenta"
-        const emailDisplay = profileEmailBtn.querySelector('span');
-        if (emailDisplay) emailDisplay.textContent = newEmail;
-
-        alert("Correo electrónico actualizado con éxito.");
-        closeEditEmailModal();
-
-    } catch (error) {
-        console.error("Error al actualizar el correo:", error);
-        if (error.code === 'auth/wrong-password') {
-            alert("La contraseña es incorrecta. Inténtalo de nuevo.");
-        } else if (error.code === 'auth/email-already-in-use') {
-            alert("Ese correo electrónico ya está en uso por otra cuenta.");
-        } else {
-            alert("Hubo un error al actualizar tu correo.");
-        }
-    } finally {
-        showLoading(false);
-    }
-}
 
 function formatInvoiceNumber(number) {
     return String(number).padStart(3, '0');
@@ -3560,11 +3494,6 @@ onAuthStateChanged(auth, (user) => {
         const profileNameBtn = document.getElementById('profileNameBtn');
         if (profileNameBtn) {
             profileNameBtn.addEventListener('click', openEditNameModal);
-        }
-
-        const profileEmailBtn = document.getElementById('profileEmailBtn');
-        if (profileEmailBtn) {
-            profileEmailBtn.addEventListener('click', openEditEmailModal);
         }
 
         const googleReauthBtn = document.getElementById('googleReauthBtn');
