@@ -198,6 +198,43 @@
     font-weight: 300;
 }
 
+/* ============================================= */
+/* === ESTILOS ESPECÍFICOS PARA MODALES DE MI CUENTA === */
+/* ============================================= */
+
+/* Ancho específico para el modal de editar foto y correo */
+#editPhotoModal .modal-content,
+#editEmailModal .modal-content {
+    max-width: 500px;
+}
+
+/* Estilos para el cargador de foto de perfil */
+.profile-photo-uploader {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+#photoPreview {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--border-color);
+}
+
+/* Estilo para el aviso en el modal de correo */
+.modal-notice {
+    font-size: 0.9rem;
+    color: var(--text-muted-color);
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: var(--border-radius-s);
+    margin-bottom: 20px;
+    border-left: 4px solid var(--info-color);
+}
+
 /* === Pantalla de carga === */
 .splash-screen {
     position: fixed;
