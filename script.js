@@ -2093,6 +2093,29 @@ async function saveProfilePhoto() {
 }
 
 // --- Funciones para Editar Correo Electrónico ---
+async function reauthenticateWithGoogle() {
+    if (!auth.currentUser) return;
+    showLoading(true);
+    try {
+        // La función correcta para re-autenticar es reauthenticateWithPopup
+        await reauthenticateWithPopup(auth.currentUser, googleProvider);
+
+        // Si la re-autenticación es exitosa:
+        alert("Verificación exitosa. Ahora puedes cambiar tu correo.");
+        
+        // Opcional: enfocar el campo de nuevo correo
+        if (profileEmailInput) {
+            profileEmailInput.focus();
+        }
+
+    } catch (error) {
+        console.error("Error durante la reautenticación con Google:", error);
+        alert("No se pudo verificar tu identidad con Google. Inténtalo de nuevo.");
+    } finally {
+        showLoading(false);
+    }
+}
+
 function openEditEmailModal() {
     const user = auth.currentUser;
     if (user) {
@@ -3505,6 +3528,8 @@ if (logoutButton) {
 
 // En tu script.js, reemplaza tu onAuthStateChanged con esto:
 
+// En tu script.js, reemplaza tu onAuthStateChanged con esto:
+
 onAuthStateChanged(auth, (user) => {
     showLoading(false);
     
@@ -3513,49 +3538,44 @@ onAuthStateChanged(auth, (user) => {
     const navAccount = document.getElementById('navAccount');
 
     if (user) {
-        // --- User is signed in ---
+        // --- El usuario ha iniciado sesión ---
         if(loginContainer) loginContainer.style.display = 'none';
         if(mainContent) mainContent.style.display  = 'flex';
         
         handleNavigation('homeSection');
 
-        if (navAccount) {
-            // Use parentElement to show the entire list item
+        if (navAccount && navAccount.parentElement) {
             navAccount.parentElement.style.display = 'list-item';
         }
 
         // =======================================================
-        // ===> ACTIVATE ALL POST-LOGIN BUTTONS HERE <===
+        // ===> ACTIVAR TODOS LOS LISTENERS DE MI CUENTA AQUÍ <===
         // =======================================================
         
-        // Find and activate profile buttons
+        // Listeners para los botones principales de la lista
         const profilePhotoBtn = document.getElementById('profilePhotoBtn');
-        if (profilePhotoBtn) {
-            profilePhotoBtn.addEventListener('click', openEditPhotoModal);
-        }
+        if (profilePhotoBtn) { profilePhotoBtn.addEventListener('click', openEditPhotoModal); }
 
         const profileNameBtn = document.getElementById('profileNameBtn');
-        if (profileNameBtn) {
-            profileNameBtn.addEventListener('click', openEditNameModal);
-        }
+        if (profileNameBtn) { profileNameBtn.addEventListener('click', openEditNameModal); }
 
         const profileEmailBtn = document.getElementById('profileEmailBtn');
-        if (profileEmailBtn) {
-            profileEmailBtn.addEventListener('click', openEditEmailModal);
+        if (profileEmailBtn) { profileEmailBtn.addEventListener('click', openEditEmailModal); }
+        
+        // Listener para el botón de re-autenticación con Google
+        const googleReauthBtn = document.getElementById('googleReauthBtn');
+        if (googleReauthBtn) {
+            googleReauthBtn.addEventListener('click', reauthenticateWithGoogle);
         }
-
-        // Activate bank selection logic if that section is visible
-        const allBanksCheckbox = document.querySelector('#bankSelectionGrid input[value="all"]');
-        if (allBanksCheckbox) {
-            // ... (Your bank selection logic here) ...
-        }
+        
+        // =======================================================
 
     } else {
-        // --- User is signed out ---
+        // --- El usuario ha cerrado sesión ---
         if(loginContainer) loginContainer.style.display = 'flex';
         if(mainContent) mainContent.style.display  = 'none';
 
-        if (navAccount) {
+        if (navAccount && navAccount.parentElement) {
             navAccount.parentElement.style.display = 'none';
         }
     }
