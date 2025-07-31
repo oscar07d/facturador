@@ -822,7 +822,27 @@
             </div>
         </div>
     </div>
-    
+    <div id="editPhoneModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Actualizar número de teléfono</h2>
+                <button id="closeEditPhoneModalBtn" class="modal-close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p id="currentPhoneNumber" class="current-info-display">Tu número actual es: (ninguno)</p>
+                <form id="editPhoneForm">
+                    <div class="form-group">
+                        <label for="profilePhoneInput">Nuevo número de teléfono:</label>
+                        <input type="tel" id="profilePhoneInput" placeholder="Escribe tu nuevo número" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="cancelEditPhoneBtn" class="btn btn-secondary">Cancelar</button>
+                <button type="button" id="savePhoneBtn" class="btn btn-success">Guardar Cambios</button>
+            </div>
+        </div>
+    </div>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" integrity="sha512-BNaRQnYJYiPSqHHDb58B0yaPfCu+Wgds8Gp/gU33kqBtgNS4tSPHuGibyoeqMV/TJlSKda6FXzoEyYGjTe+vXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" integrity="sha512-qZvrmS2ekKPF2mSznTQsxqPgnpkI4DNTlrdUmTzrDgektczlKNRRhy5X5AAOnx5S09ydFYWWNSfcEqDTTHgtNA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
