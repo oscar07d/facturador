@@ -198,6 +198,14 @@
     font-weight: 300;
 }
 
+#accountSection #logoutButton {
+    display: inline-flex;
+    width: 100%;
+    max-width: 300px; /* Ancho máximo para que no sea tan grande en escritorio */
+    justify-content: center;
+    margin: 10px auto 0; /* Centra el botón horizontalmente */
+}
+
 /* ============================================= */
 /* === ESTILOS ESPECÍFICOS PARA MODALES DE MI CUENTA === */
 /* ============================================= */
