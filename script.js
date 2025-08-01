@@ -279,40 +279,6 @@ const paymentStatusDetails = {
     'n/a': { text: "N/A", description: "No aplica o sin información.", action: "Verificar datos."} // Para estadoUltimaFacturaCliente
 };
 
-// --- SHOW / HIDE THEME MODAL ---
-openThemeBtn.addEventListener('click', () => {
-  themeModal.classList.add('active');
-  document.body.classList.add('modal-active');
-});
-closeThemeModalBtn.addEventListener('click', () => {
-  themeModal.classList.remove('active');
-  document.body.classList.remove('modal-active');
-});
-
-// --- SHOW / HIDE NOTIFICATIONS MODAL ---
-openNotificationsBtn.addEventListener('click', () => {
-  notificationsModal.classList.add('active');
-  document.body.classList.add('modal-active');
-});
-closeNotificationsBtn.addEventListener('click', () => {
-  notificationsModal.classList.remove('active');
-  document.body.classList.remove('modal-active');
-});
-
-// (Opcional) Para cerrar clicando fuera del contenido:
-themeModal.addEventListener('click', e => {
-  if (e.target === themeModal) {
-    themeModal.classList.remove('active');
-    document.body.classList.remove('modal-active');
-  }
-});
-notificationsModal.addEventListener('click', e => {
-  if (e.target === notificationsModal) {
-    notificationsModal.classList.remove('active');
-    document.body.classList.remove('modal-active');
-  }
-});
-
 // --- DICCIONARIO COMPLETO DE TRADUCCIONES ---
 const translations = {
     es: {
@@ -5071,6 +5037,7 @@ if (document.readyState === 'loading') {
 //        alert("Funcionalidad 'Generar Factura (Archivo)' pendiente.");
 //    });
 //}
+
 
 
 
