@@ -376,6 +376,46 @@
     backdrop-filter: blur(4px);
 }
 
+[data-theme="dark"] .btn-icon-header .icon-svg {
+    /* Inverts the icon to white */
+    filter: brightness(0) invert(1) opacity(0.8);
+}
+
+[data-theme="dark"] .btn-icon-header:hover .icon-svg {
+    filter: brightness(0) invert(1) opacity(1); /* Becomes bright white on hover */
+}
+
+/* Styles for Actions in the Header (Notification Bell) */
+.header-actions {
+    position: absolute;
+    right: 25px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 3; /* Ensures it's above other header elements */
+}
+
+.btn-icon-header {
+    position: relative;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    display: flex; /* Ensures content is visible */
+    align-items: center;
+}
+
+.btn-icon-header .icon-svg {
+    width: 24px;
+    height: 24px;
+    /* Default color (dark grey) for light theme */
+    filter: brightness(0) opacity(0.6);
+    transition: filter 0.2s ease;
+}
+
+.btn-icon-header:hover .icon-svg {
+    filter: brightness(0) opacity(1); /* Becomes black on hover */
+}
+
 /* ===================================== */
 /* === ESTILOS PARA SECCIÓN MI CUENTA (NUEVO) === */
 /* ===================================== */
