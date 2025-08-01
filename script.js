@@ -4964,13 +4964,14 @@ function buildWhatsAppMessage(clientName) {
   return mensaje;
 }
 
+// --- Cargar Preferencias del Usuario al Iniciar la App ---
 document.addEventListener('DOMContentLoaded', () => {
-    // Loads the saved theme
-    const savedTheme = localStorage.getItem('appTheme') || 'system';
+    // Carga y aplica el tema guardado
+    const savedTheme = localStorage.getItem('appTheme') || 'system'; // 'system' es el valor por defecto
     applyTheme(savedTheme);
 
-    // Loads the saved language
-    const savedLang = localStorage.getItem('appLanguage') || 'es';
+    // Carga y aplica el idioma guardado
+    const savedLang = localStorage.getItem('appLanguage') || 'es'; // 'es' es el valor por defecto
     setLanguage(savedLang);
 });
 
