@@ -2428,6 +2428,16 @@ function openInvoiceDetailModal(invoiceData, invoiceId) {
     if (invoiceDetailModal) {
         console.log("Activando modal y clase modal-active en body.");
         invoiceDetailModal.classList.add('active');
+        const modalConfirmBtn = document.getElementById('modalConfirmPaymentBtn');
+        if (modalConfirmBtn) {
+            // Si el estado de la factura es 'pendiente' o 'vencido', muestra el botón
+            if (invoiceData.paymentStatus === 'pending' || invoiceData.paymentStatus === 'overdue') {
+                modalConfirmBtn.style.display = 'inline-flex';
+            } else {
+                // Para cualquier otro estado, ocúltalo
+                modalConfirmBtn.style.display = 'none';
+            }
+        }
         bodyElement.classList.add('modal-active');
     } else {
         console.error("invoiceDetailModal es null, no se puede activar.");
@@ -4302,6 +4312,16 @@ onAuthStateChanged(auth, (user) => {
         const profileLanguageBtn = document.getElementById('profileLanguageBtn');
         if (profileLanguageBtn) {
             profileLanguageBtn.addEventListener('click', openLanguageModal);
+        }
+
+        const modalConfirmPaymentBtn = document.getElementById('modalConfirmPaymentBtn');
+        if (modalConfirmPaymentBtn) {
+            modalConfirmPaymentBtn.addEventListener('click', () => {
+                // 1. Cerramos el modal de "Ver Detalles"
+                closeInvoiceDetailModal();
+                // 2. Abrimos el modal de "Confirmar Pago" usando los datos que ya tenemos guardados
+                openPaymentUpdateModal(currentInvoiceDataForModalActions, currentInvoiceIdForModalActions);
+            });
         }
 
         // Setup para los botones internos de los modales
