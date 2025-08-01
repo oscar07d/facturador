@@ -105,7 +105,7 @@
 }
 
 /* ============================================= */
-/* === DARK THEME STYLES (DEFINITIVE VERSION) === */
+/* === DARK THEME STYLES (FINAL VERSION) === */
 /* ============================================= */
 
 /* 1. DEFINE DARK THEME COLOR VARIABLES
@@ -127,16 +127,11 @@
 
 /* 2. GLOBAL & LAYOUT OVERRIDES
 /* ============================================= */
-[data-theme="dark"] body {
-    background: var(--background-color);
-}
-
+[data-theme="dark"] body,
 [data-theme="dark"] .splash-screen,
-[data-theme="dark"] .loading-content,
-[data-theme="dark"] .login-container {
+[data-theme="dark"] .loading-content {
     background-color: var(--background-color);
     color: var(--text-color);
-    border-top-color: var(--primary-color); /* For login container */
 }
 
 [data-theme="dark"] .splash-logo,
@@ -144,12 +139,15 @@
 [data-theme="dark"] .loading-logo-spinner .logo-path-spinner,
 [data-theme="dark"] .login-logo-completo .cls-1-login,
 [data-theme="dark"] .app-logo-completo .cls-1-app {
-    filter: brightness(0) invert(1); /* Inverts SVGs/logos to white */
+    filter: brightness(0) invert(1);
 }
 
 [data-theme="dark"] .invoice-app-container,
+[data-theme="dark"] .login-container,
 [data-theme="dark"] .modal-content,
-[data-theme="dark"] .form-section {
+[data-theme="dark"] .dashboard-card,
+[data-theme="dark"] .form-section,
+[data-theme="dark"] .profile-list ul {
     background-color: var(--container-background);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
     border-color: var(--border-color);
@@ -168,7 +166,9 @@
 /* ============================================= */
 [data-theme="dark"] h1, [data-theme="dark"] h2, [data-theme="dark"] h3, [data-theme="dark"] h4,
 [data-theme="dark"] .splash-text strong,
-[data-theme="dark"] .login-container h1 {
+[data-theme="dark"] .login-container h1,
+[data-theme="dark"] .invoice-list-client,
+[data-theme="dark"] .summary-value {
     color: var(--text-color);
 }
 
@@ -178,11 +178,12 @@
     color: var(--text-muted-color);
 }
 
-[data-theme="dark"] .app-header h1 {
+[data-theme="dark"] .app-header h1,
+[data-theme="dark"] .form-section legend {
     color: var(--primary-color);
 }
 
-/* 4. FORMS, BUTTONS & INPUTS
+/* 4. FORMS, BUTTONS & DROPDOWNS
 /* ============================================= */
 [data-theme="dark"] input,
 [data-theme="dark"] select,
@@ -200,24 +201,43 @@
 
 [data-theme="dark"] input:focus,
 [data-theme="dark"] select:focus,
-[data-theme="dark"] textarea:focus {
+[data-theme="dark"] textarea:focus,
+[data-theme="dark"] .custom-select-container.open {
     box-shadow: 0 0 0 3px rgba(61, 157, 255, 0.3);
+    border-color: var(--primary-color);
+}
+
+[data-theme="dark"] .custom-select-options,
+[data-theme="dark"] .flatpickr-calendar {
+    background-color: var(--secondary-background);
+    border-color: var(--border-color);
+}
+[data-theme="dark"] .custom-option:hover,
+[data-theme="dark"] .flatpickr-day:hover {
+    background-color: var(--input-background);
+}
+[data-theme="dark"] .flatpickr-day.selected {
+    background: var(--primary-color) !important;
+}
+[data-theme="dark"] .flatpickr-time, [data-theme="dark"] .flatpickr-weekday, [data-theme="dark"] .flatpickr-month {
+    color: var(--text-color);
 }
 
 /* 5. SPECIFIC COMPONENT STYLING
 /* ============================================= */
 
-/* Dashboard */
-[data-theme="dark"] .dashboard-card {
-    background-color: var(--container-background);
+/* Create Invoice Section */
+[data-theme="dark"] #streamingProfileFields,
+[data-theme="dark"] .status-info-box,
+[data-theme="dark"] .totals-summary-box {
+    background-color: var(--secondary-background);
+    border-color: var(--border-color);
 }
+
+/* Dashboard */
 [data-theme="dark"] .top-items-list li .pill-count {
     background-color: var(--secondary-background);
     color: var(--text-color);
-}
-[data-theme="dark"] .flatpickr-day.selected {
-    background: var(--primary-color) !important;
-    border-color: var(--primary-color) !important;
 }
 
 /* My Invoices */
@@ -231,16 +251,14 @@
 }
 
 /* My Account */
-[data-theme="dark"] #profileSection {
+[data-theme="dark"] #profileSection,
+[data-theme="dark"] #accountSection {
     background-color: var(--background-color);
 }
 [data-theme="dark"] .profile-header,
 [data-theme="dark"] .profile-list ul {
     background-color: var(--container-background);
     border-color: var(--border-color);
-}
-[data-theme="dark"] .profile-list h3 {
-    color: var(--text-muted-color);
 }
 [data-theme="dark"] .profile-item:hover {
     background-color: var(--secondary-background);
@@ -249,18 +267,20 @@
     background-color: var(--secondary-background);
 }
 [data-theme="dark"] .profile-item .icon-round img {
-    filter: invert(1); /* Inverts icons to white */
+    filter: invert(1);
 }
 [data-theme="dark"] #profilePhotoBtn .icon-round img {
-    filter: none; /* Do not invert the user's actual photo */
+    filter: none;
 }
 [data-theme="dark"] .profile-item.logout-item .icon-round {
     background-color: rgba(220, 53, 69, 0.15);
 }
 
 /* Mobile Navigation */
-[data-theme="dark"] .logo-app-container {
-    filter: invert(1); /* Inverts the isologo to white */
+@media (max-width: 768px) {
+    [data-theme="dark"] .logo-app-container {
+        filter: invert(1);
+    }
 }
 
 /* ===================================== */
