@@ -4308,6 +4308,7 @@ onAuthStateChanged(auth, (user) => {
         setupEditNameModalListeners();
         setupEditPhoneModalListeners();
         setupThemeModalListeners();
+        setupLanguageModalListeners();
         // ...etc.
         
     } else {
