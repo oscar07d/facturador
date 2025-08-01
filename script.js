@@ -4354,11 +4354,15 @@ onAuthStateChanged(auth, (user) => {
 
         // Both Notification buttons
         const notificationsBtnHeader = document.getElementById('notificationsBtn');
-        if (notificationsBtnHeader) notificationsBtnHeader.addEventListener('click', openNotificationsModal);
-
+        if (notificationsBtnHeader) {
+            notificationsBtnHeader.addEventListener('click', openNotificationsModal);
+        }
+        
         const profileNotificationsBtn = document.getElementById('profileNotificationsBtn');
-        if (profileNotificationsBtn) profileNotificationsBtn.addEventListener('click', openNotificationsModal);
-
+        if (profileNotificationsBtn) {
+            profileNotificationsBtn.addEventListener('click', openNotificationsModal);
+        }
+        
         // Setup for buttons INSIDE the modals
         setupEditNameModalListeners();
         setupEditPhoneModalListeners();
