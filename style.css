@@ -459,6 +459,14 @@
     padding: 30px;
     color: var(--text-muted-color);
 }
+
+#themeModal.active,
+#notificationsModal.active {
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+    z-index: 10000 !important; /* Un z-index muy alto para asegurar que estén por encima de todo */
+}
 /* Estilos para Acciones en la Cabecera (Campana de Notificación) */
 .header-actions {
     display: flex;
@@ -3721,4 +3729,5 @@ body.modal-active {
   max-height: 100vh;
   overflow-y: hidden;
 }
+
 
