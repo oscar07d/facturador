@@ -4304,73 +4304,46 @@ onAuthStateChanged(auth, (user) => {
             navAccount.parentElement.style.display = 'list-item';
         }
 
-        // =======================================================
-        // ===> ACTIVACIÓN DE TODOS LOS LISTENERS POST-LOGIN (VERSIÓN FINAL) <===
-        // =======================================================
+        // --- Activación de TODOS los listeners de la UI principal ---
         
         const profilePhotoBtn = document.getElementById('profilePhotoBtn');
-        if (profilePhotoBtn) {
-            profilePhotoBtn.addEventListener('click', openEditPhotoModal);
-        }
+        if (profilePhotoBtn) profilePhotoBtn.addEventListener('click', openEditPhotoModal);
 
         const profileNameBtn = document.getElementById('profileNameBtn');
-        if (profileNameBtn) {
-            profileNameBtn.addEventListener('click', openEditNameModal);
-        }
+        if (profileNameBtn) profileNameBtn.addEventListener('click', openEditNameModal);
 
         const profilePhoneBtn = document.getElementById('profilePhoneBtn');
         if (profilePhoneBtn) {
-            profilePhoneBtn.addEventListener('click', openEditPhoneModal); // Corregido
+            // CORRECCIÓN AQUÍ:
+            profilePhoneBtn.addEventListener('click', openEditPhoneModal);
         }
         
         const profileThemeBtn = document.getElementById('profileThemeBtn');
-        if (profileThemeBtn) {
-            profileThemeBtn.addEventListener('click', openThemeModal);
-        }
+        if (profileThemeBtn) profileThemeBtn.addEventListener('click', openThemeModal);
 
-        // ====> LISTENER RESTAURADO PARA IDIOMA <====
         const profileLanguageBtn = document.getElementById('profileLanguageBtn');
-        if (profileLanguageBtn) {
-            profileLanguageBtn.addEventListener('click', openLanguageModal);
-        }
+        if (profileLanguageBtn) profileLanguageBtn.addEventListener('click', openLanguageModal);
+
+        const notificationsBtnHeader = document.getElementById('notificationsBtn');
+        if (notificationsBtnHeader) notificationsBtnHeader.addEventListener('click', openNotificationsModal);
+
+        const profileNotificationsBtn = document.getElementById('profileNotificationsBtn');
+        if (profileNotificationsBtn) profileNotificationsBtn.addEventListener('click', openNotificationsModal);
 
         const modalConfirmPaymentBtn = document.getElementById('modalConfirmPaymentBtn');
         if (modalConfirmPaymentBtn) {
             modalConfirmPaymentBtn.addEventListener('click', () => {
-                // 1. Cerramos el modal de "Ver Detalles"
                 closeInvoiceDetailModal();
-                // 2. Abrimos el modal de "Confirmar Pago" usando los datos que ya tenemos guardados
                 openPaymentUpdateModal(currentInvoiceDataForModalActions, currentInvoiceIdForModalActions);
             });
         }
 
-        console.log("DEBUG: Buscando botones de notificación...");
-
-        const notificationsBtnHeader = document.getElementById('notificationsBtn');
-        console.log("Botón de campana en cabecera encontrado:", notificationsBtnHeader);
-        if (notificationsBtnHeader) {
-            notificationsBtnHeader.addEventListener('click', () => {
-                console.log("DEBUG: ¡Clic en el botón de campana detectado!");
-                openNotificationsModal();
-            });
-        }
-
-        const profileNotificationsBtn = document.getElementById('profileNotificationsBtn');
-        console.log("Botón de notificaciones en Mi Cuenta encontrado:", profileNotificationsBtn);
-        if (profileNotificationsBtn) {
-            profileNotificationsBtn.addEventListener('click', () => {
-                console.log("DEBUG: ¡Clic en el botón de la lista de Mi Cuenta detectado!");
-                openNotificationsModal();
-            });
-        }
-
-        // Setup para los botones internos de los modales
+        // Setup para los botones INTERNOS de los modales
         setupEditNameModalListeners();
         setupEditPhoneModalListeners();
         setupThemeModalListeners();
         setupLanguageModalListeners();
         setupNotificationsModalListeners();
-        // ...etc.
         
     } else {
         // --- El usuario ha cerrado sesión ---
