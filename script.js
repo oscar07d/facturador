@@ -4964,20 +4964,31 @@ function buildWhatsAppMessage(clientName) {
   return mensaje;
 }
 
-// Reemplaza tu DOMContentLoaded con esta versión para depurar
-document.addEventListener('DOMContentLoaded', () => {
-    console.log("DOM Cargado. Intentando aplicar preferencias..."); // <-- Mensaje de prueba
+// --- CARGAR PREFERENCIAS DEL USUARIO AL INICIAR LA APP (VERSIÓN FINAL) ---
+function applyUserPreferences() {
+    console.log("Aplicando preferencias de usuario...");
 
     // Carga y aplica el tema guardado
     const savedTheme = localStorage.getItem('appTheme') || 'system';
-    console.log("Tema guardado encontrado:", savedTheme); // <-- Ver qué tema se encontró
-    applyTheme(savedTheme);
+    if (typeof applyTheme === 'function') {
+        applyTheme(savedTheme);
+    }
 
     // Carga y aplica el idioma guardado
     const savedLang = localStorage.getItem('appLanguage') || 'es';
-    console.log("Idioma guardado encontrado:", savedLang); // <-- Ver qué idioma se encontró
-    setLanguage(savedLang);
-});
+    if (typeof setLanguage === 'function') {
+        setLanguage(savedLang);
+    }
+}
+
+// Ejecutar tan pronto como sea posible.
+// Si el DOM ya está cargado, se ejecuta de inmediato.
+// Si no, espera al evento DOMContentLoaded.
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', applyUserPreferences);
+} else {
+    applyUserPreferences();
+}
 // if (generateInvoiceFileBtn) { 
 //    generateInvoiceFileBtn.addEventListener('click', () => {
 //        alert("Funcionalidad 'Generar Factura (Archivo)' pendiente.");
