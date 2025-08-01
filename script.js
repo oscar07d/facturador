@@ -2787,20 +2787,23 @@ function closeLanguageModal() {
 
 // Función que cambia el idioma de la UI
 function setLanguage(lang) {
-    // Guardar la preferencia de idioma en el almacenamiento local del navegador
+    // La clave: Guardar la elección en localStorage
     localStorage.setItem('appLanguage', lang);
+    console.log(`Idioma aplicado y guardado: ${lang}`); // Mensaje de diagnóstico
 
-    // Aplicar las traducciones
     document.querySelectorAll('[data-translate-key]').forEach(element => {
         const key = element.dataset.translateKey;
         if (translations[lang] && translations[lang][key]) {
-            element.textContent = translations[lang][key];
+            // Manejar placeholders y texto normal
+            if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
+                element.placeholder = translations[lang][key];
+            } else {
+                element.textContent = translations[lang][key];
+            }
         }
     });
-
-    // Actualizar también el título de la página si es necesario
-    // (Esto requiere que el título también tenga un data-translate-key)
 }
+
 
 function setupLanguageModalListeners() {
     if (closeLanguageModalBtn) closeLanguageModalBtn.addEventListener('click', closeLanguageModal);
@@ -2829,7 +2832,9 @@ function applyTheme(theme) {
     } else {
         document.documentElement.setAttribute('data-theme', theme);
     }
+    // La clave: Guardar la elección en localStorage
     localStorage.setItem('appTheme', theme);
+    console.log(`Tema aplicado y guardado: ${theme}`); // Mensaje de diagnóstico
 }
 
 function openThemeModal() {
@@ -4959,26 +4964,26 @@ function buildWhatsAppMessage(clientName) {
   return mensaje;
 }
 
-// --- CARGAR PREFERENCIAS DEL USUARIO AL INICIAR LA APP (VERSIÓN FINAL) ---
+// --- Cargar Preferencias del Usuario al Iniciar la App (VERSIÓN FINAL) ---
 function applyUserPreferences() {
-    console.log("Aplicando preferencias de usuario...");
+    console.log("DOM Cargado. Aplicando preferencias guardadas...");
 
     // Carga y aplica el tema guardado
     const savedTheme = localStorage.getItem('appTheme') || 'system';
+    console.log("Tema encontrado en localStorage:", savedTheme);
     if (typeof applyTheme === 'function') {
         applyTheme(savedTheme);
     }
 
     // Carga y aplica el idioma guardado
     const savedLang = localStorage.getItem('appLanguage') || 'es';
+    console.log("Idioma encontrado en localStorage:", savedLang);
     if (typeof setLanguage === 'function') {
         setLanguage(savedLang);
     }
 }
 
 // Ejecutar tan pronto como sea posible.
-// Si el DOM ya está cargado, se ejecuta de inmediato.
-// Si no, espera al evento DOMContentLoaded.
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', applyUserPreferences);
 } else {
