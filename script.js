@@ -4365,6 +4365,7 @@ onAuthStateChanged(auth, (user) => {
         setupThemeModalListeners();
         setupLanguageModalListeners();
         setupNotificationsModalListeners();
+        testNotificationButtons();
         
     } else {
         // --- User is signed out ---
