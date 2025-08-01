@@ -2850,7 +2850,10 @@ function applyTheme(theme) {
 function openThemeModal() {
     const savedTheme = localStorage.getItem('appTheme') || 'system';
     document.querySelector(`input[name="theme"][value="${savedTheme}"]`).checked = true;
-    if (themeModal) themeModal.classList.add('active');
+    
+    const modal = document.getElementById('themeModal'); // <-- Verifica este ID
+    if (modal) modal.classList.add('active');
+    
     if (bodyElement) bodyElement.classList.add('modal-active');
 }
 
@@ -4319,7 +4322,9 @@ onAuthStateChanged(auth, (user) => {
         if (profilePhoneBtn) profilePhoneBtn.addEventListener('click', openEditPhoneModal);
         
         const profileThemeBtn = document.getElementById('profileThemeBtn');
-        if (profileThemeBtn) profileThemeBtn.addEventListener('click', openThemeModal);
+        if (profileThemeBtn) {
+            profileThemeBtn.addEventListener('click', openThemeModal);
+        }
 
         const profileLanguageBtn = document.getElementById('profileLanguageBtn');
         if (profileLanguageBtn) profileLanguageBtn.addEventListener('click', openLanguageModal);
@@ -5023,3 +5028,4 @@ if (document.readyState === 'loading') {
 //        alert("Funcionalidad 'Generar Factura (Archivo)' pendiente.");
 //    });
 //}
+
