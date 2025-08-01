@@ -884,50 +884,21 @@
                 </div>
             </div>
         </div>
-    <div id="notificationsModal" class="modal-overlay">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Notificaciones</h2>
-                <button id="closeNotificationsModalBtn" class="modal-close-btn">&times;</button>
-            </div>
-            <div class="modal-body notifications-body">
-                <ul id="notifications-list" class="notifications-list-new">
-                    <li class="notification-item-new" data-invoice-id="ID_DE_LA_FACTURA_1">
-                        <span class="notification-dot overdue"></span>
-                        <div class="notification-content">
-                            <p class="notification-title">Pago Vencido: José Emerson</p>
-                            <p class="notification-description">La factura FCT-004 ha vencido.</p>
-                        </div>
-                        <span class="notification-time">hace 2 días</span>
-                    </li>
-                    <li class="notification-item-new" data-invoice-id="ID_DE_LA_FACTURA_2">
-                        <span class="notification-dot pending"></span>
-                        <div class="notification-content">
-                            <p class="notification-title">Pago Pendiente: Matías</p>
-                            <p class="notification-description">Factura FCT-005 pendiente de pago.</p>
-                        </div>
-                        <span class="notification-time">hace 5 horas</span>
-                    </li>
-    
-                    <li class="notification-item-new">
-                        <span class="notification-dot system"></span>
-                        <div class="notification-content">
-                            <p class="notification-title">¡Nueva Función Disponible!</p>
-                            <p class="notification-description">Ahora puedes cambiar el tema de la aplicación en "Mi Cuenta".</p>
-                        </div>
-                        <span class="notification-time">hace 1 semana</span>
-                    </li>
-                    
-                    <li class="notification-item-empty" style="display: none;">
-                        No tienes notificaciones nuevas.
-                    </li>
-                </ul>
-            </div>
-            <div class="modal-footer">
-                <button id="markAllReadBtn" class="btn btn-secondary">Marcar todas como leídas</button>
+        <div id="notificationsModal" class="modal-overlay">
+            <div class="modal-content"> <div class="modal-header">
+                    <h2>Notificaciones</h2>
+                    <button id="closeNotificationsModalBtn" class="modal-close-btn">&times;</button>
+                </div>
+                <div class="modal-body notifications-body">
+                    <ul id="notifications-list" class="notifications-list-new">
+                        <li class="notification-item-empty">No tienes notificaciones nuevas.</li>
+                    </ul>
+                </div>
+                <div class="modal-footer">
+                    <button id="markAllReadBtn" class="btn btn-secondary">Marcar todas como leídas</button>
+                </div>
             </div>
         </div>
-    </div>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" integrity="sha512-BNaRQnYJYiPSqHHDb58B0yaPfCu+Wgds8Gp/gU33kqBtgNS4tSPHuGibyoeqMV/TJlSKda6FXzoEyYGjTe+vXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" integrity="sha512-qZvrmS2ekKPF2mSznTQsxqPgnpkI4DNTlrdUmTzrDgektczlKNRRhy5X5AAOnx5S09ydFYWWNSfcEqDTTHgtNA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
@@ -937,4 +908,5 @@
     <script type="module" src="script.js"></script>
 </body>
 </html>
+
 
