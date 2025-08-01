@@ -385,11 +385,8 @@
 }
 /* Estilos para Acciones en la Cabecera (Campana de Notificación) */
 .header-actions {
-    position: absolute;
-    right: 25px;
-    top: 50%;
-    transform: translateY(-50%);
-    z-index: 3; /* Asegura que esté por encima del título */
+    display: flex;
+    align-items: center;
 }
 
 .btn-icon-header {
@@ -1191,21 +1188,27 @@ body.modal-active {
 }
 
 .app-header {
+    display: flex;
+    align-items: center; /* Centra los items verticalmente */
+    justify-content: space-between; /* Separa los extremos */
+    width: 100%;
+    padding: 10px 25px;
+    position: relative;
     background-color: var(--container-background);
-    padding: 15px 30px;
     border-radius: var(--border-radius-l) var(--border-radius-l) 0 0;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    flex-wrap: wrap;
     margin-top: 20px;
 }
 
 .logo-app-container {
     max-width: 250px;
     height: auto;
+}
+
+.logo-app-container,
+.header-actions,
+.user-actions {
+    flex-shrink: 0; /* Evita que los extremos se encojan */
 }
 
 .app-logo-completo {
@@ -1218,12 +1221,19 @@ body.modal-active {
     fill: var(--logo-svg-fill-color);
 }
 
+.app-title-container {
+    flex-grow: 1; /* ¡LA CLAVE! Ocupa todo el espacio sobrante en el medio */
+    text-align: center; /* Centra el texto H1 dentro de ese espacio */
+    padding: 0 15px; /* Espacio para que no se pegue a los iconos */
+}
+
 .app-title-container h1 {
-    font-size: 1.6rem;
-    color: var(--primary-color);
     margin: 0;
     font-weight: 600;
-    text-align: center;
+    font-size: 1.6rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; /* Corta el texto si es muy largo */
 }
 
 .user-actions #logoutButton {
