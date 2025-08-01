@@ -2753,20 +2753,24 @@ textarea.input-error {
 /* === ESTILOS PARA MODAL DETALLE DE FACTURA === */
 /* (Los estilos del modal de detalle que ya tenías y los de los botones con iconos) */
 .modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.65);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
-    transition: opacity 0.3s ease, visibility 0s linear 0.3s;
-    z-index: 9999 !important; /* Asegúrate de que este z-index sea suficiente */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  /* color de fondo semitransparente */
+  background: rgba(0,0,0,0.5);
+  z-index: 99999;       /* muy por encima */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 1 !important;/* por si alguna regla baja la opacidad */
+  visibility: visible !important;
+}
+
+.modal-overlay.hidden {
+  opacity: 0;
+  visibility: hidden;
 }
 
 .modal-overlay.active {
@@ -3667,5 +3671,54 @@ textarea.input-error {
     opacity: 1 !important;
     visibility: visible !important;
     pointer-events: auto !important;
+}
+
+
+/* ==== Overlay genérico para todos los modales ==== */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  /* Fondo semitransparente para enfocar el modal */
+  background: rgba(0, 0, 0, 0.4);
+  display: none;              /* Se mostrará vía JS quitando esta clase */
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;              /* Muy por encima de todo */
+}
+
+/* Cuando quieras abrir el modal sólo pones .modal-overlay.active */
+.modal-overlay.active {
+  display: flex;
+}
+
+/* ==== Contenedor interno del modal ==== */
+.modal-content {
+  position: relative;
+  background: #fff;
+  border-radius: var(--border-radius-m);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+  max-width: 90%;
+  max-height: 90%;
+  overflow-y: auto;
+  padding: 1.5rem;
+  z-index: 10000;             /* Un poco por encima del overlay */
+}
+
+/* ==== Botón de cerrar ==== */
+.modal-close-btn {
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+/* ==== Asegúrate de que el body no oculte fixed children ==== */
+body.modal-active {
+  max-height: 100vh;
+  overflow-y: hidden;
 }
 
