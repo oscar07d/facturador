@@ -3044,7 +3044,7 @@ textarea.input-error {
         display: none; /* Ocultar texto de los botones del modal */
     }
     #invoiceDetailModal .btn-icon {
-        padding: 25px;
+        padding: 22px;
         width: 40px;
         height: 40px;
     }
