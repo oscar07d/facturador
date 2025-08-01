@@ -119,6 +119,11 @@ const closeLanguageModalBtn = document.getElementById('closeLanguageModalBtn');
 const closeLanguageModalFooterBtn = document.getElementById('closeLanguageModalFooterBtn');
 const languageSelect = document.getElementById('languageSelect');
 
+const profileThemeBtn = document.getElementById('profileThemeBtn');
+const themeModal = document.getElementById('themeModal');
+const closeThemeModalBtn = document.getElementById('closeThemeModalBtn');
+const themeOptions = document.querySelectorAll('input[name="theme"]');
+
 let selectedPhotoFile = null; // Variable global para la foto
 
 const invoiceDetailModal = document.getElementById('invoiceDetailModal');
@@ -514,6 +519,20 @@ const translations = {
         reminderPaymentInstructions: "Paga fácil a Nequi:",
         reminderClosingNote: "Si ya pagaste, ignora este mensaje. ¡Gracias!",
         reminderDoubts: "Dudas:",
+
+        // --- Perfil ---
+        profileTheme: "Tema",
+        profileThemeDesc: "Seleccionar tema",
+
+        // --- Modal de Tema ---
+        themeModalTitle: "Seleccionar Tema",
+        themeModalPrompt: "Elige cómo quieres que se vea la aplicación.",
+        themeLight: "Claro",
+        themeDark: "Oscuro",
+        themeSystem: "Sistema",
+        themeLightAlt: "Modo Claro",
+        themeDarkAlt: "Modo Oscuro",
+        themeSystemAlt: "Predeterminado del Sistema",
     },
     en: {
         // --- General & Common Words ---
@@ -758,6 +777,20 @@ const translations = {
         reminderPaymentInstructions: "Pay easily to Nequi:",
         reminderClosingNote: "If you have already paid, please ignore this message. Thank you!",
         reminderDoubts: "Questions:",
+
+        // --- Profile ---
+        profileTheme: "Theme",
+        profileThemeDesc: "Select theme",
+
+        // --- Theme Modal ---
+        themeModalTitle: "Select Theme",
+        themeModalPrompt: "Choose how you want the application to look.",
+        themeLight: "Light",
+        themeDark: "Dark",
+        themeSystem: "System",
+        themeLightAlt: "Light Mode",
+        themeDarkAlt: "Dark Mode",
+        themeSystemAlt: "System Default",
     }
 };
 
@@ -2787,6 +2820,48 @@ function setupLanguageModalListeners() {
     }
 }
 
+// --- THEME SWITCHING LOGIC ---
+
+function applyTheme(theme) {
+    if (theme === 'system') {
+        const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        document.documentElement.setAttribute('data-theme', systemPrefersDark ? 'dark' : 'light');
+    } else {
+        document.documentElement.setAttribute('data-theme', theme);
+    }
+    localStorage.setItem('appTheme', theme);
+}
+
+function openThemeModal() {
+    const savedTheme = localStorage.getItem('appTheme') || 'system';
+    document.querySelector(`input[name="theme"][value="${savedTheme}"]`).checked = true;
+    if (themeModal) themeModal.classList.add('active');
+    if (bodyElement) bodyElement.classList.add('modal-active');
+}
+
+function closeThemeModal() {
+    if (themeModal) themeModal.classList.remove('active');
+    if (bodyElement && !document.querySelector('.modal-overlay.active')) {
+        bodyElement.classList.remove('modal-active');
+    }
+}
+
+function setupThemeModalListeners() {
+    if (closeThemeModalBtn) closeThemeModalBtn.addEventListener('click', closeThemeModal);
+    if (themeModal) {
+        themeModal.addEventListener('click', (event) => {
+            if (event.target === themeModal) closeThemeModal();
+        });
+    }
+    themeOptions.forEach(radio => {
+        radio.addEventListener('change', () => {
+            applyTheme(radio.value);
+            // Optional: close the modal after a selection is made
+            setTimeout(closeThemeModal, 200); 
+        });
+    });
+}
+
 // --- Funciones para Editar Correo Electrónico ---
 async function reauthenticateWithGoogle() {
     console.log("DEBUG: La función reauthenticateWithGoogle() ha comenzado.");
@@ -4220,6 +4295,12 @@ onAuthStateChanged(auth, (user) => {
             profileLanguageBtn.addEventListener('click', openLanguageModal);
         }
         setupLanguageModalListeners();
+
+        const profileThemeBtn = document.getElementById('profileThemeBtn');
+        if (profileThemeBtn) {
+            profileThemeBtn.addEventListener('click', openThemeModal);
+        }
+        setupThemeModalListeners();
         
     } else {
         // --- User is signed out ---
@@ -4884,6 +4965,11 @@ function buildWhatsAppMessage(clientName) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Loads the saved theme
+    const savedTheme = localStorage.getItem('appTheme') || 'system';
+    applyTheme(savedTheme);
+
+    // Loads the saved language
     const savedLang = localStorage.getItem('appLanguage') || 'es';
     setLanguage(savedLang);
 });
