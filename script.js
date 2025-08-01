@@ -4304,7 +4304,9 @@ onAuthStateChanged(auth, (user) => {
             navAccount.parentElement.style.display = 'list-item';
         }
 
-        // --- Activación de TODOS los listeners de la UI principal ---
+        // =======================================================
+        // ===> ACTIVACIÓN DE TODOS LOS LISTENERS POST-LOGIN (VERSIÓN FINAL) <===
+        // =======================================================
         
         const profilePhotoBtn = document.getElementById('profilePhotoBtn');
         if (profilePhotoBtn) profilePhotoBtn.addEventListener('click', openEditPhotoModal);
@@ -4313,10 +4315,7 @@ onAuthStateChanged(auth, (user) => {
         if (profileNameBtn) profileNameBtn.addEventListener('click', openEditNameModal);
 
         const profilePhoneBtn = document.getElementById('profilePhoneBtn');
-        if (profilePhoneBtn) {
-            // CORRECCIÓN AQUÍ:
-            profilePhoneBtn.addEventListener('click', openEditPhoneModal);
-        }
+        if (profilePhoneBtn) profilePhoneBtn.addEventListener('click', openEditPhoneModal);
         
         const profileThemeBtn = document.getElementById('profileThemeBtn');
         if (profileThemeBtn) profileThemeBtn.addEventListener('click', openThemeModal);
@@ -4324,19 +4323,12 @@ onAuthStateChanged(auth, (user) => {
         const profileLanguageBtn = document.getElementById('profileLanguageBtn');
         if (profileLanguageBtn) profileLanguageBtn.addEventListener('click', openLanguageModal);
 
+        // Listeners para AMBOS botones de Notificaciones
         const notificationsBtnHeader = document.getElementById('notificationsBtn');
         if (notificationsBtnHeader) notificationsBtnHeader.addEventListener('click', openNotificationsModal);
 
         const profileNotificationsBtn = document.getElementById('profileNotificationsBtn');
         if (profileNotificationsBtn) profileNotificationsBtn.addEventListener('click', openNotificationsModal);
-
-        const modalConfirmPaymentBtn = document.getElementById('modalConfirmPaymentBtn');
-        if (modalConfirmPaymentBtn) {
-            modalConfirmPaymentBtn.addEventListener('click', () => {
-                closeInvoiceDetailModal();
-                openPaymentUpdateModal(currentInvoiceDataForModalActions, currentInvoiceIdForModalActions);
-            });
-        }
 
         // Setup para los botones INTERNOS de los modales
         setupEditNameModalListeners();
