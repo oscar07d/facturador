@@ -113,6 +113,12 @@ const savePhoneBtn = document.getElementById('savePhoneBtn');
 const currentPhoneNumber = document.getElementById('currentPhoneNumber');
 const profilePhoneInput = document.getElementById('profilePhoneInput');
 
+const profileLanguageBtn = document.getElementById('profileLanguageBtn');
+const languageModal = document.getElementById('languageModal');
+const closeLanguageModalBtn = document.getElementById('closeLanguageModalBtn');
+const closeLanguageModalFooterBtn = document.getElementById('closeLanguageModalFooterBtn');
+const languageSelect = document.getElementById('languageSelect');
+
 let selectedPhotoFile = null; // Variable global para la foto
 
 const invoiceDetailModal = document.getElementById('invoiceDetailModal');
@@ -261,6 +267,44 @@ const paymentStatusDetails = {
     moroso: { text: "Moroso", description: "Cliente tiene facturas vencidas.", action: "Iniciar proceso de cobranza." }, // Para estadoGeneralCliente
     inactivo: { text: "Inactivo", description: "Cliente marcado como inactivo o eliminado.", action: "Archivar o revisar." }, // Para estadoGeneralCliente
     'n/a': { text: "N/A", description: "No aplica o sin información.", action: "Verificar datos."} // Para estadoUltimaFacturaCliente
+};
+
+// --- DICCIONARIO DE TRADUCCIONES ---
+const translations = {
+    es: {
+        // Navegación
+        navHome: "Inicio",
+        navCreateInvoice: "Crear Factura",
+        navViewInvoices: "Mis Facturas",
+        navClients: "Clientes",
+        navAccount: "Mi Cuenta",
+        // Títulos de Sección
+        titleHome: "Inicio y Estadísticas",
+        titleCreateInvoice: "Crear Nueva Factura",
+        titleViewInvoices: "Mis Facturas",
+        titleClients: "Clientes",
+        titleAccount: "Mi Cuenta",
+        // Botones
+        logoutButton: "Cerrar Sesión",
+        // ... (Puedes añadir aquí cualquier otro texto que quieras traducir)
+    },
+    en: {
+        // Navigation
+        navHome: "Home",
+        navCreateInvoice: "Create Invoice",
+        navViewInvoices: "My Invoices",
+        navClients: "Clients",
+        navAccount: "My Account",
+        // Section Titles
+        titleHome: "Home & Statistics",
+        titleCreateInvoice: "Create New Invoice",
+        titleViewInvoices: "My Invoices",
+        titleClients: "Clients",
+        titleAccount: "My Account",
+        // Buttons
+        logoutButton: "Log Out",
+        // ... (Add English translations here)
+    }
 };
 
 
@@ -2238,6 +2282,58 @@ function setupEditPhoneModalListeners() {
     }
 }
 
+// --- LÓGICA PARA EL MODAL Y CAMBIO DE IDIOMA ---
+
+function openLanguageModal() {
+    // Cargar el idioma guardado y seleccionarlo en el dropdown
+    const savedLang = localStorage.getItem('appLanguage') || 'es';
+    languageSelect.value = savedLang;
+    if (languageModal) languageModal.classList.add('active');
+    if (bodyElement) bodyElement.classList.add('modal-active');
+}
+
+function closeLanguageModal() {
+    if (languageModal) languageModal.classList.remove('active');
+    if (bodyElement && !document.querySelector('.modal-overlay.active')) {
+        bodyElement.classList.remove('modal-active');
+    }
+}
+
+// Función que cambia el idioma de la UI
+function setLanguage(lang) {
+    // Guardar la preferencia de idioma en el almacenamiento local del navegador
+    localStorage.setItem('appLanguage', lang);
+
+    // Aplicar las traducciones
+    document.querySelectorAll('[data-translate-key]').forEach(element => {
+        const key = element.dataset.translateKey;
+        if (translations[lang] && translations[lang][key]) {
+            element.textContent = translations[lang][key];
+        }
+    });
+
+    // Actualizar también el título de la página si es necesario
+    // (Esto requiere que el título también tenga un data-translate-key)
+}
+
+function setupLanguageModalListeners() {
+    if (closeLanguageModalBtn) closeLanguageModalBtn.addEventListener('click', closeLanguageModal);
+    if (closeLanguageModalFooterBtn) closeLanguageModalFooterBtn.addEventListener('click', closeLanguageModal);
+    if (languageModal) {
+        languageModal.addEventListener('click', (event) => {
+            if (event.target === languageModal) {
+                closeLanguageModal();
+            }
+        });
+    }
+    // Cuando el usuario cambia la selección en el dropdown
+    if (languageSelect) {
+        languageSelect.addEventListener('change', () => {
+            setLanguage(languageSelect.value);
+        });
+    }
+}
+
 // --- Funciones para Editar Correo Electrónico ---
 async function reauthenticateWithGoogle() {
     console.log("DEBUG: La función reauthenticateWithGoogle() ha comenzado.");
@@ -3665,6 +3761,12 @@ onAuthStateChanged(auth, (user) => {
             profilePhoneBtn.addEventListener('click', openEditPhoneModal);
         }
         setupEditPhoneModalListeners();
+
+        const profileLanguageBtn = document.getElementById('profileLanguageBtn');
+        if (profileLanguageBtn) {
+            profileLanguageBtn.addEventListener('click', openLanguageModal);
+        }
+        setupLanguageModalListeners();
         
     } else {
         // --- User is signed out ---
@@ -4327,6 +4429,11 @@ function buildWhatsAppMessage(clientName) {
   }
   return mensaje;
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+    const savedLang = localStorage.getItem('appLanguage') || 'es';
+    setLanguage(savedLang);
+});
 
 // if (generateInvoiceFileBtn) { 
 //    generateInvoiceFileBtn.addEventListener('click', () => {
