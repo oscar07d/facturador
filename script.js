@@ -4964,17 +4964,20 @@ function buildWhatsAppMessage(clientName) {
   return mensaje;
 }
 
-// --- Cargar Preferencias del Usuario al Iniciar la App ---
+// Reemplaza tu DOMContentLoaded con esta versión para depurar
 document.addEventListener('DOMContentLoaded', () => {
+    console.log("DOM Cargado. Intentando aplicar preferencias..."); // <-- Mensaje de prueba
+
     // Carga y aplica el tema guardado
-    const savedTheme = localStorage.getItem('appTheme') || 'system'; // 'system' es el valor por defecto
+    const savedTheme = localStorage.getItem('appTheme') || 'system';
+    console.log("Tema guardado encontrado:", savedTheme); // <-- Ver qué tema se encontró
     applyTheme(savedTheme);
 
     // Carga y aplica el idioma guardado
-    const savedLang = localStorage.getItem('appLanguage') || 'es'; // 'es' es el valor por defecto
+    const savedLang = localStorage.getItem('appLanguage') || 'es';
+    console.log("Idioma guardado encontrado:", savedLang); // <-- Ver qué idioma se encontró
     setLanguage(savedLang);
 });
-
 // if (generateInvoiceFileBtn) { 
 //    generateInvoiceFileBtn.addEventListener('click', () => {
 //        alert("Funcionalidad 'Generar Factura (Archivo)' pendiente.");
