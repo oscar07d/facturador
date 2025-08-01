@@ -283,6 +283,56 @@
     }
 }
 
+/* ============================================= */
+/* === AJUSTES FINALES PARA EL TEMA OSCURO === */
+/* ============================================= */
+
+/* 1. Fondo de la aplicación, pantalla de carga y de "Procesando"
+/* ============================================= */
+[data-theme="dark"] body {
+    background: var(--background-color, #121212);
+}
+
+[data-theme="dark"] .splash-screen,
+[data-theme="dark"] .loading-content {
+    background-color: var(--background-color, #121212);
+}
+
+/* 2. Listas Desplegables
+/* ============================================= */
+
+/* Estilo para las opciones del desplegable personalizado (Selector de Cliente) */
+[data-theme="dark"] .custom-select-options {
+    background-color: var(--secondary-background, #2a2a2a);
+    border-color: var(--border-color, #383838);
+}
+[data-theme="dark"] .custom-option {
+    color: var(--text-color, #e0e0e0);
+    border-bottom-color: var(--border-color, #383838);
+}
+[data-theme="dark"] .custom-option:hover,
+[data-theme="dark"] .custom-option.focused-option {
+    background-color: var(--primary-color, #3d9dff);
+    color: #ffffff;
+}
+[data-theme="dark"] .custom-option.selected-option .option-client-name,
+[data-theme="dark"] .custom-option:hover .option-client-name {
+    color: #ffffff;
+}
+
+/* Estilo para el campo de los desplegables estándar (Filtrar por estado, etc.) */
+[data-theme="dark"] select {
+    background-color: var(--input-background, #2c2c2c);
+    color: var(--input-text-color, #e0e0e0);
+    border-color: var(--border-color, #383838);
+}
+
+/* Estilo específico para las opciones de los desplegables estándar */
+[data-theme="dark"] select option {
+    background: var(--secondary-background, #2a2a2a);
+    color: var(--text-color, #e0e0e0);
+}
+
 /* ===================================== */
 /* === ESTILOS PARA SECCIÓN MI CUENTA (NUEVO) === */
 /* ===================================== */
