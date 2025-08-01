@@ -3041,9 +3041,13 @@ function handleDiscountChange() {
 // --- LÓGICA PARA EL MODAL DE NOTIFICACIONES ---
 
 function openNotificationsModal() {
-    const modal = document.getElementById('notificationsModal');
-    if (modal) modal.classList.add('active');
-    // No añadimos 'modal-active' al body para que el fondo no se bloquee
+    console.log("TEST: Intentando abrir la caja de prueba...");
+    const caja = document.getElementById('caja-de-prueba');
+    if (caja) {
+        caja.classList.add('active');
+    } else {
+        console.error("TEST: No se encontró la caja de prueba en el HTML.");
+    }
 }
 
 function closeNotificationsModal() {
@@ -5028,4 +5032,5 @@ if (document.readyState === 'loading') {
 //        alert("Funcionalidad 'Generar Factura (Archivo)' pendiente.");
 //    });
 //}
+
 
