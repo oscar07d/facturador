@@ -4344,14 +4344,24 @@ onAuthStateChanged(auth, (user) => {
             });
         }
 
+        console.log("DEBUG: Buscando botones de notificación...");
+
         const notificationsBtnHeader = document.getElementById('notificationsBtn');
+        console.log("Botón de campana en cabecera encontrado:", notificationsBtnHeader);
         if (notificationsBtnHeader) {
-            notificationsBtnHeader.addEventListener('click', openNotificationsModal);
+            notificationsBtnHeader.addEventListener('click', () => {
+                console.log("DEBUG: ¡Clic en el botón de campana detectado!");
+                openNotificationsModal();
+            });
         }
-        
+
         const profileNotificationsBtn = document.getElementById('profileNotificationsBtn');
+        console.log("Botón de notificaciones en Mi Cuenta encontrado:", profileNotificationsBtn);
         if (profileNotificationsBtn) {
-            profileNotificationsBtn.addEventListener('click', openNotificationsModal);
+            profileNotificationsBtn.addEventListener('click', () => {
+                console.log("DEBUG: ¡Clic en el botón de la lista de Mi Cuenta detectado!");
+                openNotificationsModal();
+            });
         }
 
         // Setup para los botones internos de los modales
