@@ -849,6 +849,40 @@
                 <button type="button" id="closeLanguageModalFooterBtn" class="btn btn-secondary" data-translate-key="close">Cerrar</button>
                 </div>
         </div>
+        <div id="themeModal" class="modal-overlay">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 data-translate-key="themeModalTitle">Seleccionar Tema</h2>
+                    <button id="closeThemeModalBtn" class="modal-close-btn">×</button>
+                </div>
+                <div class="modal-body">
+                    <p data-translate-key="themeModalPrompt">Elige cómo quieres que se vea la aplicación.</p>
+                    <div class="theme-options">
+                        <label class="theme-option">
+                            <input type="radio" name="theme" value="light" checked>
+                            <div class="theme-option-card">
+                                <img src="img/light-theme-icon.svg" alt="Light Mode" data-translate-key="[alt]themeLightAlt">
+                                <span data-translate-key="themeLight">Claro</span>
+                            </div>
+                        </label>
+                        <label class="theme-option">
+                            <input type="radio" name="theme" value="dark">
+                            <div class="theme-option-card">
+                                <img src="img/dark-theme-icon.svg" alt="Dark Mode" data-translate-key="[alt]themeDarkAlt">
+                                <span data-translate-key="themeDark">Oscuro</span>
+                            </div>
+                        </label>
+                        <label class="theme-option">
+                            <input type="radio" name="theme" value="system">
+                            <div class="theme-option-card">
+                                <img src="img/system-theme-icon.svg" alt="System Default" data-translate-key="[alt]themeSystemAlt">
+                                <span data-translate-key="themeSystem">Sistema</span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     <div id="notificationsModal" class="modal-overlay">
         <div class="modal-content modal-notifications">
