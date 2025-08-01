@@ -366,6 +366,11 @@
     color: var(--text-color, #e0e0e0) !important;
 }
 
+[data-theme="dark"] .loading-overlay {
+    background-color: rgba(18, 18, 18, 0.9); /* A semi-transparent dark background */
+    backdrop-filter: blur(4px);
+}
+
 /* ===================================== */
 /* === ESTILOS PARA SECCIÓN MI CUENTA (NUEVO) === */
 /* ===================================== */
