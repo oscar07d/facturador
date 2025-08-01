@@ -149,7 +149,7 @@
                     <h3>Preferencias</h3>
                     <ul>
                         <li>
-                            <button class="profile-item">
+                            <button id="profileLanguageBtn" class="profile-item">
                                 <div class="icon-round">
                                     <img src="img/globe-icon_1.svg" alt="Idioma">
                                 </div>
@@ -841,6 +841,27 @@
                 <button type="button" id="cancelEditPhoneBtn" class="btn btn-secondary">Cancelar</button>
                 <button type="button" id="savePhoneBtn" class="btn btn-success">Guardar Cambios</button>
             </div>
+        </div>
+    </div>
+    <div id="languageModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Seleccionar Idioma</h2>
+                <button id="closeLanguageModalBtn" class="modal-close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Elige el idioma de tu preferencia para la aplicación.</p>
+                <div class="form-group">
+                    <label for="languageSelect">Idioma:</label>
+                    <select id="languageSelect" class="form-control">
+                        <option value="es">Español</option>
+                        <option value="en">English</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="closeLanguageModalFooterBtn" class="btn btn-secondary">Cerrar</button>
+                </div>
         </div>
     </div>
     
