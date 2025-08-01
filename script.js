@@ -2877,31 +2877,6 @@ function setupThemeModalListeners() {
     });
 }
 
-// --- Funciones para Editar Correo Electrónico ---
-async function reauthenticateWithGoogle() {
-    console.log("DEBUG: La función reauthenticateWithGoogle() ha comenzado.");
-    if (!auth.currentUser) return;
-    showLoading(true);
-    try {
-        // La función correcta para re-autenticar es reauthenticateWithPopup
-        await reauthenticateWithPopup(auth.currentUser, googleProvider);
-
-        // Si la re-autenticación es exitosa:
-        alert("Verificación exitosa. Ahora puedes cambiar tu correo.");
-        
-        // Opcional: enfocar el campo de nuevo correo
-        if (profileEmailInput) {
-            profileEmailInput.focus();
-        }
-
-    } catch (error) {
-        console.error("Error durante la reautenticación con Google:", error);
-        alert("No se pudo verificar tu identidad con Google. Inténtalo de nuevo.");
-    } finally {
-        showLoading(false);
-    }
-}
-
 
 function formatInvoiceNumber(number) {
     return String(number).padStart(3, '0');
@@ -3058,6 +3033,51 @@ function handleDiscountChange() {
     if (typeof recalculateTotals === 'function') {
         recalculateTotals();
     }
+}
+
+// --- LÓGICA PARA EL MODAL DE NOTIFICACIONES ---
+
+function openNotificationsModal() {
+    const modal = document.getElementById('notificationsModal');
+    if (modal) modal.classList.add('active');
+    // No añadimos 'modal-active' al body para que el fondo no se bloquee
+}
+
+function closeNotificationsModal() {
+    const modal = document.getElementById('notificationsModal');
+    if (modal) modal.classList.remove('active');
+}
+
+function setupNotificationsModalListeners() {
+    const closeBtn = document.getElementById('closeNotificationsModalBtn');
+    if (closeBtn) closeBtn.addEventListener('click', closeNotificationsModal);
+
+    const modalOverlay = document.getElementById('notificationsModal');
+    if (modalOverlay) {
+        modalOverlay.addEventListener('click', (event) => {
+            // Cierra el modal solo si se hace clic en el fondo oscuro
+            if (event.target === modalOverlay) {
+                closeNotificationsModal();
+            }
+        });
+    }
+
+    // Lógica para las pestañas (Tabs)
+    const tabLinks = document.querySelectorAll('.notifications-tabs .tab-link');
+    const tabContents = document.querySelectorAll('.tab-content');
+
+    tabLinks.forEach(link => {
+        link.addEventListener('click', () => {
+            // Quitar 'active' de todos
+            tabLinks.forEach(l => l.classList.remove('active'));
+            tabContents.forEach(c => c.classList.remove('active'));
+
+            // Añadir 'active' al seleccionado
+            link.classList.add('active');
+            const targetTab = document.getElementById(link.dataset.tab);
+            if (targetTab) targetTab.classList.add('active');
+        });
+    });
 }
 
 // Esta función COMPLETA reemplaza la que puedas tener actualmente con el mismo nombre
@@ -4324,11 +4344,22 @@ onAuthStateChanged(auth, (user) => {
             });
         }
 
+        const notificationsBtnHeader = document.getElementById('notificationsBtn');
+        if (notificationsBtnHeader) {
+            notificationsBtnHeader.addEventListener('click', openNotificationsModal);
+        }
+        
+        const profileNotificationsBtn = document.getElementById('profileNotificationsBtn');
+        if (profileNotificationsBtn) {
+            profileNotificationsBtn.addEventListener('click', openNotificationsModal);
+        }
+
         // Setup para los botones internos de los modales
         setupEditNameModalListeners();
         setupEditPhoneModalListeners();
         setupThemeModalListeners();
         setupLanguageModalListeners();
+        setupNotificationsModalListeners();
         // ...etc.
         
     } else {
