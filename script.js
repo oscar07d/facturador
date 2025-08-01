@@ -63,7 +63,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Ocultar la pantalla de carga después de 5 segundos
         setTimeout(() => {
             splashScreen.classList.add('hidden');
-        }, 2000); // 2000 milisegundos = 2 segundos
+        }, 30000); // 2000 milisegundos = 2 segundos
     }
 });
 
