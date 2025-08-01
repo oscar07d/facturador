@@ -4273,9 +4273,9 @@ onAuthStateChanged(auth, (user) => {
             profilePhotoBtn.addEventListener('click', openEditPhotoModal);
         }
 
-        const profileNameBtn = document.getElementById('profileNameBtn');
-        if (profileNameBtn) {
-            profileNameBtn.addEventListener('click', openEditNameModal);
+        const nameDisplay = document.querySelector('#profileNameBtn span');
+        if (nameDisplay && user.displayName) {
+            nameDisplay.textContent = user.displayName;
         }
 
         const googleReauthBtn = document.getElementById('googleReauthBtn');
