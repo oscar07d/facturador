@@ -2882,34 +2882,6 @@ function formatInvoiceNumber(number) {
     return String(number).padStart(3, '0');
 }
 
-// --- Notificaciones Prueba ---
-
-function testNotificationButtons() {
-    console.log("TEST: Ejecutando testNotificationButtons...");
-
-    // Prueba para el botón de la cabecera (campana)
-    const headerBtn = document.getElementById('notificationsBtn');
-    if (headerBtn) {
-        console.log("TEST: Botón de campana ENCONTRADO.");
-        headerBtn.addEventListener('click', () => {
-            alert("¡Clic en la campana FUNCIONA!");
-        });
-    } else {
-        console.error("TEST: Botón de campana NO ENCONTRADO. Revisa el id en index.html.");
-    }
-
-    // Prueba para el botón de la lista "Mi Cuenta"
-    const listBtn = document.getElementById('profileNotificationsBtn');
-    if (listBtn) {
-        console.log("TEST: Botón de la lista ENCONTRADO.");
-        listBtn.addEventListener('click', () => {
-            alert("¡Clic en el botón de la lista FUNCIONA!");
-        });
-    } else {
-        console.error("TEST: Botón de la lista NO ENCONTRADO. Revisa el id en index.html.");
-    }
-}
-
 async function getCurrentLastInvoiceNumericValue(userId) {
     if (!userId) {
         console.warn("ID de usuario no proporcionado para obtener el último número de factura.");
@@ -4369,7 +4341,6 @@ onAuthStateChanged(auth, (user) => {
         setupThemeModalListeners();
         setupLanguageModalListeners();
         setupNotificationsModalListeners();
-        testNotificationButtons();
         
     } else {
         // --- User is signed out ---
