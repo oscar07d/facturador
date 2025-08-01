@@ -4254,23 +4254,28 @@ onAuthStateChanged(auth, (user) => {
     const navAccount = document.getElementById('navAccount');
 
     if (user) {
-        // --- User is signed in ---
+        // --- El usuario ha iniciado sesión ---
         if(loginContainer) loginContainer.style.display = 'none';
         if(mainContent) mainContent.style.display  = 'flex';
         
         handleNavigation('homeSection');
 
+        // Cargar preferencias del usuario (foto, nombre, etc.)
         const profileIcon = document.querySelector('#profilePhotoBtn .icon-round');
         if (profileIcon && user.photoURL) {
             profileIcon.src = user.photoURL;
         }
-        
+        const nameDisplay = document.querySelector('#profileNameBtn span');
+        if (nameDisplay && user.displayName) {
+            nameDisplay.textContent = user.displayName;
+        }
+
         if (navAccount && navAccount.parentElement) {
             navAccount.parentElement.style.display = 'list-item';
         }
 
         // =======================================================
-        // ===> ACTIVATE ALL POST-LOGIN BUTTONS HERE <===
+        // ===> ACTIVACIÓN DE TODOS LOS LISTENERS POST-LOGIN <===
         // =======================================================
         
         const profilePhotoBtn = document.getElementById('profilePhotoBtn');
@@ -4278,37 +4283,32 @@ onAuthStateChanged(auth, (user) => {
             profilePhotoBtn.addEventListener('click', openEditPhotoModal);
         }
 
-        const nameDisplay = document.querySelector('#profileNameBtn span');
-        if (nameDisplay && user.displayName) {
-            nameDisplay.textContent = user.displayName;
+        // Listener para el botón de Nombre (RESTAURADO)
+        const profileNameBtn = document.getElementById('profileNameBtn');
+        if (profileNameBtn) {
+            profileNameBtn.addEventListener('click', openEditNameModal);
         }
 
-        const googleReauthBtn = document.getElementById('googleReauthBtn');
-        if (googleReauthBtn) {
-            googleReauthBtn.addEventListener('click', reauthenticateWithGoogle);
-        }
-        setupEditNameModalListeners();
-        
+        // Listener para el botón de Teléfono
         const profilePhoneBtn = document.getElementById('profilePhoneBtn');
         if (profilePhoneBtn) {
             profilePhoneBtn.addEventListener('click', openEditPhoneModal);
         }
-        setupEditPhoneModalListeners();
-
-        const profileLanguageBtn = document.getElementById('profileLanguageBtn');
-        if (profileLanguageBtn) {
-            profileLanguageBtn.addEventListener('click', openLanguageModal);
-        }
-        setupLanguageModalListeners();
-
+        
+        // Listener para el botón de Tema
         const profileThemeBtn = document.getElementById('profileThemeBtn');
         if (profileThemeBtn) {
             profileThemeBtn.addEventListener('click', openThemeModal);
         }
+
+        // Setup para los botones internos de los modales
+        setupEditNameModalListeners();
+        setupEditPhoneModalListeners();
         setupThemeModalListeners();
+        // ...etc.
         
     } else {
-        // --- User is signed out ---
+        // --- El usuario ha cerrado sesión ---
         if(loginContainer) loginContainer.style.display = 'flex';
         if(mainContent) mainContent.style.display  = 'none';
 
