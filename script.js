@@ -4329,7 +4329,7 @@ onAuthStateChanged(auth, (user) => {
         if (notificationsBtnHeader) {
             notificationsBtnHeader.addEventListener('click', openNotificationsModal);
         }
-        
+
         const profileNotificationsBtn = document.getElementById('profileNotificationsBtn');
         if (profileNotificationsBtn) {
             profileNotificationsBtn.addEventListener('click', openNotificationsModal);
