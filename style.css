@@ -624,9 +624,10 @@
 }
 
 .splash-logo {
-    width: 120px;
-    height: auto;
-    animation: fadeInAndFloat 1.2s ease-out;
+    width: 120px; /* Define un ancho fijo de 120px */
+    height: auto; /* La altura se ajustará automáticamente */
+    margin-bottom: 25px; /* Mantiene el espacio debajo del logo */
+    animation: fadeInAndFloat 1.2s ease-out; /* Mantiene la animación de entrada */
 }
 
 /* Contenedor para el texto en la parte inferior */
