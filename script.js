@@ -4951,11 +4951,6 @@ if (photoUploadInput) {
 if (savePhotoBtn) savePhotoBtn.addEventListener('click', saveProfilePhoto);
 
 // Listeners para Editar Correo Electrónico
-if (profileEmailBtn) profileEmailBtn.addEventListener('click', openEditEmailModal);
-if (closeEditEmailModalBtn) closeEditEmailModalBtn.addEventListener('click', closeEditEmailModal);
-if (cancelEditEmailBtn) cancelEditEmailBtn.addEventListener('click', closeEditEmailModal);
-if (saveEmailBtn) saveEmailBtn.addEventListener('click', saveProfileEmail);
-
 function buildWhatsAppMessage(clientName) {
   let mensaje = `Hola ${clientName}, aquí te compartimos tu factura.`;
   if (userSettings.linkPago) {
