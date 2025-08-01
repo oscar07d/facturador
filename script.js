@@ -4966,16 +4966,10 @@ function buildWhatsAppMessage(clientName) {
 
 // --- Cargar Preferencias del Usuario al Iniciar la App (VERSIÓN FINAL) ---
 function applyUserPreferences() {
-    console.log("DOM Cargado. Aplicando preferencias guardadas...");
+    console.log("DOM Cargado. Aplicando preferencias de idioma..."); // Log actualizado
 
-    // Carga y aplica el tema guardado
-    const savedTheme = localStorage.getItem('appTheme') || 'system';
-    console.log("Tema encontrado en localStorage:", savedTheme);
-    if (typeof applyTheme === 'function') {
-        applyTheme(savedTheme);
-    }
-
-    // Carga y aplica el idioma guardado
+    // El tema ya se aplicó con el script en <head>.
+    // Aquí solo cargamos el idioma.
     const savedLang = localStorage.getItem('appLanguage') || 'es';
     console.log("Idioma encontrado en localStorage:", savedLang);
     if (typeof setLanguage === 'function') {
@@ -4983,7 +4977,7 @@ function applyUserPreferences() {
     }
 }
 
-// Ejecutar tan pronto como sea posible.
+// El código que llama a la función se queda igual.
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', applyUserPreferences);
 } else {
