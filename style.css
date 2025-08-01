@@ -104,15 +104,74 @@
     --reminder-width: 580px;
 }
 
-/* Dark Theme Color Palette */
+/* Dark Theme Color Palette (Improved) */
 [data-theme="dark"] {
     --primary-color: #0d8eff;
+    --primary-hover-color: #007bff;
     --background-color: #121212;
     --container-background: #1e1e1e;
+    --secondary-background: #2a2a2a; /* For modals, forms, etc. */
     --text-color: #e0e0e0;
     --text-muted-color: #888888;
-    --border-color: #333333;
+    --border-color: #383838;
     --logo-svg-fill-color: #ffffff;
+    --success-color: #28a745;
+    --warning-color: #ffc107;
+    --danger-color: #dc3545;
+    --info-color: #17a2b8;
+
+    /* Specific styles for form elements in dark mode */
+    --input-background: #2c2c2c;
+    --input-text-color: #e0e0e0;
+    --input-placeholder-color: #777;
+}
+
+/* General overrides for dark mode */
+[data-theme="dark"] body {
+    background: var(--background-color);
+    color: var(--text-color);
+}
+
+[data-theme="dark"] .invoice-app-container,
+[data-theme="dark"] .login-container,
+[data-theme="dark"] .modal-content,
+[data-theme="dark"] .dashboard-card,
+[data-theme="dark"] .form-section,
+[data-theme="dark"] .profile-list ul,
+[data-theme="dark"] .custom-select-options {
+    background-color: var(--container-background);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .modal-content {
+    background-color: var(--secondary-background);
+}
+
+[data-theme="dark"] input,
+[data-theme="dark"] select,
+[data-theme="dark"] textarea,
+[data-theme="dark"] .custom-select-container {
+    background-color: var(--input-background);
+    color: var(--input-text-color);
+    border-color: var(--border-color);
+}
+
+[data-theme="dark"] ::placeholder {
+    color: var(--input-placeholder-color);
+}
+
+[data-theme="dark"] .app-header,
+[data-theme="dark"] .profile-header {
+    background-color: var(--container-background);
+    border-bottom-color: var(--border-color);
+}
+
+[data-theme="dark"] .profile-item:hover {
+    background-color: #2c2c2c;
+}
+
+[data-theme="dark"] .profile-item .icon-round {
+    background-color: #333;
 }
 
 /* ===================================== */
