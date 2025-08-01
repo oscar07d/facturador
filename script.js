@@ -4284,13 +4284,13 @@ onAuthStateChanged(auth, (user) => {
     const navAccount = document.getElementById('navAccount');
 
     if (user) {
-        // --- El usuario ha iniciado sesión ---
+        // --- User is signed in ---
         if(loginContainer) loginContainer.style.display = 'none';
         if(mainContent) mainContent.style.display  = 'flex';
         
         handleNavigation('homeSection');
 
-        // Cargar preferencias del usuario (foto, nombre, etc.)
+        // Load user preferences (photo, name, etc.)
         const profileIcon = document.querySelector('#profilePhotoBtn .icon-round');
         if (profileIcon && user.photoURL) {
             profileIcon.src = user.photoURL;
@@ -4305,9 +4305,10 @@ onAuthStateChanged(auth, (user) => {
         }
 
         // =======================================================
-        // ===> ACTIVACIÓN DE TODOS LOS LISTENERS POST-LOGIN (VERSIÓN FINAL) <===
+        // ===> ACTIVATE ALL POST-LOGIN LISTENERS (FINAL VERSION) <===
         // =======================================================
         
+        // My Account list buttons
         const profilePhotoBtn = document.getElementById('profilePhotoBtn');
         if (profilePhotoBtn) profilePhotoBtn.addEventListener('click', openEditPhotoModal);
 
@@ -4323,14 +4324,14 @@ onAuthStateChanged(auth, (user) => {
         const profileLanguageBtn = document.getElementById('profileLanguageBtn');
         if (profileLanguageBtn) profileLanguageBtn.addEventListener('click', openLanguageModal);
 
-        // Listeners para AMBOS botones de Notificaciones
+        // Both Notification buttons
         const notificationsBtnHeader = document.getElementById('notificationsBtn');
         if (notificationsBtnHeader) notificationsBtnHeader.addEventListener('click', openNotificationsModal);
 
         const profileNotificationsBtn = document.getElementById('profileNotificationsBtn');
         if (profileNotificationsBtn) profileNotificationsBtn.addEventListener('click', openNotificationsModal);
 
-        // Setup para los botones INTERNOS de los modales
+        // Setup for buttons INSIDE the modals
         setupEditNameModalListeners();
         setupEditPhoneModalListeners();
         setupThemeModalListeners();
@@ -4338,7 +4339,7 @@ onAuthStateChanged(auth, (user) => {
         setupNotificationsModalListeners();
         
     } else {
-        // --- El usuario ha cerrado sesión ---
+        // --- User is signed out ---
         if(loginContainer) loginContainer.style.display = 'flex';
         if(mainContent) mainContent.style.display  = 'none';
 
