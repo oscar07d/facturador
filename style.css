@@ -134,7 +134,6 @@
     color: var(--text-color);
 }
 
-[data-theme="dark"] .splash-logo,
 [data-theme="dark"] .splash-brand-logo,
 [data-theme="dark"] .loading-logo-spinner .logo-path-spinner,
 [data-theme="dark"] .login-logo-completo .cls-1-login,
