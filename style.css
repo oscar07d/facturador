@@ -21,6 +21,11 @@
     --border-color: #dee2e6;
     --logo-svg-fill-color: #1d1d1b;
 
+    --primary-color: #007bff;
+    --background-color: #f8f9fa;
+    --container-background: #ffffff;
+    --text-color: #212529;
+
     /* Radios de Borde App Principal */
     --border-radius-xl: 40px;
     --border-radius-l: 30px;
@@ -97,6 +102,17 @@
     --reminder-default-bg-pill: #e2e8f0;
     --reminder-default-text-pill: #4a5568;
     --reminder-width: 580px;
+}
+
+/* Dark Theme Color Palette */
+[data-theme="dark"] {
+    --primary-color: #0d8eff;
+    --background-color: #121212;
+    --container-background: #1e1e1e;
+    --text-color: #e0e0e0;
+    --text-muted-color: #888888;
+    --border-color: #333333;
+    --logo-svg-fill-color: #ffffff;
 }
 
 /* ===================================== */
@@ -248,6 +264,42 @@
 
 #languageModal .modal-content {
     max-width: 500px;
+}
+
+#themeModal .modal-content {
+    max-width: 600px;
+}
+.theme-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
+    margin-top: 20px;
+}
+.theme-option input[type="radio"] {
+    display: none; /* Hide the default radio button */
+}
+.theme-option-card {
+    border: 2px solid var(--border-color);
+    border-radius: var(--border-radius-m);
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.theme-option-card img {
+    width: 60px;
+    height: 60px;
+    margin-bottom: 10px;
+}
+.theme-option-card span {
+    font-weight: 500;
+    color: var(--text-color);
+}
+/* Style for when a theme is selected */
+.theme-option input[type="radio"]:checked + .theme-option-card {
+    border-color: var(--primary-color);
+    background-color: rgba(0, 123, 255, 0.1);
+    box-shadow: 0 0 10px rgba(0, 123, 255, 0.3);
 }
 
 .current-info-display {
