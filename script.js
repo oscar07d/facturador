@@ -4275,7 +4275,7 @@ onAuthStateChanged(auth, (user) => {
         }
 
         // =======================================================
-        // ===> ACTIVACIÓN DE TODOS LOS LISTENERS POST-LOGIN <===
+        // ===> ACTIVACIÓN DE TODOS LOS LISTENERS POST-LOGIN (VERSIÓN FINAL) <===
         // =======================================================
         
         const profilePhotoBtn = document.getElementById('profilePhotoBtn');
@@ -4283,22 +4283,25 @@ onAuthStateChanged(auth, (user) => {
             profilePhotoBtn.addEventListener('click', openEditPhotoModal);
         }
 
-        // Listener para el botón de Nombre (RESTAURADO)
         const profileNameBtn = document.getElementById('profileNameBtn');
         if (profileNameBtn) {
             profileNameBtn.addEventListener('click', openEditNameModal);
         }
 
-        // Listener para el botón de Teléfono
         const profilePhoneBtn = document.getElementById('profilePhoneBtn');
         if (profilePhoneBtn) {
-            profilePhoneBtn.addEventListener('click', openEditPhoneModal);
+            profilePhoneBtn.addEventListener('click', openEditPhoneModal); // Corregido
         }
         
-        // Listener para el botón de Tema
         const profileThemeBtn = document.getElementById('profileThemeBtn');
         if (profileThemeBtn) {
             profileThemeBtn.addEventListener('click', openThemeModal);
+        }
+
+        // ====> LISTENER RESTAURADO PARA IDIOMA <====
+        const profileLanguageBtn = document.getElementById('profileLanguageBtn');
+        if (profileLanguageBtn) {
+            profileLanguageBtn.addEventListener('click', openLanguageModal);
         }
 
         // Setup para los botones internos de los modales
