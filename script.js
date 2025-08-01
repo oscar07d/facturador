@@ -126,12 +126,10 @@ const themeOptions = document.querySelectorAll('input[name="theme"]');
 
 let selectedPhotoFile = null; // Variable global para la foto
 
-const themeModal            = document.getElementById('themeModal');
-const closeThemeModalBtn    = document.getElementById('closeThemeModalBtn');
-const openThemeBtn          = document.getElementById('openThemeBtn');    // botón que dispara el modal
-const notificationsModal    = document.getElementById('notificationsModal');
+const openThemeBtn = document.getElementById('openThemeBtn');    // botón que dispara el modal
+const notificationsModal = document.getElementById('notificationsModal');
 const closeNotificationsBtn = document.getElementById('closeNotificationsModalBtn');
-const openNotificationsBtn  = document.getElementById('openNotificationsBtn');
+const openNotificationsBtn = document.getElementById('openNotificationsBtn');
 
 const invoiceDetailModal = document.getElementById('invoiceDetailModal');
 const modalInvoiceTitle = document.getElementById('modalInvoiceTitle');
@@ -5073,6 +5071,7 @@ if (document.readyState === 'loading') {
 //        alert("Funcionalidad 'Generar Factura (Archivo)' pendiente.");
 //    });
 //}
+
 
 
 
