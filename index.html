@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistema de Facturas</title>
     <link rel="stylesheet" href="style.css"> <link rel="icon" href="img/isologo_icon_page.svg" type="image/svg+xml">
-	<script>
+    <link rel="stylesheet" href="modal_fix.css">
+    <script>
       (function() {
         try {
           const theme = localStorage.getItem('appTheme') || 'system';
@@ -89,6 +90,12 @@
                 <div class="app-title-container">
                     <h1 id="appPageTitle" data-translate-key="appPageTitleCreate">Crear Nueva Factura</h1>
                 </div>
+                <div class="header-actions">
+                    <button id="notificationsBtn" class="btn-icon-header" title="Notificaciones">
+                        <img src="img/bell-icon.svg" alt="Notificaciones" class="icon-svg">
+                        <span id="notification-badge" class="notification-badge" style="display: none;">0</span>
+                    </button>
+                </div>
             </header>
 
             <nav class="app-nav">
@@ -131,7 +138,7 @@
                 <header class="profile-header">
                     <h2 data-translate-key="profileHeader">Mi Cuenta</h2>
                 </header>
-            
+
                 <div class="profile-list">
                     <h3 data-translate-key="profileAccountHeader">Cuenta</h3>
                     <ul>
@@ -162,7 +169,6 @@
                             <div class="icon-round">
                                 <img src="img/phone-icon.svg" alt="Teléfono">
                             </div>
-
                             <div>
                                 <span data-translate-key="profilePhone">Número de teléfono</span>
                                 <small data-translate-key="profilePhoneDesc">Editar número de teléfono</small>
@@ -171,7 +177,7 @@
                         </button>
                         </li>
                     </ul>
-            
+
                     <h3 data-translate-key="profilePreferencesHeader">Preferencias</h3>
                     <ul>
                         <li>
@@ -187,9 +193,9 @@
                             </button>
                         </li>
                         <li>
-                            <button class="profile-item">
+                            <button id="profileThemeBtn" class="profile-item">
                                 <div class="icon-round">
-                                    <img src="img/theme-icon.svg" alt="Tema">
+                                    <img src="img/theme-icon.svg" alt="Tema" data-translate-key="[alt]profileTheme">
                                 </div>
                                 <div>
                                     <span data-translate-key="profileTheme">Tema</span>
@@ -199,11 +205,11 @@
                             </button>
                         </li>
                     </ul>
-            
+
                     <h3 data-translate-key="profilePrivacyHeader">Privacidad y seguridad</h3>
                     <ul>
                         <li>
-                            <button class="profile-item">
+                            <button id="profileNotificationsBtn" class="profile-item">
                                 <div class="icon-round">
                                     <img src="img/bell-icon.svg" alt="Notificaciones">
                                 </div>
@@ -227,7 +233,7 @@
                             </button>
                         </li>
                     </ul>
-            
+
                     <h3 data-translate-key="profileHelpHeader">Ayuda y soporte</h3>
                     <ul>
                         <li>
@@ -450,7 +456,7 @@
                             <span data-translate-key="addNewClientBtn">Añadir Nuevo Cliente</span>
                         </button>
                     </div>
-                
+
                     <div id="newClientFormContainer" class="form-section" style="display: none;">
                         <form id="newClientForm">
                             <legend data-translate-key="newClientFormLegend">Datos del Nuevo Cliente</legend>
@@ -497,7 +503,7 @@
                             <h4 data-translate-key="inactiveClientsCard">Clientes Inactivos</h4>
                             <p id="dashboardInactiveClients">0</p>
                         </div>
-                
+
                         <div class="dashboard-card chart-container">
                             <h4 data-translate-key="revenueChartCard">Ingresos por Mes (Últimos 12 meses)</h4>
                             <div class="chart-filters">
@@ -511,12 +517,12 @@
                                         <option value="day" data-translate-key="chartFilterDay">Día Específico</option>
                                     </select>
                                 </div>
-                            
+
                                 <div id="yearFilter" class="filter-group" style="display: none;">
                                     <label for="selectYear" data-translate-key="chartFilterYearLabel">Año:</label>
                                     <select id="selectYear"></select>
                                 </div>
-                            
+
                                 <div id="monthFilter" class="filter-group" style="display: none;">
                                     <label for="selectMonth" data-translate-key="chartFilterMonthLabel">Mes:</label>
                                     <select id="selectMonth">
@@ -541,7 +547,7 @@
                                 <canvas id="monthlyRevenueChart"></canvas>
                             </div>
                         </div>
-                
+
                         <div class="dashboard-card top-items-list-container">
                             <h4 data-translate-key="topItemsCard">Ítems Más Vendidos</h4>
                             <ul id="dashboardTopItems" class="top-items-list">
@@ -552,7 +558,7 @@
             </main>
 
         </div> 
-        
+
         <!-- TEMPLATES - El contenido dinámico debe ser traducido por JS, pero las etiquetas estáticas se marcan aquí -->
         <div id="invoice-export-template" style="display: none; width: 210mm;">
             <div class="export-header">
@@ -645,7 +651,6 @@
         </div>
 
         <div id="invoiceDetailModal" class="modal-overlay">
-
             <div class="modal-content">
                 <div class="modal-header">
                     <h2 id="modalInvoiceTitle" data-translate-key="modalInvoiceDetailTitle">Detalle de Factura</h2>
@@ -657,6 +662,11 @@
                     </div>
                 </div>
                 <div class="modal-footer">
+                    <button type="button" id="modalConfirmPaymentBtn" class="btn btn-icon btn-success-outline" title="Confirmar Pago" style="display: none;">
+                        <img src="img/Paid_icon.svg" alt="Confirmar Pago" class="icon-svg">
+                        <span>Confirmar Pago</span>
+                    </button>
+
                     <button type="button" id="modalShareBtn" class="btn btn-icon btn-secondary-outline" data-translate-key="[title]share" title="Compartir">
                         <img src="img/Share_icon.svg" alt="Compartir" class="icon-svg">
                         <span data-translate-key="share">Compartir</span>
@@ -741,7 +751,7 @@
                 </div>
             </div>
         </div>
-        
+
         <div id="loadingOverlay" class="loading-overlay" style="display: none;">
         <div class="loading-content">
             <svg id="Capa_2_loading_logo_overlay" data-name="Capa 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 306.53 264.67" class="loading-logo-spinner">
@@ -759,7 +769,7 @@
     </div>
 
     </div> 
-    
+
     <div id="editPhotoModal" class="modal-overlay">
         <div class="modal-content">
             <div class="modal-header">
@@ -840,86 +850,60 @@
                 <button type="button" id="closeLanguageModalFooterBtn" class="btn btn-secondary" data-translate-key="close">Cerrar</button>
                 </div>
         </div>
-    </div>
-	<div id="themeModal" class="modal-overlay">
-	    <div class="modal-content">
-	        <div class="modal-header">
-	            <h2 data-translate-key="themeModalTitle">Seleccionar Tema</h2>
-	            <button id="closeThemeModalBtn" class="modal-close-btn">×</button>
-	        </div>
-	        <div class="modal-body">
-	            <p data-translate-key="themeModalPrompt">Elige cómo quieres que se vea la aplicación.</p>
-	            <div class="theme-options">
-	                <label class="theme-option">
-	                    <input type="radio" name="theme" value="light" checked>
-	                    <div class="theme-option-card">
-	                        <img src="img/light-theme-icon.svg" alt="Light Mode" data-translate-key="[alt]themeLightAlt">
-	                        <span data-translate-key="themeLight">Claro</span>
-	                    </div>
-	                </label>
-	                <label class="theme-option">
-	                    <input type="radio" name="theme" value="dark">
-	                    <div class="theme-option-card">
-	                        <img src="img/dark-theme-icon.svg" alt="Dark Mode" data-translate-key="[alt]themeDarkAlt">
-	                        <span data-translate-key="themeDark">Oscuro</span>
-	                    </div>
-	                </label>
-	                <label class="theme-option">
-	                    <input type="radio" name="theme" value="system">
-	                    <div class="theme-option-card">
-	                        <img src="img/system-theme-icon.svg" alt="System Default" data-translate-key="[alt]themeSystemAlt">
-	                        <span data-translate-key="themeSystem">Sistema</span>
-	                    </div>
-	                </label>
-	            </div>
-	        </div>
-	    </div>
-	</div>
-	<div id="notificationsModal" class="modal-overlay">
-	    <div class="modal-content">
-	        <div class="modal-header">
-	            <h2>Notificaciones</h2>
-	            <button id="closeNotificationsModalBtn" class="modal-close-btn">&times;</button>
-	        </div>
-	        <div class="modal-body notifications-body">
-	            <ul id="notifications-list" class="notifications-list-new">
-	                <li class="notification-item-new" data-invoice-id="ID_DE_LA_FACTURA_1">
-	                    <span class="notification-dot overdue"></span>
-	                    <div class="notification-content">
-	                        <p class="notification-title">Pago Vencido: José Emerson</p>
-	                        <p class="notification-description">La factura FCT-004 ha vencido.</p>
-	                    </div>
-	                    <span class="notification-time">hace 2 días</span>
-	                </li>
-	                <li class="notification-item-new" data-invoice-id="ID_DE_LA_FACTURA_2">
-	                    <span class="notification-dot pending"></span>
-	                    <div class="notification-content">
-	                        <p class="notification-title">Pago Pendiente: Matías</p>
-	                        <p class="notification-description">Factura FCT-005 pendiente de pago.</p>
-	                    </div>
-	                    <span class="notification-time">hace 5 horas</span>
-	                </li>
-	
-	                <li class="notification-item-new">
-	                    <span class="notification-dot system"></span>
-	                    <div class="notification-content">
-	                        <p class="notification-title">¡Nueva Función Disponible!</p>
-	                        <p class="notification-description">Ahora puedes cambiar el tema de la aplicación en "Mi Cuenta".</p>
-	                    </div>
-	                    <span class="notification-time">hace 1 semana</span>
-	                </li>
-	                
-	                <li class="notification-item-empty" style="display: none;">
-	                    No tienes notificaciones nuevas.
-	                </li>
-	            </ul>
-	        </div>
-	        <div class="modal-footer">
-	            <button id="markAllReadBtn" class="btn btn-secondary">Marcar todas como leídas</button>
-	        </div>
-	    </div>
-	</div>
-    
+        <div id="themeModal" class="modal-overlay">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 data-translate-key="themeModalTitle">Seleccionar Tema</h2>
+                    <button id="closeThemeModalBtn" class="modal-close-btn">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p data-translate-key="themeModalPrompt">Elige cómo quieres que se vea la aplicación.</p>
+                    <div class="theme-options">
+                        <label class="theme-option">
+                            <input type="radio" name="theme" value="light" checked>
+                            <div class="theme-option-card">
+                                <img src="img/theme-icon.svg" alt="Light Mode">
+                                <span data-translate-key="themeLight">Claro</span>
+                            </div>
+                        </label>
+                        <label class="theme-option">
+                            <input type="radio" name="theme" value="dark">
+                            <div class="theme-option-card">
+                                <img src="img/dark-theme-icon.svg" alt="Dark Mode">
+                                <span data-translate-key="themeDark">Oscuro</span>
+                            </div>
+                        </label>
+                        <label class="theme-option">
+                            <input type="radio" name="theme" value="system">
+                            <div class="theme-option-card">
+                                <img src="img/system-theme-icon.svg" alt="System Default">
+                                <span data-translate-key="themeSystem">Sistema</span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="notificationsModal" class="modal-overlay">
+            <div class="modal-content"> <div class="modal-header">
+
+                    <h2>Notificaciones</h2>
+                    <button id="closeNotificationsModalBtn" class="modal-close-btn">&times;</button>
+                </div>
+                <div class="modal-body notifications-body">
+                    <ul id="notifications-list" class="notifications-list-new">
+                        <li class="notification-item-empty">No tienes notificaciones nuevas.</li>
+                    </ul>
+                </div>
+                <div class="modal-footer">
+                    <button id="markAllReadBtn" class="btn btn-secondary">Marcar todas como leídas</button>
+                </div>
+            </div>
+        </div>
+        <div id="caja-de-prueba" class="modal-overlay" style="background-color: red;">
+            <p style="color: white; font-size: 2rem;">Si ves esto, la prueba funciona.</p>
+        </div>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" integrity="sha512-BNaRQnYJYiPSqHHDb58B0yaPfCu+Wgds8Gp/gU33kqBtgNS4tSPHuGibyoeqMV/TJlSKda6FXzoEyYGjTe+vXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" integrity="sha512-qZvrmS2ekKPF2mSznTQsxqPgnpkI4DNTlrdUmTzrDgektczlKNRRhy5X5AAOnx5S09ydFYWWNSfcEqDTTHgtNA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
@@ -928,5 +912,3 @@
     <script type="module" src="script.js"></script>
 </body>
 </html>
-
-
