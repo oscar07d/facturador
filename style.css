@@ -383,6 +383,82 @@
 [data-theme="dark"] .btn-icon-header:hover .icon-svg {
     filter: brightness(0) invert(1) opacity(1);
 }
+
+/* ============================================= */
+/* === ESTILOS PARA NOTIFICACIONES (NUEVO DISEÑO) === */
+/* ============================================= */
+
+/* Ancho específico para el nuevo modal */
+#notificationsModal .modal-content {
+    max-width: 550px;
+}
+
+#notificationsModal .modal-body {
+    padding: 0; /* Quitamos el padding para que la lista ocupe todo */
+}
+
+.notifications-list-new {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.notification-item-new {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px 25px;
+    border-bottom: 1px solid var(--border-color);
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+.notification-item-new:hover {
+    background-color: #f8f9fa;
+}
+[data-theme="dark"] .notification-item-new:hover {
+    background-color: var(--secondary-background);
+}
+.notification-item-new:last-child {
+    border-bottom: none;
+}
+
+.notification-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+.notification-dot.pending { background-color: var(--warning-color); }
+.notification-dot.overdue { background-color: var(--danger-color); }
+.notification-dot.system { background-color: var(--info-color); }
+
+.notification-content {
+    flex-grow: 1;
+}
+.notification-title {
+    font-weight: 600;
+    color: var(--text-color);
+    margin: 0 0 4px 0;
+}
+.notification-description {
+    font-size: 0.9rem;
+    color: var(--text-muted-color);
+    margin: 0;
+}
+
+.notification-time {
+    font-size: 0.8rem;
+    color: var(--text-muted-color);
+    flex-shrink: 0;
+    margin-left: auto;
+    padding-left: 15px;
+}
+
+.notification-item-empty {
+    text-align: center;
+    padding: 30px;
+    color: var(--text-muted-color);
+}
 /* Estilos para Acciones en la Cabecera (Campana de Notificación) */
 .header-actions {
     display: flex;
