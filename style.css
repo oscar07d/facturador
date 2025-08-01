@@ -496,6 +496,8 @@
     width: 100%;
     max-width: 1200px;
     margin: 0 auto;
+    position: relative;
+    z-index: 1;
 }
 
 .profile-header {
@@ -547,6 +549,7 @@
     cursor: pointer;
     gap: 16px; /* Espacio entre el icono y el texto */
     transition: background-color 0.2s ease;
+    z-index: 10000 !important;
 }
 
 .profile-item:hover {
@@ -2763,7 +2766,7 @@ textarea.input-error {
     visibility: hidden;
     pointer-events: none;
     transition: opacity 0.3s ease, visibility 0s linear 0.3s;
-    z-index: 1050; /* Asegúrate de que este z-index sea suficiente */
+    z-index: 9999 !important; /* Asegúrate de que este z-index sea suficiente */
 }
 
 .modal-overlay.active {
@@ -3665,3 +3668,4 @@ textarea.input-error {
     visibility: visible !important;
     pointer-events: auto !important;
 }
+
