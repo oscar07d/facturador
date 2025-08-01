@@ -246,6 +246,10 @@
     max-width: 500px;
 }
 
+#languageModal .modal-content {
+    max-width: 500px;
+}
+
 .current-info-display {
     font-size: 0.9rem;
     color: var(--text-muted-color);
