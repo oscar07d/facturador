@@ -3081,17 +3081,12 @@ function handleDiscountChange() {
 // --- LÓGICA PARA EL MODAL DE NOTIFICACIONES ---
 
 function openNotificationsModal() {
-    const badge = document.getElementById('notification-badge');
-    
-    // Solo reproduce el sonido si el contador de notificaciones es mayor que 0
-    if (badge && parseInt(badge.textContent) > 0) {
-        playNotificationSound();
-    }
-    
-    // El resto de la función se queda igual
-    loadInvoiceNotifications(); // Carga/refresca la lista
+    // Esta función ahora solo actualiza la lista y abre el modal, sin sonido.
+    loadInvoiceNotifications(); 
     const modal = document.getElementById('notificationsModal');
-    if (modal) modal.classList.add('active');
+    if (modal) {
+        modal.classList.add('active');
+    }
 }
 
 function closeNotificationsModal() {
@@ -3749,7 +3744,7 @@ async function loadInvoiceNotifications() {
 
     const newNotificationCount = querySnapshot.size;
     // Si el nuevo conteo es mayor que el anterior, reproduce el sonido
-    if (newNotificationCount > lastNotificationCount) {
+    if (newNotificationCount > lastNotificationCount && hasInteracted) {
         playNotificationSound();
     }
     lastNotificationCount = newNotificationCount;
@@ -5216,6 +5211,7 @@ if (document.readyState === 'loading') {
 //        alert("Funcionalidad 'Generar Factura (Archivo)' pendiente.");
 //    });
 //}
+
 
 
 
