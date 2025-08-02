@@ -850,7 +850,7 @@ async function saveNewClient(name, phone, email) {
 // Variable global para guardar la instancia de la gráfica
 let revenueChartInstance = null;
 
-async  loadDashboardData() {
+async function loadDashboardData() {
     showLoading(true);
     const user = auth.currentUser;
     if (!user) {
@@ -5183,6 +5183,7 @@ if (document.readyState === 'loading') {
 //        alert("Funcionalidad 'Generar Factura (Archivo)' pendiente.");
 //    });
 //}
+
 
 
 
