@@ -3689,35 +3689,31 @@ async function loadInvoiceNotifications() {
     const badge = document.getElementById('notification-badge');
     if (!list || !badge) return;
 
-    // Buscar facturas pendientes o vencidas del usuario actual
     const q = query(collection(db, "facturas"), 
         where("userId", "==", user.uid),
         where("paymentStatus", "in", ["pending", "overdue"]),
-        orderBy("invoiceDate", "desc") // Mostrar las más recientes primero
+        orderBy("invoiceDate", "desc")
     );
-
     const querySnapshot = await getDocs(q);
 
-    // Limpiar la lista actual
     list.innerHTML = '';
 
     if (querySnapshot.empty) {
-        // Si no hay notificaciones, ocultar el contador y mostrar mensaje
         badge.style.display = 'none';
         badge.textContent = '0';
         list.innerHTML = '<li class="notification-item-empty">No tienes notificaciones de facturas.</li>';
     } else {
-        // Si hay notificaciones, mostrar y actualizar el contador
         badge.textContent = querySnapshot.size;
         badge.style.display = 'flex';
 
-        querySnapshot.forEach(doc => {
-            const invoice = doc.data();
-            const invoiceId = doc.id;
+        querySnapshot.forEach(docSnap => {
+            const invoice = docSnap.data();
+            const invoiceId = docSnap.id;
             
             const item = document.createElement('li');
             item.className = 'notification-item-new';
-            item.dataset.invoiceId = invoiceId; // Guardamos el ID de la factura para usarlo después
+            // Guardamos los datos para usarlos al hacer clic
+            item.dataset.invoiceId = invoiceId;
 
             const dotClass = invoice.paymentStatus === 'overdue' ? 'overdue' : 'pending';
             const title = invoice.paymentStatus === 'overdue' ? 'Pago Vencido' : 'Pago Pendiente';
@@ -3729,9 +3725,64 @@ async function loadInvoiceNotifications() {
                     <p class="notification-description">La factura ${invoice.invoiceNumberFormatted} requiere tu atención.</p>
                 </div>
             `;
+
+            // ===> ¡NUEVO! HACEMOS LA NOTIFICACIÓN CLICABLE <===
+            item.addEventListener('click', async () => {
+                closeNotificationsModal(); // Cierra el panel de notificaciones
+                await handleNavigation('viewInvoicesSection'); // Navega a "Mis Facturas"
+
+                // Esperamos un momento para que la lista de facturas se renderice
+                setTimeout(() => {
+                    const invoiceCard = document.querySelector(`.invoice-list-item[data-invoice-id="${invoiceId}"]`);
+                    if (invoiceCard) {
+                        // Resaltar la tarjeta de la factura
+                        invoiceCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        invoiceCard.classList.add('highlight');
+                        setTimeout(() => invoiceCard.classList.remove('highlight'), 2000); // Quitar el resaltado después de 2 segundos
+
+                        // Abrir el modal de detalles
+                        openInvoiceDetailModal(invoice, invoiceId);
+                    }
+                }, 500); // 500ms de espera
+            });
+
             list.appendChild(item);
         });
     }
+}
+B. Añade la llamada para refrescar las notificaciones
+Ahora, busca la función que se ejecuta cuando haces clic en el botón "Marcar como Pagado" (confirmAndSetNextBtn). Necesitamos añadir una línea para que, después de pagar, se actualice la lista de notificaciones.
+
+Busca el eventListener de confirmAndSetNextBtn y asegúrate de que se vea así:
+
+JavaScript
+
+// En tu script.js
+
+if (confirmAndSetNextBtn) {
+    confirmAndSetNextBtn.addEventListener('click', async () => {
+        // ... (tu código para actualizar la factura y el cliente)
+        
+        try {
+            await updateDoc(invoiceRef, { /* ... */ });
+            if (clientId) {
+                await updateDoc(clientRef, { /* ... */ });
+            }
+
+            alert("¡Factura actualizada con éxito!");
+            closePaymentUpdateModal();
+
+            await loadAndDisplayInvoices(); 
+            
+            // ===> ¡NUEVO! REFRESCA LAS NOTIFICACIONES <===
+            await loadInvoiceNotifications();
+
+        } catch (error) {
+            // ... (manejo de errores)
+        } finally {
+            showLoading(false);
+        }
+    });
 }
 // === INICIO: NUEVO CÓDIGO - Funciones para la Sección Clientes ===
 
@@ -5088,6 +5139,7 @@ if (document.readyState === 'loading') {
 //        alert("Funcionalidad 'Generar Factura (Archivo)' pendiente.");
 //    });
 //}
+
 
 
 
