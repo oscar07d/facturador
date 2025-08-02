@@ -3046,12 +3046,9 @@ function handleDiscountChange() {
 // --- LÓGICA PARA EL MODAL DE NOTIFICACIONES ---
 
 function openNotificationsModal() {
-    console.log("TEST: Intentando abrir la caja de prueba...");
-    const caja = document.getElementById('caja-de-prueba');
-    if (caja) {
-        caja.classList.add('active');
-    } else {
-        console.error("TEST: No se encontró la caja de prueba en el HTML.");
+    const modal = document.getElementById('notificationsModal');
+    if (modal) {
+        modal.classList.add('active');
     }
 }
 
@@ -5037,6 +5034,7 @@ if (document.readyState === 'loading') {
 //        alert("Funcionalidad 'Generar Factura (Archivo)' pendiente.");
 //    });
 //}
+
 
 
 
