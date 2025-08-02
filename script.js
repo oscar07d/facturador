@@ -3735,13 +3735,21 @@ async function loadInvoiceNotifications() {
             item.addEventListener('click', async () => {
                 closeNotificationsModal();
                 await handleNavigation('viewInvoicesSection');
+            
+                // Esperamos un momento para que la lista de facturas se renderice
                 setTimeout(() => {
                     const invoiceCard = document.querySelector(`.invoice-list-item[data-invoice-id="${invoiceId}"]`);
                     if (invoiceCard) {
+                        // 1. Resaltar la tarjeta de la factura (esto pasa de inmediato)
                         invoiceCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
                         invoiceCard.classList.add('highlight');
-                        setTimeout(() => invoiceCard.classList.remove('highlight'), 2000);
-                        openInvoiceDetailModal(invoice, invoiceId);
+                        setTimeout(() => invoiceCard.classList.remove('highlight'), 2000); // El resaltado dura 2 segundos
+            
+                        // 2. AÑADIMOS UNA NUEVA PAUSA de 1 segundo
+                        setTimeout(() => {
+                            // 3. Abrir el modal de detalles DESPUÉS de la pausa
+                            openInvoiceDetailModal(invoice, invoiceId);
+                        }, 1000); // 1000 milisegundos = 1 segundo
                     }
                 }, 500);
             });
@@ -5156,6 +5164,7 @@ if (document.readyState === 'loading') {
 //        alert("Funcionalidad 'Generar Factura (Archivo)' pendiente.");
 //    });
 //}
+
 
 
 
