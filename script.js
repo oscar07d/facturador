@@ -3689,35 +3689,30 @@ async function loadInvoiceNotifications() {
     const badge = document.getElementById('notification-badge');
     if (!list || !badge) return;
 
-    // Buscar facturas pendientes o vencidas del usuario actual
+    // Query Firestore for pending or overdue invoices for the current user
     const q = query(collection(db, "facturas"), 
         where("userId", "==", user.uid),
         where("paymentStatus", "in", ["pending", "overdue"]),
-        orderBy("invoiceDate", "desc") // Mostrar las más recientes primero
+        orderBy("invoiceDate", "desc")
     );
 
     const querySnapshot = await getDocs(q);
-
-    // Limpiar la lista actual
-    list.innerHTML = '';
+    list.innerHTML = ''; // Clear the list
 
     if (querySnapshot.empty) {
-        // Si no hay notificaciones, ocultar el contador y mostrar mensaje
         badge.style.display = 'none';
         badge.textContent = '0';
         list.innerHTML = '<li class="notification-item-empty">No tienes notificaciones de facturas.</li>';
     } else {
-        // Si hay notificaciones, mostrar y actualizar el contador
         badge.textContent = querySnapshot.size;
         badge.style.display = 'flex';
 
         querySnapshot.forEach(docSnap => {
             const invoice = docSnap.data();
             const invoiceId = docSnap.id;
-            
+
             const item = document.createElement('li');
             item.className = 'notification-item-new';
-            // Guardamos el ID de la factura para usarlo después
             item.dataset.invoiceId = invoiceId;
 
             const dotClass = invoice.paymentStatus === 'overdue' ? 'overdue' : 'pending';
@@ -3731,25 +3726,20 @@ async function loadInvoiceNotifications() {
                 </div>
             `;
 
-            // ===> ¡NUEVO! HACEMOS LA NOTIFICACIÓN CLICABLE <===
+            // Make the notification clickable
             item.addEventListener('click', async () => {
-                closeNotificationsModal(); // 1. Cierra el panel de notificaciones
-                await handleNavigation('viewInvoicesSection'); // 2. Navega a "Mis Facturas"
+                closeNotificationsModal();
+                await handleNavigation('viewInvoicesSection');
 
-                // 3. Esperamos un momento para que la lista de facturas se renderice
                 setTimeout(() => {
                     const invoiceCard = document.querySelector(`.invoice-list-item[data-invoice-id="${invoiceId}"]`);
                     if (invoiceCard) {
-                        // 4. Resaltar la tarjeta de la factura
                         invoiceCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
                         invoiceCard.classList.add('highlight');
-                        // Quitar el resaltado después de 2 segundos
                         setTimeout(() => invoiceCard.classList.remove('highlight'), 2000);
-
-                        // 5. Abrir el modal de detalles
                         openInvoiceDetailModal(invoice, invoiceId);
                     }
-                }, 500); // 500ms de espera son suficientes
+                }, 500);
             });
 
             list.appendChild(item);
@@ -5162,6 +5152,7 @@ if (document.readyState === 'loading') {
 //        alert("Funcionalidad 'Generar Factura (Archivo)' pendiente.");
 //    });
 //}
+
 
 
 
