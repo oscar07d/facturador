@@ -799,7 +799,7 @@ const translations = {
     }
 };
 
-
+let lastNotificationCount = 0;
 let currentInvoiceItems = [];
 let nextItemId = 0;
 let loadedClients = [];
@@ -850,7 +850,7 @@ async function saveNewClient(name, phone, email) {
 // Variable global para guardar la instancia de la gráfica
 let revenueChartInstance = null;
 
-async function loadDashboardData() {
+async  loadDashboardData() {
     showLoading(true);
     const user = auth.currentUser;
     if (!user) {
@@ -1038,12 +1038,23 @@ const showLoading = (show) => {
  * @param {string} description - La descripción completa del ítem.
  * @returns {string} - El nombre normalizado.
  */
-function normalizeItemName(description) {
+ normalizeItemName(description) {
     if (!description) return '';
     return description
         .toLowerCase() // Convertir a minúsculas
         .split('(')[0]   // Tomar solo la parte antes del primer '('
         .trim();         // Quitar espacios extra al inicio o final
+}
+
+function playNotificationSound() {
+    const sound = document.getElementById('notificationSound');
+    if (sound) {
+        sound.currentTime = 0; // Reinicia el sonido por si se llama rápidamente
+        sound.play().catch(error => {
+            // Los navegadores pueden bloquear la reproducción automática hasta que el usuario interactúa.
+            console.log("La reproducción de sonido fue bloqueada por el navegador.");
+        });
+    }
 }
 
 function setDefaultInvoiceDate() {
@@ -3702,6 +3713,14 @@ async function loadInvoiceNotifications() {
     );
 
     const querySnapshot = await getDocs(q);
+
+    const newNotificationCount = querySnapshot.size;
+    // Si el nuevo conteo es mayor que el anterior, reproduce el sonido
+    if (newNotificationCount > lastNotificationCount) {
+        playNotificationSound();
+    }
+    lastNotificationCount = newNotificationCount;
+    
     list.innerHTML = ''; // Limpiar el "Cargando..."
 
     if (querySnapshot.empty) {
@@ -5164,6 +5183,7 @@ if (document.readyState === 'loading') {
 //        alert("Funcionalidad 'Generar Factura (Archivo)' pendiente.");
 //    });
 //}
+
 
 
 
