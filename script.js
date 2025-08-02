@@ -4337,7 +4337,7 @@ if (logoutButton) {
 
 // In script.js, replace your entire onAuthStateChanged function
 
-onAuthStateChanged(auth, (user) => {
+onAuthStateChanged(auth, async (user) => {
     showLoading(false);
     
     const loginContainer = document.querySelector('.login-container');
@@ -4350,7 +4350,8 @@ onAuthStateChanged(auth, (user) => {
         if(mainContent) mainContent.style.display  = 'flex';
         
         handleNavigation('homeSection');
-
+        
+        await loadInvoiceNotifications();
         // Load user preferences (photo, name, etc.)
         const profileIcon = document.querySelector('#profilePhotoBtn .icon-round');
         if (profileIcon && user.photoURL) {
@@ -4404,7 +4405,7 @@ onAuthStateChanged(auth, (user) => {
         setupThemeModalListeners();
         setupLanguageModalListeners();
         setupNotificationsModalListeners();
-        await loadInvoiceNotifications();
+        
         
     } else {
         // --- User is signed out ---
@@ -5087,6 +5088,7 @@ if (document.readyState === 'loading') {
 //        alert("Funcionalidad 'Generar Factura (Archivo)' pendiente.");
 //    });
 //}
+
 
 
 
