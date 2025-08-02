@@ -3750,14 +3750,6 @@ async function loadInvoiceNotifications() {
         });
     }
 }
-B. Añade la llamada para refrescar las notificaciones
-Ahora, busca la función que se ejecuta cuando haces clic en el botón "Marcar como Pagado" (confirmAndSetNextBtn). Necesitamos añadir una línea para que, después de pagar, se actualice la lista de notificaciones.
-
-Busca el eventListener de confirmAndSetNextBtn y asegúrate de que se vea así:
-
-JavaScript
-
-// En tu script.js
 
 if (confirmAndSetNextBtn) {
     confirmAndSetNextBtn.addEventListener('click', async () => {
@@ -5139,6 +5131,7 @@ if (document.readyState === 'loading') {
 //        alert("Funcionalidad 'Generar Factura (Archivo)' pendiente.");
 //    });
 //}
+
 
 
 
