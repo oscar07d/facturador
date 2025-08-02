@@ -3670,7 +3670,7 @@ textarea.input-error {
 .modal-overlay {
     position: fixed !important;
     display: flex !important;
-    opacity: 0 !important;
+    opacity: 1 !important;
     visibility: hidden !important;
     pointer-events: none !important;
 }
@@ -3729,5 +3729,6 @@ body.modal-active {
   max-height: 100vh;
   overflow-y: hidden;
 }
+
 
 
