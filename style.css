@@ -469,12 +469,15 @@
 }
 /* Estilos para Acciones en la Cabecera (Campana de Notificación) */
 .header-actions {
-    display: flex;
-    align-items: center;
+    position: absolute;
+    right: 25px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 3;
 }
 
 .btn-icon-header {
-    position: relative;
+    position: relative; /* ¡MUY IMPORTANTE! Para que el contador se posicione correctamente */
     background: none;
     border: none;
     cursor: pointer;
@@ -487,7 +490,34 @@
     width: 24px;
     height: 24px;
     filter: brightness(0) opacity(0.6);
-    transition: filter 0.2s ease;
+}
+
+.notification-badge {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    background-color: var(--danger-color);
+    color: white;
+    font-size: 10px;
+    font-weight: bold;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    display: flex; /* Se cambia a 'flex' con JavaScript para mostrarlo */
+    justify-content: center;
+    align-items: center;
+    border: 1px solid white; /* Borde para que resalte más */
+}
+
+.invoice-list-item.highlight {
+    animation: blink-animation 1s 2; /* Parpadea 2 veces */
+}
+
+@keyframes blink-animation {
+    50% {
+        background-color: #e7f1ff; /* Un azul claro */
+        box-shadow: 0 0 15px rgba(0, 123, 255, 0.5);
+    }
 }
 
 .btn-icon-header:hover .icon-svg {
@@ -3729,6 +3759,7 @@ body.modal-active {
   max-height: 100vh;
   overflow-y: hidden;
 }
+
 
 
 
