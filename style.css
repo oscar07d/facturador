@@ -2812,7 +2812,7 @@ textarea.input-error {
     z-index: 1050;
     
     /* Estado Oculto */
-    opacity: 0;
+    opacity: 1;
     visibility: hidden;
     pointer-events: none;
     transition: opacity 0.3s ease, visibility 0s linear 0.3s;
@@ -3724,7 +3724,7 @@ textarea.input-error {
     z-index: 1050;
     
     /* Estado Oculto */
-    opacity: 0;
+    opacity: 1;
     visibility: hidden;
     pointer-events: none;
     transition: opacity 0.3s ease, visibility 0s linear 0.3s;
@@ -3751,7 +3751,7 @@ textarea.input-error {
     z-index: 1050;
     
     /* Estado Oculto */
-    opacity: 0;
+    opacity: 1;
     visibility: hidden;
     pointer-events: none;
     transition: opacity 0.3s ease, visibility 0s linear 0.3s;
@@ -3796,6 +3796,7 @@ body.modal-active {
   max-height: 100vh;
   overflow-y: hidden;
 }
+
 
 
 
