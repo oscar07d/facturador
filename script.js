@@ -3046,10 +3046,9 @@ function handleDiscountChange() {
 // --- LÓGICA PARA EL MODAL DE NOTIFICACIONES ---
 
 function openNotificationsModal() {
+    loadInvoiceNotifications(); // Carga/refresca las notificaciones cada vez que se abre el modal
     const modal = document.getElementById('notificationsModal');
-    if (modal) {
-        modal.classList.add('active');
-    }
+    if (modal) modal.classList.add('active');
 }
 
 function closeNotificationsModal() {
@@ -3679,6 +3678,59 @@ async function loadAndDisplayInvoices() {
         invoiceListContainer.innerHTML = '<p class="error-message">Error al cargar las facturas.</p>';
     } finally {
         showLoading(false);
+    }
+}
+
+async function loadInvoiceNotifications() {
+    const user = auth.currentUser;
+    if (!user) return;
+
+    const list = document.getElementById('invoice-notifications-list');
+    const badge = document.getElementById('notification-badge');
+    if (!list || !badge) return;
+
+    // Buscar facturas pendientes o vencidas del usuario actual
+    const q = query(collection(db, "facturas"), 
+        where("userId", "==", user.uid),
+        where("paymentStatus", "in", ["pending", "overdue"]),
+        orderBy("invoiceDate", "desc") // Mostrar las más recientes primero
+    );
+
+    const querySnapshot = await getDocs(q);
+
+    // Limpiar la lista actual
+    list.innerHTML = '';
+
+    if (querySnapshot.empty) {
+        // Si no hay notificaciones, ocultar el contador y mostrar mensaje
+        badge.style.display = 'none';
+        badge.textContent = '0';
+        list.innerHTML = '<li class="notification-item-empty">No tienes notificaciones de facturas.</li>';
+    } else {
+        // Si hay notificaciones, mostrar y actualizar el contador
+        badge.textContent = querySnapshot.size;
+        badge.style.display = 'flex';
+
+        querySnapshot.forEach(doc => {
+            const invoice = doc.data();
+            const invoiceId = doc.id;
+            
+            const item = document.createElement('li');
+            item.className = 'notification-item-new';
+            item.dataset.invoiceId = invoiceId; // Guardamos el ID de la factura para usarlo después
+
+            const dotClass = invoice.paymentStatus === 'overdue' ? 'overdue' : 'pending';
+            const title = invoice.paymentStatus === 'overdue' ? 'Pago Vencido' : 'Pago Pendiente';
+
+            item.innerHTML = `
+                <span class="notification-dot ${dotClass}"></span>
+                <div class="notification-content">
+                    <p class="notification-title">${title}: ${invoice.client?.name || 'Cliente'}</p>
+                    <p class="notification-description">La factura ${invoice.invoiceNumberFormatted} requiere tu atención.</p>
+                </div>
+            `;
+            list.appendChild(item);
+        });
     }
 }
 // === INICIO: NUEVO CÓDIGO - Funciones para la Sección Clientes ===
@@ -4352,6 +4404,7 @@ onAuthStateChanged(auth, (user) => {
         setupThemeModalListeners();
         setupLanguageModalListeners();
         setupNotificationsModalListeners();
+        await loadInvoiceNotifications();
         
     } else {
         // --- User is signed out ---
@@ -5034,6 +5087,7 @@ if (document.readyState === 'loading') {
 //        alert("Funcionalidad 'Generar Factura (Archivo)' pendiente.");
 //    });
 //}
+
 
 
 
