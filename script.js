@@ -2471,6 +2471,13 @@ function openInvoiceDetailModal(invoiceData, invoiceId) {
                 modalConfirmBtn.style.display = 'none';
             }
         }
+
+        modalConfirmBtn.onclick = () => {
+            closeInvoiceDetailModal(); // Primero cerramos el modal actual
+            // Luego abrimos el modal de pago usando los datos que ya están guardados
+            openPaymentUpdateModal(currentInvoiceDataForModalActions, currentInvoiceIdForModalActions);
+        };
+        
         bodyElement.classList.add('modal-active');
     } else {
         console.error("invoiceDetailModal es null, no se puede activar.");
@@ -5209,6 +5216,7 @@ if (document.readyState === 'loading') {
 //        alert("Funcionalidad 'Generar Factura (Archivo)' pendiente.");
 //    });
 //}
+
 
 
 
