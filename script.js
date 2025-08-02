@@ -3682,14 +3682,19 @@ async function loadAndDisplayInvoices() {
 }
 
 async function loadInvoiceNotifications() {
+    console.log("DEBUG: Iniciando carga de notificaciones..."); // Mensaje de diagnóstico
     const user = auth.currentUser;
     if (!user) return;
 
-    const list = document.getElementById('invoice-notifications-list');
+    // --- CORRECCIÓN CLAVE AQUÍ ---
+    const list = document.getElementById('notifications-list'); // Buscando el ID correcto
     const badge = document.getElementById('notification-badge');
-    if (!list || !badge) return;
 
-    // Query Firestore for pending or overdue invoices for the current user
+    if (!list || !badge) {
+        console.error("Error: No se encontró la lista de notificaciones (#notifications-list) o el contador (#notification-badge).");
+        return;
+    }
+
     const q = query(collection(db, "facturas"), 
         where("userId", "==", user.uid),
         where("paymentStatus", "in", ["pending", "overdue"]),
@@ -3697,7 +3702,7 @@ async function loadInvoiceNotifications() {
     );
 
     const querySnapshot = await getDocs(q);
-    list.innerHTML = ''; // Clear the list
+    list.innerHTML = ''; // Limpiar el "Cargando..."
 
     if (querySnapshot.empty) {
         badge.style.display = 'none';
@@ -3710,7 +3715,7 @@ async function loadInvoiceNotifications() {
         querySnapshot.forEach(docSnap => {
             const invoice = docSnap.data();
             const invoiceId = docSnap.id;
-
+            
             const item = document.createElement('li');
             item.className = 'notification-item-new';
             item.dataset.invoiceId = invoiceId;
@@ -3724,13 +3729,12 @@ async function loadInvoiceNotifications() {
                     <p class="notification-title">${title}: ${invoice.client?.name || 'Cliente'}</p>
                     <p class="notification-description">La factura ${invoice.invoiceNumberFormatted} requiere tu atención.</p>
                 </div>
+                <span class="notification-time">...</span>
             `;
 
-            // Make the notification clickable
             item.addEventListener('click', async () => {
                 closeNotificationsModal();
                 await handleNavigation('viewInvoicesSection');
-
                 setTimeout(() => {
                     const invoiceCard = document.querySelector(`.invoice-list-item[data-invoice-id="${invoiceId}"]`);
                     if (invoiceCard) {
@@ -5152,6 +5156,7 @@ if (document.readyState === 'loading') {
 //        alert("Funcionalidad 'Generar Factura (Archivo)' pendiente.");
 //    });
 //}
+
 
 
 
