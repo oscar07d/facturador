@@ -1047,21 +1047,26 @@ const showLoading = (show) => {
         .trim();         // Quitar espacios extra al inicio o final
 }
 
-function unlockAudio() {
+async function handleFirstInteraction() {
     if (hasInteracted) return; // Solo se ejecuta una vez
+    hasInteracted = true; // Marcamos que el usuario ya interactuó
+
+    console.log("Primera interacción detectada. Desbloqueando audio y revisando notificaciones...");
+
     const sound = document.getElementById('notificationSound');
     if (sound) {
-        sound.play().then(() => {
-            sound.pause(); // Lo pausamos de inmediato, solo queríamos el permiso
-            console.log("Audio desbloqueado por interacción del usuario.");
-            hasInteracted = true;
-        }).catch(error => {
-            // Ignorar errores si el navegador no lo permite
-        });
+        // Intentamos reproducir y pausar el sonido para "desbloquearlo"
+        sound.play().then(() => sound.pause()).catch(e => {});
+    }
+
+    // ¡LA CLAVE! Ahora llamamos a la función de notificaciones aquí.
+    // Esto forzará la revisión (y el sonido) en el momento del primer clic.
+    if (typeof loadInvoiceNotifications === 'function') {
+        await loadInvoiceNotifications();
     }
 }
-// Este listener escucha el PRIMER clic en cualquier parte de la página
-document.addEventListener('click', unlockAudio, { once: true });
+// Este listener sigue escuchando el PRIMER clic en cualquier parte de la página
+document.addEventListener('click', handleFirstInteraction, { once: true });
 
 function playNotificationSound() {
     const sound = document.getElementById('notificationSound');
@@ -4474,7 +4479,6 @@ onAuthStateChanged(auth, async (user) => {
         
         handleNavigation('homeSection');
         
-        await loadInvoiceNotifications();
         // Load user preferences (photo, name, etc.)
         const profileIcon = document.querySelector('#profilePhotoBtn .icon-round');
         if (profileIcon && user.photoURL) {
@@ -5211,6 +5215,7 @@ if (document.readyState === 'loading') {
 //        alert("Funcionalidad 'Generar Factura (Archivo)' pendiente.");
 //    });
 //}
+
 
 
 
