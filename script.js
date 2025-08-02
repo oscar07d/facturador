@@ -3689,20 +3689,25 @@ async function loadInvoiceNotifications() {
     const badge = document.getElementById('notification-badge');
     if (!list || !badge) return;
 
+    // Buscar facturas pendientes o vencidas del usuario actual
     const q = query(collection(db, "facturas"), 
         where("userId", "==", user.uid),
         where("paymentStatus", "in", ["pending", "overdue"]),
-        orderBy("invoiceDate", "desc")
+        orderBy("invoiceDate", "desc") // Mostrar las más recientes primero
     );
+
     const querySnapshot = await getDocs(q);
 
+    // Limpiar la lista actual
     list.innerHTML = '';
 
     if (querySnapshot.empty) {
+        // Si no hay notificaciones, ocultar el contador y mostrar mensaje
         badge.style.display = 'none';
         badge.textContent = '0';
         list.innerHTML = '<li class="notification-item-empty">No tienes notificaciones de facturas.</li>';
     } else {
+        // Si hay notificaciones, mostrar y actualizar el contador
         badge.textContent = querySnapshot.size;
         badge.style.display = 'flex';
 
@@ -3712,7 +3717,7 @@ async function loadInvoiceNotifications() {
             
             const item = document.createElement('li');
             item.className = 'notification-item-new';
-            // Guardamos los datos para usarlos al hacer clic
+            // Guardamos el ID de la factura para usarlo después
             item.dataset.invoiceId = invoiceId;
 
             const dotClass = invoice.paymentStatus === 'overdue' ? 'overdue' : 'pending';
@@ -3728,22 +3733,23 @@ async function loadInvoiceNotifications() {
 
             // ===> ¡NUEVO! HACEMOS LA NOTIFICACIÓN CLICABLE <===
             item.addEventListener('click', async () => {
-                closeNotificationsModal(); // Cierra el panel de notificaciones
-                await handleNavigation('viewInvoicesSection'); // Navega a "Mis Facturas"
+                closeNotificationsModal(); // 1. Cierra el panel de notificaciones
+                await handleNavigation('viewInvoicesSection'); // 2. Navega a "Mis Facturas"
 
-                // Esperamos un momento para que la lista de facturas se renderice
+                // 3. Esperamos un momento para que la lista de facturas se renderice
                 setTimeout(() => {
                     const invoiceCard = document.querySelector(`.invoice-list-item[data-invoice-id="${invoiceId}"]`);
                     if (invoiceCard) {
-                        // Resaltar la tarjeta de la factura
+                        // 4. Resaltar la tarjeta de la factura
                         invoiceCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
                         invoiceCard.classList.add('highlight');
-                        setTimeout(() => invoiceCard.classList.remove('highlight'), 2000); // Quitar el resaltado después de 2 segundos
+                        // Quitar el resaltado después de 2 segundos
+                        setTimeout(() => invoiceCard.classList.remove('highlight'), 2000);
 
-                        // Abrir el modal de detalles
+                        // 5. Abrir el modal de detalles
                         openInvoiceDetailModal(invoice, invoiceId);
                     }
-                }, 500); // 500ms de espera
+                }, 500); // 500ms de espera son suficientes
             });
 
             list.appendChild(item);
@@ -3753,24 +3759,49 @@ async function loadInvoiceNotifications() {
 
 if (confirmAndSetNextBtn) {
     confirmAndSetNextBtn.addEventListener('click', async () => {
-        // ... (tu código para actualizar la factura y el cliente)
+        const newDueDate = nextDueDateInput.value;
+        if (!newDueDate) {
+            alert("Por favor, establece la próxima fecha de pago.");
+            return;
+        }
+        if (!confirm("¿Confirmas que has recibido el pago y quieres actualizar la fecha de vencimiento?")) {
+            return;
+        }
+        
+        showLoading(true);
+        // Usamos las variables globales que guardamos al abrir el modal
+        const invoiceRef = doc(db, "facturas", currentInvoiceIdForModalActions);
         
         try {
-            await updateDoc(invoiceRef, { /* ... */ });
+            // 1. Actualizar la factura
+            await updateDoc(invoiceRef, {
+                paymentStatus: "paid",
+                serviceStartDate: newDueDate
+            });
+
+            // 2. Buscar y actualizar al cliente asociado
+            const clientId = currentInvoiceDataForModalActions.client?.id;
+            
             if (clientId) {
-                await updateDoc(clientRef, { /* ... */ });
+                const clientRef = doc(db, "clientes", clientId);
+                await updateDoc(clientRef, {
+                    estadoUltimaFacturaCliente: "paid",
+                    estadoGeneralCliente: "Al día" // Actualizamos también el estado general
+                });
+            } else {
+                console.warn("No se encontró un ID de cliente en esta factura. El estado del cliente no se pudo actualizar.");
             }
 
             alert("¡Factura actualizada con éxito!");
             closePaymentUpdateModal();
 
+            // 3. Refrescar las vistas para que todo se actualice
             await loadAndDisplayInvoices(); 
-            
-            // ===> ¡NUEVO! REFRESCA LAS NOTIFICACIONES <===
-            await loadInvoiceNotifications();
+            await loadInvoiceNotifications(); // <-- Refresca las notificaciones
 
         } catch (error) {
-            // ... (manejo de errores)
+            console.error("Error al actualizar la factura o el cliente:", error);
+            alert("Hubo un error al actualizar los datos.");
         } finally {
             showLoading(false);
         }
@@ -5131,6 +5162,7 @@ if (document.readyState === 'loading') {
 //        alert("Funcionalidad 'Generar Factura (Archivo)' pendiente.");
 //    });
 //}
+
 
 
 
