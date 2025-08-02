@@ -3087,7 +3087,8 @@ function handleDiscountChange() {
 
 function openNotificationsModal() {
     // Esta función ahora solo actualiza la lista y abre el modal, sin sonido.
-    loadInvoiceNotifications(); 
+    loadInvoiceNotifications();
+    loadSystemNotifications();
     const modal = document.getElementById('notificationsModal');
     if (modal) {
         modal.classList.add('active');
@@ -3721,6 +3722,54 @@ async function loadAndDisplayInvoices() {
         invoiceListContainer.innerHTML = '<p class="error-message">Error al cargar las facturas.</p>';
     } finally {
         showLoading(false);
+    }
+}
+
+async function loadSystemNotifications() {
+    const list = document.getElementById('system-notifications-list');
+    if (!list) return;
+
+    const q = query(collection(db, "system_notifications"), orderBy("createdAt", "desc"));
+    const querySnapshot = await getDocs(q);
+
+    list.innerHTML = ''; // Clear the list
+
+    if (querySnapshot.empty) {
+        list.innerHTML = '<li class="notification-item-empty">No hay novedades del sistema.</li>';
+    } else {
+        querySnapshot.forEach((doc) => {
+            const notif = doc.data();
+            const item = document.createElement('li');
+            item.className = 'notification-item-new';
+
+            // Function to calculate time ago (you can add this as a helper function)
+            const timeAgo = (date) => {
+                const seconds = Math.floor((new Date() - date) / 1000);
+                let interval = seconds / 31536000;
+                if (interval > 1) return `hace ${Math.floor(interval)} años`;
+                interval = seconds / 2592000;
+                if (interval > 1) return `hace ${Math.floor(interval)} meses`;
+                interval = seconds / 86400;
+                if (interval > 1) return `hace ${Math.floor(interval)} días`;
+                interval = seconds / 3600;
+                if (interval > 1) return `hace ${Math.floor(interval)} horas`;
+                interval = seconds / 60;
+                if (interval > 1) return `hace ${Math.floor(interval)} minutos`;
+                return "hace unos segundos";
+            };
+            
+            const time = notif.createdAt ? timeAgo(notif.createdAt.toDate()) : '';
+
+            item.innerHTML = `
+                <span class="notification-dot system"></span>
+                <div class="notification-content">
+                    <p class="notification-title">${notif.title}</p>
+                    <p class="notification-description">${notif.description}</p>
+                </div>
+                <span class="notification-time">${time}</span>
+            `;
+            list.appendChild(item);
+        });
     }
 }
 
@@ -5215,6 +5264,7 @@ if (document.readyState === 'loading') {
 //        alert("Funcionalidad 'Generar Factura (Archivo)' pendiente.");
 //    });
 //}
+
 
 
 
