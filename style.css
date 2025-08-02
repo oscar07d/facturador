@@ -477,13 +477,11 @@
 }
 
 .btn-icon-header {
-    position: relative; /* ¡MUY IMPORTANTE! Para que el contador se posicione correctamente */
+    position: relative; /* ¡MUY IMPORTANTE! Para que el contador se posicione bien */
     background: none;
     border: none;
     cursor: pointer;
     padding: 8px;
-    display: flex;
-    align-items: center;
 }
 
 .btn-icon-header .icon-svg {
@@ -503,10 +501,10 @@
     width: 16px;
     height: 16px;
     border-radius: 50%;
-    display: flex; /* Se cambia a 'flex' con JavaScript para mostrarlo */
+    display: flex; /* Esta propiedad es la que activa el JS para mostrarlo */
     justify-content: center;
     align-items: center;
-    border: 1px solid white; /* Borde para que resalte más */
+    border: 1px solid white;
 }
 
 .invoice-list-item.highlight {
@@ -3759,6 +3757,7 @@ body.modal-active {
   max-height: 100vh;
   overflow-y: hidden;
 }
+
 
 
 
