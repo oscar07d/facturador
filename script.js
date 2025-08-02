@@ -3726,51 +3726,62 @@ async function loadAndDisplayInvoices() {
 }
 
 async function loadSystemNotifications() {
+    console.log("DEBUG: Iniciando carga de notificaciones del sistema...");
     const list = document.getElementById('system-notifications-list');
-    if (!list) return;
-
-    const q = query(collection(db, "system_notifications"), orderBy("createdAt", "desc"));
-    const querySnapshot = await getDocs(q);
-
-    list.innerHTML = ''; // Clear the list
-
-    if (querySnapshot.empty) {
-        list.innerHTML = '<li class="notification-item-empty">No hay novedades del sistema.</li>';
-    } else {
-        querySnapshot.forEach((doc) => {
-            const notif = doc.data();
-            const item = document.createElement('li');
-            item.className = 'notification-item-new';
-
-            // Function to calculate time ago (you can add this as a helper function)
-            const timeAgo = (date) => {
-                const seconds = Math.floor((new Date() - date) / 1000);
-                let interval = seconds / 31536000;
-                if (interval > 1) return `hace ${Math.floor(interval)} años`;
-                interval = seconds / 2592000;
-                if (interval > 1) return `hace ${Math.floor(interval)} meses`;
-                interval = seconds / 86400;
-                if (interval > 1) return `hace ${Math.floor(interval)} días`;
-                interval = seconds / 3600;
-                if (interval > 1) return `hace ${Math.floor(interval)} horas`;
-                interval = seconds / 60;
-                if (interval > 1) return `hace ${Math.floor(interval)} minutos`;
-                return "hace unos segundos";
-            };
-            
-            const time = notif.createdAt ? timeAgo(notif.createdAt.toDate()) : '';
-
-            item.innerHTML = `
-                <span class="notification-dot system"></span>
-                <div class="notification-content">
-                    <p class="notification-title">${notif.title}</p>
-                    <p class="notification-description">${notif.description}</p>
-                </div>
-                <span class="notification-time">${time}</span>
-            `;
-            list.appendChild(item);
-        });
+    if (!list) {
+        console.error("DEBUG: No se encontró la lista #system-notifications-list en el HTML.");
+        return;
     }
+
+    try {
+        const q = query(collection(db, "system_notifications"), orderBy("createdAt", "desc"));
+        const querySnapshot = await getDocs(q);
+
+        list.innerHTML = ''; // Limpiar la lista
+
+        if (querySnapshot.empty) {
+            console.log("DEBUG: No se encontraron notificaciones del sistema en Firestore.");
+            list.innerHTML = '<li class="notification-item-empty">No hay novedades del sistema.</li>';
+        } else {
+            console.log(`DEBUG: Se encontraron ${querySnapshot.size} notificaciones del sistema.`);
+            querySnapshot.forEach((doc) => {
+                const notif = doc.data();
+                const item = document.createElement('li');
+                item.className = 'notification-item-new';
+
+                const time = notif.createdAt ? timeAgo(notif.createdAt.toDate()) : '';
+
+                item.innerHTML = `
+                    <span class="notification-dot system"></span>
+                    <div class="notification-content">
+                        <p class="notification-title">${notif.title}</p>
+                        <p class="notification-description">${notif.description}</p>
+                    </div>
+                    <span class="notification-time">${time}</span>
+                `;
+                list.appendChild(item);
+            });
+        }
+    } catch (error) {
+        console.error("¡ERROR DE FIREBASE! No se pudieron cargar las notificaciones del sistema. Revisa tus reglas de seguridad.", error);
+        list.innerHTML = '<li class="notification-item-empty">Error al cargar las notificaciones.</li>';
+    }
+}
+
+// Función auxiliar para calcular el tiempo (si no la tienes, pégala también)
+function timeAgo(date) {
+    const seconds = Math.floor((new Date() - date) / 1000);
+    let interval = seconds / 31536000;
+    if (interval > 1) return `hace ${Math.floor(interval)} años`;
+    interval = seconds / 2592000;
+    if (interval > 1) return `hace ${Math.floor(interval)} meses`;
+    interval = seconds / 86400;
+    if (interval > 1) return `hace ${Math.floor(interval)} días`;
+    interval = seconds / 3600;
+    if (interval > 1) return `hace ${Math.floor(interval)} horas`;
+    interval = seconds / 60;
+    if (interval > 1) return `hace ${Math.floor(interval)} minutos`;
+    return "hace unos segundos";
 }
 
 async function loadInvoiceNotifications() {
@@ -5264,6 +5275,7 @@ if (document.readyState === 'loading') {
 //        alert("Funcionalidad 'Generar Factura (Archivo)' pendiente.");
 //    });
 //}
+
 
 
 
