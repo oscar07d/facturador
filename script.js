@@ -1038,7 +1038,7 @@ const showLoading = (show) => {
  * @param {string} description - La descripción completa del ítem.
  * @returns {string} - El nombre normalizado.
  */
- normalizeItemName(description) {
+ function normalizeItemName(description) {
     if (!description) return '';
     return description
         .toLowerCase() // Convertir a minúsculas
@@ -5183,6 +5183,7 @@ if (document.readyState === 'loading') {
 //        alert("Funcionalidad 'Generar Factura (Archivo)' pendiente.");
 //    });
 //}
+
 
 
 
