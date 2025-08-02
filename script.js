@@ -799,6 +799,7 @@ const translations = {
     }
 };
 
+let hasInteracted = false;
 let lastNotificationCount = 0;
 let currentInvoiceItems = [];
 let nextItemId = 0;
@@ -1045,6 +1046,22 @@ const showLoading = (show) => {
         .split('(')[0]   // Tomar solo la parte antes del primer '('
         .trim();         // Quitar espacios extra al inicio o final
 }
+
+function unlockAudio() {
+    if (hasInteracted) return; // Solo se ejecuta una vez
+    const sound = document.getElementById('notificationSound');
+    if (sound) {
+        sound.play().then(() => {
+            sound.pause(); // Lo pausamos de inmediato, solo queríamos el permiso
+            console.log("Audio desbloqueado por interacción del usuario.");
+            hasInteracted = true;
+        }).catch(error => {
+            // Ignorar errores si el navegador no lo permite
+        });
+    }
+}
+// Este listener escucha el PRIMER clic en cualquier parte de la página
+document.addEventListener('click', unlockAudio, { once: true });
 
 function playNotificationSound() {
     const sound = document.getElementById('notificationSound');
@@ -3057,7 +3074,15 @@ function handleDiscountChange() {
 // --- LÓGICA PARA EL MODAL DE NOTIFICACIONES ---
 
 function openNotificationsModal() {
-    loadInvoiceNotifications(); // Carga/refresca las notificaciones cada vez que se abre el modal
+    const badge = document.getElementById('notification-badge');
+    
+    // Solo reproduce el sonido si el contador de notificaciones es mayor que 0
+    if (badge && parseInt(badge.textContent) > 0) {
+        playNotificationSound();
+    }
+    
+    // El resto de la función se queda igual
+    loadInvoiceNotifications(); // Carga/refresca la lista
     const modal = document.getElementById('notificationsModal');
     if (modal) modal.classList.add('active');
 }
@@ -3713,6 +3738,7 @@ async function loadInvoiceNotifications() {
     );
 
     const querySnapshot = await getDocs(q);
+
 
     const newNotificationCount = querySnapshot.size;
     // Si el nuevo conteo es mayor que el anterior, reproduce el sonido
@@ -5183,6 +5209,7 @@ if (document.readyState === 'loading') {
 //        alert("Funcionalidad 'Generar Factura (Archivo)' pendiente.");
 //    });
 //}
+
 
 
 
