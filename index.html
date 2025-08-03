@@ -886,18 +886,24 @@
             </div>
         </div>
     <div id="notificationsModal" class="modal-overlay">
-        <div class="modal-content">
+        <div class="modal-content modal-notifications">
             <div class="modal-header">
                 <h2>Notificaciones</h2>
                 <button id="closeNotificationsModalBtn" class="modal-close-btn">&times;</button>
             </div>
-            <div class="modal-body notifications-body">
-                <ul id="notifications-list" class="notifications-list-new">
-                    <li class="notification-item-empty">Cargando notificaciones...</li>
-                </ul>
+            <div class="notifications-tabs">
+                <button class="tab-link active" data-tab="tab-invoices">Facturas</button>
+                <button class="tab-link" data-tab="tab-system">Sistema</button>
             </div>
-            <div class="modal-footer">
-                <button id="markAllReadBtn" class="btn btn-secondary">Marcar todas como leídas</button>
+            <div class="modal-body">
+                <div id="tab-invoices" class="tab-content active">
+                    <ul id="invoice-notifications-list" class="notifications-list">
+                        </ul>
+                </div>
+                <div id="tab-system" class="tab-content">
+                    <ul id="system-notifications-list" class="notifications-list">
+                        </ul>
+                </div>
             </div>
         </div>
     </div>
@@ -911,6 +917,7 @@
     <script type="module" src="script.js"></script>
 </body>
 </html>
+
 
 
 
