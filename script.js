@@ -3725,6 +3725,22 @@ async function loadAndDisplayInvoices() {
     }
 }
 
+// This function should be defined once, outside of other functions
+function timeAgo(date) {
+    const seconds = Math.floor((new Date() - date) / 1000);
+    let interval = seconds / 31536000;
+    if (interval > 1) return `hace ${Math.floor(interval)} años`;
+    interval = seconds / 2592000;
+    if (interval > 1) return `hace ${Math.floor(interval)} meses`;
+    interval = seconds / 86400;
+    if (interval > 1) return `hace ${Math.floor(interval)} días`;
+    interval = seconds / 3600;
+    if (interval > 1) return `hace ${Math.floor(interval)} horas`;
+    interval = seconds / 60;
+    if (interval > 1) return `hace ${Math.floor(interval)} minutos`;
+    return "hace unos segundos";
+}
+
 async function loadSystemNotifications() {
     const list = document.getElementById('system-notifications-list');
     if (!list) {
@@ -3745,22 +3761,6 @@ async function loadSystemNotifications() {
                 const notif = doc.data();
                 const item = document.createElement('li');
                 item.className = 'notification-item-new';
-
-                // Helper function to format time (add this function to your script if you don't have it)
-                const timeAgo = (date) => {
-                    const seconds = Math.floor((new Date() - date) / 1000);
-                    let interval = seconds / 31536000;
-                    if (interval > 1) return `hace ${Math.floor(interval)} años`;
-                    interval = seconds / 2592000;
-                    if (interval > 1) return `hace ${Math.floor(interval)} meses`;
-                    interval = seconds / 86400;
-                    if (interval > 1) return `hace ${Math.floor(interval)} días`;
-                    interval = seconds / 3600;
-                    if (interval > 1) return `hace ${Math.floor(interval)} horas`;
-                    interval = seconds / 60;
-                    if (interval > 1) return `hace ${Math.floor(interval)} minutos`;
-                    return "hace unos segundos";
-                };
                 
                 const time = notif.createdAt ? timeAgo(notif.createdAt.toDate()) : '';
 
@@ -3779,21 +3779,6 @@ async function loadSystemNotifications() {
         console.error("Firebase Error! Could not load system notifications. Check your security rules.", error);
         list.innerHTML = '<li class="notification-item-empty">Error al cargar notificaciones.</li>';
     }
-}
-// Función auxiliar para calcular el tiempo (si no la tienes, pégala también)
-function timeAgo(date) {
-    const seconds = Math.floor((new Date() - date) / 1000);
-    let interval = seconds / 31536000;
-    if (interval > 1) return `hace ${Math.floor(interval)} años`;
-    interval = seconds / 2592000;
-    if (interval > 1) return `hace ${Math.floor(interval)} meses`;
-    interval = seconds / 86400;
-    if (interval > 1) return `hace ${Math.floor(interval)} días`;
-    interval = seconds / 3600;
-    if (interval > 1) return `hace ${Math.floor(interval)} horas`;
-    interval = seconds / 60;
-    if (interval > 1) return `hace ${Math.floor(interval)} minutos`;
-    return "hace unos segundos";
 }
 
 async function loadInvoiceNotifications() {
@@ -5287,6 +5272,7 @@ if (document.readyState === 'loading') {
 //        alert("Funcionalidad 'Generar Factura (Archivo)' pendiente.");
 //    });
 //}
+
 
 
 
