@@ -280,6 +280,29 @@
     [data-theme="dark"] .logo-app-container {
         filter: invert(1);
     }
+
+    #themeModal .modal-content {
+        max-width: 90%; /* El modal ocupará más ancho en pantallas pequeñas */
+    }
+    
+    .theme-options {
+        flex-direction: column; /* Apila las opciones verticalmente */
+        gap: 12px; /* Reduce el espacio entre las opciones */
+    }
+    
+    .theme-option-card {
+        flex-direction: row; /* Pone el icono y el texto uno al lado del otro */
+        justify-content: flex-start; /* Alinea el contenido a la izquierda */
+        padding: 15px;
+        min-height: auto; /* Quita la altura mínima */
+    }
+    
+    .theme-option-card img {
+        width: 30px; /* Iconos más pequeños */
+        height: 30px;
+        margin-bottom: 0; /* Quita el margen inferior */
+        margin-right: 15px; /* Añade espacio a la derecha del icono */
+    }
 }
 
 /* ============================================= */
@@ -3894,6 +3917,7 @@ body.modal-active {
   max-height: 100vh;
   overflow-y: hidden;
 }
+
 
 
 
