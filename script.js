@@ -3102,32 +3102,35 @@ function closeNotificationsModal() {
 
 function setupNotificationsModalListeners() {
     const closeBtn = document.getElementById('closeNotificationsModalBtn');
-    if (closeBtn) closeBtn.addEventListener('click', closeNotificationsModal);
+    if (closeBtn) {
+        closeBtn.addEventListener('click', closeNotificationsModal);
+    }
 
     const modalOverlay = document.getElementById('notificationsModal');
     if (modalOverlay) {
         modalOverlay.addEventListener('click', (event) => {
-            // Cierra el modal solo si se hace clic en el fondo oscuro
             if (event.target === modalOverlay) {
                 closeNotificationsModal();
             }
         });
     }
 
-    // Lógica para las pestañas (Tabs)
+    // --- Tab Switching Logic ---
     const tabLinks = document.querySelectorAll('.notifications-tabs .tab-link');
     const tabContents = document.querySelectorAll('.tab-content');
 
     tabLinks.forEach(link => {
         link.addEventListener('click', () => {
-            // Quitar 'active' de todos
+            // Remove 'active' class from all tabs and content
             tabLinks.forEach(l => l.classList.remove('active'));
             tabContents.forEach(c => c.classList.remove('active'));
 
-            // Añadir 'active' al seleccionado
+            // Add 'active' class to the clicked tab and corresponding content
             link.classList.add('active');
             const targetTab = document.getElementById(link.dataset.tab);
-            if (targetTab) targetTab.classList.add('active');
+            if (targetTab) {
+                targetTab.classList.add('active');
+            }
         });
     });
 }
@@ -5272,6 +5275,7 @@ if (document.readyState === 'loading') {
 //        alert("Funcionalidad 'Generar Factura (Archivo)' pendiente.");
 //    });
 //}
+
 
 
 
