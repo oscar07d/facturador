@@ -3101,6 +3101,8 @@ function closeNotificationsModal() {
 }
 
 function setupNotificationsModalListeners() {
+    console.log("--- INICIANDO DIAGNÓSTICO DE LISTENERS DE NOTIFICACIONES ---");
+
     const closeBtn = document.getElementById('closeNotificationsModalBtn');
     if (closeBtn) {
         closeBtn.addEventListener('click', closeNotificationsModal);
@@ -3115,21 +3117,38 @@ function setupNotificationsModalListeners() {
         });
     }
 
-    // --- LÓGICA PARA LAS PESTAÑAS (TABS) ---
+    // --- Lógica para las pestañas (Tabs) ---
     const tabLinks = document.querySelectorAll('.notifications-tabs .tab-link');
     const tabContents = document.querySelectorAll('.modal-body .tab-content');
 
+    console.log(`Encontrados ${tabLinks.length} botones de pestaña (Facturas, Sistema).`);
+    console.log(`Encontrados ${tabContents.length} paneles de contenido.`);
+
+    if (tabLinks.length === 0) {
+        console.error("¡ERROR DE DIAGNÓSTICO! No se encontraron los botones de las pestañas. Revisa las clases '.notifications-tabs .tab-link' en tu HTML.");
+        return;
+    }
+
     tabLinks.forEach(link => {
+        console.log("Añadiendo listener al botón:", link.textContent.trim());
         link.addEventListener('click', () => {
-            // Quitar 'active' de todos los enlaces y contenidos
+            console.log("--- ¡CLIC DETECTADO! ---");
+            console.log("Botón presionado:", link.textContent.trim());
+            
+            const targetTabId = link.dataset.tab;
+            console.log("Intentando activar el panel con id:", targetTabId);
+
             tabLinks.forEach(l => l.classList.remove('active'));
             tabContents.forEach(c => c.classList.remove('active'));
 
-            // Añadir 'active' al enlace y contenido seleccionados
             link.classList.add('active');
-            const targetTab = document.getElementById(link.dataset.tab);
+            const targetTab = document.getElementById(targetTabId);
+            
             if (targetTab) {
                 targetTab.classList.add('active');
+                console.log("Panel activado con éxito:", targetTab);
+            } else {
+                console.error(`¡ERROR DE DIAGNÓSTICO! No se encontró el panel de contenido con id="${targetTabId}".`);
             }
         });
     });
@@ -5269,6 +5288,7 @@ if (document.readyState === 'loading') {
 //        alert("Funcionalidad 'Generar Factura (Archivo)' pendiente.");
 //    });
 //}
+
 
 
 
