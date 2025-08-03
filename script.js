@@ -3726,10 +3726,9 @@ async function loadAndDisplayInvoices() {
 }
 
 async function loadSystemNotifications() {
-    console.log("DEBUG: Iniciando carga de notificaciones del sistema...");
     const list = document.getElementById('system-notifications-list');
     if (!list) {
-        console.error("DEBUG: No se encontró la lista #system-notifications-list en el HTML.");
+        console.error("Error: Could not find the system notifications list in your HTML.");
         return;
     }
 
@@ -3737,18 +3736,32 @@ async function loadSystemNotifications() {
         const q = query(collection(db, "system_notifications"), orderBy("createdAt", "desc"));
         const querySnapshot = await getDocs(q);
 
-        list.innerHTML = ''; // Limpiar la lista
+        list.innerHTML = ''; // Clear the list
 
         if (querySnapshot.empty) {
-            console.log("DEBUG: No se encontraron notificaciones del sistema en Firestore.");
             list.innerHTML = '<li class="notification-item-empty">No hay novedades del sistema.</li>';
         } else {
-            console.log(`DEBUG: Se encontraron ${querySnapshot.size} notificaciones del sistema.`);
             querySnapshot.forEach((doc) => {
                 const notif = doc.data();
                 const item = document.createElement('li');
                 item.className = 'notification-item-new';
 
+                // Helper function to format time (add this function to your script if you don't have it)
+                const timeAgo = (date) => {
+                    const seconds = Math.floor((new Date() - date) / 1000);
+                    let interval = seconds / 31536000;
+                    if (interval > 1) return `hace ${Math.floor(interval)} años`;
+                    interval = seconds / 2592000;
+                    if (interval > 1) return `hace ${Math.floor(interval)} meses`;
+                    interval = seconds / 86400;
+                    if (interval > 1) return `hace ${Math.floor(interval)} días`;
+                    interval = seconds / 3600;
+                    if (interval > 1) return `hace ${Math.floor(interval)} horas`;
+                    interval = seconds / 60;
+                    if (interval > 1) return `hace ${Math.floor(interval)} minutos`;
+                    return "hace unos segundos";
+                };
+                
                 const time = notif.createdAt ? timeAgo(notif.createdAt.toDate()) : '';
 
                 item.innerHTML = `
@@ -3763,11 +3776,10 @@ async function loadSystemNotifications() {
             });
         }
     } catch (error) {
-        console.error("¡ERROR DE FIREBASE! No se pudieron cargar las notificaciones del sistema. Revisa tus reglas de seguridad.", error);
-        list.innerHTML = '<li class="notification-item-empty">Error al cargar las notificaciones.</li>';
+        console.error("Firebase Error! Could not load system notifications. Check your security rules.", error);
+        list.innerHTML = '<li class="notification-item-empty">Error al cargar notificaciones.</li>';
     }
 }
-
 // Función auxiliar para calcular el tiempo (si no la tienes, pégala también)
 function timeAgo(date) {
     const seconds = Math.floor((new Date() - date) / 1000);
@@ -5275,6 +5287,7 @@ if (document.readyState === 'loading') {
 //        alert("Funcionalidad 'Generar Factura (Archivo)' pendiente.");
 //    });
 //}
+
 
 
 
