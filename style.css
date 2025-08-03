@@ -416,18 +416,18 @@
     color: var(--text-color);
 }
 
-[data-theme="dark"] .theme-option-card {
-    border-color: var(--border-color);
-}
+ [data-theme="dark"] .theme-option-card {
+     border-color: var(--border-color);
+ }
 
-[data-theme="dark"] .theme-option input[type="radio"]:checked + .theme-option-card {
-    background-color: rgba(61, 157, 255, 0.15); /* Un azul oscuro traslúcido */
-    box-shadow: 0 0 10px rgba(61, 157, 255, 0.4);
-}
+ [data-theme="dark"] .theme-option inputradio:checked + .theme-option-card {
+     background-color: rgba(61, 157, 255, 0.15); /* Un azul oscuro traslúcido */
+     box-shadow: 0 0 8px rgba(61, 157, 255, 0.4);
+ }
 
-[data-theme="dark"] .theme-option-card img {
-    filter: invert(1) opacity(0.8); /* Invierte los iconos a blanco */
-}
+ [data-theme="dark"] .theme-option-card img {
+     filter: invert(1) opacity(0.8); /* Invierte los iconos a blanco */
+ }
 
 /* ============================================= */
 /* === ESTILOS PARA NOTIFICACIONES (NUEVO DISEÑO) === */
@@ -762,55 +762,64 @@
     max-width: 500px;
 }
 
-/* ============================================= */
-/* === ESTILOS MEJORADOS PARA MODAL DE TEMA === */
-/* ============================================= */
+ /* ============================================= */
+ /* === ESTILOS REFINADOS PARA MODAL DE TEMA === */
+ /* ============================================= */
 
-/* Ancho del modal */
-#themeModal .modal-content {
-    max-width: 600px;
-}
+ #themeModal .modal-content {
+     max-width: 450px; /* Reducir el ancho máximo */
+ }
 
-/* Contenedor de las opciones */
-.theme-options {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 15px;
-    margin-top: 20px;
-}
+ .theme-options {
+     display: flex; /* Usar flexbox para mejor control del alineamiento */
+     gap: 15px;
+     margin-top: 20px;
+     justify-content: center; /* Centrar las opciones horizontalmente */
+     align-items: stretch; /* Hacer que las tarjetas tengan la misma altura */
+ }
 
-/* Oculta el botón de radio por defecto */
-.theme-option input[type="radio"] {
-    display: none;
-}
+ .theme-option {
+     flex: 1; /* Distribuir el espacio disponible de forma equitativa */
+ }
 
-/* Estilo de la tarjeta de opción */
-.theme-option-card {
-    border: 2px solid var(--border-color);
-    border-radius: var(--border-radius-m);
-    padding: 20px;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
+ /* Oculta el botón de radio por defecto */
+ .theme-option inputradio {
+     display: none;
+ }
 
-.theme-option-card img {
-    width: 60px;
-    height: 60px;
-    margin-bottom: 10px;
-}
+ /* Estilo de la tarjeta de opción */
+ .theme-option-card {
+     display: flex; /* Flexbox para alinear icono y texto */
+     flex-direction: column; /* Alinear icono arriba y texto abajo */
+     justify-content: center; /* Centrar verticalmente el contenido */
+     align-items: center; /* Centrar horizontalmente el contenido */
+     border: 2px solid var(--border-color);
+     border-radius: var(--border-radius-m);
+     padding: 20px;
+     text-align: center;
+     cursor: pointer;
+     transition: all 0.2s ease;
+     min-height: 120px; /* Asegurar una altura mínima */
+ }
 
-.theme-option-card span {
-    font-weight: 500;
-    color: var(--text-color);
-}
+ .theme-option-card img {
+     width: 40px; /* Reducir el tamaño del icono */
+     height: 40px; /* Reducir el tamaño del icono */
+     margin-bottom: 8px; /* Reducir el espacio inferior */
+ }
 
-/* --- Estilos para la tarjeta SELECCIONADA --- */
-.theme-option input[type="radio"]:checked + .theme-option-card {
-    border-color: var(--primary-color);
-    background-color: #e7f1ff; /* Un azul muy claro */
-    box-shadow: 0 0 10px rgba(0, 123, 255, 0.3);
-}
+ .theme-option-card span {
+     font-weight: 500;
+     color: var(--text-color);
+     font-size: 0.9rem; /* Reducir ligeramente el tamaño del texto */
+ }
+
+ /* --- Estilos para la tarjeta SELECCIONADA --- */
+ .theme-option inputradio:checked + .theme-option-card {
+     border-color: var(--primary-color);
+     background-color: #e7f1ff; /* Un azul muy claro */
+     box-shadow: 0 0 8px rgba(0, 123, 255, 0.3);
+ }
 
 .current-info-display {
     font-size: 0.9rem;
@@ -3885,6 +3894,7 @@ body.modal-active {
   max-height: 100vh;
   overflow-y: hidden;
 }
+
 
 
 
