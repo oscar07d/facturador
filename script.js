@@ -3785,16 +3785,16 @@ async function loadSystemNotifications() {
 }
 
 async function loadInvoiceNotifications() {
-    console.log("DEBUG: Iniciando carga de notificaciones..."); // Mensaje de diagnóstico
     const user = auth.currentUser;
     if (!user) return;
 
     // --- CORRECCIÓN CLAVE AQUÍ ---
-    const list = document.getElementById('notifications-list'); // Buscando el ID correcto
+    const list = document.getElementById('invoice-notifications-list'); // Buscando el ID correcto
     const badge = document.getElementById('notification-badge');
 
     if (!list || !badge) {
-        console.error("Error: No se encontró la lista de notificaciones (#notifications-list) o el contador (#notification-badge).");
+        // Este error ya no debería aparecer
+        console.error("Error: No se encontró la lista #invoice-notifications-list o el contador #notification-badge.");
         return;
     }
 
@@ -3806,15 +3806,13 @@ async function loadInvoiceNotifications() {
 
     const querySnapshot = await getDocs(q);
 
-
     const newNotificationCount = querySnapshot.size;
-    // Si el nuevo conteo es mayor que el anterior, reproduce el sonido
     if (newNotificationCount > lastNotificationCount && hasInteracted) {
         playNotificationSound();
     }
     lastNotificationCount = newNotificationCount;
     
-    list.innerHTML = ''; // Limpiar el "Cargando..."
+    list.innerHTML = '';
 
     if (querySnapshot.empty) {
         badge.style.display = 'none';
@@ -3847,21 +3845,17 @@ async function loadInvoiceNotifications() {
             item.addEventListener('click', async () => {
                 closeNotificationsModal();
                 await handleNavigation('viewInvoicesSection');
-            
-                // Esperamos un momento para que la lista de facturas se renderice
+                
                 setTimeout(() => {
                     const invoiceCard = document.querySelector(`.invoice-list-item[data-invoice-id="${invoiceId}"]`);
                     if (invoiceCard) {
-                        // 1. Resaltar la tarjeta de la factura (esto pasa de inmediato)
                         invoiceCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
                         invoiceCard.classList.add('highlight');
-                        setTimeout(() => invoiceCard.classList.remove('highlight'), 2000); // El resaltado dura 2 segundos
-            
-                        // 2. AÑADIMOS UNA NUEVA PAUSA de 1 segundo
+                        setTimeout(() => invoiceCard.classList.remove('highlight'), 2000);
+                        
                         setTimeout(() => {
-                            // 3. Abrir el modal de detalles DESPUÉS de la pausa
                             openInvoiceDetailModal(invoice, invoiceId);
-                        }, 1000); // 1000 milisegundos = 1 segundo
+                        }, 1000);
                     }
                 }, 500);
             });
@@ -5275,6 +5269,7 @@ if (document.readyState === 'loading') {
 //        alert("Funcionalidad 'Generar Factura (Archivo)' pendiente.");
 //    });
 //}
+
 
 
 
