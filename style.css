@@ -302,7 +302,7 @@
         width: 30px; /* Iconos más pequeños */
         height: 30px;
         margin-bottom: 0; /* Quita el margen inferior */
-        margin-right: 15px; /* Añade espacio a la derecha del icono */
+        margin-right: 0px; /* Añade espacio a la derecha del icono */
     }
 }
 
@@ -3918,6 +3918,7 @@ body.modal-active {
   max-height: 100vh;
   overflow-y: hidden;
 }
+
 
 
 
