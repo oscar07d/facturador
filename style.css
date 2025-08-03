@@ -291,10 +291,11 @@
     }
     
     .theme-option-card {
-        flex-direction: row; /* Pone el icono y el texto uno al lado del otro */
-        justify-content: flex-start; /* Alinea el contenido a la izquierda */
+        flex-direction: row;          /* Pone el icono y el texto uno al lado del otro */
+        justify-content: center;      /* <-- LA CORRECCIÓN: Centra el contenido horizontalmente */
+        align-items: center;          /* Asegura que el icono y el texto estén centrados verticalmente */
         padding: 15px;
-        min-height: auto; /* Quita la altura mínima */
+        min-height: auto;
     }
     
     .theme-option-card img {
@@ -3917,6 +3918,7 @@ body.modal-active {
   max-height: 100vh;
   overflow-y: hidden;
 }
+
 
 
 
