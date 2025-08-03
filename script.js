@@ -4599,6 +4599,41 @@ onAuthStateChanged(auth, async (user) => {
     }
 });
 
+function setupNotificationsModalListeners() {
+    const closeBtn = document.getElementById('closeNotificationsModalBtn');
+    if (closeBtn) {
+        closeBtn.addEventListener('click', closeNotificationsModal);
+    }
+
+    const modalOverlay = document.getElementById('notificationsModal');
+    if (modalOverlay) {
+        modalOverlay.addEventListener('click', (event) => {
+            if (event.target === modalOverlay) {
+                closeNotificationsModal();
+            }
+        });
+    }
+
+    // --- Lógica para las pestañas (Tabs) ---
+    const tabLinks = document.querySelectorAll('.notifications-tabs .tab-link');
+    const tabContents = document.querySelectorAll('.modal-body .tab-content');
+
+    tabLinks.forEach(link => {
+        link.addEventListener('click', () => {
+            // Quitar 'active' de todos los enlaces y contenidos
+            tabLinks.forEach(l => l.classList.remove('active'));
+            tabContents.forEach(c => c.classList.remove('active'));
+
+            // Añadir 'active' al enlace y contenido seleccionados
+            link.classList.add('active');
+            const targetTab = document.getElementById(link.dataset.tab);
+            if (targetTab) {
+                targetTab.classList.add('active');
+            }
+        });
+    });
+}
+
 // 2) Handler de click en Ajustes
 document.getElementById('navProfile').addEventListener('click', (e) => {
   e.preventDefault();
@@ -5269,6 +5304,7 @@ if (document.readyState === 'loading') {
 //        alert("Funcionalidad 'Generar Factura (Archivo)' pendiente.");
 //    });
 //}
+
 
 
 
