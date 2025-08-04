@@ -1095,6 +1095,8 @@ async function loadSystemUpdates() {
     }
 }
 
+
+
 function handleRouteChange() {
     const hash = window.location.hash;
     if (hash === '#Novedades-de-Grid-Studio') {
@@ -4002,60 +4004,6 @@ function timeAgo(date) {
     return "hace unos segundos";
 }
 
-async function loadSystemNotifications() {
-    const list = document.getElementById('system-notifications-list');
-    if (!list) {
-        console.error("Error: Could not find the system notifications list in your HTML.");
-        return;
-    }
-
-    try {
-        const q = query(collection(db, "system_notifications"), orderBy("createdAt", "desc"));
-        const querySnapshot = await getDocs(q);
-
-        list.innerHTML = ''; // Limpiar la lista
-
-        // Creamos una lista temporal para las notificaciones válidas
-        const validNotifications = [];
-
-        querySnapshot.forEach((doc) => {
-            const notif = doc.data();
-            
-            // ===> LA CLAVE ESTÁ AQUÍ <===
-            // Solo procesa la notificación si no tiene fecha de expiración,
-            // o si la fecha de expiración todavía no ha pasado.
-            if (!notif.expiresAt || notif.expiresAt.toDate() > new Date()) {
-                validNotifications.push(notif);
-            }
-        });
-
-        if (validNotifications.length === 0) {
-            list.innerHTML = '<li class="notification-item-empty">No hay novedades del sistema.</li>';
-        } else {
-            validNotifications.forEach((notif) => {
-                const item = document.createElement('li');
-                item.className = 'notification-item-new';
-
-                const time = notif.createdAt ? timeAgo(notif.createdAt.toDate()) : '';
-
-                item.innerHTML = `
-                    <span class="notification-dot system"></span>
-                    <div class="notification-content">
-                        <p class="notification-title">${notif.title}</p>
-                        <p class="notification-description">${notif.description}</p>
-                    </div>
-                    <span class="notification-time">${time}</span>
-                `;
-                list.appendChild(item);
-            });
-        }
-    } catch (error) {
-        console.error("Firebase Error! Could not load system notifications. Check your security rules.", error);
-        list.innerHTML = '<li class="notification-item-empty">Error al cargar notificaciones.</li>';
-    }
-}
-
-
 if (confirmAndSetNextBtn) {
     confirmAndSetNextBtn.addEventListener('click', async () => {
         const newDueDate = nextDueDateInput.value;
@@ -5468,6 +5416,7 @@ if (document.readyState === 'loading') {
 //        alert("Funcionalidad 'Generar Factura (Archivo)' pendiente.");
 //    });
 //}
+
 
 
 
