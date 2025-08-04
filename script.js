@@ -3934,64 +3934,6 @@ async function loadSystemNotifications() {
     }
 }
 
-// This function should be defined once, outside of other functions
-function timeAgo(date) {
-    const seconds = Math.floor((new Date() - date) / 1000);
-    let interval = seconds / 31536000;
-    if (interval > 1) return `hace ${Math.floor(interval)} años`;
-    interval = seconds / 2592000;
-    if (interval > 1) return `hace ${Math.floor(interval)} meses`;
-    interval = seconds / 86400;
-    if (interval > 1) return `hace ${Math.floor(interval)} días`;
-    interval = seconds / 3600;
-    if (interval > 1) return `hace ${Math.floor(interval)} horas`;
-    interval = seconds / 60;
-    if (interval > 1) return `hace ${Math.floor(interval)} minutos`;
-    return "hace unos segundos";
-}
-
-async function loadSystemNotifications() {
-    const list = document.getElementById('system-notifications-list');
-    if (!list) {
-        console.error("Error: Could not find the system notifications list in your HTML.");
-        return;
-    }
-
-    try {
-        const q = query(collection(db, "system_notifications"), orderBy("createdAt", "desc"));
-        const querySnapshot = await getDocs(q);
-
-        list.innerHTML = ''; // Clear the list
-
-        if (querySnapshot.empty) {
-            list.innerHTML = '<li class="notification-item-empty">No hay novedades del sistema.</li>';
-        } else {
-            querySnapshot.forEach((doc) => {
-                const notif = doc.data();
-                const item = document.createElement('li');
-                item.className = 'notification-item-new';
-                
-                const time = notif.createdAt ? timeAgo(notif.createdAt.toDate()) : '';
-
-                item.innerHTML = `
-                    <span class="notification-dot system"></span>
-                    <div class="notification-content">
-                        <p class="notification-title">${notif.title}</p>
-                        <p class="notification-description">${notif.description}</p>
-                    </div>
-                    <span class="notification-time">${time}</span>
-                `;
-                list.appendChild(item);
-            });
-        }
-    } catch (error) {
-        console.error("Firebase Error! Could not load system notifications. Check your security rules.", error);
-        list.innerHTML = '<li class="notification-item-empty">Error al cargar notificaciones.</li>';
-    }
-}
-
-
-
 if (confirmAndSetNextBtn) {
     confirmAndSetNextBtn.addEventListener('click', async () => {
         const newDueDate = nextDueDateInput.value;
@@ -5404,6 +5346,7 @@ if (document.readyState === 'loading') {
 //        alert("Funcionalidad 'Generar Factura (Archivo)' pendiente.");
 //    });
 //}
+
 
 
 
