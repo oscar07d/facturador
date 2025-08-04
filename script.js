@@ -3300,124 +3300,6 @@ async function loadAllNotifications() {
             list.appendChild(item);
         });
     }
-} {
-    const user = auth.currentUser;
-    if (!user) return;
-
-    const list = document.getElementById('notifications-list');
-    const badge = document.getElementById('notification-badge');
-    if (!list || !badge) return;
-
-    // 1. Buscar notificaciones de facturas
-    const invoicesQuery = query(collection(db, "facturas"), 
-        where("userId", "==", user.uid),
-        where("paymentStatus", "in", ["pending", "overdue"])
-    );
-    // 2. Buscar notificaciones del sistema (novedades)
-    const systemQuery = query(collection(db, "system_updates"), orderBy("createdAt", "desc"));
-
-    const [invoicesSnapshot, systemSnapshot] = await Promise.all([
-        getDocs(invoicesQuery),
-        getDocs(systemQuery)
-    ]);
-
-    let allNotifications = [];
-
-    // Procesar notificaciones de facturas
-    invoicesSnapshot.forEach(docSnap => {
-        allNotifications.push({
-            type: 'invoice',
-            data: docSnap.data(),
-            id: docSnap.id,
-            date: new Date(docSnap.data().invoiceDate) // Usamos la fecha de la factura para ordenar
-        });
-    });
-
-    // Procesar notificaciones del sistema con filtro de tiempo
-    systemSnapshot.forEach(docSnap => {
-        const update = docSnap.data();
-        // Solo añade la novedad si NO tiene fecha de expiración,
-        // o si la fecha de expiración todavía no ha pasado.
-        if (!update.expiresAt || update.expiresAt.toDate() > new Date()) {
-            allNotifications.push({
-                type: 'system',
-                data: update,
-                id: docSnap.id,
-                date: update.createdAt.toDate() // Usamos la fecha de creación para ordenar
-            });
-        }
-    });
-
-    // 3. Ordenar todas las notificaciones juntas por fecha, de más nueva a más vieja
-    allNotifications.sort((a, b) => b.date - a.date);
-
-    // 4. Renderizar la lista unificada
-    list.innerHTML = '';
-    const invoiceNotifCount = invoicesSnapshot.size;
-
-    if (invoiceNotifCount > 0) {
-        badge.textContent = invoiceNotifCount;
-        badge.style.display = 'flex';
-    } else {
-        badge.style.display = 'none';
-        badge.textContent = '0';
-    }
-
-    if (allNotifications.length === 0) {
-        list.innerHTML = '<li class="notification-item-empty">No tienes notificaciones.</li>';
-    } else {
-        allNotifications.forEach(notification => {
-            const item = document.createElement('li');
-            item.className = 'notification-item-new';
-
-            if (notification.type === 'invoice') {
-                // Renderizar notificación de factura
-                const invoice = notification.data;
-                const dotClass = invoice.paymentStatus === 'overdue' ? 'overdue' : 'pending';
-                const title = invoice.paymentStatus === 'overdue' ? 'Pago Vencido' : 'Pago Pendiente';
-                item.dataset.invoiceId = notification.id;
-                
-                item.innerHTML = `
-                    <span class="notification-dot ${dotClass}"></span>
-                    <div class="notification-content">
-                        <p class="notification-title">${title}: ${invoice.client?.name || 'Cliente'}</p>
-                        <p class="notification-description">La factura ${invoice.invoiceNumberFormatted} requiere tu atención.</p>
-                    </div>
-                    <span class="notification-time">${timeAgo(notification.date)}</span>
-                `;
-                
-                item.addEventListener('click', () => {
-                    closeNotificationsModal();
-                    handleNavigation('viewInvoicesSection');
-                    setTimeout(() => {
-                        const invoiceCard = document.querySelector(`.invoice-list-item[data-invoice-id="${notification.id}"]`);
-                        if (invoiceCard) {
-                            invoiceCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                            invoiceCard.classList.add('highlight');
-                            setTimeout(() => invoiceCard.classList.remove('highlight'), 2000);
-                            
-                            setTimeout(() => {
-                                openInvoiceDetailModal(invoice, notification.id);
-                            }, 1000);
-                        }
-                    }, 500);
-                });
-
-            } else { // type === 'system'
-                // Renderizar notificación del sistema
-                const update = notification.data;
-                item.innerHTML = `
-                    <span class="notification-dot system"></span>
-                    <div class="notification-content">
-                        <p class="notification-title">${update.title}</p>
-                        <p class="notification-description">${update.content.replace(/\n/g, '<br>')}</p>
-                    </div>
-                    <span class="notification-time">${timeAgo(notification.date)}</span>
-                `;
-            }
-            list.appendChild(item);
-        });
-    }
 }
 
 // Esta función COMPLETA reemplaza la que puedas tener actualmente con el mismo nombre
@@ -5573,6 +5455,7 @@ if (document.readyState === 'loading') {
 //        alert("Funcionalidad 'Generar Factura (Archivo)' pendiente.");
 //    });
 //}
+
 
 
 
