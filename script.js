@@ -1097,14 +1097,15 @@ async function loadSystemUpdates() {
 
 function handleRouteChange() {
     const hash = window.location.hash;
-    // Show the updates section if the hash matches
     if (hash === '#Novedades-de-Grid-Studio') {
         handleNavigation('updatesSection');
+    } else {
+        // Default to home if the hash is unknown or empty
+        handleNavigation('homeSection');
     }
-    // Add other routes here in the future if needed
 }
 
-// Listen for hash changes to navigate between "pages"
+// Listen for hash changes
 window.addEventListener('hashchange', handleRouteChange);
 
 function playNotificationSound() {
@@ -3648,13 +3649,10 @@ async function handleNavigation(sectionToShowId) {
     }
 
     if (sectionToShowId === 'updatesSection') {
-        targetTitle = "Actualizaciones del Sistema";
+        targetTitle = "Novedades del Sistema";
         await loadSystemUpdates();
     } else if (sectionToShowId === 'homeSection') {
-        // When going to other sections, clear the hash
-        if (window.location.hash) {
-            window.history.pushState("", document.title, window.location.pathname + window.location.search);
-        }
+        window.location.hash = ''; // Clear the hash when going home
         targetTitle = "Inicio y Estadísticas";
         await loadDashboardData();
     }
@@ -5348,6 +5346,7 @@ if (document.readyState === 'loading') {
 //        alert("Funcionalidad 'Generar Factura (Archivo)' pendiente.");
 //    });
 //}
+
 
 
 
