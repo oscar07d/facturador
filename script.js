@@ -4013,16 +4013,29 @@ async function loadSystemNotifications() {
         const q = query(collection(db, "system_notifications"), orderBy("createdAt", "desc"));
         const querySnapshot = await getDocs(q);
 
-        list.innerHTML = ''; // Clear the list
+        list.innerHTML = ''; // Limpiar la lista
 
-        if (querySnapshot.empty) {
+        // Creamos una lista temporal para las notificaciones válidas
+        const validNotifications = [];
+
+        querySnapshot.forEach((doc) => {
+            const notif = doc.data();
+            
+            // ===> LA CLAVE ESTÁ AQUÍ <===
+            // Solo procesa la notificación si no tiene fecha de expiración,
+            // o si la fecha de expiración todavía no ha pasado.
+            if (!notif.expiresAt || notif.expiresAt.toDate() > new Date()) {
+                validNotifications.push(notif);
+            }
+        });
+
+        if (validNotifications.length === 0) {
             list.innerHTML = '<li class="notification-item-empty">No hay novedades del sistema.</li>';
         } else {
-            querySnapshot.forEach((doc) => {
-                const notif = doc.data();
+            validNotifications.forEach((notif) => {
                 const item = document.createElement('li');
                 item.className = 'notification-item-new';
-                
+
                 const time = notif.createdAt ? timeAgo(notif.createdAt.toDate()) : '';
 
                 item.innerHTML = `
@@ -5455,6 +5468,7 @@ if (document.readyState === 'loading') {
 //        alert("Funcionalidad 'Generar Factura (Archivo)' pendiente.");
 //    });
 //}
+
 
 
 
