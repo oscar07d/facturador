@@ -4650,6 +4650,13 @@ onAuthStateChanged(auth, async (user) => {
         if (profileNotificationsBtn) {
             profileNotificationsBtn.addEventListener('click', openNotificationsModal);
         }
+
+        const profileUpdatesBtn = document.getElementById('profileUpdatesBtn');
+        if (profileUpdatesBtn) {
+            profileUpdatesBtn.addEventListener('click', () => {
+                window.location.hash = '#Novedades-de-Grid-Studio';
+            });
+        }
         
         // Setup for buttons INSIDE the modals
         setupEditNameModalListeners();
@@ -4657,6 +4664,7 @@ onAuthStateChanged(auth, async (user) => {
         setupThemeModalListeners();
         setupLanguageModalListeners();
         setupNotificationsModalListeners();
+        handleRouteChange();
         
         
     } else {
@@ -5340,6 +5348,7 @@ if (document.readyState === 'loading') {
 //        alert("Funcionalidad 'Generar Factura (Archivo)' pendiente.");
 //    });
 //}
+
 
 
 
