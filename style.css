@@ -277,6 +277,38 @@
 
 /* Mobile Navigation */
 @media (max-width: 768px) {
+
+    /* === ESTILOS PARA MODAL DE NOTIFICACIONES EN MÓVIL === */
+#notificationsModal .modal-content {
+    width: 95%; /* El modal ocupará casi todo el ancho */
+    max-width: 95%;
+    max-height: 80vh; /* Aumentamos la altura máxima permitida */
+    top: 0; /* Lo movemos de la esquina al centro */
+    right: 0;
+    position: relative; /* Anulamos el posicionamiento fijo en móvil */
+    transform: none !important; /* Quitamos la animación de entrada para un look más nativo */
+}
+
+.notification-item-new {
+    padding: 12px 15px; /* Reducimos el padding */
+    gap: 12px; /* Reducimos el espacio */
+}
+
+.notification-title {
+    font-size: 0.95rem; /* Título un poco más pequeño */
+}
+
+.notification-description {
+    font-size: 0.85rem; /* Descripción un poco más pequeña */
+}
+
+.notification-time {
+    font-size: 0.75rem;
+    padding-left: 10px;
+    text-align: right; /* Alineamos la hora a la derecha */
+    min-width: 70px; /* Ancho mínimo para que no se desordene */
+}
+
     [data-theme="dark"] .logo-app-container {
         filter: invert(1);
     }
@@ -3938,6 +3970,7 @@ body.modal-active {
   max-height: 100vh;
   overflow-y: hidden;
 }
+
 
 
 
