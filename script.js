@@ -1068,6 +1068,45 @@ async function handleFirstInteraction() {
 // Este listener sigue escuchando el PRIMER clic en cualquier parte de la página
 document.addEventListener('click', handleFirstInteraction, { once: true });
 
+async function loadSystemUpdates() {
+    const contentDiv = document.getElementById('updates-content');
+    if (!contentDiv) return;
+
+    contentDiv.innerHTML = '<p>Cargando novedades...</p>';
+    const q = query(collection(db, "system_updates"), orderBy("createdAt", "desc"));
+    const querySnapshot = await getDocs(q);
+
+    if (querySnapshot.empty) {
+        contentDiv.innerHTML = '<p>No hay novedades para mostrar.</p>';
+    } else {
+        let html = '';
+        querySnapshot.forEach(doc => {
+            const update = doc.data();
+            const date = update.createdAt.toDate().toLocaleDateString('es-CO', { year: 'numeric', month: 'long', day: 'numeric' });
+            html += `
+                <div class="update-card">
+                    <h3>${update.title}</h3>
+                    <small>Publicado el ${date}</small>
+                    <div class="update-body">${update.content.replace(/\n/g, '<br>')}</div>
+                </div>
+            `;
+        });
+        contentDiv.innerHTML = html;
+    }
+}
+
+function handleRouteChange() {
+    const hash = window.location.hash;
+    // Show the updates section if the hash matches
+    if (hash === '#Novedades-de-Grid-Studio') {
+        handleNavigation('updatesSection');
+    }
+    // Add other routes here in the future if needed
+}
+
+// Listen for hash changes to navigate between "pages"
+window.addEventListener('hashchange', handleRouteChange);
+
 function playNotificationSound() {
     const sound = document.getElementById('notificationSound');
     if (sound) {
@@ -3476,7 +3515,8 @@ async function handleNavigation(sectionToShowId) {
       createInvoiceSection,
       viewInvoicesSection,
       clientsSection,
-      profileSection
+      profileSection,
+      updatesSection
     ];
     const navLinks = [
       navHome,
@@ -3605,6 +3645,18 @@ async function handleNavigation(sectionToShowId) {
       targetTitle = "Mi Cuenta";
       // Aquí dentro pon cualquier inicialización de esa sección.
       // Ejemplo: cargar logo guardado, listeners para subir logo/QR, etc.
+    }
+
+    if (sectionToShowId === 'updatesSection') {
+        targetTitle = "Actualizaciones del Sistema";
+        await loadSystemUpdates();
+    } else if (sectionToShowId === 'homeSection') {
+        // When going to other sections, clear the hash
+        if (window.location.hash) {
+            window.history.pushState("", document.title, window.location.pathname + window.location.search);
+        }
+        targetTitle = "Inicio y Estadísticas";
+        await loadDashboardData();
     }
     
     if (appPageTitle) appPageTitle.textContent = targetTitle;
@@ -5288,6 +5340,7 @@ if (document.readyState === 'loading') {
 //        alert("Funcionalidad 'Generar Factura (Archivo)' pendiente.");
 //    });
 //}
+
 
 
 
