@@ -135,6 +135,11 @@
                 </nav>
 
             <main class="invoice-app-container">
+            <section id="updatesSection" class="invoice-section" style="display: none;">
+                <h2>Novedades de Grid Studio</h2>
+                <div id="updates-content">
+                    </div>
+            </section>
             <section id="profileSection" style="display:none;">
                 <header class="profile-header">
                     <h2 data-translate-key="profileHeader">Mi Cuenta</h2>
@@ -222,13 +227,13 @@
                             </button>
                         </li>
                         <li>
-                            <button class="profile-item">
+                            <button id="profileUpdatesBtn" class="profile-item">
                                 <div class="icon-round">
-                                    <img src="img/shield-icon.svg" alt="Seguridad">
+                                    <img src="img/updates-icon.svg" alt="Actualizaciones">
                                 </div>
                                 <div>
-                                    <span data-translate-key="profileSecurity">Seguridad de la cuenta</span>
-                                    <small data-translate-key="profileSecurityDesc">Ajustes de seguridad</small>
+                                    <span>Actualizaciones del Sistema</span>
+                                    <small>Ver las últimas novedades</small>
                                 </div>
                                 <span class="chevron">›</span>
                             </button>
@@ -917,6 +922,7 @@
     <script type="module" src="script.js"></script>
 </body>
 </html>
+
 
 
 
