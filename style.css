@@ -636,6 +636,26 @@
 /* === ESTILOS PARA SECCIÓN MI CUENTA (NUEVO) === */
 /* ===================================== */
 
+.update-card {
+    background-color: var(--container-background);
+    border-radius: var(--border-radius-m);
+    padding: 20px 25px;
+    margin-bottom: 20px;
+    box-shadow: var(--box-shadow-light);
+}
+.update-card h3 {
+    margin-top: 0;
+    color: var(--primary-color);
+}
+.update-card small {
+    display: block;
+    color: var(--text-muted-color);
+    margin-bottom: 15px;
+}
+.update-body {
+    line-height: 1.7;
+}
+
 #profileSection {
     background-color: #f8f9fa; /* Un fondo gris claro para la sección */
     padding: 0;
@@ -3918,6 +3938,7 @@ body.modal-active {
   max-height: 100vh;
   overflow-y: hidden;
 }
+
 
 
 
