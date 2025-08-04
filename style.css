@@ -639,8 +639,8 @@
 .update-card {
     background-color: var(--container-background);
     border-radius: var(--border-radius-m);
-    padding: 20px 25px;
-    margin-bottom: 20px;
+    padding: 20px;
+    margin-bottom: 15px;
     box-shadow: var(--box-shadow-light);
 }
 .update-card h3 {
@@ -3938,6 +3938,7 @@ body.modal-active {
   max-height: 100vh;
   overflow-y: hidden;
 }
+
 
 
 
