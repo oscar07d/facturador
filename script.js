@@ -3807,14 +3807,12 @@ async function loadAndDisplayInvoices() {
             // Revisa si una factura pagada con fecha de servicio ya se venció
             if (invoice.paymentStatus === 'paid' && invoice.serviceStartDate) {
                 const dueDate = new Date(invoice.serviceStartDate + 'T00:00:00');
-                if (today > dueDate) {
-                    // Actualiza el objeto local para que la UI se muestre bien al instante
+              if (today >= dueDate) { 
                     invoice.paymentStatus = 'overdue'; 
-                    // Añade la actualización a la base de datos al lote
                     const invoiceRef = doc(db, "facturas", invoice.id);
                     batch.update(invoiceRef, { paymentStatus: "overdue" });
                     updatesMade = true;
-                }
+              }
             }
             allInvoices.push(invoice);
         });
@@ -5469,6 +5467,7 @@ if (document.readyState === 'loading') {
 //        alert("Funcionalidad 'Generar Factura (Archivo)' pendiente.");
 //    });
 //}
+
 
 
 
