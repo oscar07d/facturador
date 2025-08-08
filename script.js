@@ -284,7 +284,7 @@ const translations = {
     es: {
         // --- General & Common Words ---
         optional: "(Opcional)",
-        loading: "Procesando...",
+        loading: "Cargando...",
         cancel: "Cancelar",
         close: "Cerrar",
         saveChanges: "Guardar Cambios",
@@ -542,7 +542,7 @@ const translations = {
     en: {
         // --- General & Common Words ---
         optional: "(Optional)",
-        loading: "Processing...",
+        loading: "Loading...",
         cancel: "Cancel",
         close: "Close",
         saveChanges: "Save Changes",
@@ -5469,6 +5469,7 @@ if (document.readyState === 'loading') {
 //        alert("Funcionalidad 'Generar Factura (Archivo)' pendiente.");
 //    });
 //}
+
 
 
 
