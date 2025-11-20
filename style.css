@@ -104,6 +104,234 @@
     --reminder-width: 580px;
 }
 
+/* === LOGIN EMAIL / PASSWORD === */
+
+.email-login-box {
+    width: 100%;
+    margin-top: 25px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.email-login-box input {
+    width: 100%;
+    padding: 12px 15px;
+    font-size: 15px;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    background: var(--container-background);
+    color: var(--text-color);
+    outline: none;
+}
+
+.email-login-box input:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(0,123,255,0.2);
+}
+
+#emailLoginBtn {
+    padding: 12px;
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    transition: 0.2s;
+}
+
+#emailLoginBtn:hover {
+    background: var(--primary-hover-color);
+}
+
+.register-text {
+    margin-top: 5px;
+    font-size: 14px;
+    color: var(--text-muted-color);
+}
+
+#openRegisterBtn {
+    color: var(--primary-color);
+    cursor: pointer;
+    font-weight: 600;
+}
+
+/* === REGISTRO (MODAL) === */
+
+#registerModal .modal-content {
+    width: 90%;
+    max-width: 380px;
+    background: var(--container-background);
+    padding: 25px;
+    border-radius: 18px;
+    box-shadow: var(--box-shadow-medium);
+    text-align: center;
+}
+
+#registerModal h2 {
+    margin-bottom: 15px;
+    color: var(--text-color);
+}
+
+#registerEmail,
+#registerPassword {
+    width: 100%;
+    padding: 12px 15px;
+    font-size: 15px;
+    margin-bottom: 12px;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    background: var(--container-background);
+    color: var(--text-color);
+}
+
+#registerEmail:focus,
+#registerPassword:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(0,123,255,0.2);
+}
+
+#registerUserBtn {
+    width: 100%;
+    padding: 12px;
+    background: var(--primary-color);
+    color: white;
+    font-weight: 600;
+    border-radius: 12px;
+    cursor: pointer;
+    border: none;
+    margin-top: 5px;
+    transition: 0.2s;
+}
+
+#registerUserBtn:hover {
+    background: var(--primary-hover-color);
+}
+
+#closeRegisterModal {
+    width: 100%;
+    margin-top: 10px;
+    padding: 12px;
+    background: var(--danger-color);
+    color: white;
+    font-weight: 600;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+#closeRegisterModal:hover {
+    background: #b51f1f;
+}
+
+/* === BOTÓN INSTALAR APP (PWA) === */
+
+.install-app-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 20px;
+    padding: 12px 18px;
+    font-size: 15px;
+    font-weight: 600;
+    background: var(--primary-color);
+    color: white; /* <- SVG heredará este color */
+    border: none;
+    border-radius: 14px;
+    cursor: pointer;
+    box-shadow: var(--box-shadow-light);
+    transition: all 0.2s ease;
+}
+
+.install-app-btn:hover {
+    background: var(--primary-hover-color);
+    transform: translateY(-2px);
+}
+
+.install-app-icon svg {
+    width: 20px;
+    height: 20px;
+    fill: currentColor;
+    stroke: currentColor;
+}
+
+[data-theme="dark"] .install-app-btn {
+    background: var(--primary-color);
+    color: white;
+}
+
+/* Texto "Olvidé mi contraseña" */
+.forgot-password-text {
+    margin-top: 5px;
+    font-size: 14px;
+    text-align: center; /* ← centrado */
+}
+
+#openForgotPassword {
+    color: var(--primary-color);
+    cursor: pointer;
+    font-weight: 600;
+}
+
+/* === MODAL RECUPERAR CONTRASEÑA === */
+
+#forgotPasswordModal .modal-content {
+    width: 90%;
+    max-width: 380px;
+    background: var(--container-background);
+    padding: 25px;
+    border-radius: 18px;
+    box-shadow: var(--box-shadow-medium);
+    text-align: center;
+}
+
+#forgotPasswordModal input {
+    width: 100%;
+    padding: 12px 15px;
+    margin-bottom: 12px;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    background: var(--container-background);
+    color: var(--text-color);
+}
+
+#forgotPasswordModal input:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(0,123,255,0.2);
+}
+
+#sendResetLinkBtn {
+    width: 100%;
+    padding: 12px;
+    background: var(--primary-color);
+    color: white;
+    font-weight: 600;
+    border-radius: 12px;
+    cursor: pointer;
+    border: none;
+    transition: 0.2s;
+}
+
+#sendResetLinkBtn:hover {
+    background: var(--primary-hover-color);
+}
+
+#closeForgotPasswordModal {
+    width: 100%;
+    margin-top: 10px;
+    padding: 12px;
+    background: var(--danger-color);
+    color: white;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+}
+
+
 /* ============================================= */
 /* === DARK THEME STYLES (FINAL VERSION) === */
 /* ============================================= */
@@ -3970,19 +4198,3 @@ body.modal-active {
   max-height: 100vh;
   overflow-y: hidden;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
