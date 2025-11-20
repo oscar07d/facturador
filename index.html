@@ -5,15 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistema de Facturas</title>
     <link rel="stylesheet" href="style.css"> <link rel="icon" href="img/isologo_icon_page.svg" type="image/svg+xml">
-    <script src="https://www.google.com/recaptcha/enterprise.js?render=6LfPTxIsAAAAAC5phzDtaF88s9slZENHhU_HhlAP"></script>
-    <script>
-    function onClick(e) {
-        e.preventDefault();
-        grecaptcha.enterprise.ready(async () => {
-        const token = await grecaptcha.enterprise.execute('6LfPTxIsAAAAAC5phzDtaF88s9slZENHhU_HhlAP', {action: 'LOGIN'});
-        });
-    }
-    </script>
     <script>
       (function() {
         try {
@@ -972,3 +963,4 @@
     <script type="module" src="script.js"></script>
 </body>
 </html>
+
