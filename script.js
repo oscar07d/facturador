@@ -11,7 +11,10 @@ import {
     updateEmail, 
     EmailAuthProvider,
     reauthenticateWithCredential,
-    reauthenticateWithPopup
+    reauthenticateWithPopup,
+    createUserWithEmailAndPassword,
+    signInWithEmailAndPassword,
+    sendPasswordResetEmail
 } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
 import { 
     getFirestore,
@@ -260,6 +263,9 @@ const invoiceSearchBtn = document.getElementById('invoiceSearchBtn');
 
 const generateInvoiceFileBtn = document.getElementById('generateInvoiceFileBtn');
 
+const email = document.getElementById("registerEmail").value.trim();
+const pass = document.getElementById("registerPassword").value.trim();
+
 // --- Variables Globales ---
 const paymentStatusDetails = {
     pending: { text: "Pendiente", description: "La factura ha sido emitida y enviada al cliente, pero aún no se ha recibido el pago. El plazo de vencimiento todavía no ha llegado.", action: "Monitoreo regular, envío de recordatorios amigables antes de la fecha de vencimiento." },
@@ -278,6 +284,142 @@ const paymentStatusDetails = {
     inactivo: { text: "Inactivo", description: "Cliente marcado como inactivo o eliminado.", action: "Archivar o revisar." }, // Para estadoGeneralCliente
     'n/a': { text: "N/A", description: "No aplica o sin información.", action: "Verificar datos."} // Para estadoUltimaFacturaCliente
 };
+
+document.getElementById("registerUserBtn").addEventListener("click", async () => {
+    const email = document.getElementById("registerEmail").value.trim();
+    const pass = document.getElementById("registerPassword").value.trim();
+
+    if (!email || !pass) {
+        alert("Debes llenar todos los campos.");
+        return;
+    }
+
+    try {
+        await createUserWithEmailAndPassword(auth, email, pass);
+        alert("Cuenta creada con éxito");
+        document.getElementById("registerModal").classList.remove("active");
+
+    } catch (err) {
+        console.error(err);
+
+        if (err.code === "auth/email-already-in-use") {
+            alert("Este correo ya está registrado. Intenta iniciar sesión.");
+            return;
+        }
+
+        if (err.code === "auth/invalid-email") {
+            alert("El correo ingresado no es válido.");
+            return;
+        }
+
+        if (err.code === "auth/weak-password") {
+            alert("La contraseña debe tener al menos 6 caracteres.");
+            return;
+        }
+
+        if (err.code === "auth/missing-email") {
+            alert("Debes ingresar un correo.");
+            return;
+        }
+
+        if (err.code === "auth/missing-password") {
+            alert("Debes ingresar una contraseña.");
+            return;
+        }
+
+        alert("Error: " + err.message);
+    }
+});
+
+
+
+document.getElementById("emailLoginBtn").addEventListener("click", async () => {
+    const email = document.getElementById("emailInput").value;
+    const pass = document.getElementById("passwordInput").value;
+
+    try {
+        await signInWithEmailAndPassword(auth, email, pass);
+        console.log("Sesión iniciada");
+    } catch (err) {
+        alert("Error: " + err.message);
+    }
+});
+
+document.getElementById("openRegisterBtn").onclick = () => {
+    document.getElementById("registerModal").classList.add("active");
+};
+
+document.getElementById("closeRegisterModal").onclick = () => {
+    document.getElementById("registerModal").classList.remove("active");
+};
+
+if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("sw.js")
+        .then(() => console.log("SW registrado"))
+        .catch(err => console.log("SW error:", err));
+}
+
+let deferredPrompt;
+
+window.addEventListener("beforeinstallprompt", (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+
+    const installBtn = document.getElementById("installAppBtn");
+    installBtn.style.display = "block";
+
+    installBtn.onclick = async () => {
+        installBtn.style.display = "none";
+        deferredPrompt.prompt();
+        const result = await deferredPrompt.userChoice;
+        console.log("Resultado instalación:", result);
+        deferredPrompt = null;
+    };
+});
+
+// ABRIR MODAL DE RECUPERAR CONTRASEÑA
+document.getElementById("openForgotPassword").onclick = () => {
+    document.getElementById("forgotPasswordModal").classList.add("active");
+};
+
+// CERRAR MODAL
+document.getElementById("closeForgotPasswordModal").onclick = () => {
+    document.getElementById("forgotPasswordModal").classList.remove("active");
+};
+
+// ENVIAR CORREO DE RESET
+document.getElementById("sendResetLinkBtn").addEventListener("click", async () => {
+    const email = document.getElementById("forgotEmailInput").value.trim();
+
+    if (!email) {
+        alert("Debes ingresar un correo.");
+        return;
+    }
+
+    try {
+        await sendPasswordResetEmail(auth, email);
+        alert("Te enviamos un enlace para recuperar tu contraseña.");
+        document.getElementById("forgotPasswordModal").classList.remove("active");
+
+    } catch (err) {
+        console.error(err);
+
+        if (err.code === "auth/user-not-found") {
+            alert("No existe ninguna cuenta con ese correo.");
+            return;
+        }
+
+        if (err.code === "auth/invalid-email") {
+            alert("El correo no es válido.");
+            return;
+        }
+
+        alert("Error: " + err.message);
+    }
+});
+
+
+
 
 // --- DICCIONARIO COMPLETO DE TRADUCCIONES ---
 const translations = {
@@ -5467,48 +5609,3 @@ if (document.readyState === 'loading') {
 //        alert("Funcionalidad 'Generar Factura (Archivo)' pendiente.");
 //    });
 //}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
