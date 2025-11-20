@@ -1,0 +1,15 @@
+{
+  "name": "Grid Studio - Facturador",
+  "short_name": "Facturador",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#007bff",
+  "icons": [
+    {
+      "src": "img/isologo_icon_page.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml"
+    }
+  ]
+}
