@@ -353,10 +353,13 @@ document.getElementById("closeRegisterModal").onclick = () => {
     document.getElementById("registerModal").classList.remove("active");
 };
 
-if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("sw.js")
-        .then(() => console.log("SW registrado"))
-        .catch(err => console.log("SW error:", err));
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        // Usa la ruta absoluta de GitHub Pages si falla el registro con /sw.js
+        navigator.serviceWorker.register('/facturador/sw.js') 
+            .then(reg => console.log('SW Registrado: ', reg.scope))
+            .catch(err => console.log('Registro de SW Fallido: ', err));
+    });
 }
 
 let deferredPrompt;
@@ -5609,3 +5612,4 @@ if (document.readyState === 'loading') {
 //        alert("Funcionalidad 'Generar Factura (Archivo)' pendiente.");
 //    });
 //}
+
