@@ -1,8 +1,7 @@
 {
   "name": "Grid Studio - Facturador",
   "short_name": "Facturador",
-  
-  // *** CAMBIO CRUCIAL: Apuntar a la subcarpeta ***
+
   "start_url": "/facturador/",
   "scope": "/facturador/",
   
@@ -28,3 +27,4 @@
     }
   ]
 }
+
