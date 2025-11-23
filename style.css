@@ -102,6 +102,8 @@
     --reminder-default-bg-pill: #e2e8f0;
     --reminder-default-text-pill: #4a5568;
     --reminder-width: 580px;
+    --text-color-light: #666;
+    --border-color: #ccc;
 }
 
 /* === LOGIN EMAIL / PASSWORD === */
@@ -152,10 +154,15 @@
     color: var(--text-muted-color);
 }
 
+/* Atacamos el SPAN directamente con su ID para máxima especificidad */
 #openRegisterBtn {
     color: var(--primary-color);
     cursor: pointer;
     font-weight: 600;
+}
+
+[data-theme="dark"] #openRegisterBtn {
+    color: var(--primary-color); /* Debería ser suficiente */
 }
 
 /* === REGISTRO (MODAL) === */
@@ -238,13 +245,18 @@
     font-size: 15px;
     font-weight: 600;
     background: var(--primary-color);
-    color: white; /* <- SVG heredará este color */
+    color: white; 
     border: none;
     border-radius: 14px;
     cursor: pointer;
     box-shadow: var(--box-shadow-light);
     transition: all 0.2s ease;
 }
+
+/* 
+ * ESTO ES LO QUE NECESITAS AÑADIR/MODIFICAR 
+ * para asegurar que el párrafo no tenga márgenes.
+*/
 
 .install-app-btn:hover {
     background: var(--primary-hover-color);
@@ -258,9 +270,67 @@
     stroke: currentColor;
 }
 
+.install-app-icon svg {
+    vertical-align: middle; /* Fuerza la alineación al medio vertical del contenedor */
+}
+
+.install-app-btn p, /* o .install-app-btn span[data-translate-key] */
+.install-app-btn span { 
+    margin: 0; 
+    line-height: 1; /* Esto también ayuda a veces */
+    transform: translateY(-1px); /* <-- EL MICRO-AJUSTE MANUAL */
+}
+
 [data-theme="dark"] .install-app-btn {
     background: var(--primary-color);
     color: white;
+}
+
+[data-theme="dark"] .install-app-btn p,
+[data-theme="dark"] .install-app-btn span[data-translate-key] {
+    color: white !important; /* El !important es solo para asegurar, pero es mejor evitarlo */
+    color: white; /* Intenta solo esto primero */
+}
+
+[data-theme="dark"] .install-app-icon svg {
+    fill: white;
+    stroke: white;
+}
+
+/* Contenedor Flexbox para el divisor */
+.divider-text-container {
+    display: flex;
+    align-items: center;
+    margin: 0px 0 30px 0; /* Ajusta los márgenes a tu gusto */
+    width: 100%;
+    color: #aaa; /* Color del texto 'o' */
+    font-size: 14px;
+}
+
+/* Pseudo-elementos que crean las líneas */
+.divider-text-container::before,
+.divider-text-container::after {
+    content: '';
+    flex-grow: 1;
+    border-top: 1px solid #666; /* Color de línea sutil */
+    margin-top: 0.5em; /* Ajuste vertical */
+    background-color: transparent;
+}
+
+/* Espaciado alrededor de la 'o' */
+.divider-text {
+    padding: 0 15px;
+    margin: 0;
+}
+
+/* Ajustes para modo claro (si lo usas) */
+[data-theme="light"] .divider-text-container {
+    color: #666; /* Gris oscuro para la 'o' */
+}
+
+[data-theme="light"] .divider-text-container::before,
+[data-theme="light"] .divider-text-container::after {
+    background-color: #ccc; /* Gris claro para las líneas */
 }
 
 /* Texto "Olvidé mi contraseña" */
@@ -331,6 +401,270 @@
     border: none;
 }
 
+/* Botón de eliminar factura */
+.invoice-delete-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 6px 10px;
+
+    height: 33px;       /* más alto */
+    width: 50px;        /* más ancho */
+
+    border-radius: 6px;
+    background-color: #dc3545;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+/* Hover */
+.invoice-delete-btn:hover {
+    background-color: #bb2d3b;
+}
+
+/* Active (clic) */
+.invoice-delete-btn:active {
+    transform: scale(0.95);
+}
+
+/* Ícono dentro del botón */
+.invoice-delete-btn svg {
+    width: 22px;
+    height: 22px;
+    fill: currentColor;
+    pointer-events: none;
+}
+
+.invoice-list-actions {
+    display: flex;
+    align-items: center;      /* 🔥 CENTRA verticalmente */
+    gap: 6px;                 /* Espaciado consistente */
+}
+
+.invoice-trash-header {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 12px;
+}
+
+.trash-header-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: #dc3545;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    color: white;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.trash-header-btn svg {
+    width: 20px;
+    height: 20px;
+    fill: white;
+}
+
+.trash-header-btn:hover {
+    background: #c82333;
+}
+
+/* Móvil */
+@media (max-width: 768px) {
+    .invoice-trash-header {
+        justify-content: center;
+    }
+}
+
+/* Contenedor de la sección Papelera */
+#trashSection {
+    animation: fadeIn 0.3s ease;
+}
+
+.trash-info {
+    margin-bottom: 15px;
+    font-size: 14px;
+    color: #cfcfcf;
+}
+
+/* Tarjeta de factura en papelera */
+.trash-invoice-item {
+    background: #1e1e1e;
+    border: 1px solid #444;
+    padding: 16px;
+    border-radius: 12px;
+    margin-bottom: 15px;
+}
+
+.trash-invoice-header {
+    display: flex;
+    justify-content: space-between;
+    font-weight: bold;
+    margin-bottom: 6px;
+}
+
+.trash-invoice-actions {
+    margin-top: 12px;
+    display: flex;
+    gap: 10px;
+}
+
+.trash-restore-btn,
+.trash-delete-btn {
+    padding: 6px 12px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.trash-restore-btn {
+    background: #0dcaf0;
+    color: #000;
+}
+
+.trash-delete-btn {
+    background: #dc3545;
+    color: #fff;
+}
+
+.trash-return-btn-container {
+    margin-top: 25px;
+    text-align: center;
+}
+
+@media (max-width: 768px) {
+    .trash-invoice-actions {
+        flex-direction: column;
+    }
+}
+
+.trash-nav-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 8px;
+    background: #dc3545;
+    color: #fff;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.trash-nav-btn .trash-icon svg {
+    width: 20px;
+    height: 20px;
+}
+
+/* Contenedor del botón de papelera */
+.trash-button-container {
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+/* Contenedor de papelera */
+.trash-info {
+    margin-bottom: 15px;
+    color: #ccc;
+    font-size: 14px;
+}
+
+.trash-return-btn-container {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.invoice-header-with-trash {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px; /* separa del filtro */
+}
+
+/* Botón de papelera */
+.trash-nav-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 8px;
+    background: #dc3545;
+    color: #fff;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.trash-nav-btn .trash-icon svg {
+    width: 20px;
+    height: 20px;
+}
+
+/* ---------------------------
+   BOTÓN "VOLVER A MIS FACTURAS"
+----------------------------*/
+
+#returnToInvoices {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 22px;
+    border-radius: 30px;
+    font-size: 16px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: var(--transition-speed);
+    
+    /* CAMBIOS CLAVE PARA MODO CLARO (Azul) */
+    background-color: var(--primary-color); /* Fondo Azul */
+    color: white; /* Texto/Íconos Blancos */
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3); /* Sombra de color para destacar */
+}
+
+#returnToInvoices svg {
+    width: 22px;
+    height: 22px;
+    fill: white !important; 
+    transition: var(--transition-speed);
+}
+
+#returnToInvoices:hover {
+    transform: translateY(-2px);
+    background-color: var(--primary-hover-color); /* Azul oscuro en hover */
+    box-shadow: 0 6px 15px rgba(0, 123, 255, 0.4);
+}
+
+/* ---------------------------
+        MODO OSCURO
+----------------------------*/
+
+body.dark-mode #returnToInvoices {
+    /* Usamos el primary-color del modo oscuro (si lo tienes) o un azul fuerte */
+    background-color: var(--primary-color); 
+    color: white; /* Asegura que texto y SVG sean blancos */
+    
+    /* Box-shadow más oscuro para el contraste */
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3); 
+    border: none; /* Quitamos el borde que tenías */
+}
+
+body.dark-mode #returnToInvoices:hover {
+    background-color: var(--primary-hover-color); /* Azul oscuro en hover */
+    box-shadow: 0 6px 15px rgba(0, 123, 255, 0.4);
+}
+
+body.dark-mode #returnToInvoices svg {
+    fill: white; /* Asegura que el SVG herede el color blanco */
+}
 
 /* ============================================= */
 /* === DARK THEME STYLES (FINAL VERSION) === */
@@ -1784,6 +2118,8 @@ body.modal-active {
     background-color: #c82333;
 }
 
+
+
 .nav-icon {
     display: none;
 }
@@ -2701,6 +3037,18 @@ textarea.input-error {
     flex-direction: column;
     gap: 12px;
 }
+
+/* Separación entre tarjetas de factura, tanto normales como eliminadas */
+#invoiceListContainer .invoice-list-item,
+#deletedInvoicesContainer .invoice-list-item {
+    margin-bottom: 18px; /* separa cada tarjeta */
+}
+
+#invoiceListContainer .invoice-list-item:last-child,
+#deletedInvoicesContainer .invoice-list-item:last-child {
+    margin-bottom: 8px; /* cierre más suave */
+}
+
 
 .invoice-list-item:hover {
     box-shadow: var(--box-shadow-medium);
@@ -4207,4 +4555,3 @@ body.modal-active {
   max-height: 100vh;
   overflow-y: hidden;
 }
-
