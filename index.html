@@ -61,17 +61,21 @@
             <h1 data-translate-key="loginWelcome">Bienvenido a Grid tu Sistema de Facturación</h1>
             <p data-translate-key="loginPrompt">Inicia sesión para continuar</p>
             <div class="email-login-box">
-                <input type="email" id="emailInput" placeholder="Correo electrónico">
-                <input type="password" id="passwordInput" placeholder="Contraseña">
-                <button id="emailLoginBtn">Ingresar</button>
+                <input type="email" id="emailInput" data-translate-key="[placeholder]loginemailPlaceholder" placeholder="Correo electrónico">
+                <input type="password" id="passwordInput" data-translate-key="[placeholder]loginpasswordPlaceholder" placeholder="Contraseña">
+                <button id="emailLoginBtn"data-translate-key="BtnemailLogin">Ingresar</button>
 
                 <p class="register-text">
-                    ¿No tienes cuenta? 
-                    <span id="openRegisterBtn">Crear cuenta</span>
+                    <span data-translate-key="registerPrompt">¿No tienes cuenta?</span> <!-- Traducir solo la pregunta -->
+                    <span id="openRegisterBtn" data-translate-key="registerLink">Crear cuenta</span> <!-- Traducir el enlace -->
                 </p>
                 <p class="forgot-password-text">
-                    <span id="openForgotPassword">¿Olvidaste tu contraseña?</span>
+                    <span id="openForgotPassword"data-translate-key="forgotPasswordLink">¿Olvidaste tu contraseña?</span>
                 </p>
+            </div>
+
+            <div class="divider-text-container">
+                <span class="divider-text" data-translate-key="dividingline">o</span>
             </div>
             
             <button id="loginButton" class="google-btn">
@@ -82,7 +86,7 @@
                 <span class="install-app-icon">
                     <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M480-320 280-520l56-58 104 104v-326h80v326l104-104 56 58-200 200ZM240-160q-33 0-56.5-23.5T160-240v-120h80v120h480v-120h80v120q0 33-23.5 56.5T720-160H240Z"/></svg>
                 </span>
-                Instalar App
+                <span data-translate-key="appinstallBtn">Instalar App</span>
             </button>
         </div>
         <div id="registerModal" class="modal-overlay">
@@ -322,7 +326,7 @@
                             </button>
                         </li>
                     </ul>
-                    </div>
+                </div>
                   </section>
                 <section id="createInvoiceSection" class="invoice-section active-section">
                     <form id="invoiceForm" class="invoice-form">
@@ -469,11 +473,24 @@
                 </section>
 
                 <section id="viewInvoicesSection" class="invoice-section" style="display: none;">
-                    <h2 data-translate-key="viewInvoicesTitle">Mis Facturas</h2>
+                    <div class="invoice-header-with-trash">
+                        <h2 data-translate-key="viewInvoicesTitle">Mis Facturas</h2>
+
+                        <button id="openTrashBtn" class="btn btn-danger trash-nav-btn">
+                            <span class="trash-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M265.18-737.85v548.79-548.79ZM451.62-113.3H265.18q-31.06 0-53.49-22.38-22.42-22.38-22.42-53.38v-548.79h-46.55v-75.75h204.07v-38.04h254.1v38.04h204.15v75.75h-46.55v185.23q-16.43-6.57-37.31-10.65-20.88-4.09-38.44-4.75v-169.83H265.18v548.79h148.43q4.96 17.14 15.9 38.68 10.94 21.53 22.11 37.08Zm-95.37-157.37h35.73q0-74.15 17.62-113.34 17.62-39.18 17.86-39.42v-233.24h-71.21v386ZM520.96-522q14.39-9.88 34.2-19.03 19.81-9.15 37.17-14.39v-101.25h-71.37V-522ZM672.55-76.7q-87.2 0-148.22-61.35-61.02-61.35-61.02-148.74 0-87.2 61.16-148.33 61.17-61.14 148.17-61.14 87.27 0 148.75 61.33 61.48 61.34 61.48 148.23 0 87.28-61.52 148.64-61.52 61.36-148.8 61.36Zm65.34-113.26 30.07-30.15-74.55-74.63V-407.7H650.3v130.15l87.59 87.59Z"/></svg>
+                            </span>
+                            <p data-translate-key="recyclingbinBtn">Papelera</p>
+                        </button>
+                    </div>
+
                     <div class="invoice-search-controls">
                         <div class="search-input-group">
-                            <input type="search" id="invoiceSearchInput" data-translate-key="[placeholder]invoiceSearchPlaceholder" placeholder="Buscar por cliente, N° factura, Cód. consulta...">
-                            <button type="button" id="invoiceSearchBtn" class="search-btn" data-translate-key="[title]search" title="Buscar">
+                            <input type="search" id="invoiceSearchInput"
+                                data-translate-key="[placeholder]invoiceSearchPlaceholder"
+                                placeholder="Buscar por cliente, N° factura, Cód. consulta...">
+                            <button type="button" id="invoiceSearchBtn" class="search-btn"
+                                data-translate-key="[title]search" title="Buscar">
                                 <img src="img/Search_icon.svg" alt="Buscar" class="icon-svg">
                             </button>
                         </div>
@@ -490,8 +507,31 @@
                             </select>
                         </div>
                     </div>
-                    <div id="invoiceListContainer">
-                        {/* Las facturas se cargarán aquí con JS */}
+
+                    <div id="invoiceListContainer"></div>
+                </section>
+
+                <section id="deletedInvoicesSection" class="invoice-section" style="display:none;">
+                    <h2>Papelera</h2>
+
+                    <p class="trash-info">
+                        Las facturas eliminadas permanecen aquí durante <strong>30 días</strong>.
+                    </p>
+
+                    <div id="deletedInvoicesContainer">
+                        <!-- Se cargan con loadDeletedInvoices() -->
+                    </div>
+
+                    <div class="trash-return-btn-container">
+                        <button id="returnToInvoices" class="btn btn-secondary">
+                            <span>
+                                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M560-232.35 312.35-480 560-727.65 623.65-664l-184 184 184 184L560-232.35Z"/></svg>
+                            </span>
+                            <span>
+                                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M241.2-65.41q-54.59 0-92.8-38.21-38.2-38.21-38.2-92.79V-324.3h123.58v-561.2l62.15 61.43 61.49-61.43 61.48 61.43 61.48-61.43 61.49 61.43 61.48-61.43 61.43 61.43 61.44-61.43 61.43 61.43 62.15-61.43v689.09q0 54.58-38.2 92.79-38.21 38.21-92.8 38.21H241.2Zm477.6-91q17 0 28.5-11.5t11.5-28.5V-753.3H324.78v429H678.8v127.89q0 17 11.5 28.5t28.5 11.5ZM364.78-591.39v-80H598.8v80H364.78Zm0 120v-80H598.8v80H364.78Zm314.02-120q-17 0-28.5-11.5t-11.5-28.5q0-17 11.5-28.5t28.5-11.5q17 0 28.5 11.5t11.5 28.5q0 17-11.5 28.5t-28.5 11.5Zm0 120q-17 0-28.5-11.5t-11.5-28.5q0-17 11.5-28.5t28.5-11.5q17 0 28.5 11.5t11.5 28.5q0 17-11.5 28.5t-28.5 11.5ZM241.2-156.41h346.6v-76.89H201.2v36.89q0 17 11.5 28.5t28.5 11.5Zm-40 0v-76.89 76.89Z"/></svg>
+                            </span>
+                            Volver a Mis Facturas
+                        </button>
                     </div>
                 </section>
 
@@ -963,4 +1003,3 @@
     <script type="module" src="script.js"></script>
 </body>
 </html>
-
