@@ -666,6 +666,78 @@ body.dark-mode #returnToInvoices svg {
     fill: white; /* Asegura que el SVG herede el color blanco */
 }
 
+/* ---------------------------
+   BOTÓN PAPELERA (trash-nav-btn)
+----------------------------*/
+.trash-nav-btn {
+    /* 1. Base Flexbox para Icono + Texto */
+    display: inline-flex;
+    align-items: center;
+    gap: 8px; /* Espacio entre el icono y el texto */
+
+    /* 2. Estilos de Diseño */
+    padding: 10px 18px;
+    border-radius: var(--border-radius-m, 15px); /* Usa tu variable o un valor fijo */
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: var(--transition-speed, 0.2s);
+    
+    /* 3. Colores (Basado en tu .btn-danger) */
+    background-color: var(--danger-color, #dc3545);
+    color: white; /* Texto blanco para el fondo rojo */
+    box-shadow: var(--box-shadow-light, 0 4px 12px rgba(0, 0, 0, 0.08));
+}
+
+.trash-nav-btn:hover {
+    background-color: var(--danger-color-hover, #c82333); /* Define un color hover para danger */
+    transform: translateY(-1px);
+}
+
+/* Estilo del Ícono */
+.trash-nav-btn svg {
+    width: 20px;
+    height: 20px;
+    fill: currentColor; /* El SVG tomará el color del texto (blanco) */
+}
+
+/* Estilo del Párrafo de Texto */
+.trash-nav-btn p {
+    margin: 0; /* Elimina el margen por defecto del <p> */
+}
+
+@media (max-width: 600px) {
+    
+    /* Ocultar el texto */
+    .trash-nav-btn p {
+        display: none;
+    }
+    
+    /* Ajustar el botón para que sea más pequeño (solo con icono) */
+    .trash-nav-btn {
+        padding: 10px; /* Padding igual por todos lados para un botón cuadrado/redondo */
+        gap: 0;        /* Elimina el espacio del gap */
+        
+        /* Opcional: Reducir el border-radius si quieres que sea más redondo */
+        border-radius: 50%; /* Si quieres un círculo (requiere width/height fijos) */
+        
+        /* Si usas border-radius: 50%; asegúrate de que el padding lo haga cuadrado */
+    }
+}
+
+[data-theme="dark"] .trash-nav-btn {
+    /* Mantenemos el color danger del modo oscuro si lo tienes, o un color oscuro */
+    background-color: var(--danger-color, #dc3545); 
+    color: white; 
+    box-shadow: 0 4px 12px rgba(255, 0, 0, 0.2); 
+}
+
+[data-theme="dark"] .trash-nav-btn:hover {
+    background-color: var(--danger-color-hover, #c82333); 
+}
+
+
 /* ============================================= */
 /* === DARK THEME STYLES (FINAL VERSION) === */
 /* ============================================= */
@@ -972,10 +1044,11 @@ body.dark-mode #returnToInvoices svg {
 
 /* 2. Listas Desplegables (con !important para forzar el estilo)
 /* ================================================= */
+
 [data-theme="dark"] select {
-    background-color: var(--input-background, #2c2c2s5) !important;
-    color: var(--input-text-color, #e3e3e3) !important;
-    border-color: var(--border-color, #3e424a) !important;
+    background-color: var(--input-background) !important; 
+    color: var(--input-text-color) !important;
+    border-color: var(--border-color) !important;
 }
 
 [data-theme="dark"] .custom-select-options,
@@ -2178,10 +2251,6 @@ body.modal-active {
     box-shadow: var(--box-shadow-medium);
     width: 100%;
     margin-top: 10px;
-}
-
-.invoice-section {
-    /* display: none; es manejado por JS */
 }
 
 .invoice-section.active-section {
