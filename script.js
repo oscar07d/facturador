@@ -266,6 +266,7 @@ const generateInvoiceFileBtn = document.getElementById('generateInvoiceFileBtn')
 const email = document.getElementById("registerEmail").value.trim();
 const pass = document.getElementById("registerPassword").value.trim();
 
+
 // --- Variables Globales ---
 const paymentStatusDetails = {
     pending: { text: "Pendiente", description: "La factura ha sido emitida y enviada al cliente, pero aún no se ha recibido el pago. El plazo de vencimiento todavía no ha llegado.", action: "Monitoreo regular, envío de recordatorios amigables antes de la fecha de vencimiento." },
@@ -284,6 +285,154 @@ const paymentStatusDetails = {
     inactivo: { text: "Inactivo", description: "Cliente marcado como inactivo o eliminado.", action: "Archivar o revisar." }, // Para estadoGeneralCliente
     'n/a': { text: "N/A", description: "No aplica o sin información.", action: "Verificar datos."} // Para estadoUltimaFacturaCliente
 };
+
+
+async function deleteInvoice(invoice, invoiceId) {
+    const confirmDelete = confirm(`¿Eliminar la factura ${invoice.invoiceNumberFormatted}?`);
+
+    if (!confirmDelete) return;
+
+    try {
+        const user = auth.currentUser;
+        if (!user) return alert("No estás autenticado.");
+
+        // 1. Mover a papelera
+        await setDoc(doc(db, "facturas_eliminadas", invoiceId), {
+            ...invoice,
+            userId: user.uid,
+            deletedAt: Date.now()
+        });
+
+        // 2. Borrar de la colección principal
+        await deleteDoc(doc(db, "facturas", invoiceId));
+
+        alert("Factura movida a la papelera.");
+        loadAndDisplayInvoices(); // actualizar
+    } catch (err) {
+        console.error("Error eliminando factura:", err);
+        alert("Error al eliminar la factura.");
+    }
+}
+
+async function loadDeletedInvoices() {
+    const deletedContainer = document.getElementById("deletedInvoicesContainer");
+    deletedContainer.innerHTML = "";
+
+    const user = auth.currentUser;
+    if (!user) return;
+
+    try {
+        const q = query(
+            collection(db, "facturas_eliminadas"),
+            where("userId", "==", user.uid),
+            orderBy("deletedAt", "desc")
+        );
+
+        const snaps = await getDocs(q);
+
+        if (snaps.empty) {
+            deletedContainer.innerHTML = "<p>No hay facturas eliminadas.</p>";
+            return;
+        }
+
+        snaps.forEach(docSnap => {
+            const invoice = { id: docSnap.id, ...docSnap.data() };
+
+            const item = document.createElement("div");
+            item.classList.add("invoice-list-item");
+
+            const deletedDate = new Date(invoice.deletedAt).toLocaleDateString("es-CO");
+
+            item.innerHTML = `
+                <div class="invoice-list-header">
+                    <span class="invoice-list-number">${invoice.invoiceNumberFormatted}</span>
+                    <span class="status-badge status-overdue">Eliminada</span>
+                </div>
+
+                <div class="invoice-list-client">${invoice.client?.name}</div>
+
+                <div class="invoice-list-details">
+                    <span class="invoice-list-date">Eliminada: ${deletedDate}</span>
+                </div>
+
+                <div class="invoice-list-actions">
+                    <button class="btn btn-sm btn-warning restore-btn">Recuperar</button>
+                    <button class="btn btn-sm btn-danger delete-final-btn">Borrar Definitivo</button>
+                </div>
+            `;
+
+            item.querySelector(".restore-btn").onclick = () =>
+                restoreInvoice(invoice);
+
+            item.querySelector(".delete-final-btn").onclick = () =>
+                deleteInvoiceForever(invoice.id);
+
+            deletedContainer.appendChild(item);
+        });
+
+    } catch (error) {
+        console.error("Error al cargar la papelera:", error);
+        deletedContainer.innerHTML = "<p>Error al cargar la papelera.</p>";
+    }
+}
+
+async function restoreInvoice(invoice) {
+    try {
+        const originalData = { ...invoice };
+        
+        // 1. Eliminar campos que no deben regresar a "facturas"
+        delete originalData.deletedAt;
+        delete originalData.trashReason;
+
+        // 2. Restaurar a colección NORMAL
+        await setDoc(doc(db, "facturas", invoice.id), originalData);
+
+        // 3. Eliminar de la papelera
+        await deleteDoc(doc(db, "facturas_eliminadas", invoice.id));
+
+        alert("Factura recuperada.");
+
+        // 4. Actualizar UI correctamente (sin mezclar pantallas)
+        document.getElementById("deletedInvoicesSection").style.display = "none";
+        document.getElementById("viewInvoicesSection").style.display = "block";
+
+        // 5. Recargar solo donde corresponde
+        loadAndDisplayInvoices();
+
+    } catch (err) {
+        console.error("Error restaurando factura:", err);
+        alert("Error restaurando la factura.");
+    }
+}
+
+async function deleteInvoiceForever(id) {
+    const confirmDelete = confirm("¿Eliminar para siempre esta factura?");
+    if (!confirmDelete) return;
+
+    try {
+        await deleteDoc(doc(db, "facturas_eliminadas", id));
+        alert("Factura eliminada permanentemente.");
+        loadDeletedInvoices();
+    } catch (err) {
+        console.error(err);
+        alert("Error eliminando permanentemente.");
+    }
+}
+
+async function autoCleanTrash() {
+    const cutoff = Date.now() - (30 * 24 * 60 * 60 * 1000); // 30 días
+
+    const q = query(
+        collection(db, "facturas_eliminadas"),
+        where("deletedAt", "<=", cutoff)
+    );
+
+    const snaps = await getDocs(q);
+
+    snaps.forEach(async docSnap => {
+        await deleteDoc(doc(db, "facturas_eliminadas", docSnap.id));
+    });
+}
 
 document.getElementById("registerUserBtn").addEventListener("click", async () => {
     const email = document.getElementById("registerEmail").value.trim();
@@ -421,8 +570,38 @@ document.getElementById("sendResetLinkBtn").addEventListener("click", async () =
     }
 });
 
+document.getElementById("openTrashBtn").addEventListener("click", () => {
+    showDeletedInvoicesSection();
+});
 
+function showDeletedInvoicesSection() {
+    hideAllSections();
+    document.getElementById("deletedInvoicesSection").style.display = "block";
+    loadDeletedInvoices();
+}
 
+function hideAllSections() {
+    document.querySelectorAll(".invoice-section").forEach(sec => {
+        sec.style.display = "none";
+    });
+}
+
+document.getElementById("returnToInvoices").addEventListener("click", () => {
+    // Cerrar papelera
+    deletedInvoicesSection.style.display = "none";
+
+    // Mostrar mis facturas
+    viewInvoicesSection.style.display = "block";
+
+    // Limpiar fondo o residuos
+    viewInvoicesSection.scrollTop = 0;
+
+    // Resetea cualquier filtro que quedó activo
+    invoiceSearchInput.value = "";
+    statusFilterSelect.value = "all";
+
+    loadInvoices();
+});
 
 // --- DICCIONARIO COMPLETO DE TRADUCCIONES ---
 const translations = {
@@ -446,8 +625,16 @@ const translations = {
         // --- Splash & Login Screen ---
         splashBy: "Sistema de Facturación by",
         loginWelcome: "Bienvenido a Grid tu Sistema de Facturación",
+        loginemailPlaceholder: "Correo Electrónico",
+        loginpasswordPlaceholder: "Contraseña",
+        BtnemailLogin: "Ingresar",
+        registerPrompt: "¿No tienes cuenta?",
+        registerLink: "Crear cuenta",
+        forgotPasswordLink: "¿Olvidaste tu contraseña?",
         loginPrompt: "Inicia sesión para continuar",
+        dividingline: "o",
         loginButton: "Iniciar Sesión con Google",
+        appinstallBtn: "Instalar App",
 
         // --- Navigation ---
         navHome: "Inicio",
@@ -557,6 +744,7 @@ const translations = {
         
         // --- View Invoices Section ---
         viewInvoicesTitle: "Mis Facturas",
+        recyclingbinBtn: "Papelera de Reciclaje",
         invoiceSearchPlaceholder: "Buscar por cliente, N° factura, Cód. consulta...",
         filterByStatusLabel: "Filtrar por estado:",
         allStatusesOption: "Todos los estados",
@@ -704,6 +892,13 @@ const translations = {
         // --- Splash & Login Screen ---
         splashBy: "Invoicing System by",
         loginWelcome: "Welcome to Grid, your Invoicing System",
+        loginemailPlaceholder: "Email Address",
+        loginpasswordPlaceholder: "Password",
+        BtnemailLogin: "Log In",
+        registerPrompt: "Don't have an account?",
+        registerLink: "Create account",
+        forgotPasswordLink: "Forgot your password?",
+        dividingline: "or",
         loginPrompt: "Log in to continue",
         loginButton: "Sign In with Google",
 
@@ -815,6 +1010,7 @@ const translations = {
 
         // --- View Invoices Section ---
         viewInvoicesTitle: "My Invoices",
+        recyclingbinBtn: "Recycling Bin",
         invoiceSearchPlaceholder: "Search by client, invoice #, query code...",
         filterByStatusLabel: "Filter by status:",
         allStatusesOption: "All statuses",
@@ -3928,103 +4124,135 @@ async function loadAndDisplayInvoices() {
         return; 
     }
 
-    // Obtener los valores actuales de los filtros de búsqueda
     const searchTerm = invoiceSearchInput ? invoiceSearchInput.value.toLowerCase() : '';
     const statusFilter = statusFilterSelect ? statusFilterSelect.value : 'all';
 
     showLoading(true);
 
     try {
-        const q = query(collection(db, "facturas"), where("userId", "==", user.uid), orderBy("createdAt", "desc"));
+        const q = query(
+            collection(db, "facturas"),
+            where("userId", "==", user.uid),
+            orderBy("createdAt", "desc")
+        );
+
         const querySnapshot = await getDocs(q);
-        
-        // --- 1. LÓGICA DE ACTUALIZACIÓN SEMI-AUTOMÁTICA ---
+
         const batch = writeBatch(db);
         let updatesMade = false;
         const today = new Date();
-        today.setHours(0, 0, 0, 0); // Comparar solo fechas, sin la hora
+        today.setHours(0, 0, 0, 0);
 
-        const allInvoices = []; // Array para guardar todas las facturas, ya sea originales o actualizadas
+        const allInvoices = [];
 
         querySnapshot.forEach(docSnap => {
             let invoice = { id: docSnap.id, ...docSnap.data() };
 
-            // Revisa si una factura pagada con fecha de servicio ya se venció
             if (invoice.paymentStatus === 'paid' && invoice.serviceStartDate) {
                 const dueDate = new Date(invoice.serviceStartDate + 'T00:00:00');
-              if (today >= dueDate) { 
-                    invoice.paymentStatus = 'overdue'; 
+                if (today >= dueDate) {
+                    invoice.paymentStatus = 'overdue';
                     const invoiceRef = doc(db, "facturas", invoice.id);
                     batch.update(invoiceRef, { paymentStatus: "overdue" });
                     updatesMade = true;
-              }
+                }
             }
             allInvoices.push(invoice);
         });
 
         if (updatesMade) {
-            await batch.commit(); // Envía todas las actualizaciones a Firestore a la vez
+            await batch.commit();
         }
 
-        // --- 2. LÓGICA DE FILTRADO (SOBRE LA LISTA YA ACTUALIZADA) ---
         const filteredInvoices = allInvoices.filter(invoice => {
             const clientName = invoice.client?.name.toLowerCase() || '';
             const invoiceNumber = invoice.invoiceNumberFormatted?.toLowerCase() || '';
             const uniqueCode = invoice.uniqueQueryCode?.toLowerCase() || '';
-            
-            const matchesSearchTerm = searchTerm === '' || 
-                                      clientName.includes(searchTerm) ||
-                                      invoiceNumber.includes(searchTerm) ||
-                                      uniqueCode.includes(searchTerm);
 
-            const matchesStatus = statusFilter === 'all' || 
-                                  invoice.paymentStatus === statusFilter;
+            const matchesSearchTerm =
+                searchTerm === '' ||
+                clientName.includes(searchTerm) ||
+                invoiceNumber.includes(searchTerm) ||
+                uniqueCode.includes(searchTerm);
+
+            const matchesStatus =
+                statusFilter === 'all' || invoice.paymentStatus === statusFilter;
 
             return matchesSearchTerm && matchesStatus;
         });
 
-        // --- 3. RENDERIZADO DE LA LISTA FINAL ---
         invoiceListContainer.innerHTML = '';
+
         if (filteredInvoices.length === 0) {
-            invoiceListContainer.innerHTML = querySnapshot.empty ? 
-                '<p class="empty-list-message">No tienes facturas guardadas.</p>' :
-                '<p class="empty-list-message">No se encontraron facturas que coincidan con tu búsqueda.</p>';
+            invoiceListContainer.innerHTML = querySnapshot.empty
+                ? '<p class="empty-list-message">No tienes facturas guardadas.</p>'
+                : '<p class="empty-list-message">No se encontraron facturas que coincidan con tu búsqueda.</p>';
         } else {
             filteredInvoices.forEach((invoice) => {
                 const invoiceId = invoice.id;
 
-                // --- CORRECCIÓN AQUÍ: Definimos las variables ANTES de usarlas ---
                 let statusClassName = invoice.paymentStatus || 'pending';
-                let statusText = paymentStatusDetails[statusClassName]?.text || statusClassName.replace(/_/g, ' ');
-                // --- FIN DE LA CORRECCIÓN ---
+                let statusText =
+                    paymentStatusDetails[statusClassName]?.text ||
+                    statusClassName.replace(/_/g, ' ');
 
                 const itemElement = document.createElement('div');
-                // Añadimos la clase del tema para el borde de color que hicimos antes
-                itemElement.classList.add('invoice-list-item', `status-theme-${statusClassName.toLowerCase()}`);
+                itemElement.classList.add(
+                    'invoice-list-item',
+                    `status-theme-${statusClassName.toLowerCase()}`
+                );
                 itemElement.setAttribute('data-invoice-id', invoiceId);
-                
-                // Ahora el innerHTML puede usar las variables sin problemas
+
                 itemElement.innerHTML = `
                     <div class="invoice-list-header">
                         <span class="invoice-list-number">${invoice.invoiceNumberFormatted || 'N/A'}</span>
                         <span class="status-badge status-${statusClassName.toLowerCase()}">${statusText}</span>
                     </div>
+
                     <div class="invoice-list-client">${invoice.client?.name || 'N/A'}</div>
-                    ${invoice.uniqueQueryCode ? `<div class="invoice-list-query-code">Cód. Consulta: <strong>${invoice.uniqueQueryCode}</strong></div>` : ''}
+
+                    ${
+                        invoice.uniqueQueryCode
+                            ? `<div class="invoice-list-query-code">Cód. Consulta: <strong>${invoice.uniqueQueryCode}</strong></div>`
+                            : ''
+                    }
+
                     <div class="invoice-list-details">
-                        <span class="invoice-list-date">Fecha: ${invoice.invoiceDate ? new Date(invoice.invoiceDate + 'T00:00:00').toLocaleDateString('es-CO') : 'N/A'}</span>
-                        <span class="invoice-list-total">${(invoice.totals?.grandTotal || 0).toLocaleString('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 })}</span>
+                        <span class="invoice-list-date">Fecha: ${
+                            invoice.invoiceDate
+                                ? new Date(invoice.invoiceDate + 'T00:00:00').toLocaleDateString('es-CO')
+                                : 'N/A'
+                        }</span>
+
+                        <span class="invoice-list-total">${
+                            (invoice.totals?.grandTotal || 0).toLocaleString('es-CO', {
+                                style: 'currency',
+                                currency: 'COP',
+                                minimumFractionDigits: 0
+                            })
+                        }</span>
                     </div>
+
                     <div class="invoice-list-actions">
-                        ${(invoice.paymentStatus === 'pending' || invoice.paymentStatus === 'overdue') ?
-                            `<button type="button" class="btn btn-sm btn-success confirm-payment-btn">Confirmar Pago</button>` :
-                            ''
+                        ${
+                            invoice.paymentStatus === 'pending' ||
+                            invoice.paymentStatus === 'overdue'
+                                ? `<button type="button" class="btn btn-sm btn-success confirm-payment-btn">Confirmar Pago</button>`
+                                : ''
                         }
                         <button type="button" class="btn btn-sm btn-info view-details-btn">Ver Detalles</button>
+                        <button type="button" class="btn btn-sm btn-danger invoice-delete-btn">
+                            <svg xmlns="http://www.w3.org/2000/svg" height="20px" width="20px"
+                                viewBox="0 -960 960 960" fill="currentColor">
+                                <path d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 
+                                33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 
+                                0h80v-360h-80v360ZM280-720v520-520Z"/>
+                            </svg>
+                        </button>
                     </div>
                 `;
 
-                // Listeners para los botones de la tarjeta
+                // Confirmar pago
                 const confirmPaymentBtn = itemElement.querySelector('.confirm-payment-btn');
                 if (confirmPaymentBtn) {
                     confirmPaymentBtn.addEventListener('click', (e) => {
@@ -4032,23 +4260,80 @@ async function loadAndDisplayInvoices() {
                         openPaymentUpdateModal(invoice, invoiceId);
                     });
                 }
-                
+
+                // Ver detalles
                 const viewDetailsBtn = itemElement.querySelector('.view-details-btn');
                 if (viewDetailsBtn) {
                     viewDetailsBtn.addEventListener('click', () => {
-                        openInvoiceDetailModal(invoice, invoiceId); 
+                        openInvoiceDetailModal(invoice, invoiceId);
                     });
                 }
+
+                // ELIMINAR FACTURA (listener)
+                const deleteBtn = itemElement.querySelector('.invoice-delete-btn');
+                deleteBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    moveInvoiceToTrash(invoice, invoiceId);
+                });
+
                 invoiceListContainer.appendChild(itemElement);
             });
         }
     } catch (error) {
         console.error("Error al cargar y filtrar facturas:", error);
-        invoiceListContainer.innerHTML = '<p class="error-message">Error al cargar las facturas.</p>';
+        invoiceListContainer.innerHTML =
+            '<p class="error-message">Error al cargar las facturas.</p>';
     } finally {
         showLoading(false);
     }
 }
+
+// Mover factura a papelera temporal
+async function moveInvoiceToTrash(invoice, invoiceId) {
+    try {
+        const user = auth.currentUser;
+        if (!user) {
+            console.error("No hay usuario autenticado.");
+            return;
+        }
+
+        // Fecha actual para registro
+        const deletedAt = new Date().toISOString();
+
+        // 1. Guardar factura en la papelera
+        const trashRef = doc(db, "facturas_eliminadas", invoiceId);
+        await setDoc(trashRef, {
+            ...invoice,
+            deletedAt,
+            deletedBy: user.uid,
+            permanentlyDeleteAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString() // +30 días
+        });
+
+        // 2. Eliminar factura original
+        const originalRef = doc(db, "facturas", invoiceId);
+        await deleteDoc(originalRef);
+
+        console.log(`Factura ${invoiceId} movida a facturas_eliminadas`);
+
+        // 3. Refrescar lista visual
+        loadAndDisplayInvoices();
+
+    } catch (error) {
+        console.error("Error al mover factura a la papelera:", error);
+    }
+}
+
+// Ir a papelera
+document.getElementById("openTrashBtn").addEventListener("click", () => {
+    showDeletedInvoicesSection(); // Solo esto
+});
+
+// Volver a Mis Facturas
+document.getElementById("returnToInvoices").addEventListener("click", () => {
+    showSection("viewInvoicesSection");
+    loadAndDisplayInvoices();
+});
+
 
 async function loadInvoiceNotifications() {
     const user = auth.currentUser;
@@ -5612,4 +5897,3 @@ if (document.readyState === 'loading') {
 //        alert("Funcionalidad 'Generar Factura (Archivo)' pendiente.");
 //    });
 //}
-
