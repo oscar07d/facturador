@@ -554,9 +554,10 @@
     padding: 6px 14px;
     border-radius: 8px;
     background: #dc3545;
-    color: #fff;
+    color: #fff !important;
     font-size: 14px;
     cursor: pointer;
+    background-color: var(--danger-color, #dc3545);
 }
 
 .trash-nav-btn .trash-icon svg {
@@ -699,7 +700,7 @@ body.dark-mode #returnToInvoices svg {
 .trash-nav-btn svg {
     width: 20px;
     height: 20px;
-    fill: currentColor; /* El SVG tomará el color del texto (blanco) */
+    fill: #fff; /* El SVG tomará el color del texto (blanco) */
 }
 
 /* Estilo del Párrafo de Texto */
@@ -729,12 +730,16 @@ body.dark-mode #returnToInvoices svg {
 [data-theme="dark"] .trash-nav-btn {
     /* Mantenemos el color danger del modo oscuro si lo tienes, o un color oscuro */
     background-color: var(--danger-color, #dc3545); 
-    color: white; 
+    color: #ffffff ; 
     box-shadow: 0 4px 12px rgba(255, 0, 0, 0.2); 
 }
 
 [data-theme="dark"] .trash-nav-btn:hover {
     background-color: var(--danger-color-hover, #c82333); 
+}
+
+[data-theme="dark"] .trash-nav-btn svg {
+    fill: #ffffff; /* Forzar el SVG a blanco puro */
 }
 
 
