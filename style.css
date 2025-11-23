@@ -976,6 +976,15 @@
     gap: 16px; /* Espacio entre el icono y el texto */
     transition: background-color 0.2s ease;
     z-index: 10000 !important;
+    padding: 12px 16px;
+}
+
+.chevron {
+    margin-left: auto; 
+    flex-shrink: 0; 
+    font-size: 1.5rem;
+    color: var(--text-muted-color);
+    font-weight: 300;
 }
 
 .profile-item:hover {
@@ -994,9 +1003,9 @@
 }
 
 .profile-item div {
-    flex-grow: 0; /* Ocupa el espacio restante */
     display: flex;
     flex-direction: column;
+    margin-right: 20px;
 }
 
 .profile-item span {
@@ -4198,3 +4207,4 @@ body.modal-active {
   max-height: 100vh;
   overflow-y: hidden;
 }
+
