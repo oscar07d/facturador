@@ -106,6 +106,10 @@
     --border-color: #ccc;
 }
 
+.invoice-section {
+    display: none;
+}
+
 /* === LOGIN EMAIL / PASSWORD === */
 
 .email-login-box {
@@ -2258,7 +2262,11 @@ body.modal-active {
     margin-top: 10px;
 }
 
-.invoice-section.active-section {
+.invoice-section {
+    display: none;
+}
+
+.active-section {
     display: block;
 }
 
