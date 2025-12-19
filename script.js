@@ -73,16 +73,31 @@ document.addEventListener('DOMContentLoaded', () => {
 const allSections = [
   'homeSection',
   'createInvoiceSection',
+  'deletedInvoicesSection',
   'viewInvoicesSection',
   'clientsSection',
   'profileSection'
 ];
 
+
+
+function ensureTrashHidden() {
+    const trashSection = document.getElementById("deletedInvoicesSection");
+    if (trashSection && trashSection.style.display !== "none") {
+        trashSection.style.display = "none";
+    }
+}
+
+
 function showSection(sectionId) {
-  allSections.forEach(id => {
-    document.getElementById(id).style.display =
-      (id === sectionId) ? 'block' : 'none';
+  document.querySelectorAll(".invoice-section").forEach(section => {
+    section.style.display = "none";
   });
+
+  const target = document.getElementById(sectionId);
+  if (target) {
+    target.style.display = "block";
+  }
 }
 
 // --- Selección de Elementos del DOM ---
@@ -286,6 +301,7 @@ const paymentStatusDetails = {
     'n/a': { text: "N/A", description: "No aplica o sin información.", action: "Verificar datos."} // Para estadoUltimaFacturaCliente
 };
 
+let isLoadingDeletedInvoices = false;
 
 async function deleteInvoice(invoice, invoiceId) {
     const confirmDelete = confirm(`¿Eliminar la factura ${invoice.invoiceNumberFormatted}?`);
@@ -315,11 +331,17 @@ async function deleteInvoice(invoice, invoiceId) {
 }
 
 async function loadDeletedInvoices() {
+    if (isLoadingDeletedInvoices) return; // ⛔ evita duplicados
+    isLoadingDeletedInvoices = true;
+
     const deletedContainer = document.getElementById("deletedInvoicesContainer");
     deletedContainer.innerHTML = "";
 
     const user = auth.currentUser;
-    if (!user) return;
+    if (!user) {
+        isLoadingDeletedInvoices = false;
+        return;
+    }
 
     try {
         const q = query(
@@ -339,17 +361,17 @@ async function loadDeletedInvoices() {
             const invoice = { id: docSnap.id, ...docSnap.data() };
 
             const item = document.createElement("div");
-            item.classList.add("invoice-list-item");
+            item.className = "invoice-list-item";
 
             const deletedDate = new Date(invoice.deletedAt).toLocaleDateString("es-CO");
 
             item.innerHTML = `
                 <div class="invoice-list-header">
-                    <span class="invoice-list-number">${invoice.invoiceNumberFormatted}</span>
+                    <span class="invoice-list-number">${invoice.invoiceNumberFormatted || "N/A"}</span>
                     <span class="status-badge status-overdue">Eliminada</span>
                 </div>
 
-                <div class="invoice-list-client">${invoice.client?.name}</div>
+                <div class="invoice-list-client">${invoice.client?.name || "—"}</div>
 
                 <div class="invoice-list-details">
                     <span class="invoice-list-date">Eliminada: ${deletedDate}</span>
@@ -361,11 +383,13 @@ async function loadDeletedInvoices() {
                 </div>
             `;
 
-            item.querySelector(".restore-btn").onclick = () =>
-                restoreInvoice(invoice);
+            item.querySelector(".restore-btn").onclick = async () => {
+                await restoreInvoice(invoice);
+            };
 
-            item.querySelector(".delete-final-btn").onclick = () =>
-                deleteInvoiceForever(invoice.id);
+            item.querySelector(".delete-final-btn").onclick = async () => {
+                await deleteInvoiceForever(invoice.id);
+            };
 
             deletedContainer.appendChild(item);
         });
@@ -373,34 +397,25 @@ async function loadDeletedInvoices() {
     } catch (error) {
         console.error("Error al cargar la papelera:", error);
         deletedContainer.innerHTML = "<p>Error al cargar la papelera.</p>";
+    } finally {
+        isLoadingDeletedInvoices = false;
     }
 }
 
+
 async function restoreInvoice(invoice) {
     try {
-        const originalData = { ...invoice };
-        
-        // 1. Eliminar campos que no deben regresar a "facturas"
-        delete originalData.deletedAt;
-        delete originalData.trashReason;
-
-        // 2. Restaurar a colección NORMAL
-        await setDoc(doc(db, "facturas", invoice.id), originalData);
-
-        // 3. Eliminar de la papelera
+        await setDoc(doc(db, "facturas", invoice.id), invoice);
         await deleteDoc(doc(db, "facturas_eliminadas", invoice.id));
 
-        alert("Factura recuperada.");
+        alert("Factura restaurada.");
 
-        // 4. Actualizar UI correctamente (sin mezclar pantallas)
-        document.getElementById("deletedInvoicesSection").style.display = "none";
-        document.getElementById("viewInvoicesSection").style.display = "block";
-
-        // 5. Recargar solo donde corresponde
-        loadAndDisplayInvoices();
+        // vuelve automáticamente a Mis Facturas
+        showSection("viewInvoicesSection");
+        await loadAndDisplayInvoices();
 
     } catch (err) {
-        console.error("Error restaurando factura:", err);
+        console.error(err);
         alert("Error restaurando la factura.");
     }
 }
@@ -571,7 +586,8 @@ document.getElementById("sendResetLinkBtn").addEventListener("click", async () =
 });
 
 document.getElementById("openTrashBtn").addEventListener("click", () => {
-    showDeletedInvoicesSection();
+    showSection("deletedInvoicesSection");
+    loadDeletedInvoices();
 });
 
 function showDeletedInvoicesSection() {
@@ -581,27 +597,13 @@ function showDeletedInvoicesSection() {
 }
 
 function hideAllSections() {
-    document.querySelectorAll(".invoice-section").forEach(sec => {
-        sec.style.display = "none";
+    const sections = document.querySelectorAll(".invoice-section");
+    sections.forEach(section => {
+        section.style.display = "none";
     });
 }
 
-document.getElementById("returnToInvoices").addEventListener("click", () => {
-    // Cerrar papelera
-    deletedInvoicesSection.style.display = "none";
 
-    // Mostrar mis facturas
-    viewInvoicesSection.style.display = "block";
-
-    // Limpiar fondo o residuos
-    viewInvoicesSection.scrollTop = 0;
-
-    // Resetea cualquier filtro que quedó activo
-    invoiceSearchInput.value = "";
-    statusFilterSelect.value = "all";
-
-    loadInvoices();
-});
 
 // --- DICCIONARIO COMPLETO DE TRADUCCIONES ---
 const translations = {
@@ -4323,10 +4325,6 @@ async function moveInvoiceToTrash(invoice, invoiceId) {
     }
 }
 
-// Ir a papelera
-document.getElementById("openTrashBtn").addEventListener("click", () => {
-    showDeletedInvoicesSection(); // Solo esto
-});
 
 // Volver a Mis Facturas
 document.getElementById("returnToInvoices").addEventListener("click", () => {
